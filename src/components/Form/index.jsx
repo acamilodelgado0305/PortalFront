@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { svgProfessional, svgSmile, svgExams, svgBriefcase, svgFlagUsa, svgFlagSpain, svgFlagCanada, svgFlagUK, svgDominicanRepublic } from "./icons"
+import { Range } from 'react-range';
 
 const questions = [
   {
@@ -59,7 +60,7 @@ const questions = [
   {
     id: 6,
     question: "¿Cuál es tu presupuesto para una clase?",
-    type: "slider",
+    type: "range",
     min: 1,
     max: 40,
     step: 1,
@@ -70,7 +71,7 @@ const questions = [
 function Form() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [budget, setBudget] = useState(1);
+  const [budget, setBudget] = useState([1, 40]);
 
   const handleOptionSelected = (option) => {
     const newAnswers = [...answers];
@@ -92,18 +93,15 @@ function Form() {
     }
   };
 
-  const handleBudgetChange = (e) => {
-    const value = parseInt(e.target.value);
-    setBudget(value);
-
+  const handleRangeChange = (values) => {
+    setBudget(values);
     const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = value;
+    newAnswers[currentQuestionIndex] = values;
     setAnswers(newAnswers);
   };
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-pink-400">
-
       <button 
         onClick={handleBack}
         className="absolute top-20 left-20 bg-transparent text-black font-bold text-5xl">
@@ -122,27 +120,54 @@ function Form() {
           </h1>
         </div>
 
-        <div className="w-1/2 bg-white  p-10 shadow-lg h-full flex flex-col justify-center">
+        <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center">
           <div className="flex-grow space-y-6 flex-col items-center mt-96 mx-6 ">
-
-            {questions[currentQuestionIndex].type === "slider" ? (
+            {questions[currentQuestionIndex].type === "range" ? (
               <div className="flex flex-col items-center">
-                <input
-                  type="range"
+                <div className="text-4xl font-bold mb-16">
+                  {`${questions[currentQuestionIndex].unit}${budget[0]} - ${questions[currentQuestionIndex].unit}${budget[1]}${budget[1] === 40 ? '+' : ''}`}
+                </div>
+                <Range
+                  step={questions[currentQuestionIndex].step}
                   min={questions[currentQuestionIndex].min}
                   max={questions[currentQuestionIndex].max}
-                  step={questions[currentQuestionIndex].step}
-                  value={budget}
-                  onChange={handleBudgetChange}
-                  className="w-full mt-8"
+                  values={budget}
+                  onChange={handleRangeChange}
+                  renderTrack={({ props, children }) => (
+                    <div
+                      {...props}
+                      style={{
+                        height: '6px',
+                        width: '100%',
+                        background: '#000',
+                        position: 'relative',
+                      }}
+                    >
+                      {children}
+                    </div>
+                  )}
+                  renderThumb={({ props}) => (
+                    <div
+                      {...props}
+                      style={{
+                        height: '60px',
+                        width: '60px',
+                        backgroundColor: 'white',
+                        border: "4px solid black",
+                        borderRadius: '20%',
+                        position: 'absolute',
+                      }}
+                    >
+                    </div>
+                  )}
                 />
-                <div className="text-2xl font-bold mt-4">{`${questions[currentQuestionIndex].unit}${budget} - ${budget === 40 ? `${questions[currentQuestionIndex].unit}40+` : ""}`}</div>
+
+                
               </div>
             ) : (
-              questions[currentQuestionIndex].options.map((option, index) => (
+              questions[currentQuestionIndex].options?.map((option, index) => (
                 <div key={index} className="flex justify-between text-2xl font-semibold border-4 border-gray-300 rounded-xl p-6 items-center w-full">
                   <div className="flex items-center space-x-2">
-                    <div>{option.svg}</div>
                     <label htmlFor={`option-${index}`} className="block text-gray-700 w-full">{option.text}</label>
                   </div>
                   <input
