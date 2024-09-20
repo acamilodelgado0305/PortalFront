@@ -7,6 +7,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./error-page";
 import Landing from "./landing";
 import AddTeacher from "./components/Teacher/AddTeacher";
+import Form from "./components/Form";
+
 
 
 import "./index.css";
@@ -28,6 +30,10 @@ const router = createBrowserRouter([
     path: "/register/teacher",
     element: <AddTeacher />,
 
+  },
+  {
+    path: "/form/",
+    element: <Form />,
   }
 ]);
 

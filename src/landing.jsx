@@ -54,9 +54,13 @@ const Landing = () => {
               </Link>
             </div>
 
-            <button className="bg-purple-500 text-white px-6 py-2 rounded w-full">
-              Anuncia lo que buscas
-            </button>
+            <div>
+              <Link to="/form">
+                <button className="bg-purple-500 text-white px-6 py-2 rounded w-full">
+                Anuncia lo que buscas
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </main>
