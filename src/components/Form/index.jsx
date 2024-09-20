@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { svgProfessional, svgSmile, svgExams, svgBriefcase, svgFlagUsa, svgFlagSpain, svgFlagCanada, svgFlagUK, svgDominicanRepublic } from "./icons"
+import { svgProfessional, svgSmile, svgExams, svgBriefcase, svgFlagUsa, svgFlagSpain, svgFlagCanada, svgFlagUK, svgDominicanRepublic, svgMoonZzz, svgMoonCloud, svgMoon, svgSun, svgSunFog } from "./icons"
 import { Range } from 'react-range';
 
 const questions = [
@@ -46,16 +46,45 @@ const questions = [
       { text: "Inglés para niños"}
     ]
   },
-  { 
+  {
     id: 5,
     question: "¿Cuándo te vienen bien las clases?",
+    type: "hours",
     options: [
-      { text: "Inglés estadounidense"},
-      { text: "Inglés de negocios"},
-      { text: "Inglés conversacional"},
-      { text: "BEC"},
-      { text: "Inglés para niños"}
-    ]
+      {
+        label: "Horas",
+        sections: [
+          {
+            label: "Día",
+            values: [
+              { label: "9-12", value: "9-12", svg: svgSunFog },
+              { label: "12-15", value: "12-15", svg: svgSun },
+              { label: "15-18", value: "15-18", svg: svgSun },
+            ],
+          },
+          {
+            label: "Tarde y noche",
+            values: [
+              { label: "18-21", value: "18-21", svg: svgSunFog },
+              { label: "21-24", value: "21-24", svg: svgMoonCloud },
+              { label: "0-3", value: "0-3", svg: svgMoon },
+            ],
+          },
+          {
+            label: "Madrugada",
+            values: [
+              { label: "3-6", value: "3-6", svg: svgMoonZzz },
+              { label: "6-9", value: "6-9", svg: svgSunFog },
+            ],
+          },
+        ],
+      },
+      {
+        type: "days",
+        label: "Días",
+        values: ["Dom", "Lun", "Mar", "Miér", "Jue", "Vie", "Sáb"],
+      },
+    ],
   },
   {
     id: 6,
@@ -100,6 +129,47 @@ function Form() {
     setAnswers(newAnswers);
   };
 
+  const handleHoursSelected = (sectionLabel, value) => {
+    const updatedAnswers = { ...answers[currentQuestionIndex] };
+    if (!updatedAnswers.hours) {
+      updatedAnswers.hours = {};
+    }
+    if (!updatedAnswers.hours[sectionLabel]) {
+      updatedAnswers.hours[sectionLabel] = [];
+    }
+    if (updatedAnswers.hours[sectionLabel].includes(value)) {
+      // Si ya está seleccionado, lo removemos
+      updatedAnswers.hours[sectionLabel] = updatedAnswers.hours[sectionLabel].filter(val => val !== value);
+    } else {
+      // Si no está seleccionado, lo añadimos
+      updatedAnswers.hours[sectionLabel].push(value);
+    }
+    setAnswers({
+      ...answers,
+      [currentQuestionIndex]: updatedAnswers
+    });
+  };
+  
+  const handleDaysSelected = (day) => {
+    const updatedAnswers = { ...answers[currentQuestionIndex] };
+    if (!updatedAnswers.days) {
+      updatedAnswers.days = [];
+    }
+    if (updatedAnswers.days.includes(day)) {
+      // Si ya está seleccionado, lo removemos
+      updatedAnswers.days = updatedAnswers.days.filter(val => val !== day);
+    } else {
+      // Si no está seleccionado, lo añadimos
+      updatedAnswers.days.push(day);
+    }
+    setAnswers({
+      ...answers,
+      [currentQuestionIndex]: updatedAnswers
+    });
+  };
+
+  const isSkippable = currentQuestionIndex >= 2 && currentQuestionIndex <= 5;
+
   return (
     <div className="min-h-screen flex flex-col justify-center bg-pink-400">
       <button 
@@ -110,15 +180,15 @@ function Form() {
       <button
         onClick={handleContinue}
         className="absolute top-20 right-20 bg-transparent text-black font-bold text-2xl">
-        Saltar
+        {isSkippable ? "Saltar esta pregunta" : "Saltar"}
       </button>
-
+  
       <div className="flex justify-center items-center h-screen"> 
         <div className="w-1/2 p-10 h-full flex items-center pl-20">
           <h1 className="text-black text-7xl font-bold">
             {questions[currentQuestionIndex].question}
           </h1>
-        </div>
+      </div>      
 
         <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center">
           <div className="flex-grow space-y-6 flex-col items-center mt-96 mx-6 ">
@@ -127,47 +197,90 @@ function Form() {
                 <div className="text-4xl font-bold mb-16">
                   {`${questions[currentQuestionIndex].unit}${budget[0]} - ${questions[currentQuestionIndex].unit}${budget[1]}${budget[1] === 40 ? '+' : ''}`}
                 </div>
-                <Range
-                  step={questions[currentQuestionIndex].step}
-                  min={questions[currentQuestionIndex].min}
-                  max={questions[currentQuestionIndex].max}
-                  values={budget}
-                  onChange={handleRangeChange}
-                  renderTrack={({ props, children }) => (
-                    <div
-                      {...props}
-                      style={{
-                        height: '6px',
-                        width: '100%',
-                        background: '#000',
-                        position: 'relative',
+                  <Range
+                    step={questions[currentQuestionIndex].step}
+                    min={questions[currentQuestionIndex].min}
+                    max={questions[currentQuestionIndex].max}
+                    values={budget}
+                    onChange={handleRangeChange}
+                    renderTrack={({ props, children }) => {
+                      const { key, ...restProps } = props;
+                        return (
+                          <div
+                          key={key}
+                          {...restProps}
+                          style={{
+                            height: '6px',
+                            width: '100%',
+                            background: '#000',                 
+                            position: 'relative',
+                          }}
+                        >
+                          {children}
+                        </div>
+                      );
+                    }}
+                      renderThumb={({ props }) => {
+                        const { key, ...restProps } = props;
+                        return (
+                          <div
+                            key={key}
+                            {...restProps}
+                            style={{
+                              height: '60px',
+                              width: '60px',
+                              backgroundColor: 'white',
+                              border: "4px solid black",
+                              borderRadius: '20%',
+                              position: 'absolute',
+                            }}
+                          />
+                        );        
                       }}
-                    >
-                      {children}
+                    />
+                  </div>
+              ) : questions[currentQuestionIndex].type === "hours" ? (
+                  <div>
+                    <h2 className="text-4xl font-bold mb-4 ">Horas</h2>
+                    {questions[currentQuestionIndex].options.find(opt => opt.label === "Horas").sections.map((section, idx) => (
+                      <div key={idx} className="mb-6 ">
+                        <h3 className="text-xl font-semibold mb-2 ">{section.label}</h3>
+                        <div className="grid grid-cols-3 gap-4 ">
+                          {section.values.map(value => (
+                            <div
+                              key={value.value}
+                              onClick={() => handleHoursSelected(section.label, value.value)}
+                              className={`p-4 border-4 rounded-lg cursor-pointer font-bold text-xl flex flex-col items-center ${
+                                answers[currentQuestionIndex]?.hours?.[section.label]?.includes(value.value) ? 'bg-pink-400 border-black' : 'border-gray-300'
+                              }`}
+                            >
+                              {value.svg}
+                              {value.label}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    <h2 className="text-3xl font-bold mb-4 ">Días</h2>
+                    <div className="grid grid-cols-7 gap-4 ">
+                      {questions[currentQuestionIndex].options.find(opt => opt.label === "Días").values.map((day, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => handleDaysSelected(day)}
+                          className={`p-4 border-4 rounded-lg cursor-pointer font-bold text-2xl flex justify-center ${
+                            answers[currentQuestionIndex]?.days?.includes(day) ? 'bg-pink-400 border-black' : 'border-gray-300'
+                          }`}
+                        >
+                          {day}
+                        </div>
+                      ))}
                     </div>
-                  )}
-                  renderThumb={({ props}) => (
-                    <div
-                      {...props}
-                      style={{
-                        height: '60px',
-                        width: '60px',
-                        backgroundColor: 'white',
-                        border: "4px solid black",
-                        borderRadius: '20%',
-                        position: 'absolute',
-                      }}
-                    >
-                    </div>
-                  )}
-                />
-
-                
-              </div>
-            ) : (
+                  </div>
+              ) : (
               questions[currentQuestionIndex].options?.map((option, index) => (
                 <div key={index} className="flex justify-between text-2xl font-semibold border-4 border-gray-300 rounded-xl p-6 items-center w-full">
                   <div className="flex items-center space-x-2">
+                    <div>{option.svg}</div>
                     <label htmlFor={`option-${index}`} className="block text-gray-700 w-full">{option.text}</label>
                   </div>
                   <input
@@ -179,21 +292,25 @@ function Form() {
                     className="h-4 w-4 text-pink-500 focus:ring-pink-400 "
                   />
                 </div>
-              ))
-            )}
-          </div>
-
+              )))}        
+            </div>  
+          
           <div className="mt-auto">
             <button
               onClick={handleContinue}
-              disabled={!answers[currentQuestionIndex]}  
+              disabled={!answers[currentQuestionIndex] && !isSkippable}
               className={`w-full text-black text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 ${
-                answers[currentQuestionIndex] ? 'bg-pink-400 hover:bg-pink-600 border-black' : 'bg-gray-400 border-gray-400 cursor-not-allowed'
-              }`}
-            >
-              Continuar
+                answers[currentQuestionIndex] 
+                  ? 'bg-pink-400 hover:bg-pink-600 border-black'
+                  : isSkippable 
+                    ? 'bg-white border-black hover:bg-gray-200'
+                    : 'bg-white border-gray-400 cursor-not-allowed'
+                }`}
+              >
+              {isSkippable ? "Saltar esta pregunta" : "Continuar"}
             </button>
           </div>
+
         </div>
       </div>
     </div>
