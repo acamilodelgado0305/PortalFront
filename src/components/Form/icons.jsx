@@ -269,7 +269,7 @@ export const svgMoonZzz = (
 
 export const svgMoon = (
   <svg width="31" height="31" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M3.32031 11.6835C3.32031 16.6541 7.34975 20.6835 12.3203 20.6835C16.1075 20.6835 19.3483 18.3443 20.6768 15.032C19.6402 15.4486 18.5059 15.6834 17.3203 15.6834C12.3497 15.6834 8.32031 11.654 8.32031 6.68342C8.32031 5.50338 8.55165 4.36259 8.96453 3.32996C5.65605 4.66028 3.32031 7.89912 3.32031 11.6835Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.32031 11.6835C3.32031 16.6541 7.34975 20.6835 12.3203 20.6835C16.1075 20.6835 19.3483 18.3443 20.6768 15.032C19.6402 15.4486 18.5059 15.6834 17.3203 15.6834C12.3497 15.6834 8.32031 11.654 8.32031 6.68342C8.32031 5.50338 8.55165 4.36259 8.96453 3.32996C5.65605 4.66028 3.32031 7.89912 3.32031 11.6835Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 );
 
@@ -281,28 +281,28 @@ export const svgMoonCloud = (
 
 export const svgSun = (
 <svg width="31" height="31" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M7.28451 10.3333C7.10026 10.8546 7 11.4156 7 12C7 14.7614 9.23858 17 12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C11.4156 7 10.8546 7.10026 10.3333 7.28451" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M12 2V4" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M12 20V22" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M4 12L2 12" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M22 12L20 12" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M19.7778 4.22266L17.5558 6.25424" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M4.22217 4.22266L6.44418 6.25424" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M6.44434 17.5557L4.22211 19.7779" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M19.7778 19.7773L17.5558 17.5551" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M7.28451 10.3333C7.10026 10.8546 7 11.4156 7 12C7 14.7614 9.23858 17 12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C11.4156 7 10.8546 7.10026 10.3333 7.28451" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M12 2V4" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M12 20V22" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M4 12L2 12" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M22 12L20 12" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M19.7778 4.22266L17.5558 6.25424" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M4.22217 4.22266L6.44418 6.25424" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M6.44434 17.5557L4.22211 19.7779" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M19.7778 19.7773L17.5558 17.5551" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
 </svg>
 );
 
 export const svgSunFog = (
 <svg width="31" height="31" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8 22H16" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5 19H19" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2 16H22" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10 6.34141C10.6256 6.12031 11.2987 6 12 6C15.3137 6 18 8.68629 18 12C18 13.5217 17.4335 14.911 16.5 15.9687H7.5C6.56645 14.911 6 13.5217 6 12C6 11.2987 6.12031 10.6256 6.34141 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M12 2V3" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M22 12L21 12" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M3 12L2 12" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M19.0708 4.92969L18.678 5.32252" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M5.32178 5.32227L4.92894 4.92943" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 22H16" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M5 19H19" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M2 16H22" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 6.34141C10.6256 6.12031 11.2987 6 12 6C15.3137 6 18 8.68629 18 12C18 13.5217 17.4335 14.911 16.5 15.9687H7.5C6.56645 14.911 6 13.5217 6 12C6 11.2987 6.12031 10.6256 6.34141 10" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M12 2V3" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M22 12L21 12" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M3 12L2 12" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M19.0708 4.92969L18.678 5.32252" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
+<path d="M5.32178 5.32227L4.92894 4.92943" stroke="#1C274C" strokeWidth="1.5" strokeLinecap="round"/>
 </svg>);
 

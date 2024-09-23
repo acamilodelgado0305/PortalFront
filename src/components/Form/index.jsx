@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { svgProfessional, svgSmile, svgExams, svgBriefcase, svgFlagUsa, svgFlagSpain, svgFlagCanada, svgFlagUK, svgDominicanRepublic, svgMoonZzz, svgMoonCloud, svgMoon, svgSun, svgSunFog } from "./icons"
 import { Range } from 'react-range';
@@ -104,22 +104,12 @@ function Form() {
 
   const handleOptionSelected = (option) => {
     const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = option;
-    setAnswers(newAnswers);
-  };
-
-  const handleContinue = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    if (newAnswers[currentQuestionIndex] === option) {
+      newAnswers[currentQuestionIndex] = null;
     } else {
-      console.log("Final answers: ", answers);
+      newAnswers[currentQuestionIndex] = option;
     }
-  };
-
-  const handleBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
+    setAnswers(newAnswers);
   };
 
   const handleRangeChange = (values) => {
@@ -130,40 +120,63 @@ function Form() {
   };
 
   const handleHoursSelected = (sectionLabel, value) => {
-    const updatedAnswers = { ...answers[currentQuestionIndex] };
-    if (!updatedAnswers.hours) {
-      updatedAnswers.hours = {};
+    let newAnswers = Array.isArray(answers) ? [...answers] : [];
+    if (typeof newAnswers[currentQuestionIndex] !== 'object' || newAnswers[currentQuestionIndex] === null) {
+      newAnswers[currentQuestionIndex] = {};
     }
-    if (!updatedAnswers.hours[sectionLabel]) {
-      updatedAnswers.hours[sectionLabel] = [];
+    const currentAnswer = { ...newAnswers[currentQuestionIndex] };
+    if (!currentAnswer.hours) {
+      currentAnswer.hours = {};
     }
-    if (updatedAnswers.hours[sectionLabel].includes(value)) {
-      updatedAnswers.hours[sectionLabel] = updatedAnswers.hours[sectionLabel].filter(val => val !== value);
+    if (!Array.isArray(currentAnswer.hours[sectionLabel])) {
+      currentAnswer.hours[sectionLabel] = [];
+    }
+    if (currentAnswer.hours[sectionLabel].includes(value)) {
+      currentAnswer.hours[sectionLabel] = currentAnswer.hours[sectionLabel].filter(val => val !== value);
     } else {
-      updatedAnswers.hours[sectionLabel].push(value);
+      currentAnswer.hours[sectionLabel].push(value);
     }
-    setAnswers({
-      ...answers,
-      [currentQuestionIndex]: updatedAnswers
-    });
+    newAnswers[currentQuestionIndex] = currentAnswer;
+    setAnswers(newAnswers);
   };
   
   const handleDaysSelected = (day) => {
-    const updatedAnswers = { ...answers[currentQuestionIndex] };
-    if (!updatedAnswers.days) {
-      updatedAnswers.days = [];
+    let newAnswers = Array.isArray(answers) ? [...answers] : [];
+    if (typeof newAnswers[currentQuestionIndex] !== 'object' || newAnswers[currentQuestionIndex] === null) {
+      newAnswers[currentQuestionIndex] = {};
     }
-    if (updatedAnswers.days.includes(day)) {
-      updatedAnswers.days = updatedAnswers.days.filter(val => val !== day);
+    const currentAnswer = { ...newAnswers[currentQuestionIndex] };
+    if (!Array.isArray(currentAnswer.days)) {
+      currentAnswer.days = [];
+    }
+    if (currentAnswer.days.includes(day)) {
+      currentAnswer.days = currentAnswer.days.filter(val => val !== day);
     } else {
-      updatedAnswers.days.push(day);
+      currentAnswer.days.push(day);
     }
-    setAnswers({
-      ...answers,
-      [currentQuestionIndex]: updatedAnswers
-    });
+    newAnswers[currentQuestionIndex] = currentAnswer;
+    setAnswers(newAnswers);
   };
 
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+  
+  const handleContinue = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      console.log("Final answers: ", answers);
+    }
+  };
+
+  useEffect(() => {
+    console.log(answers,"answers")
+  }, [answers]);
+
+  const isAnswered = answers[currentQuestionIndex] !== undefined && answers[currentQuestionIndex] !== null;
   const isSkippable = currentQuestionIndex >= 2 && currentQuestionIndex <= 5;
 
   return (
@@ -173,12 +186,7 @@ function Form() {
         className="absolute top-20 left-20 bg-transparent text-black font-bold text-5xl">
         ←
       </button>
-      <button
-        onClick={handleContinue}
-        className="absolute top-20 right-20 bg-transparent text-black font-bold text-2xl">
-        {isSkippable ? "Saltar esta pregunta" : "Saltar"}
-      </button>
-  
+
       <div className="flex justify-center items-center h-screen"> 
         <div className="w-1/2 p-10 h-full flex items-center pl-20">
           <h1 className="text-black text-7xl font-bold">
@@ -186,10 +194,10 @@ function Form() {
           </h1>
       </div>      
 
-        <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center">
+        <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center ">
           <div className="flex-grow space-y-6 flex-col items-center mt-96 mx-6 ">
             {questions[currentQuestionIndex].type === "range" ? (
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center mt-40">
                 <div className="text-4xl font-bold mb-16">
                   {`${questions[currentQuestionIndex].unit}${budget[0]} - ${questions[currentQuestionIndex].unit}${budget[1]}${budget[1] === 40 ? '+' : ''}`}
                 </div>
@@ -237,7 +245,7 @@ function Form() {
                   </div>
               ) : questions[currentQuestionIndex].type === "hours" ? (
                   <div>
-                    <h2 className="text-4xl font-bold mb-4 ">Horas</h2>
+                    <h2 className="text-4xl font-bold mb-4 -mt-32">Horas</h2>
                     {questions[currentQuestionIndex].options.find(opt => opt.label === "Horas").sections.map((section, idx) => (
                       <div key={idx} className="mb-6 ">
                         <h3 className="text-xl font-semibold mb-2 ">{section.label}</h3>
@@ -245,7 +253,7 @@ function Form() {
                           {section.values.map(value => (
                             <div
                               key={value.value}
-                              onClick={() => handleHoursSelected(section.label, value.value)}
+                              onClick={() => handleHoursSelected(section.label, value.value)} // dia, 9-12
                               className={`p-4 border-4 rounded-lg cursor-pointer font-bold text-xl flex flex-col items-center ${
                                 answers[currentQuestionIndex]?.hours?.[section.label]?.includes(value.value) ? 'bg-pink-400 border-black' : 'border-gray-300'
                               }`}
@@ -280,12 +288,12 @@ function Form() {
                     <label htmlFor={`option-${index}`} className="block text-gray-700 w-full">{option.text}</label>
                   </div>
                   <input
-                    type="radio"
+                    type="checkbox"
                     id={`option-${index}`}
                     name="option"
-                    value={option.text}
-                    onClick={() => handleOptionSelected(option.text)}
-                    className="h-4 w-4 text-pink-500 focus:ring-pink-400 "
+                    checked={answers[currentQuestionIndex] === option.text}
+                    onChange={() => handleOptionSelected(option.text)}
+                    className="h-4 w-4 text-pink-500 focus:ring-pink-400"
                   />
                 </div>
               )))}        
@@ -294,16 +302,16 @@ function Form() {
           <div className="mt-auto">
             <button
               onClick={handleContinue}
-              disabled={!answers[currentQuestionIndex] && !isSkippable}
+              disabled={!isAnswered && !isSkippable}
               className={`w-full text-black text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 ${
-                answers[currentQuestionIndex] 
-                  ? 'bg-pink-400 hover:bg-pink-600 border-black'
+                isAnswered 
+                  ? 'bg-pink-400 hover:bg-pink-600 border border-black'
                   : isSkippable 
-                    ? 'bg-white border-black hover:bg-gray-200'
-                    : 'bg-white border-gray-400 cursor-not-allowed'
+                    ? 'bg-white border border-black hover:bg-gray-200'
+                    : 'bg-white border border-black cursor-not-allowed'
                 }`}
               >
-              {isSkippable ? "Saltar esta pregunta" : "Continuar"}
+              {isAnswered ? "Continuar" : isSkippable ? "Saltar esta pregunta" : "Continuar"}
             </button>
           </div>
 
