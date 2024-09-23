@@ -105,7 +105,7 @@ function Form() {
   const handleOptionSelected = (optionText) => {
     const newAnswers = [...answers];
 
-    if (currentQuestionIndex === 3) {
+    if (currentQuestionIndex === 2 || currentQuestionIndex === 3) {
       if (!Array.isArray(newAnswers[currentQuestionIndex])) {
         newAnswers[currentQuestionIndex] = [];
       }
@@ -187,11 +187,11 @@ function Form() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(answers, "answers");
-  // }, [answers]);
+  useEffect(() => {
+    console.log(answers, "answers");
+  }, [answers]);
 
-  const isAnswered = currentQuestionIndex === 3
+  const isAnswered = currentQuestionIndex === 2 || currentQuestionIndex === 3
     ? answers[currentQuestionIndex]?.length > 0
     : answers[currentQuestionIndex] !== undefined && answers[currentQuestionIndex] !== null;
   
@@ -309,7 +309,7 @@ function Form() {
                     type="checkbox"
                     id={`option-${index}`}
                     name="option"
-                    checked={currentQuestionIndex === 3 
+                    checked={currentQuestionIndex === 2 || currentQuestionIndex === 3
                       ? answers[currentQuestionIndex]?.includes(option.text)
                       : answers[currentQuestionIndex] === option.text || false}
                     onChange={() => handleOptionSelected(option.text)}
@@ -320,19 +320,22 @@ function Form() {
             </div>  
           
           <div className="mt-auto">
-            <button
-              onClick={handleContinue}
-              disabled={!isAnswered && !isSkippable}
-              className={`w-full text-black text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 ${
-                isAnswered 
-                  ? 'bg-pink-400 hover:bg-pink-600 border border-black'
-                  : isSkippable 
-                    ? 'bg-white border border-black hover:bg-gray-200'
-                    : 'bg-white border border-black cursor-not-allowed'
-                }`}
-              >
-              {isAnswered ? "Continuar" : isSkippable ? "Saltar esta pregunta" : "Continuar"}
-            </button>
+          <button
+            onClick={handleContinue}
+            disabled={!isAnswered && !isSkippable}
+            className={`w-full text-black text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 ${
+              isAnswered 
+                ? 'bg-pink-400 hover:bg-pink-600 border border-black'
+                : isSkippable 
+                  ? 'bg-white border border-black hover:bg-gray-200'
+                  : 'bg-white border border-black cursor-not-allowed'
+            }`}
+          >
+            {isAnswered ? (currentQuestionIndex === questions.length - 1 ? "Finalizar" : "Continuar") 
+              : isSkippable 
+                ? "Saltar esta pregunta" 
+                : "Continuar"}
+          </button>
           </div>
 
         </div>
