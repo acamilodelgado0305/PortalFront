@@ -99,16 +99,31 @@ const questions = [
 
 function Form() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState(questions.map(() => null));
   const [budget, setBudget] = useState([1, 40]);
 
-  const handleOptionSelected = (option) => {
+  const handleOptionSelected = (optionText) => {
     const newAnswers = [...answers];
-    if (newAnswers[currentQuestionIndex] === option) {
-      newAnswers[currentQuestionIndex] = null;
+
+    if (currentQuestionIndex === 3) {
+      if (!Array.isArray(newAnswers[currentQuestionIndex])) {
+        newAnswers[currentQuestionIndex] = [];
+      }
+      const currentAnswer = newAnswers[currentQuestionIndex];
+
+      if (currentAnswer.includes(optionText)) {
+        newAnswers[currentQuestionIndex] = currentAnswer.filter(text => text !== optionText);
+      } else {
+        newAnswers[currentQuestionIndex].push(optionText);
+      }
     } else {
-      newAnswers[currentQuestionIndex] = option;
+      if (newAnswers[currentQuestionIndex] === optionText) {
+        newAnswers[currentQuestionIndex] = null;
+      } else {
+        newAnswers[currentQuestionIndex] = optionText;
+      }
     }
+
     setAnswers(newAnswers);
   };
 
@@ -172,11 +187,14 @@ function Form() {
     }
   };
 
-  useEffect(() => {
-    console.log(answers,"answers")
-  }, [answers]);
+  // useEffect(() => {
+  //   console.log(answers, "answers");
+  // }, [answers]);
 
-  const isAnswered = answers[currentQuestionIndex] !== undefined && answers[currentQuestionIndex] !== null;
+  const isAnswered = currentQuestionIndex === 3
+    ? answers[currentQuestionIndex]?.length > 0
+    : answers[currentQuestionIndex] !== undefined && answers[currentQuestionIndex] !== null;
+  
   const isSkippable = currentQuestionIndex >= 2 && currentQuestionIndex <= 5;
 
   return (
@@ -291,7 +309,9 @@ function Form() {
                     type="checkbox"
                     id={`option-${index}`}
                     name="option"
-                    checked={answers[currentQuestionIndex] === option.text}
+                    checked={currentQuestionIndex === 3 
+                      ? answers[currentQuestionIndex]?.includes(option.text)
+                      : answers[currentQuestionIndex] === option.text || false}
                     onChange={() => handleOptionSelected(option.text)}
                     className="h-4 w-4 text-pink-500 focus:ring-pink-400"
                   />
