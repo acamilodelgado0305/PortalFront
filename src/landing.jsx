@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import backgroundImage from "../images/fondos.jpg";
+import TeacherBanner from "./components/TeacherBanner";
+import Steps from "./components/Steps";
+import HowBranakWorks from "./components/HowBranakWorks";
+import Tutor from "./components/Tutor";
+import Subject from "./components/Subject";
 
 const Landing = () => {
   return (
@@ -24,7 +29,7 @@ const Landing = () => {
       </header>
 
       {/* Main content */}
-      <main className="flex items-start justify-center min-h-screen">
+      <main className="flex flex-col items-start justify-center min-h-screen">
         <div
           className="flex flex-col items-start justify-center w-full mt-12"
           style={{
@@ -63,6 +68,11 @@ const Landing = () => {
             </div>
           </div>
         </div>
+        <TeacherBanner/>
+        <Steps/>
+        <HowBranakWorks/>
+        <Tutor/>
+        <Subject/>
       </main>
     </div>
   );
