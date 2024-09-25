@@ -274,7 +274,7 @@ function FormStudent() {
                           {section.values.map(value => (
                             <div
                               key={value.value}
-                              onClick={() => handleHoursSelected(section.label, value.value)} // dia, 9-12
+                              onClick={() => handleHoursSelected(section.label, value.value)} 
                               className={`p-4 border-4 rounded-lg cursor-pointer font-bold text-xl flex flex-col items-center ${
                                 answers[currentQuestionIndex]?.hours?.[section.label]?.includes(value.value) ? 'bg-pink-400 border-black' : 'border-gray-300'
                               }`}
@@ -311,7 +311,7 @@ function FormStudent() {
                     </span>
                   </div>
                   <div className="relative">
-                    <div
+                  <div
                       className={`w-6 h-6 border-2 rounded-full ${
                         answers[currentQuestionIndex] === option.text
                           ? "border-purple-400"
