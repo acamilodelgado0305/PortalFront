@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import backgroundImage from "../images/fondos.jpg";
+import TeacherBanner from "./components/TeacherBanner";
+import Steps from "./components/Steps";
+import HowBranakWorks from "./components/HowBranakWorks";
+import Tutor from "./components/Tutor";
+import Subject from "./components/Subject";
 
 const Landing = () => {
   return (
@@ -24,7 +29,7 @@ const Landing = () => {
       </header>
 
       {/* Main content */}
-      <main className="flex items-start justify-center min-h-screen">
+      <main className="flex flex-col items-start justify-center min-h-screen">
         <div
           className="flex flex-col items-start justify-center w-full mt-12"
           style={{
@@ -41,10 +46,13 @@ const Landing = () => {
             </h1>
             <p className="text-white-300 mb-6">El contacto es gratuito</p>
           </div>
+
           <div className="pl-6 space-y-6 w-29">
-            <button className="bg-yellow-400 text-black px-6 py-2 rounded w-full">
-              Aprende
-            </button>
+            <Link to="/register/student">
+              <button className="bg-yellow-400 text-black px-6 py-2 rounded w-full">
+                Aprende
+              </button>
+            </Link>
 
             <div>
               <Link to="/register/teacher">
@@ -57,12 +65,17 @@ const Landing = () => {
             <div>
               <Link to="/form">
                 <button className="bg-purple-500 text-white px-6 py-2 rounded w-full">
-                Anuncia lo que buscas
+                  Anuncia lo que buscas
                 </button>
               </Link>
             </div>
           </div>
         </div>
+        <TeacherBanner/>
+        <Steps/>
+        <HowBranakWorks/>
+        <Tutor/>
+        <Subject/>
       </main>
     </div>
   );

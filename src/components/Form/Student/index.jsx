@@ -11,20 +11,22 @@ const questions = [
       { text: "Carrera profesional y negocios", svg: svgProfessional },
       { text: "Clases para niños", svg: svgSmile },
       { text: "Examenes y cursos", svg: svgExams },
-      { text: "Cultura, pasatiempos o para viajar", svg: svgBriefcase } 
-    ]
+      { text: "Cultura, pasatiempos o para viajar", svg: svgBriefcase },
+    ],
   },
-  { 
+  {
     id: 2,
     question: "¿Cuál es tu nivel de inglés?",
     options: [
-      { text: "Soy principiante"},
-      { text: "Conozco lo básico"},
-      { text: "Puedo conversar"},
-      { text: "Me desenvuelvo con soltura en la mayoría de las conversaciones"}
-    ]
+      { text: "Soy principiante" },
+      { text: "Conozco lo básico" },
+      { text: "Puedo conversar" },
+      {
+        text: "Me desenvuelvo con soltura en la mayoría de las conversaciones",
+      },
+    ],
   },
-  { 
+  {
     id: 3,
     question: "¿Buscas un acento o cultura concretos?",
     options: [
@@ -32,19 +34,19 @@ const questions = [
       { text: "España", svg: svgFlagSpain },
       { text: "Estados Unidos", svg: svgFlagUsa },
       { text: "Reino Unido", svg: svgFlagUK },
-      { text: "República Dominicana", svg: svgDominicanRepublic}
-    ]
+      { text: "República Dominicana", svg: svgDominicanRepublic },
+    ],
   },
-  { 
+  {
     id: 4,
     question: "¿Algún interés en concreto?",
     options: [
-      { text: "Inglés estadounidense"},
-      { text: "Inglés de negocios"},
-      { text: "Inglés conversacional"},
-      { text: "BEC"},
-      { text: "Inglés para niños"}
-    ]
+      { text: "Inglés estadounidense" },
+      { text: "Inglés de negocios" },
+      { text: "Inglés conversacional" },
+      { text: "BEC" },
+      { text: "Inglés para niños" },
+    ],
   },
   {
     id: 5,
@@ -94,10 +96,10 @@ const questions = [
     max: 40,
     step: 1,
     unit: "US$",
-  }
+  },
 ];
 
-function Form() {
+function FormStudent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState(questions.map(() => null));
   const [budget, setBudget] = useState([1, 40]);
@@ -198,16 +200,17 @@ function Form() {
   const isSkippable = currentQuestionIndex >= 2 && currentQuestionIndex <= 5;
 
   return (
-    <div className="min-h-screen flex flex-col justify-center bg-pink-400">
-      <button 
+    <div className="min-h-screen flex flex-col justify-center bg-purple-400">
+      <button
         onClick={handleBack}
-        className="absolute top-20 left-20 bg-transparent text-black font-bold text-5xl">
+        className="absolute top-20 left-20 bg-transparent text-white font-bold text-5xl"
+      >
         ←
       </button>
 
-      <div className="flex justify-center items-center h-screen"> 
+      <div className="flex justify-center items-center h-screen">
         <div className="w-1/2 p-10 h-full flex items-center pl-20">
-          <h1 className="text-black text-7xl font-bold">
+          <h1 className="text-white text-7xl font-bold">
             {questions[currentQuestionIndex].question}
           </h1>
       </div>      
@@ -303,7 +306,22 @@ function Form() {
                 <div key={index} className="flex justify-between text-2xl font-semibold border-4 border-gray-300 rounded-xl p-6 items-center w-full">
                   <div className="flex items-center space-x-2">
                     <div>{option.svg}</div>
-                    <label htmlFor={`option-${index}`} className="block text-gray-700 w-full">{option.text}</label>
+                    <span className="block text-gray-700 w-full">
+                      {option.text}
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <div
+                      className={`w-6 h-6 border-2 rounded-full ${
+                        answers[currentQuestionIndex] === option.text
+                          ? "border-purple-400"
+                          : "border-gray-400"
+                      }`}
+                    >
+                      {answers[currentQuestionIndex] === option.text && (
+                        <div className="absolute inset-0 m-1 rounded-full bg-purple-400"></div>
+                      )}
+                    </div>
                   </div>
                   <input
                     type="checkbox"
@@ -344,4 +362,4 @@ function Form() {
   );
 }
 
-export default Form;
+export default FormStudent;
