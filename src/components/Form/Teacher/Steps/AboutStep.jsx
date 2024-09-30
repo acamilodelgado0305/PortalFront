@@ -6,12 +6,20 @@ import 'react-phone-input-2/lib/style.css';
 
 const { Option } = Select;
 
-const AboutStep = ({ countriesOfLatinAmerica }) => {
+const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
+  const handleValuesChange = (changedValues) => {
+    // Llama a la función onChange para guardar la información
+    onChange(changedValues);
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Personal Information</h2>
-      
-      <Form layout="vertical">
+
+      <Form
+        layout="vertical"
+        onValuesChange={handleValuesChange} // Captura los cambios en los valores
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             label={<span className="text-lg font-medium">First Name</span>}
@@ -24,7 +32,7 @@ const AboutStep = ({ countriesOfLatinAmerica }) => {
               className="text-lg p-3 border-2 border-gray-300 rounded-md"
             />
           </Form.Item>
-          
+
           <Form.Item
             label={<span className="text-lg font-medium">Last Name</span>}
             name="lastName"

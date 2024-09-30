@@ -2,48 +2,50 @@ import React, { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import { uploadImage } from "../../../../services/utils.js";
-import Swal from 'sweetalert2';
-import { useDropzone } from 'react-dropzone';
+import Swal from "sweetalert2";
+import { useDropzone } from "react-dropzone";
 
-const PhotoStep = ({ imageUrl, setImageUrl }) => {
+const PhotoStep = ({ onChange }) => {
   const [uploading, setUploading] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
 
   const onDrop = async (acceptedFiles) => {
     if (!acceptedFiles || acceptedFiles.length === 0) {
-      console.log('No se ha seleccionado ningún archivo');
+      console.log("No se ha seleccionado ningún archivo");
       return;
     }
-    const file = acceptedFiles[0]; 
-    if(!file) return
+    const file = acceptedFiles[0];
+    if (!file) return;
     setUploading(true);
-      try {
-        const contentType = file.type || 'application/octet-stream';
-        const response = await uploadImage(file, contentType);
-        
-        if (response && response.url) {
-          const uploadedImageUrl = response.url;
-          setImageUrl(uploadedImageUrl);
-          message.success('Photo uploaded successfully');
-        } else {
-          throw new Error(response.data?.error || 'Upload failed');
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Unable to upload the image. Please try again.",
-          confirmButtonColor: "#d33",
-        });
-      } finally {
-        setUploading(false);
+    try {
+      const contentType = file.type || "application/octet-stream";
+      const response = await uploadImage(file, contentType);
+
+      if (response && response.url) {
+        const uploadedImageUrl = response.url;
+        setProfileImageUrl(uploadedImageUrl);
+        message.success("Photo uploaded successfully");
+        // Llama a onChange para guardar la URL de la imagen en el estado del padre
+        onChange({ profileImageUrl: uploadedImageUrl });
+      } else {
+        throw new Error(response.data?.error || "Upload failed");
       }
-    
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Unable to upload the image. Please try again.",
+        confirmButtonColor: "#d33",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: 'image/*',
+    accept: "image/*",
   });
 
   return (
@@ -55,9 +57,9 @@ const PhotoStep = ({ imageUrl, setImageUrl }) => {
 
       <div className="flex items-center mb-6">
         <div className="w-24 h-24 bg-gray-200 border border-dashed border-gray-400 flex justify-center items-center overflow-hidden">
-          {imageUrl ? (
+          {profileImageUrl ? (
             <img
-              src={imageUrl}
+              src={profileImageUrl}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -82,7 +84,7 @@ const PhotoStep = ({ imageUrl, setImageUrl }) => {
           className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
           disabled={uploading}
         >
-        {uploading ? "Uploading..." : "Upload photo"}
+          {uploading ? "Uploading..." : "Upload photo"}
         </button>
       </div>
 

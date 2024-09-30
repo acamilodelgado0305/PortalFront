@@ -18,9 +18,14 @@ const { Step } = AntSteps;
 const MultiStepForm  = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
-  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  
+  const [formData, setFormData] = React.useState({});
 
 
+
+  const handleFormChange = (changedValues) => {
+    setFormData((prevData) => ({ ...prevData, ...changedValues }));
+  };
 
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
@@ -56,10 +61,10 @@ const MultiStepForm  = () => {
     "Pricing",
   ];
 
-  const onFinish = async(values) => {
+  const onFinish = async() => {
   // agregar esta información al formulario: imageUrl
-    const updatedValues = { ...values, profileImageUrl };
-    console.log("Form values with imageUrl:", updatedValues);
+    const updatedValues = { ...formData };
+    console.log("Form values with imageUrl:" + JSON.stringify(formData));
     await createTeacher(updatedValues)   
  
   };
@@ -77,9 +82,9 @@ const MultiStepForm  = () => {
   const getCurrentStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <AboutStep countriesOfLatinAmerica={countriesOfLatinAmerica} />;
+        return <AboutStep countriesOfLatinAmerica={countriesOfLatinAmerica} onChange={handleFormChange} />;
       case 1:
-        return <PhotoStep imageUrl={profileImageUrl} setImageUrl={setProfileImageUrl} />;
+        return <PhotoStep  onChange={handleFormChange} />;
       case 2:
         return <CertificationStep />;
       case 3:
