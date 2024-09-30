@@ -3,24 +3,25 @@ import { UploadOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import { uploadImage } from "../../../../services/utils.js";
 import Swal from 'sweetalert2';
+import { useDropzone } from 'react-dropzone';
 
-const PhotoStep = () => {
-  const [imageUrl, setImageUrl] = useState(null);
+const PhotoStep = ({ imageUrl, setImageUrl }) => {
   const [uploading, setUploading] = useState(false);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploading(true);
-      const formData = new FormData();
-      formData.append('file', file);
-
+  const onDrop = async (acceptedFiles) => {
+    if (!acceptedFiles || acceptedFiles.length === 0) {
+      console.log('No se ha seleccionado ningún archivo');
+      return;
+    }
+    const file = acceptedFiles[0]; 
+    if(!file) return
+    setUploading(true);
       try {
         const contentType = file.type || 'application/octet-stream';
-        const response = await uploadImage(formData, contentType);
+        const response = await uploadImage(file, contentType);
         
-        if (response.data && response.data.success) {
-          const uploadedImageUrl = response.data.url;
+        if (response && response.url) {
+          const uploadedImageUrl = response.url;
           setImageUrl(uploadedImageUrl);
           message.success('Photo uploaded successfully');
         } else {
@@ -37,8 +38,13 @@ const PhotoStep = () => {
       } finally {
         setUploading(false);
       }
-    }
+    
   };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: 'image/*',
+  });
 
   return (
     <div className="max-w-lg mx-auto p-6">
@@ -70,22 +76,15 @@ const PhotoStep = () => {
         </div>
       </div>
 
-      <input
-        type="file"
-        onChange={handleImageUpload}
-        accept="image/*"
-        style={{ display: "none" }}
-        id="photo-upload"
-      />
-      <label htmlFor="photo-upload">
+      <div {...getRootProps()} className="cursor-pointer mb-6">
+        <input {...getInputProps()} />
         <button
-          className="bg-pink-500 text-white px-4 py-2 rounded-md mb-6 hover:bg-pink-600"
-          onClick={() => document.getElementById("photo-upload").click()}
+          className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
           disabled={uploading}
         >
-          {uploading ? "Uploading..." : "Upload photo"}
+        {uploading ? "Uploading..." : "Upload photo"}
         </button>
-      </label>
+      </div>
 
       {/* Guidelines for photo */}
       <div className="mb-8">

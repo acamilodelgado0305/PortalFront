@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { createTeacher } from "../../../services/teacher.services";
+
 import { Form, Button, Steps as AntSteps, Card } from "antd";
 import Header from "../Header";
 import AboutStep from "./Steps/AboutStep";
@@ -10,11 +12,16 @@ import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 
+
 const { Step } = AntSteps;
 
 const MultiStepForm  = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+
+
+
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
     { code: "bo", name: "Bolivia" },
@@ -49,8 +56,12 @@ const MultiStepForm  = () => {
     "Pricing",
   ];
 
-  const onFinish = (values) => {
-    console.log("Form values:", values);
+  const onFinish = async(values) => {
+  // agregar esta información al formulario: imageUrl
+    const updatedValues = { ...values, profileImageUrl };
+    console.log("Form values with imageUrl:", updatedValues);
+    await createTeacher(updatedValues)   
+ 
   };
 
   const next = () => {
@@ -68,7 +79,7 @@ const MultiStepForm  = () => {
       case 0:
         return <AboutStep countriesOfLatinAmerica={countriesOfLatinAmerica} />;
       case 1:
-        return <PhotoStep />;
+        return <PhotoStep imageUrl={profileImageUrl} setImageUrl={setProfileImageUrl} />;
       case 2:
         return <CertificationStep />;
       case 3:
