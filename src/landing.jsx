@@ -63,7 +63,7 @@ const Landing = () => {
             </div>
 
             <div>
-              <Link to="/form">
+              <Link to="/register/student">
                 <button className="bg-purple-500 text-white px-6 py-2 rounded w-full">
                   Anuncia lo que buscas
                 </button>
