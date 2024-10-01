@@ -11,7 +11,7 @@ COPY package.json package-lock.json* ./
 # Rebuild the source code only when needed
 FROM node:20.12.2-alpine AS builder
 WORKDIR /main
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /main/node_modules ./node_modules
 COPY . .
 
 #RUN yarn build
