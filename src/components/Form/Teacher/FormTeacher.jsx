@@ -8,7 +8,8 @@ import EducationStep from "./Steps/EducationStep";
 import DescriptionSet from "./Steps/DescriptionStep";
 import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
-import PricingStep from "./Steps/PricingStep";
+import PricingStep from "./Steps/PricingStep.jsx";
+import createTeacher from "../../../services/TeacherServices.js";
 
 const { Step } = AntSteps;
 
@@ -49,9 +50,17 @@ const MultiStepForm  = () => {
     "Pricing",
   ];
 
-  const onFinish = (values) => {
-    console.log("Form values:", values);
+  const onFinish = async (values) => {
+    try {
+      // Combinar los datos del formulario anterior con los datos del último paso
+      const finalData = { ...formData, ...values };
+      const createdTeacher = await createTeacher(finalData);
+      console.log("Profesor creado con éxito:", createdTeacher);
+    } catch (error) {
+      console.error("Error al crear el profesor:", error);
+    }
   };
+  
 
   const next = () => {
     form.validateFields().then(() => {
