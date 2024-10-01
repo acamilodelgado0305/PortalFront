@@ -22,16 +22,16 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.TOKEN_DEPLOY }}" | docker login -u "${{ secrets.USER_NAME }}" --password-stdin ghcr.io/portal/frontend:production
+        run: echo "${{ secrets.TOKEN_DEPLOY }}" | docker login -u "${{ secrets.USER_NAME }}" --password-stdin portal/frontend:production
 
       - name: Pull production image (if it exists)
-        run: docker pull ghcr.io/portal/frontend:production || true
+        run: docker pull portal/frontend:production || true
 
       - name: Build Docker image
-        run: docker build --build-arg env_name=production --build-arg env_port=3001 -t ghcr.io/portal/frontend:production .
+        run: docker build --build-arg env_name=production --build-arg env_port=3001 -t portal/frontend:production .
 
       - name: Push Docker image to the registry
-        run: docker push ghcr.io/portal/frontend:production
+        run: docker push portal/frontend:production
 
   # Job to deploy the application
   deploy_production:
@@ -62,7 +62,7 @@ jobs:
         run: |
           sshpass ssh -i my_ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} \
           "cd /home/ubuntu/enjoyplatforms; \
-           sudo docker login -u "${{ secrets.USER_NAME }}" -p ${{ secrets.DOCKER_PASSWORD }} ghcr.io/portal/frontend:production; \
+           sudo docker login -u "${{ secrets.USER_NAME }}" -p ${{ secrets.DOCKER_PASSWORD }} portal/frontend:production; \
            sudo docker compose down; \
-           sudo docker image rm ghcr.io/portal/frontend:production; \
+           sudo docker image rm portal/frontend:production; \
            sudo docker compose up -d;"
