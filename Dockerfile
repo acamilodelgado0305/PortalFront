@@ -1,27 +1,32 @@
-# Install dependencies only when needed
-FROM node:20.12.2-alpine AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+# Utiliza una imagen de Node.js para construir la aplicación
+FROM node:16 as build
+
+# Establece el directorio de trabajo en el contenedor
 WORKDIR /main
 
-# Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
+# Copia los archivos package.json y package-lock.json
+COPY package*.json ./
 
+# Instala las dependencias
+RUN npm install
 
-# Rebuild the source code only when needed
-FROM node:20.12.2-alpine AS builder
-WORKDIR /main
-COPY --from=deps /main/node_modules ./node_modules
+# Copia el resto del código de la aplicación
 COPY . .
 
-#RUN yarn build
-# RUN npm install typescript --force
-
-# If using npm comment out above and use below instead
+# Construye la aplicación para producción
 RUN npm run build
 
-EXPOSE 3001
+# Utiliza una imagen de nginx para servir la aplicación
+FROM nginx:stable-alpine
 
-ENV PORT 3001
+# Copia los archivos construidos a la ubicación donde nginx los servirá
+COPY --from=build /main/dist /usr/share/nginx/html
 
-CMD ["npm", "run", "start"]
+# Copia el archivo de configuración de nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expone el puerto en el que nginx está escuchando
+EXPOSE 80
+
+# Comando para iniciar nginx
+CMD ["nginx", "-g", "daemon off;"]
