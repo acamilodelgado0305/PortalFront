@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Form, Input, Select, Checkbox, Upload, Button, message } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
-
+import { uploadImage } from '../../../../services/utils';
+import { useDropzone } from "react-dropzone";
 const { Option } = Select;
 
 const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
-
-
-  const handleDiplomaUpload = (info) => {
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
+  const onDrop  = async(acceptedFiles) => {
+    const file  = acceptedFiles[0];
+    const contentType = file.type; 
+    try {
+    const response = await uploadImage(file, contentType);
+    logChange('diplomaFile', response ,index)
+    message.success(`${file.name} file uploaded successfully`);
+     } catch {
+      message.error(`${file.name} file upload failed.`);
     }
   };
 
@@ -28,7 +31,14 @@ const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
     });
   };
 
-  
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': [], // Acepta imágenes
+      'application/pdf': [], // Acepta PDF
+    },
+  });
+
   return (
     <div className="bg-gray-50 p-6 rounded-lg mb-6">
       <h3 className="text-xl font-semibold mb-4">Education {index + 1}</h3>
@@ -134,13 +144,10 @@ const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
           name={['education', index, 'diploma']}
           rules={[{ required: false, message: 'Please upload your diploma' }]}
         >
-          <Upload
-            accept=".jpg,.png,.pdf"
-            maxFileSize={20 * 1024 * 1024}
-            onChange={handleDiplomaUpload}
-          >
-            <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
-          </Upload>
+        <div {...getRootProps({ className: 'dropzone' })}>
+          <input {...getInputProps()} />
+          <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
+        </div>
         </Form.Item>
         <p className="text-base text-gray-600">
           JPG or PNG format; maximum size of 20MB.
