@@ -8,7 +8,6 @@ const { Option } = Select;
 
 const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
   const handleValuesChange = (changedValues) => {
-    // Llama a la función onChange para guardar la información
     onChange(changedValues);
   };
 
@@ -18,7 +17,7 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
 
       <Form
         layout="vertical"
-        onValuesChange={handleValuesChange} // Captura los cambios en los valores
+        onValuesChange={handleValuesChange}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item

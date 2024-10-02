@@ -25,7 +25,6 @@ const PhotoStep = ({ onChange }) => {
         const uploadedImageUrl = response.url;
         setProfileImageUrl(uploadedImageUrl);
         message.success("Photo uploaded successfully");
-        // Llama a onChange para guardar la URL de la imagen en el estado del padre
         onChange({ profileImageUrl: uploadedImageUrl });
       } else {
         throw new Error(response.data?.error || "Upload failed");
