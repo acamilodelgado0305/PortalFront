@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { Form, Button, Steps as AntSteps, Card } from "antd";
 import Header from "../Header";
 import AboutStep from "./Steps/AboutStep";
@@ -8,14 +9,25 @@ import EducationStep from "./Steps/EducationStep";
 import DescriptionSet from "./Steps/DescriptionStep";
 import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
-import PricingStep from "./Steps/PricingStep.jsx";
-import createTeacher from "../../../services/TeacherServices.js";
+import PricingStep from "./Steps/PricingStep";
+
+import {createTeacher} from "../../../services/TeacherServices.js"
+
 
 const { Step } = AntSteps;
 
 const MultiStepForm  = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
+  
+  const [formData, setFormData] = React.useState({});
+
+
+
+  const handleFormChange = (changedValues) => {
+    setFormData((prevData) => ({ ...prevData, ...changedValues }));
+  };
+
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
     { code: "bo", name: "Bolivia" },
@@ -50,17 +62,13 @@ const MultiStepForm  = () => {
     "Pricing",
   ];
 
-  const onFinish = async (values) => {
-    try {
-      // Combinar los datos del formulario anterior con los datos del último paso
-      const finalData = { ...formData, ...values };
-      const createdTeacher = await createTeacher(finalData);
-      console.log("Profesor creado con éxito:", createdTeacher);
-    } catch (error) {
-      console.error("Error al crear el profesor:", error);
-    }
+  const onFinish = async() => {
+  // agregar esta información al formulario: imageUrl
+    const updatedValues = { ...formData };
+    console.log("Form values with imageUrl:" + JSON.stringify(formData));
+    await createTeacher(updatedValues)   
+ 
   };
-  
 
   const next = () => {
     form.validateFields().then(() => {
@@ -75,9 +83,9 @@ const MultiStepForm  = () => {
   const getCurrentStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <AboutStep countriesOfLatinAmerica={countriesOfLatinAmerica} />;
+        return <AboutStep countriesOfLatinAmerica={countriesOfLatinAmerica} onChange={handleFormChange} />;
       case 1:
-        return <PhotoStep />;
+        return <PhotoStep  onChange={handleFormChange} />;
       case 2:
         return <CertificationStep />;
       case 3:

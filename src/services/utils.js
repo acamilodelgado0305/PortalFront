@@ -5,7 +5,7 @@ import axios from "axios";
 const BACK_URL = import.meta.env.VITE_API_BACKEND || "http://localhost:4005";
 
 // Instancia de axios personalizada
-const backApi = axios.create({
+export const backApi = axios.create({
   baseURL: BACK_URL,
   headers: {
     "Content-Type": "application/json",
@@ -13,18 +13,29 @@ const backApi = axios.create({
 });
 
 
-export const uploadImage = async (file) => {
-  const formData = new FormData();
-  formData.append('image', file);
-
+export const uploadImage = async (file, contentType) => {
   try {
-      const response = await backApi.post('/api/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      console.log('URL de la imagen subida:', response.data.url);
-      return response.data.url;
+    const response = await backApi.post('/api/upload', file, {
+      headers: { 'Content-Type': contentType },
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        console.log(`Progreso de carga: ${percentCompleted}%`);
+      }
+    });
+    console.log('URL ' + JSON.stringify(response.data.url))
+    if (response.data && response.data.url) {
+      return {
+        success: true,
+        url: response.data.url
+      };
+    } else {
+      throw new Error('La respuesta del servidor no contiene la URL de la imagen');
+    }
   } catch (error) {
-      console.error('Error al subir la imagen:', error);
-      throw error;
+    console.error('Error al subir la imagen:', error);
+    return {
+      success: false,
+      error: error.message || 'Error desconocido al subir la imagen'
+    };
   }
 };

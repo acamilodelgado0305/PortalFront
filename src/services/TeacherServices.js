@@ -1,29 +1,61 @@
-//import axios from "axios";
+import { backApi } from "./utils";
 
-import axios from "axios";
-
-const BACK_URL = import.meta.env.VITE_API_BACKEND || "http://localhost:4005";
-
-// Instancia de axios personalizada
-const backApi = axios.create({
-  baseURL: BACK_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-
-const createTeacher = async (teacherData) => {
-  try {
-    const response = await backApi.post('/api/teachers', teacherData, {
-      headers: { 'Content-Type': 'application/json' },
-    });
-    console.log('Profesor creado:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error al crear el profesor:', error);
-    throw error;
-  }
-};
-
-export default createTeacher;
+const createTeacher = async (data) => {
+    try {
+      const response = await backApi.post('/api/teachers/', data);
+        console.log('Se creo un teacher? '+JSON.stringify(response))
+      return response.data; 
+    } catch (error) {
+      console.error("Error creating teacher:", error);
+      throw error;
+    }
+  };
+  
+  const readAllTeachers = async () => {
+    try {
+      const response = await backApi.get('/api/teachers/');
+      return response.data; 
+    } catch (error) {
+      console.error("Error reading teachers:", error);
+      throw error;
+    }
+  };
+  
+  const getTeacherById = async (id) => {
+    try {
+      const response = await backApi.get(`/api/teachers/${id}`);
+      return response.data; 
+    } catch (error) {
+      console.error(`Error getting teacher with id ${id}:`, error);
+      throw error;
+    }
+  };
+  
+  const updateTeacher = async (id, updatedData) => {
+    try {
+      const response = await backApi.put(`/api/teachers/${id}`, updatedData);
+      return response.data; 
+    } catch (error) {
+      console.error(`Error updating teacher with id ${id}:`, error);
+      throw error;
+    }
+  };
+  
+  const deleteTeacherById = async (id) => {
+    try {
+      const response = await backApi.delete(`/api/teachers/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting teacher with id ${id}:`, error);
+      throw error;
+    }
+  };
+  
+  export {
+    createTeacher,
+    readAllTeachers,
+    getTeacherById,
+    updateTeacher,
+    deleteTeacherById
+  };
+  
