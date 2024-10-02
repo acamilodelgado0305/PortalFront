@@ -81,7 +81,7 @@ const PhotoStep = ({ onChange }) => {
       <div {...getRootProps()} className="cursor-pointer mb-6">
         <input {...getInputProps()} />
         <button
-          className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
           disabled={uploading}
         >
           {uploading ? "Uploading..." : "Upload photo"}
