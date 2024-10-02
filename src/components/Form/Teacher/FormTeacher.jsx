@@ -11,6 +11,7 @@ import DescriptionSet from "./Steps/DescriptionStep";
 import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
+import { TbRuler2Off } from "react-icons/tb";
 
 
 const { Step } = AntSteps;
@@ -25,6 +26,7 @@ const MultiStepForm  = () => {
 
   const handleFormChange = (changedValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
+    console.log(formData)
   };
 
   const countriesOfLatinAmerica = [
@@ -62,7 +64,10 @@ const MultiStepForm  = () => {
   ];
 
   const onFinish = async() => {
-  // agregar esta información al formulario: imageUrl
+    if(currentStep != '7'){
+      console.log('no soy 7')
+      return}
+
     const updatedValues = { ...formData };
     console.log("Form values with imageUrl:" + JSON.stringify(formData));
     await createTeacher(updatedValues)   
@@ -88,7 +93,7 @@ const MultiStepForm  = () => {
       case 2:
         return <CertificationStep />;
       case 3:
-        return <EducationStep />;
+        return <EducationStep onChange={handleFormChange} />;
       case 4:
         return <DescriptionSet />;
       case 5:

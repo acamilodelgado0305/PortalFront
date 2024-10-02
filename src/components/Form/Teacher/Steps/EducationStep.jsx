@@ -4,7 +4,9 @@ import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const EducationForm = ({ index, onRemove }) => {
+const EducationForm = ({ index, onRemove, list, setList }) => {
+
+
   const handleDiplomaUpload = (info) => {
     if (info.file.status === 'done') {
       message.success(`${info.file.name} file uploaded successfully`);
@@ -13,16 +15,34 @@ const EducationForm = ({ index, onRemove }) => {
     }
   };
 
+  const logChange = (field, value, index) => {
+    setList((prevEducations) => {
+      const updatedEducations = [...prevEducations];
+      updatedEducations[index] = {
+        ...updatedEducations[index],
+        [field]: value,
+      };     
+      console.log(list)
+      return updatedEducations;
+ 
+    });
+  };
+
+  
   return (
     <div className="bg-gray-50 p-6 rounded-lg mb-6">
       <h3 className="text-xl font-semibold mb-4">Education {index + 1}</h3>
-      
+
       <Form.Item
         name={['education', index, 'university']}
         label={<span className="text-lg">University</span>}
         rules={[{ required: true, message: 'Please enter your university' }]}
       >
-        <Input className="text-lg p-3" placeholder="E.g. Mount Royal University" />
+        <Input 
+          className="text-lg p-3" 
+          placeholder="E.g. Mount Royal University" 
+          onChange={(e) => logChange('university', e.target.value, index)} 
+        />
       </Form.Item>
 
       <Form.Item
@@ -30,7 +50,11 @@ const EducationForm = ({ index, onRemove }) => {
         label={<span className="text-lg">Degree</span>}
         rules={[{ required: true, message: 'Please enter your degree' }]}
       >
-        <Input className="text-lg p-3" placeholder="E.g. Bachelor's degree in the English Language" />
+        <Input 
+          className="text-lg p-3" 
+          placeholder="E.g. Bachelor's degree in the English Language" 
+          onChange={(e) => logChange('degree', e.target.value, index)} 
+        />
       </Form.Item>
 
       <Form.Item
@@ -38,7 +62,12 @@ const EducationForm = ({ index, onRemove }) => {
         label={<span className="text-lg">Degree type</span>}
         rules={[{ required: true, message: 'Please select your degree type' }]}
       >
-        <Select className="text-lg" size="large" placeholder="Choose degree type...">
+        <Select 
+          className="text-lg" 
+          size="large" 
+          placeholder="Choose degree type..." 
+          onChange={(value) => logChange('degreeType', value, index)}
+        >
           <Option value="bachelor">Bachelor's</Option>
           <Option value="master">Master's</Option>
           <Option value="phd">PhD</Option>
@@ -52,7 +81,11 @@ const EducationForm = ({ index, onRemove }) => {
         label={<span className="text-lg">Specialization</span>}
         rules={[{ required: true, message: 'Please enter your specialization' }]}
       >
-        <Input className="text-lg p-3" placeholder="E.g. Teaching English as a Foreign Language" />
+        <Input 
+          className="text-lg p-3" 
+          placeholder="E.g. Teaching English as a Foreign Language" 
+          onChange={(e) => logChange('specialization', e.target.value, index)} 
+        />
       </Form.Item>
 
       <Form.Item label={<span className="text-lg">Years of study</span>} required>
@@ -62,7 +95,12 @@ const EducationForm = ({ index, onRemove }) => {
             noStyle
             rules={[{ required: true, message: 'Start year is required' }]}
           >
-            <Select className="w-1/2 text-lg" size="large" placeholder="Start year">
+            <Select 
+              className="w-1/2 text-lg" 
+              size="large" 
+              placeholder="Start year" 
+              onChange={(value) => logChange('studyStart', value, index)}
+            >
               {Array.from({ length: 50 }, (_, i) => (
                 <Option key={i} value={2024 - i}>{2024 - i}</Option>
               ))}
@@ -73,7 +111,12 @@ const EducationForm = ({ index, onRemove }) => {
             noStyle
             rules={[{ required: true, message: 'End year is required' }]}
           >
-            <Select className="w-1/2 text-lg" size="large" placeholder="End year">
+            <Select 
+              className="w-1/2 text-lg" 
+              size="large" 
+              placeholder="End year" 
+              onChange={(value) => logChange('studyEnd', value, index)}
+            >
               {Array.from({ length: 50 }, (_, i) => (
                 <Option key={i} value={2024 - i}>{2024 - i}</Option>
               ))}
@@ -92,11 +135,10 @@ const EducationForm = ({ index, onRemove }) => {
           rules={[{ required: false, message: 'Please upload your diploma' }]}
         >
           <Upload
-  accept=".jpg,.png,.pdf"
-  maxFileSize={20 * 1024 * 1024}
-  onChange={handleDiplomaUpload}
->
-
+            accept=".jpg,.png,.pdf"
+            maxFileSize={20 * 1024 * 1024}
+            onChange={handleDiplomaUpload}
+          >
             <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
           </Upload>
         </Form.Item>
@@ -118,6 +160,7 @@ const EducationStep = () => {
   const [form] = Form.useForm();
   const [hasHigherEducation, setHasHigherEducation] = useState(true);
   const [educations, setEducations] = useState([{}]);
+  const [list, setList] = useState([{}]);
 
   const addEducation = () => {
     setEducations([...educations, {}]);
@@ -125,8 +168,13 @@ const EducationStep = () => {
 
   const removeEducation = (index) => {
     const newEducations = [...educations];
+    const newList = [...list];
+
     newEducations.splice(index, 1);
+    newList.splice(index, 1);
+
     setEducations(newEducations);
+    setList(newList); // Update the list state after removal
   };
 
   return (
@@ -150,7 +198,8 @@ const EducationStep = () => {
         {hasHigherEducation && (
           <>
             {educations.map((_, index) => (
-              <EducationForm key={index} index={index} onRemove={removeEducation} />
+              <EducationForm key={index} index={index} onRemove={removeEducation} setEducations={setEducations}  list={list} 
+              setList={setList} />
             ))}
 
             <Button 
