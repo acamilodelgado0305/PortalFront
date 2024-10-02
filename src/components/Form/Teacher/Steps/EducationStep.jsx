@@ -4,7 +4,7 @@ import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const EducationForm = ({ index, onRemove, list, setList }) => {
+const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
 
 
   const handleDiplomaUpload = (info) => {
@@ -22,7 +22,7 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
         ...updatedEducations[index],
         [field]: value,
       };     
-      console.log(list)
+      onChange({'education': list})
       return updatedEducations;
  
     });
@@ -41,7 +41,7 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
         <Input 
           className="text-lg p-3" 
           placeholder="E.g. Mount Royal University" 
-          onChange={(e) => logChange('university', e.target.value, index)} 
+          onInput={(e) => logChange('university', e.target.value, index)}
         />
       </Form.Item>
 
@@ -53,7 +53,7 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
         <Input 
           className="text-lg p-3" 
           placeholder="E.g. Bachelor's degree in the English Language" 
-          onChange={(e) => logChange('degree', e.target.value, index)} 
+          onInput={(e) => logChange('degree', e.target.value, index)} 
         />
       </Form.Item>
 
@@ -84,7 +84,7 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
         <Input 
           className="text-lg p-3" 
           placeholder="E.g. Teaching English as a Foreign Language" 
-          onChange={(e) => logChange('specialization', e.target.value, index)} 
+          onInput={(e) => logChange('specialization', e.target.value, index)} 
         />
       </Form.Item>
 
@@ -99,7 +99,7 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
               className="w-1/2 text-lg" 
               size="large" 
               placeholder="Start year" 
-              onChange={(value) => logChange('studyStart', value, index)}
+              onSelect={(value) => logChange('studyStart', value, index)}
             >
               {Array.from({ length: 50 }, (_, i) => (
                 <Option key={i} value={2024 - i}>{2024 - i}</Option>
@@ -115,7 +115,7 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
               className="w-1/2 text-lg" 
               size="large" 
               placeholder="End year" 
-              onChange={(value) => logChange('studyEnd', value, index)}
+              onSelect={(value) => logChange('studyEnd', value, index)}
             >
               {Array.from({ length: 50 }, (_, i) => (
                 <Option key={i} value={2024 - i}>{2024 - i}</Option>
@@ -156,25 +156,20 @@ const EducationForm = ({ index, onRemove, list, setList }) => {
   );
 };
 
-const EducationStep = () => {
+const EducationStep = ({onChange}) => {
   const [form] = Form.useForm();
   const [hasHigherEducation, setHasHigherEducation] = useState(true);
-  const [educations, setEducations] = useState([{}]);
   const [list, setList] = useState([{}]);
 
   const addEducation = () => {
-    setEducations([...educations, {}]);
+    setList([... list, {}]);
   };
 
   const removeEducation = (index) => {
-    const newEducations = [...educations];
-    const newList = [...list];
+       const newList = [...list];
 
-    newEducations.splice(index, 1);
     newList.splice(index, 1);
-
-    setEducations(newEducations);
-    setList(newList); // Update the list state after removal
+    setList(newList);
   };
 
   return (
@@ -197,9 +192,9 @@ const EducationStep = () => {
 
         {hasHigherEducation && (
           <>
-            {educations.map((_, index) => (
-              <EducationForm key={index} index={index} onRemove={removeEducation} setEducations={setEducations}  list={list} 
-              setList={setList} />
+            { list.map((_, index) => (
+              <EducationForm key={index} index={index} onRemove={removeEducation}  list={list} 
+              setList={setList} onChange={onChange}/>
             ))}
 
             <Button 
