@@ -24,7 +24,7 @@ const VideoStep = () => {
       message.success(`${info.file.name} video uploaded successfully`);
     } else {
       message.error(
-        `${info.file.name} upload failed. It may be due to the file size. Please try again.`,
+    `${info.file.name} upload failed. It may be due to the file size. Please try again.`,
       );
     }
   };
@@ -79,99 +79,84 @@ const VideoStep = () => {
     }
   };
 
-  // Función para detener la grabación.
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop(); // Detenemos el MediaRecorder.
-      setIsRecording(false); // Actualizamos el estado de grabación.
-      const tracks = videoRef.current.srcObject.getTracks(); // Obtenemos las pistas de video.
-      tracks.forEach((track) => track.stop()); // Detenemos las pistas.
+      mediaRecorderRef.current.stop(); 
+      setIsRecording(false); 
+      const tracks = videoRef.current.srcObject.getTracks(); 
+      tracks.forEach((track) => track.stop()); 
     }
   };
 
+const handleDownloadYoutube = (e) =>{
+  console.log(`En teoria este tendria que ser el link de youtube: \n ${e.target.value}`)
+}
+
   return (
-    <div className="mx-auto max-w-lg p-6">
-      {" "}
-      {/* Contenedor principal del componente */}
-      <h2 className="mb-4 text-2xl font-bold">Video Introduction</h2>{" "}
-      {/* Título del componente */}
-      <p className="mb-4 text-gray-600">
-        Upload a video introduction to showcase your teaching style and
-        personality
-      </p>{" "}
-      {/* Descripción del componente */}
-      <Form form={form} layout="vertical">
-        {" "}
-        {/* Componente de formulario de Ant Design */}
-        <Form.Item label="Video Upload Method" required>
-          {" "}
-          {/* Elemento del formulario para seleccionar el método de carga */}
-          <Radio.Group
-            onChange={(e) => setVideoUploadMethod(e.target.value)} // Actualiza el método de carga seleccionado
-            value={videoUploadMethod} // Valor actual del método de carga
+    <div className="max-w-lg mx-auto p-6">
+    <h2 className="text-2xl font-bold mb-4">Video Introduction</h2>
+    <p className="mb-4 text-gray-600">
+      Upload a video introduction to showcase your teaching style and personality
+    </p>
+
+    <Form form={form} layout="vertical">
+      <Form.Item label="Video Upload Method" required>
+        <Radio.Group
+          onChange={(e) => setVideoUploadMethod(e.target.value)}
+          value={videoUploadMethod}
+        >
+          <Radio value="file">Upload File</Radio>
+          <Radio value="record">Record Video</Radio>
+          <Radio value="youtube">YouTube Link</Radio>
+        </Radio.Group>
+      </Form.Item>
+
+      {videoUploadMethod === 'file' && (
+        <Form.Item
+          name="video"
+          rules={[{ required: true, message: 'Please upload a video' }]}
+        >
+          <Upload
+            accept="video/*"
+            maxCount={1}
+            onChange={handleVideoUpload}
+            beforeUpload={() => false} // Prevent auto upload
           >
-            <Radio value="file">Upload File</Radio>{" "}
-            {/* Opción para cargar archivo */}
-            <Radio value="record">Record Video</Radio>{" "}
-            {/* Opción para grabar video */}
-            <Radio value="youtube">YouTube Link</Radio>{" "}
-            {/* Opción para enlace de YouTube */}
-          </Radio.Group>
+            <Button icon={<UploadOutlined />}>Upload Video</Button>
+          </Upload>
         </Form.Item>
-        {videoUploadMethod === "file" && ( // Condicional para mostrar el campo de carga de archivo
-          <Form.Item
-            name="video"
-            rules={[{ required: true, message: "Please upload a video" }]} // Validación del campo
+      )}
+
+      {videoUploadMethod === 'record' && (
+        <div>
+          <video ref={videoRef} style={{ width: '100%', maxWidth: '400px' }} autoPlay muted />
+          <Button
+            onClick={isRecording ? stopRecording : startRecording}
+            icon={<VideoCameraOutlined />}
+            className="mt-2"
           >
-            <Upload
-              accept="video/*" // Aceptar solo archivos de video
-              maxCount={1} // Permitir solo un archivo
-              onChange={handleVideoUpload} // Manejar la carga del video
-              beforeUpload={() => false} // Evitar carga automática
-            >
-              <Button icon={<UploadOutlined />}>Upload Video</Button>{" "}
-              {/* Botón para cargar video */}
-            </Upload>
-          </Form.Item>
-        )}
-        {videoUploadMethod === "record" && ( // Condicional para mostrar el campo de grabación de video
-          <div>
-            <video
-              ref={videoRef}
-              style={{ width: "100%", maxWidth: "400px" }}
-              autoPlay
-              muted
-            />{" "}
-            {/* Reproductor de video */}
-            <Button
-              onClick={isRecording ? stopRecording : startRecording} // Llama a la función para grabar o detener
-              icon={<VideoCameraOutlined />} // Icono para el botón
-              className="mt-2"
-            >
-              {isRecording ? "Stop Recording" : "Start Recording"}{" "}
-              {/* Texto del botón */}
-            </Button>
-          </div>
-        )}
-        {videoUploadMethod === "youtube" && ( // Condicional para mostrar el campo para enlace de YouTube
-          <Form.Item
-            name="youtubeLink"
-            rules={[
-              // Validaciones para el enlace de YouTube
-              { required: true, message: "Please enter a YouTube link" },
-              { type: "url", message: "Please enter a valid URL" },
-            ]}
-          >
-            <Input
-              prefix={<LinkOutlined />}
-              placeholder="Enter YouTube video link"
-            />{" "}
-            {/* Campo de entrada para el enlace */}
-          </Form.Item>
-        )}
-      </Form>
-    </div>
+            {isRecording ? 'Stop Recording' : 'Start Recording'}
+          </Button>
+        </div>
+      )}
+
+      {videoUploadMethod === 'youtube' && (
+        <Form.Item
+          name="youtubeLink"
+          rules={[
+            { required: true, message: 'Please enter a YouTube link' },
+            { type: 'url', message: 'Please enter a valid URL' }
+          ]}
+          onChange={handleDownloadYoutube}
+        >
+          <Input prefix={<LinkOutlined />} placeholder="Enter YouTube video link" />
+        </Form.Item>
+      )}
+
+  
+    </Form>
+  </div>
   );
 };
 
-export default VideoStep; // Exportamos el componente para su uso en otros lugares
+export default VideoStep; 
