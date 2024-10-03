@@ -5,7 +5,7 @@ import { uploadImage } from '../../../../services/utils';
 import { useDropzone } from "react-dropzone";
 const { Option } = Select;
 
-const EducationForm = ({ props }) => {
+const EducationForm = (props) => {
   const { index, onRemove, list, setList, onChange } = props
 
   const onDrop  = async(acceptedFiles) => {
