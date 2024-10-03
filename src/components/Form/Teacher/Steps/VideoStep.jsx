@@ -14,6 +14,9 @@ const VideoStep = () => {
   const videoRef = useRef(null); 
   const mediaRecorderRef = useRef(null); 
 
+const [urlPreview, setUrlPreview] = useState('');
+
+
   // Función para manejar la carga de videos desde la pc.
   const handleVideoUpload = async (info) => {
     const file = info.file;
@@ -22,6 +25,7 @@ const VideoStep = () => {
 
     if (response.success) {
       message.success(`${info.file.name} video uploaded successfully`);
+      setUrlPreview(response.url)
     } else {
       message.error(
     `${info.file.name} upload failed. It may be due to the file size. Please try again.`,
@@ -65,7 +69,8 @@ const VideoStep = () => {
             },
           ], 
         };
-        console.log(`¿Url? :\n ${fileList.url} \n\n `)
+        setUrlPreview(response.url)
+        console.log(`¿Url? :\n ${response.url} \n\n `)
         console.log(`FileList: \n ${JSON.stringify(fileList)}`)
 
         form.setFieldsValue({ video: fileList }); 
@@ -89,7 +94,12 @@ const VideoStep = () => {
   };
 
 const handleDownloadYoutube = (e) =>{
-  console.log(`En teoria este tendria que ser el link de youtube: \n ${e.target.value}`)
+  const extractYoutubeId = (url) => {
+    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const matches = url.match(regex);
+    return matches ? matches[1] : null;
+  };
+  setUrlPreview(`https://www.youtube.com/embed/${extractYoutubeId(e.target.value)}`)
 }
 
   return (
@@ -98,8 +108,8 @@ const handleDownloadYoutube = (e) =>{
     <p className="mb-4 text-gray-600">
       Upload a video introduction to showcase your teaching style and personality
     </p>
-
-    <Form form={form} layout="vertical">
+  { urlPreview.length === 0 ? 
+    (<Form form={form} layout="vertical">
       <Form.Item label="Video Upload Method" required>
         <Radio.Group
           onChange={(e) => setVideoUploadMethod(e.target.value)}
@@ -147,14 +157,33 @@ const handleDownloadYoutube = (e) =>{
             { required: true, message: 'Please enter a YouTube link' },
             { type: 'url', message: 'Please enter a valid URL' }
           ]}
-          onChange={handleDownloadYoutube}
+          onBlur={handleDownloadYoutube} // quiero que este evento se lanse cuando el usuario haya terminado de poner la url.
         >
           <Input prefix={<LinkOutlined />} placeholder="Enter YouTube video link" />
         </Form.Item>
       )}
 
   
-    </Form>
+    </Form>) :
+   (
+    <div>
+      {/* Reproductor de YouTube */}
+      <iframe
+        width="600"
+        height="340"
+        src={urlPreview}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title="YouTube video"
+      ></iframe>
+      
+      {/* Botón para cerrar el reproductor */}
+      <Button onClick={() => setUrlPreview('')} style={{ marginTop: '10px' }}>
+        Cerrar video
+      </Button>
+    </div>
+  )}
   </div>
   );
 };
