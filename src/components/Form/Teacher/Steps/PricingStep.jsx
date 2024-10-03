@@ -3,11 +3,10 @@ import { Form, InputNumber, Slider, Card, Typography, Table } from 'antd';
 
 const { Title, Text } = Typography;
 
-const PricingStep = () => {
+const PricingStep = ({ onChange }) => {
   const [form] = Form.useForm();
   const [hourlyRate, setHourlyRate] = useState(20);
 
-  // Define commission rates
   const commissionRates = [
     { minPrice: 0, maxPrice: 30, rate: 0.20 },
     { minPrice: 30, maxPrice: 50, rate: 0.15 },
@@ -15,7 +14,6 @@ const PricingStep = () => {
     { minPrice: 100, maxPrice: Infinity, rate: 0.05 },
   ];
 
-  // Calculate the current commission rate and amount
   const getCurrentCommission = () => {
     const rate = commissionRates.find(r => hourlyRate >= r.minPrice && hourlyRate < r.maxPrice);
     return {
@@ -28,6 +26,12 @@ const PricingStep = () => {
 
   useEffect(() => {
     setCommission(getCurrentCommission());
+    // Actualizamos el estado general con el valor del hourlyRate y comisión.
+    onChange({
+      hourlyRate,
+      commissionRate: commission.rate,
+      commissionAmount: commission.amount,
+    });
   }, [hourlyRate]);
 
   const commissionColumns = [
@@ -80,7 +84,7 @@ const PricingStep = () => {
           <Title level={4}>Your Earnings</Title>
           <Text>Hourly Rate: ${hourlyRate}</Text>
           <br />
-          <Text>Platform Commission ({commission.rate * 100}%): ${commission.amount.toFixed(2)}</Text>
+          <Text>Platform Commission ({(commission.rate * 100).toFixed(0)}%): ${commission.amount.toFixed(2)}</Text>
           <br />
           <Text strong>You Receive: ${(hourlyRate - commission.amount).toFixed(2)}</Text>
         </Card>

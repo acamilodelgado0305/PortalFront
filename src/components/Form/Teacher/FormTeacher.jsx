@@ -20,7 +20,6 @@ const MultiStepForm = () => {
   const [formData, setFormData] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const handleFormChange = (changedValues, allValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
@@ -68,30 +67,32 @@ const MultiStepForm = () => {
     setIsSubmitting(true);
     try {
       await createTeacher(formData);
-      setRegistrationSuccess(true);
+      setIsModalVisible(true);
     } catch (error) {
       console.error("Registration failed:", error);
-      setRegistrationSuccess(false);
+      message.error("Registration failed. Please try again.");
     } finally {
       setIsSubmitting(false);
-      setIsModalVisible(true);
     }
   };
 
   const handleModalOk = () => {
     setIsModalVisible(false);
-    if (registrationSuccess) {
-      // Reset form or redirect to another page
-      form.resetFields();
-      setCurrentStep(0);
-      setFormData({});
-    }
+    // Reset form or redirect to another page
+    form.resetFields();
+    setCurrentStep(0);
+    setFormData({});
   };
 
   const next = () => {
-    form.validateFields().then(() => {
-      setCurrentStep(currentStep + 1);
-    });
+    form
+      .validateFields()
+      .then(() => {
+        setCurrentStep(currentStep + 1);
+      })
+      .catch((error) => {
+        console.error("Validation failed:", error);
+      });
   };
 
   const prev = () => {
@@ -177,7 +178,7 @@ const MultiStepForm = () => {
       </div>
 
       <Modal
-        title={registrationSuccess ? "Registration Successful" : "Registration Failed"}
+        title="Registration Successful"
         visible={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalOk}
@@ -187,11 +188,7 @@ const MultiStepForm = () => {
           </Button>,
         ]}
       >
-        <p>
-          {registrationSuccess
-            ? "Your registration was successful. Thank you for signing up!"
-            : "We're sorry, but there was an error during the registration process. Please try again later."}
-        </p>
+        <p>Your registration was successful. Thank you for signing up!</p>
       </Modal>
     </div>
   );
