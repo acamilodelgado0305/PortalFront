@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Checkbox, Upload, Button, message } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { uploadImage } from '../../../../services/utils';
@@ -17,19 +17,37 @@ const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
       message.error(`${file.name} file upload failed.`);
     }
   };
-
+  const [currentValue, setCurrentValue] = useState(null); 
+  
   const logChange = (field, value, index) => {
+    setCurrentValue(value); 
     setList((prevEducations) => {
       const updatedEducations = [...prevEducations];
       updatedEducations[index] = {
         ...updatedEducations[index],
         [field]: value,
-      };     
-      onChange({'education': list})
+      };
       return updatedEducations;
- 
     });
   };
+  
+   const updateChange = async(list) => {
+   await onChange({'education': list})
+  } 
+
+  useEffect(() => {
+    if (list.length > 0) {
+      const timer = setTimeout(() => {
+        console.log(JSON.stringify(list) + ' value: ' + currentValue);
+        updateChange(list)
+      }, 3000); 
+  
+      return () => clearTimeout(timer); 
+    }
+  }, [list, currentValue]); 
+  
+
+
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
