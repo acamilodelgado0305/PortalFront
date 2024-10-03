@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-
-import { Form, Button, Steps as AntSteps, Card } from "antd";
+import { Form, Button, Steps as AntSteps, Card, Modal, message } from "antd";
 import Header from "../Header";
 import AboutStep from "./Steps/AboutStep";
 import PhotoStep from "./Steps/PhotoStep";
@@ -11,21 +10,23 @@ import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 
-import {createTeacher} from "../../../services/TeacherServices.js"
-
+import { createTeacher } from "../../../services/TeacherServices.js"
 
 const { Step } = AntSteps;
 
-const MultiStepForm  = () => {
+const MultiStepForm = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
-  
-  const [formData, setFormData] = React.useState({});
+  const [formData, setFormData] = useState({});
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-
-  const handleFormChange = (changedValues) => {
+  const handleFormChange = (changedValues, allValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
+  };
+
+  const handleCertificationChange = (certifications) => {
+    setFormData((prevData) => ({ ...prevData, certifications }));
   };
 
   const countriesOfLatinAmerica = [
@@ -62,18 +63,36 @@ const MultiStepForm  = () => {
     "Pricing",
   ];
 
-  const onFinish = async() => {
-  // agregar esta información al formulario: imageUrl
-    const updatedValues = { ...formData };
-    console.log("Form values with imageUrl:" + JSON.stringify(formData));
-    await createTeacher(updatedValues)   
- 
+  const onFinish = async () => {
+    setIsSubmitting(true);
+    try {
+      await createTeacher(formData);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      message.error("Registration failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleModalOk = () => {
+    setIsModalVisible(false);
+    // Reset form or redirect to another page
+    form.resetFields();
+    setCurrentStep(0);
+    setFormData({});
   };
 
   const next = () => {
-    form.validateFields().then(() => {
-      setCurrentStep(currentStep + 1);
-    });
+    form
+      .validateFields()
+      .then(() => {
+        setCurrentStep(currentStep + 1);
+      })
+      .catch((error) => {
+        console.error("Validation failed:", error);
+      });
   };
 
   const prev = () => {
@@ -85,19 +104,19 @@ const MultiStepForm  = () => {
       case 0:
         return <AboutStep countriesOfLatinAmerica={countriesOfLatinAmerica} onChange={handleFormChange} />;
       case 1:
-        return <PhotoStep  onChange={handleFormChange} />;
+        return <PhotoStep onChange={handleFormChange} />;
       case 2:
-        return <CertificationStep />;
+        return <CertificationStep onChange={handleCertificationChange} />;
       case 3:
-        return <EducationStep />;
+        return <EducationStep onChange={handleFormChange} />;
       case 4:
-        return <DescriptionSet />;
+        return <DescriptionSet onChange={handleFormChange} />;
       case 5:
-        return <VideoStep />;
+        return <VideoStep onChange={handleFormChange} />;
       case 6:
-        return <ScheduleStep />;
+        return <ScheduleStep onChange={handleFormChange} />;
       case 7:
-        return <PricingStep />;
+        return <PricingStep onChange={handleFormChange} />;
       default:
         return null;
     }
@@ -147,6 +166,7 @@ const MultiStepForm  = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
+                  loading={isSubmitting}
                   className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
                 >
                   Submit
@@ -156,8 +176,22 @@ const MultiStepForm  = () => {
           </Form>
         </Card>
       </div>
+
+      <Modal
+        title="Registration Successful"
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalOk}
+        footer={[
+          <Button key="ok" type="primary" onClick={handleModalOk}>
+            OK
+          </Button>,
+        ]}
+      >
+        <p>Your registration was successful. Thank you for signing up!</p>
+      </Modal>
     </div>
   );
 };
 
-export default MultiStepForm ;
+export default MultiStepForm;
