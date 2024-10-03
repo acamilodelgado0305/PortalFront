@@ -203,7 +203,7 @@ const EducationStep = ({onChange}) => {
 
     if (isChecked) {      
         setList([{}])
-        onChange({'education':[{}]})
+        onChange({'education':'emply'})
     }
   };
   return (
