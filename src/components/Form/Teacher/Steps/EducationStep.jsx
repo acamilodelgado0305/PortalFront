@@ -5,7 +5,9 @@ import { uploadImage } from '../../../../services/utils';
 import { useDropzone } from "react-dropzone";
 const { Option } = Select;
 
-const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
+const EducationForm = ({ props }) => {
+  const { index, onRemove, list, setList, onChange } = props
+
   const onDrop  = async(acceptedFiles) => {
     const file  = acceptedFiles[0];
     const contentType = file.type; 
@@ -38,7 +40,6 @@ const EducationForm = ({ index, onRemove, list, setList, onChange }) => {
   useEffect(() => {
     if (list.length > 0) {
       const timer = setTimeout(() => {
-        console.log(JSON.stringify(list) + ' value: ' + currentValue);
         updateChange(list)
       }, 3000); 
   
@@ -192,11 +193,19 @@ const EducationStep = ({onChange}) => {
 
   const removeEducation = (index) => {
        const newList = [...list];
-
     newList.splice(index, 1);
     setList(newList);
   };
 
+  const handleCheckboxChange = async (e) => {
+    const isChecked = e.target.checked;
+    setHasHigherEducation(!isChecked);
+
+    if (isChecked) {      
+        setList([{}])
+        onChange({'education':[{}]})
+    }
+  };
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Education</h2>
@@ -209,7 +218,7 @@ const EducationStep = ({onChange}) => {
           <Checkbox
             className="text-xl"
             checked={!hasHigherEducation}
-            onChange={(e) => setHasHigherEducation(!e.target.checked)}
+            onChange={handleCheckboxChange}
           >
             I don't have a higher education degree
           </Checkbox>

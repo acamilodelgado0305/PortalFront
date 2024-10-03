@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { createTeacher } from "../../../services/teacher.services";
 
 import { Form, Button, Steps as AntSteps, Card } from "antd";
@@ -28,10 +28,6 @@ const MultiStepForm  = () => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
   
-  useEffect(() => {
-    console.log(formData); // Esto mostrará el formData actualizado
-  }, [formData]); //
-
 
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
