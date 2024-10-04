@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Form } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDropzone } from 'react-dropzone';

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, message } from 'antd';
 import { useDropzone } from "react-dropzone";
 import { uploadForm } from '../../../../../../services/utils';
+import { fileUpload } from '../../../../../../helpers/fileUpload';
 import DiplomaUpload from './DiplomaUpload';
 import StudyPeriod from './StudyPeriod';
 
@@ -12,15 +13,8 @@ const EducationForm = (props) => {
   const [currentValue, setCurrentValue] = useState(null);
 
   const onDrop = async (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    const contentType = file.type; 
-    try {
-      const response = await uploadForm(file, contentType);
+      const response = await fileUpload(acceptedFiles);
       logChange('diplomaFile', response, index);
-      message.success(`${file.name} file uploaded successfully`);
-    } catch {
-      message.error(`${file.name} file upload failed.`);
-    }
   };
 
   const logChange = (field, value, index) => {
