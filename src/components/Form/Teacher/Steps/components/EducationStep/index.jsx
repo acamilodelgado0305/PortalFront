@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, message } from 'antd';
 import { useDropzone } from "react-dropzone";
-import { uploadForm } from '../../../../../../services/utils';
 import { fileUpload } from '../../../../../../helpers/fileUpload';
 import DiplomaUpload from './DiplomaUpload';
 import StudyPeriod from './StudyPeriod';

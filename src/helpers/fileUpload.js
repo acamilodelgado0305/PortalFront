@@ -1,4 +1,4 @@
-import { uploadForm } from "../services/utils";
+import { uploadImage } from "../services/utils";
 import { message } from "antd";
 
 export const fileUpload = async (acceptedFiles) => {
@@ -10,7 +10,7 @@ export const fileUpload = async (acceptedFiles) => {
   if (!file) return null;
   const contentType = file.type;
   try {
-    const response = await uploadForm(file, contentType);
+    const response = await uploadImage(file, contentType);
     contentTypeSuccessMessage(contentType, file);
     return response.url;
   } catch {
@@ -24,7 +24,6 @@ const contentTypeSuccessMessage = (contentType, file) => {
     message.success(`${file.name} photo uploaded successfully`);
   } else {
     message.success(`${file.name} file uploaded successfully`);
-    console.log('GOood '+file.name)
   }
 };
 

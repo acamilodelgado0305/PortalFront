@@ -12,6 +12,7 @@ import PricingStep from "./Steps/PricingStep";
 import { createTeacher } from '../../../services/teacher.services'
 
 
+
 const { Step } = AntSteps;
 
 const MultiStepForm = () => {
@@ -20,6 +21,7 @@ const MultiStepForm = () => {
   const [formData, setFormData] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
 
 
   const handleFormChange = (changedValues) => {
@@ -31,6 +33,7 @@ const MultiStepForm = () => {
     setFormData((prevData) => ({ ...prevData, certifications }));
   };
 */
+
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
     { code: "bo", name: "Bolivia" },
@@ -64,6 +67,7 @@ const MultiStepForm = () => {
     "Availability",
     "Pricing",
   ];
+
 
 
   const onFinish = async () => {
@@ -113,6 +117,7 @@ const MultiStepForm = () => {
         return <PhotoStep onChange={handleFormChange} />;
       case 2:
         return <CertificationStep onChange={handleFormChange} />;
+
       case 3:
         return <EducationStep onChange={handleFormChange} />;
       case 4:
