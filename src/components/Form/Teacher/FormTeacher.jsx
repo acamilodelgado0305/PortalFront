@@ -9,8 +9,7 @@ import DescriptionSet from "./Steps/DescriptionStep";
 import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
-
-import {createTeacher} from "../../../services/TeacherServices.js"
+import { createTeacher } from '../../../services/teacher.services'
 
 
 const { Step } = AntSteps;
@@ -23,16 +22,15 @@ const MultiStepForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-// creo que tenemos que sacar el parametro allValues, ya que no lo estamos utilziando
-  const handleFormChange = (changedValues, allValues) => {
+  const handleFormChange = (changedValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
-// utilice la funcion de arriba en sustitución de ella.
+/* utilice la funcion de arriba en sustitución de ella.
   const handleCertificationChange = (certifications) => {
     setFormData((prevData) => ({ ...prevData, certifications }));
   };
-
+*/
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
     { code: "bo", name: "Bolivia" },
@@ -69,6 +67,9 @@ const MultiStepForm = () => {
 
 
   const onFinish = async () => {
+    if(currentStep != '7'){
+      return
+    }
     setIsSubmitting(true);
     try {
       await createTeacher(formData);
