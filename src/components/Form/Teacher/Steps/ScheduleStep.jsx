@@ -7,7 +7,7 @@ const { RangePicker } = TimePicker;
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const ScheduleStep = () => {
+const ScheduleStep = ({onChange}) => {
   const [form] = Form.useForm();
   const [schedule, setSchedule] = useState(
     daysOfWeek.reduce((acc, day) => ({
@@ -15,6 +15,10 @@ const ScheduleStep = () => {
       [day]: { enabled: false, timeSlots: [{ start: null, end: null }] }
     }), {})
   );
+
+React.useEffect(()=>{
+  onChange({ 'Availability': schedule })
+},[schedule])
 
   const toggleDay = (day) => {
     setSchedule(prev => ({
@@ -58,10 +62,7 @@ const ScheduleStep = () => {
     }));
   };
 
-  const onFinish = (values) => {
-    console.log('Submitted schedule:', schedule);
-    message.success('Schedule saved successfully');
-  };
+  
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -70,7 +71,7 @@ const ScheduleStep = () => {
         Set your weekly availability for teaching. You can add multiple time slots for each day.
       </p>
 
-      <Form form={form} onFinish={onFinish} layout="vertical">
+      <Form form={form}  layout="vertical">
         {daysOfWeek.map(day => (
           <Card key={day} className="mb-4" title={
             <div className="flex justify-between items-center">
