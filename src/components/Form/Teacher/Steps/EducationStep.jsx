@@ -39,11 +39,8 @@ const EducationForm = (props) => {
 
   useEffect(() => {
     if (list.length > 0) {
-      const timer = setTimeout(() => {
         updateChange(list)
-      }, 3000); 
   
-      return () => clearTimeout(timer); 
     }
   }, [list, currentValue]); 
   
