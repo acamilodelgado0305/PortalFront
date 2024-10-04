@@ -40,7 +40,7 @@ const VideoStep = () => {
           )}
 
           {videoUploadMethod === "record" && (
-            <VideoRecorder setUrlPreview={setUrlPreview} form={form} /> // Usar el nuevo componente
+            <VideoRecorder setUrlPreview={setUrlPreview} form={form} />
           )}
 
           {videoUploadMethod === "youtube" && (
