@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Form, Radio, message } from "antd";
-import VideoUpload from "./components/videoStep/VideoUpload.jsx";
-import YouTubeInput from "./components/videoStep/YouTubeInput";
-import VideoPreview from "./components/videoStep/VideoPreview";
-import VideoRecorder from "./components/videoStep/VideoRecorder"; // Importa el nuevo componente
-import { uploadImage } from "../../../../services/utils.js";
+import VideoUpload from "./components/VideoStep/VideoUpload.jsx";
+import YouTubeInput from "./components/VideoStep/YouTubeInput.jsx";
+import VideoPreview from "./components/VideoStep/VideoPreview.jsx";
+import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
+import { uploadForm } from "../../../../services/utils.js";
 
 const VideoStep = () => {
   const [form] = Form.useForm();
@@ -14,7 +14,7 @@ const VideoStep = () => {
   const handleVideoUpload = async (info) => {
     const file = info.file;
     const contentType = file.type;
-    const response = await uploadImage(file, contentType);
+    const response = await uploadForm(file, contentType);
 
     if (response.success) {
       message.success(`${info.file.name} video uploaded successfully`);

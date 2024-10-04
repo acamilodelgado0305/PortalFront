@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { message } from "antd";
-import { uploadImage } from "../../../../services/utils.js";
+import { uploadForm } from "../../../../services/utils.js";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
 
@@ -19,7 +19,7 @@ const PhotoStep = ({ onChange }) => {
     setUploading(true);
     try {
       const contentType = file.type || "application/octet-stream";
-      const response = await uploadImage(file, contentType);
+      const response = await uploadForm(file, contentType);
 
       if (response && response.url) {
         const uploadedImageUrl = response.url;

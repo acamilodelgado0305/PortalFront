@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Checkbox, Upload, Button, message } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
-import { uploadImage } from '../../../../services/utils';
+import { uploadForm } from '../../../../services/utils';
 import { useDropzone } from "react-dropzone";
 const { Option } = Select;
 
@@ -12,7 +12,7 @@ const EducationForm = (props) => {
     const file  = acceptedFiles[0];
     const contentType = file.type; 
     try {
-    const response = await uploadImage(file, contentType);
+    const response = await uploadForm(file, contentType);
     logChange('diplomaFile', response ,index)
     message.success(`${file.name} file uploaded successfully`);
      } catch {
