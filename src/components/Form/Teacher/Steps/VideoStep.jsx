@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Form, Radio, message } from "antd";
 import VideoUpload from "./components/VideoStep/VideoUpload.jsx";
 import YouTubeInput from "./components/VideoStep/YouTubeInput.jsx";
-import VideoPreview from "./components/VideoStep/VideoPreview.jsx";
+import VideoPreview from "./components/videoStep/VideoPreview.jsx";
 import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
 import { uploadForm } from "../../../../services/utils.js";
 
