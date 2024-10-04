@@ -13,7 +13,7 @@ const VideoPreview = ({ urlPreview, setUrlPreview }) => (
       title="YouTube video"
     ></iframe>
     <Button onClick={() => setUrlPreview("")} style={{ marginTop: "10px" }}>
-      Cerrar video
+      Cancel
     </Button>
   </div>
 );
