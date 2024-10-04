@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Form, Radio } from "antd";
 import VideoUpload from "./components/VideoStep/VideoUpload.jsx";
-import YouTubeInput from "./components/VideoStep/YouTubeInput.jsx";
+import VideoUrlInput from "./components/videoStep/VideoUrlInput.jsx";
 import VideoPreview from "./components/videoStep/VideoPreview.jsx";
 import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
 import { fileUpload } from "../../../../helpers/fileUpload";
@@ -31,6 +31,7 @@ const VideoStep = () => {
               <Radio value="file">Upload File</Radio>
               <Radio value="record">Record Video</Radio>
               <Radio value="youtube">YouTube Link</Radio>
+              <Radio value="vimeo">Vimeo Link</Radio>
             </Radio.Group>
           </Form.Item>
 
@@ -43,7 +44,10 @@ const VideoStep = () => {
           )}
 
           {videoUploadMethod === "youtube" && (
-            <YouTubeInput setUrlPreview={setUrlPreview} />
+            <VideoUrlInput plataform={'Youtube'} setUrlPreview={setUrlPreview} />
+          )}
+           {videoUploadMethod === "vimeo" && (
+            <VideoUrlInput plataform={'Vimeo'}  setUrlPreview={setUrlPreview} />
           )}
         </Form>
       ) : (
