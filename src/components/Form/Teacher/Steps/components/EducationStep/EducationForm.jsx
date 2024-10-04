@@ -40,13 +40,8 @@ const EducationForm = (props) => {
   };
 
   useEffect(() => {
-    if (list.length > 0) {
-      const timer = setTimeout(() => {
+    if (list.length > 0) 
         updateChange(list);
-      }, 3000); 
-
-      return () => clearTimeout(timer); 
-    }
   }, [list, currentValue]);
 
   const { getRootProps, getInputProps } = useDropzone({
