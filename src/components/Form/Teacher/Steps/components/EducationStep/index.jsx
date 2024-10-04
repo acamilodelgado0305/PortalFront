@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { uploadForm } from '../../../../../../services/utils';
 import { useDropzone } from "react-dropzone";
+import { uploadForm } from '../../../../../../services/utils';
+import DiplomaUpload from './DiplomaUpload';
+import StudyPeriod from './StudyPeriod';
 
 const { Option } = Select;
 
 const EducationForm = (props) => {
   const { index, onRemove, list, setList, onChange } = props;
+  const [currentValue, setCurrentValue] = useState(null);
 
   const onDrop = async (acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -21,10 +23,8 @@ const EducationForm = (props) => {
     }
   };
 
-  const [currentValue, setCurrentValue] = useState(null);
-
   const logChange = (field, value, index) => {
-    setCurrentValue(value); 
+    setCurrentValue(value);
     setList((prevEducations) => {
       const updatedEducations = [...prevEducations];
       updatedEducations[index] = {
@@ -43,14 +43,6 @@ const EducationForm = (props) => {
     if (list.length > 0) 
         updateChange(list);
   }, [list, currentValue]);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': [], 
-      'application/pdf': [], 
-    },
-  });
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg mb-6">
@@ -111,61 +103,13 @@ const EducationForm = (props) => {
         />
       </Form.Item>
 
-      <Form.Item label={<span className="text-lg">Years of study</span>} required>
-        <Input.Group compact>
-          <Form.Item
-            name={['education', index, 'study', 'start']}
-            noStyle
-            rules={[{ required: true, message: 'Start year is required' }]}
-          >
-            <Select 
-              className="w-1/2 text-lg" 
-              size="large" 
-              placeholder="Start year" 
-              onSelect={(value) => logChange('studyStart', value, index)}
-            >
-              {Array.from({ length: 50 }, (_, i) => (
-                <Option key={i} value={2024 - i}>{2024 - i}</Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name={['education', index, 'study', 'end']}
-            noStyle
-            rules={[{ required: true, message: 'End year is required' }]}
-          >
-            <Select 
-              className="w-1/2 text-lg" 
-              size="large" 
-              placeholder="End year" 
-              onSelect={(value) => logChange('studyEnd', value, index)}
-            >
-              {Array.from({ length: 50 }, (_, i) => (
-                <Option key={i} value={2024 - i}>{2024 - i}</Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Input.Group>
-      </Form.Item>
+      <StudyPeriod index={index} logChange={logChange} />
 
-      <div className="bg-blue-50 p-4 rounded-md mb-4">
-        <h4 className="text-lg font-semibold mb-2">Get a "Diploma verified" badge</h4>
-        <p className="mb-2 text-base">
-          Upload your diploma to boost your credibility! Our team will review it and add the badge to your profile. Once reviewed, your files will be deleted.
-        </p>
-        <Form.Item
-          name={['education', index, 'diploma']}
-          rules={[{ required: false, message: 'Please upload your diploma' }]}
-        >
-          <div {...getRootProps({ className: 'dropzone' })}>
-            <input {...getInputProps()} />
-            <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
-          </div>
-        </Form.Item>
-        <p className="text-base text-gray-600">
-          JPG or PNG format; maximum size of 20MB.
-        </p>
-      </div>
+      <DiplomaUpload 
+        index={index} 
+        onDrop={onDrop} 
+        logChange={logChange} 
+      />
 
       {index > 0 && (
         <Button type="link" onClick={() => onRemove(index)} className="text-red-500 text-lg p-0">

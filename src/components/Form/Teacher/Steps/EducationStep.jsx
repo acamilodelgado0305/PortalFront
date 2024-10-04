@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Checkbox, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import EducationForm from './components/EducationStep/EducationForm'; 
+import EducationForm from './components/EducationStep/index'; 
 
 const EducationStep = ({ onChange }) => {
   const [form] = Form.useForm();
