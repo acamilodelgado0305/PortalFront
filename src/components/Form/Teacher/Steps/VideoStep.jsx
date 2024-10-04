@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
-import { Form, Radio, message } from "antd";
+import { Form, Radio } from "antd";
 import VideoUpload from "./components/VideoStep/VideoUpload.jsx";
 import YouTubeInput from "./components/VideoStep/YouTubeInput.jsx";
 import VideoPreview from "./components/videoStep/VideoPreview.jsx";
 import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
-import { uploadImage } from "../../../../services/utils.js";
+import { fileUpload } from "../../../../helpers/fileUpload";
 
 const VideoStep = () => {
   const [form] = Form.useForm();
@@ -12,16 +12,9 @@ const VideoStep = () => {
   const [urlPreview, setUrlPreview] = useState("");
 
   const handleVideoUpload = async (info) => {
-    const file = info.file;
-    const contentType = file.type;
-    const response = await uploadImage(file, contentType);
-
-    if (response.success) {
-      message.success(`${info.file.name} video uploaded successfully`);
-      setUrlPreview(response.url);
-    } else {
-      message.error(`${info.file.name} upload failed. It may be due to the file size. Please try again.`);
-    }
+    const acceptedFiles = [info.file];
+    const url = await fileUpload(acceptedFiles, 'video')
+    setUrlPreview(url);
   };
 
   return (

@@ -12,7 +12,7 @@ const EducationForm = (props) => {
   const [currentValue, setCurrentValue] = useState(null);
 
   const onDrop = async (acceptedFiles) => {
-      const response = await fileUpload(acceptedFiles);
+      const response = await fileUpload(acceptedFiles, 'file');
       logChange('diplomaFile', response, index);
   };
 

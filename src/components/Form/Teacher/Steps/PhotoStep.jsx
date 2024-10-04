@@ -11,7 +11,7 @@ const PhotoStep = ({ onChange }) => {
   const onDrop = async (acceptedFiles) => {
     setUploading(true);
     try {
-       const uploadedImageUrl = await fileUpload(acceptedFiles)
+       const uploadedImageUrl = await fileUpload(acceptedFiles, 'image')
       if (uploadedImageUrl) {
         setProfileImageUrl(uploadedImageUrl);
         onChange({ profileImageUrl: uploadedImageUrl });
