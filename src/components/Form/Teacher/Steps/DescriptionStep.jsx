@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Typography, Alert } from "antd";
 
 const { TextArea } = Input;
@@ -36,10 +36,16 @@ const stepsContent = [
   },
 ];
 
-const ProfileDescriptionStep = () => {
+const ProfileDescriptionStep = ({onChange}) => {
   const [form] = Form.useForm();
   const [charCount, setCharCount] = useState(0);
-  const [step, setStep] = useState(0); // El estado empieza en 0 (primer paso)
+  const [step, setStep] = useState(0);
+  const [formValues, setFormValues] = useState({
+    introduction: "",
+    experience: "",
+    motivateStudents: "",
+    headline: "",
+  });
 
   const handleTextChange = (e) => {
     setCharCount(e.target.value.length);
@@ -52,6 +58,17 @@ const ProfileDescriptionStep = () => {
   const handleBackStep = () => {
     if (step > 0) setStep(step - 1);
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+  useEffect(()=>{
+   onChange({'description ':formValues})
+  },[formValues])
 
   const { title, description, placeholder, name, message } = stepsContent[step];
 
@@ -73,7 +90,12 @@ const ProfileDescriptionStep = () => {
           <TextArea
             rows={6}
             placeholder={placeholder}
-            onChange={handleTextChange}
+            name={name}
+            value={formValues[name]}
+            onChange={(e) => {
+              handleTextChange(e);
+              handleInputChange(e);
+            }}
             maxLength={400}
           />
         </Form.Item>
@@ -107,4 +129,5 @@ const ProfileDescriptionStep = () => {
 };
 
 export default ProfileDescriptionStep;
+
 
