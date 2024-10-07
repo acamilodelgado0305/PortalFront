@@ -17,7 +17,7 @@ const ScheduleStep = ({onChange}) => {
   );
 
 React.useEffect(()=>{
- // onChange({ 'Availability': schedule })
+  onChange({ 'Availability': schedule })
 },[schedule])
 
   const toggleDay = (day) => {
@@ -30,21 +30,6 @@ React.useEffect(()=>{
     }));
   };
 
-  const handleTimeChange = (day, index, time) => {
-    const [start, end] = time;
-
-    setSchedule(prev => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        timeSlots: prev[day].timeSlots.map((slot, i) =>
-          i === index 
-            ? { start: start, end: end }
-            : slot
-        )
-      }
-    }));
-};
   const addTimeSlot = (day) => {
     setSchedule(prev => ({
       ...prev,
@@ -64,8 +49,18 @@ React.useEffect(()=>{
       }
     }));
   };
-
- 
+  const handleTimeChange = (day, index, [start, end]) => {
+  setSchedule(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        timeSlots: prev[day].timeSlots.map((slot, i) =>
+          i === index ? { start, end } : slot
+        )
+      }
+    }));
+  };
+  
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -92,10 +87,6 @@ React.useEffect(()=>{
                     <RangePicker
                       format="HH:mm"
                       minuteStep={15}
-                      value={[
-                        slot.start ? moment(slot.start, 'HH:mm') : null,
-                        slot.end ? moment(slot.end, 'HH:mm') : null
-                      ]}
                       onChange={(time) => handleTimeChange(day, index, time)}
                     />
                     <Button
