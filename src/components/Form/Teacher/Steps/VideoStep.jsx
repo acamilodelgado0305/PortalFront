@@ -1,6 +1,6 @@
 import React, { useState, useEffect,useRef } from "react";
 import { Form, Radio } from "antd";
-import VideoUpload from "./components/VideoStep/VideoUpload.jsx";
+import VideoUpload from "./components/videoStep/VideoUpload.jsx";
 import VideoUrlInput from "./components/videoStep/VideoUrlInput.jsx";
 import VideoPreview from "./components/videoStep/VideoPreview.jsx";
 import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
