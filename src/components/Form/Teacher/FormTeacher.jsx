@@ -168,7 +168,7 @@ const MultiStepForm = () => {
               {currentStep < stepTitles.length - 1 && (
                 <Button
                   onClick={next}
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+                  className="bg-[#5CEFFF] hover:bg-blue-600 text-black py-2 px-4 rounded-md"
                 >
                   Next
                 </Button>
@@ -178,7 +178,7 @@ const MultiStepForm = () => {
                   type="primary"
                   htmlType="submit"
                   loading={isSubmitting}
-                  className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+                  className="bg-[#5CEFFF] hover:bg-green-600 text-black py-2 px-4 rounded-md"
                 >
                   Submit
                 </Button>

@@ -43,8 +43,8 @@ const PhotoStep = ({ onChange }) => {
         Choose a photo that will help learners get to know you.
       </p>
 
-      <div className="flex items-center mb-6">
-        <div className="w-24 h-24 bg-gray-200 border border-dashed border-gray-400 flex justify-center items-center overflow-hidden">
+      <div className="w-full flex justify-center items-center mb-6">
+        <div className="w-48 h-48 bg-gray-200 border border-dashed border-gray-400 flex justify-center items-center overflow-hidden rounded-full">
           {profileImageUrl ? (
             <img
               src={profileImageUrl}
@@ -52,24 +52,17 @@ const PhotoStep = ({ onChange }) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <UploadOutlined style={{ fontSize: "24px", color: "#bfbfbf" }} />
+            <UploadOutlined style={{ fontSize: "48px", color: "#bfbfbf" }} />
           )}
-        </div>
-        <div className="ml-4">
-          <h3 className="text-lg font-semibold">
-            Andres Camilo D. <span className="text-lg">🇨🇴</span>
-          </h3>
-          <p className="text-gray-500">Teaches English lessons</p>
-          <p className="text-gray-500">
-            Speaks Albanian (Native), English (B2)
-          </p>
         </div>
       </div>
 
-      <div {...getRootProps()} className="cursor-pointer mb-6">
+
+      <div
+        {...getRootProps()} className="cursor-pointer mb-6">
         <input {...getInputProps()} />
         <button
-          className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
+          className="bg-[#FFFF45] text-black px-4 py-2 rounded-md hover:bg-pink-600"
           disabled={uploading}
         >
           {uploading ? "Uploading..." : "Upload photo"}
