@@ -36,7 +36,7 @@ const stepsContent = [
   },
 ];
 
-const ProfileDescriptionStep = ({onChange}) => {
+const ProfileDescriptionStep = ({ onChange }) => {
   const [form] = Form.useForm();
   const [charCount, setCharCount] = useState(0);
   const [step, setStep] = useState(0);
@@ -66,11 +66,10 @@ const ProfileDescriptionStep = ({onChange}) => {
       [name]: value,
     }));
   };
-  useEffect(()=>{
-   onChange({'description ':formValues})
-  },[formValues])
 
-  const { title, description, placeholder, name, message } = stepsContent[step];
+  useEffect(() => {
+    onChange({ description: formValues });
+  }, [formValues]);
 
   return (
     <div className="mx-auto max-w-lg p-6">
@@ -84,21 +83,32 @@ const ProfileDescriptionStep = ({onChange}) => {
       </Paragraph>
 
       <Form form={form} layout="vertical">
-        <Title level={3}>{title}</Title>
-        {description && <Paragraph>{description}</Paragraph>}
-        <Form.Item name={name} rules={[{ required: true, message }]}>
-          <TextArea
-            rows={6}
-            placeholder={placeholder}
-            name={name}
-            value={formValues[name]}
-            onChange={(e) => {
-              handleTextChange(e);
-              handleInputChange(e);
-            }}
-            maxLength={400}
-          />
-        </Form.Item>
+        {stepsContent.slice(0, step + 1).map((item, index) => (
+          <div key={index}>
+            <Title level={3}>{item.title}</Title>
+            {index === step && item.description && (
+              <Paragraph>{item.description}</Paragraph>
+            )}
+            {index === step && (
+              <Form.Item
+                name={item.name}
+                rules={[{ required: true, message: item.message }]}
+              >
+                <TextArea
+                  rows={6}
+                  placeholder={item.placeholder}
+                  name={item.name}
+                  value={formValues[item.name]}
+                  onChange={(e) => {
+                    handleTextChange(e);
+                    handleInputChange(e);
+                  }}
+                  maxLength={400}
+                />
+              </Form.Item>
+            )}
+          </div>
+        ))}
 
         <div className="mt-6 flex items-center justify-between">
           <span>{charCount} / 400</span>
@@ -129,5 +139,4 @@ const ProfileDescriptionStep = ({onChange}) => {
 };
 
 export default ProfileDescriptionStep;
-
 
