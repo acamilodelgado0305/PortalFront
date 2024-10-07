@@ -29,7 +29,6 @@ const MultiStepForm = () => {
   };
 
   useEffect(()=>{
-    console.log(JSON.stringify(formData))
   },[formData])
 
 
