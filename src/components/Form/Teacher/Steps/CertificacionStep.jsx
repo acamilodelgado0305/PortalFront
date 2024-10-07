@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Select, Input, Checkbox, Button, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useDropzone } from "react-dropzone";
 import { uploadImage } from "../../../../services/utils.js";
 
@@ -64,7 +64,7 @@ const CertificationStep = ({ onChange }) => {
   }, [certificates, form]);
 
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles) => {}, // This will be overridden for each certificate
+    onDrop: (acceptedFiles) => { }, // This will be overridden for each certificate
     accept: "image/*,application/pdf"
   });
 
@@ -80,22 +80,31 @@ const CertificationStep = ({ onChange }) => {
   const renderFilePreview = (cert) => {
     if (!cert.fileUrl) return null;
 
-    if (cert.fileType?.startsWith('image/')) {
-      return <img src={cert.fileUrl} alt="Certificate preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />;
-    } else if (cert.fileType === 'application/pdf') {
-      return (
-        <object
-          data={cert.fileUrl}
-          type="application/pdf"
-          width="100%"
-          height="200px"
-        >
-          <p>Unable to display PDF. <a href={cert.fileUrl} target="_blank" rel="noopener noreferrer">Download PDF</a></p>
-        </object>
-      );
-    } else {
-      return <p>File uploaded: {cert.fileName}</p>;
-    }
+    return (
+      <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-md">
+        <div className="flex items-center mb-2">
+          <CheckCircleOutlined className="text-green-500 mr-2" />
+          <span className="text-green-700 font-semibold">File uploaded successfully</span>
+        </div>
+        {cert.fileType?.startsWith('image/') ? (
+          <img src={cert.fileUrl} alt="Certificate preview" className="max-w-full max-h-48 object-contain" />
+        ) : cert.fileType === 'application/pdf' ? (
+          <div>
+            <p className="mb-2">PDF uploaded: {cert.fileName}</p>
+            <object
+              data={cert.fileUrl}
+              type="application/pdf"
+              width="100%"
+              height="200px"
+            >
+              <p>Unable to display PDF. <a href={cert.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Download PDF</a></p>
+            </object>
+          </div>
+        ) : (
+          <p>File uploaded: {cert.fileName}</p>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -116,6 +125,7 @@ const CertificationStep = ({ onChange }) => {
           </Checkbox>
         </Form.Item>
 
+
         {hasCertificate && (
           <>
             {certificates.map((cert, index) => (
@@ -126,8 +136,8 @@ const CertificationStep = ({ onChange }) => {
                   label={<span className="text-lg">Subject</span>}
                   rules={[{ required: true, message: 'Please select a subject' }]}
                 >
-                  <Select 
-                    className="text-lg" 
+                  <Select
+                    className="text-lg"
                     size="large"
                     onChange={(value) => handleFieldChange(index, 'subject', value)}
                   >
@@ -163,9 +173,9 @@ const CertificationStep = ({ onChange }) => {
                     label={<span className="text-lg">Certificate Name</span>}
                     rules={[{ required: true, message: 'Please enter the certificate name' }]}
                   >
-                    <Input 
-                      className="text-lg p-3" 
-                      placeholder="Write the name exactly as it appears on your certificate" 
+                    <Input
+                      className="text-lg p-3"
+                      placeholder="Write the name exactly as it appears on your certificate"
                       onChange={(e) => handleFieldChange(index, 'customCertificate', e.target.value)}
                     />
                   </Form.Item>
@@ -178,9 +188,9 @@ const CertificationStep = ({ onChange }) => {
                       noStyle
                       rules={[{ required: true, message: 'Start year is required' }]}
                     >
-                      <Select 
-                        className="w-1/2 text-lg" 
-                        size="large" 
+                      <Select
+                        className="w-1/2 text-lg"
+                        size="large"
                         placeholder="Start year"
                         onChange={(value) => handleFieldChange(index, 'studyStart', value)}
                       >
@@ -194,9 +204,9 @@ const CertificationStep = ({ onChange }) => {
                       noStyle
                       rules={[{ required: true, message: 'End year is required' }]}
                     >
-                      <Select 
-                        className="w-1/2 text-lg" 
-                        size="large" 
+                      <Select
+                        className="w-1/2 text-lg"
+                        size="large"
                         placeholder="End year"
                         onChange={(value) => handleFieldChange(index, 'studyEnd', value)}
                       >
@@ -216,7 +226,7 @@ const CertificationStep = ({ onChange }) => {
                   <div {...getRootProps({ onClick: (event) => event.preventDefault() })}>
                     <input {...getInputProps()} />
                     <Button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
+                      className="bg-[#FFFF45] text-black px-4 py-2 rounded-md hover:bg-pink-600"
                       disabled={uploading}
                       onClick={() => {
                         const fileInput = document.createElement('input');
@@ -261,4 +271,5 @@ const CertificationStep = ({ onChange }) => {
   );
 };
 
-export default CertificationStep;
+
+export default CertificationStep

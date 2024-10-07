@@ -74,7 +74,7 @@ const Tutor = () => {
               "The energy she brings to each lesson is amazing."
             </p>
             <p className="text-gray-900 font-semibold mt-2">Ismael</p>
-            <p>English learner on Branak</p>
+            <p>English learner on Esturio</p>
           </div>
 
         </div>
