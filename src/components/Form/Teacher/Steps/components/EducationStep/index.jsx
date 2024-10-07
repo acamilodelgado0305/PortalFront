@@ -11,11 +11,15 @@ const EducationForm = (props) => {
   const { index, onRemove, list, setList, onChange } = props;
   const [currentValue, setCurrentValue] = useState(null);
   const [fileName, setFileName] = useState('');
+  const [loadingPDF, setLoadingPDF ] = useState(false)
 
   const onDrop = async (acceptedFiles) => {
-      setFileName(acceptedFiles[0].name)
+      setLoadingPDF(true)
       const response = await fileUpload(acceptedFiles, 'file');
+      setFileName(acceptedFiles[0].name)
       logChange('diplomaFile', response, index);
+      setLoadingPDF(false)
+
   };
 
  const removeDiploma = (index) =>{
@@ -112,6 +116,7 @@ const EducationForm = (props) => {
         logChange={logChange} 
         fileName={fileName}
         removeDiploma={removeDiploma}
+        loadingPDF={loadingPDF}
       />
 
       {index > 0 && (

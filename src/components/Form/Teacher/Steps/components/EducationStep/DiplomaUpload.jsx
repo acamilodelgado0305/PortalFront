@@ -1,8 +1,8 @@
 import { Button, Form } from 'antd';
-import { UploadOutlined, CloseOutlined  } from '@ant-design/icons';
+import { UploadOutlined, CloseOutlined, LoadingOutlined   } from '@ant-design/icons';
 import { useDropzone } from 'react-dropzone';
 
-const DiplomaUpload = ({ index, onDrop, fileName, removeDiploma }) => {
+const DiplomaUpload = ({ index, onDrop, fileName, removeDiploma, loadingPDF }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
@@ -24,7 +24,7 @@ const DiplomaUpload = ({ index, onDrop, fileName, removeDiploma }) => {
         
         <div {...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
-          <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
+           <Button icon={loadingPDF? <LoadingOutlined/> :<UploadOutlined />} size="large">{loadingPDF?'loading..' :'Upload Diploma'}</Button>
         </div>
         {fileName && (
           <>
@@ -34,7 +34,7 @@ const DiplomaUpload = ({ index, onDrop, fileName, removeDiploma }) => {
           <CloseOutlined
               onClick={()=> removeDiploma(index)}
               className="text-red-500 cursor-pointer"
-              style={{ fontSize: '18px', paddingLeft:'15px', color:'green' }} // Puedes ajustar el tamaño aquí
+              style={{ fontSize: '18px', paddingLeft:'15px', color:'green' }} 
             /></p>
         </>
          )}
