@@ -28,11 +28,6 @@ const MultiStepForm = () => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
-/* utilice la funcion de arriba en sustitución de ella.
-  const handleCertificationChange = (certifications) => {
-    setFormData((prevData) => ({ ...prevData, certifications }));
-  };
-*/
 
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
