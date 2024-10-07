@@ -23,9 +23,6 @@ const EducationForm = (props) => {
   logChange('diplomaFile', '', index);
  }
 
- useEffect(()=>{
-console.log('Se actualizo: '+JSON.stringify(list))
- },[list])
 
   const logChange = (field, value, index) => {
     setCurrentValue(value);
