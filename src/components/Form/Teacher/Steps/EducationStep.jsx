@@ -16,7 +16,7 @@ const EducationForm = ({ index, onRemove }) => {
   return (
     <div className="bg-gray-50 p-6 rounded-lg mb-6">
       <h3 className="text-xl font-semibold mb-4">Education {index + 1}</h3>
-      
+
       <Form.Item
         name={['education', index, 'university']}
         label={<span className="text-lg">University</span>}
@@ -92,12 +92,12 @@ const EducationForm = ({ index, onRemove }) => {
           rules={[{ required: false, message: 'Please upload your diploma' }]}
         >
           <Upload
-  accept=".jpg,.png,.pdf"
-  maxFileSize={20 * 1024 * 1024}
-  onChange={handleDiplomaUpload}
->
+            accept=".jpg,.png,.pdf"
+            maxFileSize={20 * 1024 * 1024}
+            onChange={handleDiplomaUpload}
+          >
 
-            <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
+            <Button className="bg-[#FFFF45] text-black px-4 py-2 rounded-md hover:bg-pink-600" icon={<UploadOutlined />} size="large">Upload Diploma</Button>
           </Upload>
         </Form.Item>
         <p className="text-base text-gray-600">
@@ -153,9 +153,9 @@ const EducationStep = () => {
               <EducationForm key={index} index={index} onRemove={removeEducation} />
             ))}
 
-            <Button 
-              type="dashed" 
-              onClick={addEducation} 
+            <Button
+              type="dashed"
+              onClick={addEducation}
               className="w-full text-lg h-12 mb-6"
               icon={<PlusOutlined />}
             >
