@@ -1,33 +1,22 @@
 import React, { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
-import { message } from "antd";
-import { uploadImage } from "../../../../services/utils.js";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
+import { fileUpload } from "../../../../helpers/fileUpload";
 
 const PhotoStep = ({ onChange }) => {
   const [uploading, setUploading] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState(null);
 
   const onDrop = async (acceptedFiles) => {
-    if (!acceptedFiles || acceptedFiles.length === 0) {
-      console.log("No se ha seleccionado ningún archivo");
-      return;
-    }
-    const file = acceptedFiles[0];
-    if (!file) return;
     setUploading(true);
     try {
-      const contentType = file.type || "application/octet-stream";
-      const response = await uploadImage(file, contentType);
-
-      if (response && response.url) {
-        const uploadedImageUrl = response.url;
+       const uploadedImageUrl = await fileUpload(acceptedFiles, 'image')
+      if (uploadedImageUrl) {
         setProfileImageUrl(uploadedImageUrl);
-        message.success("Photo uploaded successfully");
         onChange({ profileImageUrl: uploadedImageUrl });
       } else {
-        throw new Error(response.data?.error || "Upload failed");
+        throw new Error("Upload failed");
       }
     } catch (error) {
       console.error("Error uploading image:", error);

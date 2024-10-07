@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Steps as AntSteps, Card, Modal, message } from "antd";
 import Header from "../Header";
 import AboutStep from "./Steps/AboutStep";
@@ -9,8 +9,9 @@ import DescriptionSet from "./Steps/DescriptionStep";
 import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
+import { createTeacher } from '../../../services/teacher.services'
 
-import { createTeacher } from "../../../services/TeacherServices.js"
+
 
 const { Step } = AntSteps;
 
@@ -21,13 +22,15 @@ const MultiStepForm = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFormChange = (changedValues, allValues) => {
+
+
+  const handleFormChange = (changedValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
-  const handleCertificationChange = (certifications) => {
-    setFormData((prevData) => ({ ...prevData, certifications }));
-  };
+  useEffect(()=>{
+  },[formData])
+
 
   const countriesOfLatinAmerica = [
     { code: "ar", name: "Argentina" },
@@ -63,7 +66,12 @@ const MultiStepForm = () => {
     "Pricing",
   ];
 
+
+
   const onFinish = async () => {
+    if(currentStep != '7'){
+      return
+    }
     setIsSubmitting(true);
     try {
       await createTeacher(formData);
@@ -106,7 +114,8 @@ const MultiStepForm = () => {
       case 1:
         return <PhotoStep onChange={handleFormChange} />;
       case 2:
-        return <CertificationStep onChange={handleCertificationChange} />;
+        return <CertificationStep onChange={handleFormChange} />;
+
       case 3:
         return <EducationStep onChange={handleFormChange} />;
       case 4:

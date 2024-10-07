@@ -26,7 +26,6 @@ const PricingStep = ({ onChange }) => {
 
   useEffect(() => {
     setCommission(getCurrentCommission());
-    // Actualizamos el estado general con el valor del hourlyRate y comisión.
     onChange({
       hourlyRate,
       commissionRate: commission.rate,
