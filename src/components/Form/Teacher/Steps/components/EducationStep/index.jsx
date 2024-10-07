@@ -10,11 +10,22 @@ const { Option } = Select;
 const EducationForm = (props) => {
   const { index, onRemove, list, setList, onChange } = props;
   const [currentValue, setCurrentValue] = useState(null);
+  const [fileName, setFileName] = useState('');
 
   const onDrop = async (acceptedFiles) => {
+      setFileName(acceptedFiles[0].name)
       const response = await fileUpload(acceptedFiles, 'file');
       logChange('diplomaFile', response, index);
   };
+
+ const removeDiploma = (index) =>{
+  setFileName('')
+  logChange('diplomaFile', '', index);
+ }
+
+ useEffect(()=>{
+console.log('Se actualizo: '+JSON.stringify(list))
+ },[list])
 
   const logChange = (field, value, index) => {
     setCurrentValue(value);
@@ -102,6 +113,8 @@ const EducationForm = (props) => {
         index={index} 
         onDrop={onDrop} 
         logChange={logChange} 
+        fileName={fileName}
+        removeDiploma={removeDiploma}
       />
 
       {index > 0 && (

@@ -1,8 +1,8 @@
 import { Button, Form } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, CloseOutlined  } from '@ant-design/icons';
 import { useDropzone } from 'react-dropzone';
 
-const DiplomaUpload = ({ index, onDrop }) => {
+const DiplomaUpload = ({ index, onDrop, fileName, removeDiploma }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
@@ -21,10 +21,23 @@ const DiplomaUpload = ({ index, onDrop }) => {
         name={['education', index, 'diploma']}
         rules={[{ required: false, message: 'Please upload your diploma' }]}
       >
+        
         <div {...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
           <Button icon={<UploadOutlined />} size="large">Upload Diploma</Button>
         </div>
+        {fileName && (
+          <>
+          <p className="mt-2">Uploaded file:</p>
+          <br /> 
+          <p className='text-md text-green-500 '>{fileName}
+          <CloseOutlined
+              onClick={()=> removeDiploma(index)}
+              className="text-red-500 cursor-pointer"
+              style={{ fontSize: '18px', paddingLeft:'15px', color:'green' }} // Puedes ajustar el tamaño aquí
+            /></p>
+        </>
+         )}
       </Form.Item>
       <p className="text-base text-gray-600">
         JPG or PNG format; maximum size of 20MB.
