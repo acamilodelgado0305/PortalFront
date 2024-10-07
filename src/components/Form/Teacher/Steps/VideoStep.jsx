@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { Form, Radio } from "antd";
 import VideoUpload from "./components/VideoStep/VideoUpload.jsx";
 import VideoUrlInput from "./components/videoStep/VideoUrlInput.jsx";
@@ -6,7 +6,7 @@ import VideoPreview from "./components/videoStep/VideoPreview.jsx";
 import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
 import { fileUpload } from "../../../../helpers/fileUpload";
 
-const VideoStep = () => {
+const VideoStep = ({onChange}) => {
   const [form] = Form.useForm();
   const [videoUploadMethod, setVideoUploadMethod] = useState("file");
   const [urlPreview, setUrlPreview] = useState("");
@@ -17,6 +17,9 @@ const VideoStep = () => {
     setUrlPreview(url);
   };
 
+  useEffect(()=>{
+    onChange({'video':urlPreview})
+  },[urlPreview])
   return (
     <div className="max-w-lg mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">Video Introduction</h2>

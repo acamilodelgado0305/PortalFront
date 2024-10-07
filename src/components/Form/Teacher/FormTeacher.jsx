@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Steps as AntSteps, Card, Modal, message } from "antd";
 import Header from "../Header";
 import AboutStep from "./Steps/AboutStep";
@@ -27,6 +27,10 @@ const MultiStepForm = () => {
   const handleFormChange = (changedValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
+
+  useEffect(()=>{
+    console.log(JSON.stringify(formData))
+  },[formData])
 
 
   const countriesOfLatinAmerica = [

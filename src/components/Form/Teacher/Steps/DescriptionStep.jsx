@@ -68,7 +68,7 @@ const ProfileDescriptionStep = ({ onChange }) => {
   };
 
   useEffect(() => {
-    onChange({ description: formValues });
+    onChange({ 'description': formValues });
   }, [formValues]);
 
   return (

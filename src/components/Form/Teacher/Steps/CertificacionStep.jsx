@@ -13,8 +13,8 @@ const CertificationStep = ({ onChange }) => {
   const [certificates, setCertificates] = useState([{}]);
 
   useEffect(() => {
-    onChange(certificates);
-  }, [certificates, onChange]);
+   onChange({'certifications':certificates});
+  }, [certificates]);
 
   const addCertificate = () => {
     setCertificates([...certificates, {}]);
