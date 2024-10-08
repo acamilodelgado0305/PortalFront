@@ -25,7 +25,7 @@ function Target({ number }) {
     3: "https://randomuser.me/api/portraits/men/45.jpg",
   };
   return (
-    <div className="h-auto w-full rounded-lg p-14 shadow-lg">
+    <div className="bg-[#E8E8E8] h-auto w-full rounded-lg p-14 shadow-lg">
       <div className="mb-6 flex flex-col">
         {number in badgeColors && (
           <div
@@ -42,7 +42,7 @@ function Target({ number }) {
       ) : (
         <div className="flex justify-center">
           <img
-            className="mx-5 h-full w-full rounded-lg border border-white"
+            className="mx-5 h-full w-full rounded-lg"
             src={img[number]}
             alt={number === 2 ? "Tutor teaching" : "Tutor working with student"}
           />

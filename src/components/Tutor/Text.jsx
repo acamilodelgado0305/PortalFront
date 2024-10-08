@@ -2,7 +2,7 @@ function Text() {
   const windowWidth = window.innerWidth;
   const isWideScreen = windowWidth < 800;
   return (
-    <div className="flex flex-col justify-center md:w-1/2 h-[14rem] ml-32" style={{marginTop:isWideScreen && '-180px'}}>
+    <div className="flex flex-col justify-center md:w-1/2 h-[10rem] ml-32" style={{marginTop:isWideScreen && '-180px'}}>
             <p className="text-3xl font-bold italic text-blue-900">
               "The energy she brings to each lesson is amazing."
             </p>
