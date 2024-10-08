@@ -10,18 +10,18 @@ const Landing = () => {
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Header fijo */}
-      <header className="fixed top-0 left-0 right-0 bg-[#7BD8FF] p-4 flex justify-between items-center z-50">
+      <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between bg-[#7BD8FF] p-4">
         <div></div>
         <div>
           <Link
             to="/signup"
-            className="bg-[#5CEFFF] text-black px-4 py-2 rounded mr-4"
+            className="mr-4 rounded bg-[#5CEFFF] px-4 py-2 text-black"
           >
             Sign Up
           </Link>
           <Link
             to="/signin"
-            className="bg-[#FFFF45] text-black px-4 py-2 rounded"
+            className="rounded bg-[#FFFF45] px-4 py-2 text-black"
           >
             Sign In
           </Link>
@@ -29,9 +29,9 @@ const Landing = () => {
       </header>
 
       {/* Main content */}
-      <main className="flex flex-col items-start justify-center min-h-screen mt-15.5">
+      <main className="mt-15.5 flex min-h-screen flex-col items-start justify-center">
         <div
-          className="flex flex-col items-start justify-center w-full"
+          className="flex w-full flex-col items-start justify-center"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: "cover",
@@ -39,33 +39,32 @@ const Landing = () => {
             height: "100vh",
           }}
         >
-          <div className="text-start text-white p-8 mt-20">
-            <h1 className="text-5xl font-bold mb-4">
+          <div className="mt-20 p-8 text-start text-white">
+            <h1 className="mb-4 text-5xl font-bold">
               Elije un buen maestro en 5 minutos
             </h1>
             <p className="text-white-300 mb-6">El contacto es gratuito</p>
           </div>
-
-          <div className="pl-6 space-y-6 w-29">
+          <div className="w-29 space-y-6 pl-6">
             <Link to="/register/student">
-              <button className="bg-[#FFFF45] text-black px-6 py-2 rounded-2xl w-full">
+              <button className="h-[45px] w-[125px] w-full rounded-2xl bg-[#FFFF45] px-6 py-2 text-lg text-black">
                 Aprende
               </button>
             </Link>
 
             <div>
               <Link to="/register/teacher">
-                <button className="bg-[#5CEFFF] text-black px-6 py-2 rounded-2xl w-full">
+                <button className="h-[45px] w-[125px] rounded-2xl bg-[#5CEFFF] px-6 py-2 text-lg text-black">
                   Enseña
                 </button>
               </Link>
             </div>
           </div>
 
-          <div className="flex items-end justify-end h-[18em] w-full">
+          <div className="flex h-[18em] w-full items-end justify-end">
             <div className="mr-4">
               <Link to="/form">
-                <button className="bg-purple-500 text-white px-6 py-2 rounded-2xl w-full">
+                <button className="w-full rounded-2xl bg-purple-500 px-6 py-2 text-white">
                   Anuncia lo que buscas
                 </button>
               </Link>
