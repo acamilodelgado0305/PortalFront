@@ -65,7 +65,7 @@ const Landing = () => {
           <div className="flex items-end justify-end h-[18em] w-full">
             <div className="mr-4">
               <Link to="/form">
-                <button className="bg-purple-500 text-white px-6 py-2 rounded-full w-full">
+                <button className="bg-purple-500 text-white px-6 py-2 rounded-2xl w-full">
                   Anuncia lo que buscas
                 </button>
               </Link>
