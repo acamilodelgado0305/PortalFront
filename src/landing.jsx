@@ -77,8 +77,8 @@ const Landing = () => {
 
         {/* <TeacherBanner /> */}
         {/* <Steps /> */}
-        <HowBranakWorks />
-        {/* <Tutor /> */}
+        {/* <HowBranakWorks /> */}
+        <Tutor />
         {/* <Subject /> */}
       </main>
     </div>
