@@ -1,6 +1,6 @@
 import OptionTutor from "./OptionTutor"
 
-function FirstTarget({number, title, description, img}) {
+function Target({number, title, description, img}) {
   return (
     <div className="bg-white border border-black rounded-lg shadow-md p-14 w-full h-auto lg:w-[720px] lg:h-[720px]">
     <div className="flex flex-col mb-6">
@@ -45,4 +45,4 @@ function FirstTarget({number, title, description, img}) {
   )
 }
 
-export default FirstTarget
+export default Target
