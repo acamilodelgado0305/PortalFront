@@ -39,13 +39,13 @@ const Landing = () => {
             height: "100vh",
           }}
         >
-          <div className="mt-20 p-8 text-start text-white">
+          <div className="mt-20 p-20 text-start text-white">
             <h1 className="mb-4 text-5xl font-bold">
               Elije un buen maestro en 5 minutos
             </h1>
             <p className="text-white-300 mb-6">El contacto es gratuito</p>
           </div>
-          <div className="w-29 space-y-6 pl-6">
+          <div className="w-29 space-y-6 pl-20">
             <Link to="/register/student">
               <button className="h-[45px] w-[125px] w-full rounded-2xl bg-[#FFFF45] px-6 py-2 text-lg text-black">
                 Aprende
@@ -62,9 +62,9 @@ const Landing = () => {
           </div>
 
           <div className="flex h-[18em] w-full items-end justify-end">
-            <div className="mr-4">
+            <div className="mr-12">
               <Link to="/form">
-                <button className="w-full rounded-2xl bg-purple-500 px-6 py-2 text-white">
+                <button className="w-full h-[45px] rounded-2xl bg-purple-500 px-6 py-2 text-white text-lg ">
                   Anuncia lo que buscas
                 </button>
               </Link>
@@ -75,7 +75,7 @@ const Landing = () => {
         <TeacherBanner />
         <Steps />
         <HowBranakWorks />
-        <Tutor />
+        <Tutor />     
         <Subject />
       </main>
     </div>
