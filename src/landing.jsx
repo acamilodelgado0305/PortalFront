@@ -75,11 +75,11 @@ const Landing = () => {
           </div>
         </div>
 
-        <TeacherBanner />
-        <Steps />
+        {/* <TeacherBanner /> */}
+        {/* <Steps /> */}
         <HowBranakWorks />
-        <Tutor />
-        <Subject />
+        {/* <Tutor /> */}
+        {/* <Subject /> */}
       </main>
     </div>
   );
