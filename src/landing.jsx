@@ -37,8 +37,7 @@ const Landing = () => {
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
-            height: "800px",
-            marginTop: "-4em",
+            height: "100vh",
           }}
         >
           <div className="text-start text-white p-8 mt-20">
@@ -50,14 +49,14 @@ const Landing = () => {
 
           <div className="pl-6 space-y-6 w-29">
             <Link to="/register/student">
-              <button className="bg-[#FFFF45] text-black px-6 py-2 rounded w-full">
+              <button className="bg-[#FFFF45] text-black px-6 py-2 rounded-full w-full">
                 Aprende
               </button>
             </Link>
 
             <div>
               <Link to="/register/teacher">
-                <button className="bg-[#5CEFFF] text-black px-6 py-2 rounded w-full">
+                <button className="bg-[#5CEFFF] text-black px-6 py-2 rounded-full w-full">
                   Enseña
                 </button>
               </Link>
@@ -67,7 +66,7 @@ const Landing = () => {
           <div className="flex items-end justify-end h-[18em] w-full">
             <div className="mr-4">
               <Link to="/form">
-                <button className="bg-purple-500 text-white px-6 py-2 rounded w-full">
+                <button className="bg-purple-500 text-white px-6 py-2 rounded-full w-full">
                   Anuncia lo que buscas
                 </button>
               </Link>
