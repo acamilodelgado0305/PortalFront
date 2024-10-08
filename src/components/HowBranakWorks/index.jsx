@@ -2,23 +2,23 @@ import React from "react";
 
 const HowBranakWorks = () => {
   return (
-    <div className="bg-white w-full flex flex-col items-center">
-      <div className=" justify-center w-full lg:w-[1200px] xl:w-[2600px] max-w-screen-4xl px-4">
+    <div className="bg-white w-full flex flex-col items-center overflow-hidden">
+      <div className="justify-center w-full xl:max-w-screen-xl px-4">
 
         <div className="mb-14 p-4 w-full">
-          <h2 className="text-6xl lg:text-8xl font-bold text-gray-900 text-left">How Branak works:</h2>
+          <h2 className="text-6xl xl:text-8xl font-bold text-gray-900 text-left">How Branak works:</h2>
         </div>
 
-        <div className=" flex flex-col lg:flex-row gap-6  w-full">
-
-          <div className="bg-white border border-black rounded-lg shadow-md p-14 w-full h-auto lg:w-[720px] lg:h-[920px]">
+        <div className="flex flex-col xl:flex-row xl:flex-wrap gap-6 w-full">
+          
+          <div className="bg-white border border-black rounded-lg shadow-md p-7 sm:p-14 w-full xl:w-[31%] h-auto xl:h-[920px]">
             <div className="flex flex-col mb-6">
               <div className="bg-green-300 text-black font-bold text-5xl w-16 h-16 rounded-md flex items-center justify-center mb-3">
                 1
               </div>
-              <h3 className="text-4xl lg:text-6xl font-bold">Find your tutor.</h3>
+              <h3 className="text-4xl xl:text-6xl font-bold">Find your tutor.</h3>
             </div>
-            <p className="text-lg lg:text-3xl mb-6">
+            <p className="text-lg xl:text-3xl mb-6">
               We'll connect you with a tutor who will motivate, challenge, and inspire you.
             </p>
             <div className="border border-black rounded-lg p-4 mb-4">
@@ -53,14 +53,14 @@ const HowBranakWorks = () => {
             </div>
           </div>
 
-          <div className="bg-white border border-black rounded-lg shadow-md p-14 w-full h-auto lg:w-[720px] lg:h-[920px]">
+          <div className="bg-white border border-black rounded-lg shadow-md p-7 sm:p-14 w-full xl:w-[31%] h-auto xl:h-[920px]">
             <div className="flex flex-col mb-6">
               <div className="bg-yellow-300 text-black font-bold text-5xl w-16 h-16 rounded-md flex items-center justify-center mb-3">
                 2
               </div>
-              <h3 className="text-4xl lg:text-6xl font-bold">Start learning.</h3>
+              <h3 className="text-4xl xl:text-6xl font-bold">Start learning.</h3>
             </div>
-            <p className="text-lg lg:text-3xl mb-6">
+            <p className="text-lg xl:text-3xl mb-6">
               Your tutor will guide the way through your first lesson and help you plan your next steps.
             </p>
             <div className="flex justify-center">
@@ -72,14 +72,14 @@ const HowBranakWorks = () => {
             </div>
           </div>
 
-          <div className="bg-white border border-black rounded-lg shadow-md p-14 w-full h-auto lg:w-[720px] lg:h-[920px]">
+          <div className="bg-white border border-black rounded-lg shadow-md p-7 sm:p-14 w-full xl:w-[31%] h-auto xl:h-[1000px]">
             <div className="flex flex-col mb-6">
               <div className="bg-blue-500 text-black font-bold text-5xl w-16 h-16 rounded-md flex items-center justify-center mb-3">
                 3
               </div>
-              <h3 className="text-4xl lg:text-6xl font-bold">Speak. Read. Write. Repeat.</h3>
+              <h3 className="text-4xl xl:text-6xl font-bold">Speak. Read. Write. Repeat.</h3>
             </div>
-            <p className="text-lg lg:text-3xl mb-6">
+            <p className="text-lg xl:text-3xl mb-6">
               Choose how many lessons you want to take each week and get ready to reach your goals!
             </p>
             <div className="flex justify-center">
@@ -90,7 +90,7 @@ const HowBranakWorks = () => {
             />
             </div>
           </div>
-          
+
         </div>
       </div>
     </div>

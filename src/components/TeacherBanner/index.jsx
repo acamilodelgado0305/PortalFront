@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 
 const TeacherBanner = () => {
   return (
-    <div className="bg-purple-100 relative p-8 h-auto w-full flex items-center rounded-lg shadow-lg">
+    <div className="bg-purple-100 relative p-8 h-auto w-full flex flex-col items-center rounded-lg shadow-lg sm:flex-row">
       <div className="">
         <img src={PurpleGreenForm} alt="Banner" className="w-96" />
       </div>
 
-      <div className="pl-14">
+      <div className="sm:pl-14">
         {/* Asegurarse de envolver el contenido en un solo Link */}
         <Link to="/register/teacher">
           <div>

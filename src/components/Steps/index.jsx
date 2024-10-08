@@ -12,7 +12,7 @@ const Steps = () => {
         </p>
       </div>
 
-      <div className="flex justify-center gap-6">
+      <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-xs">
           <h3 className="text-6xl font-bold text-purple-500">1</h3>
           <h4 className="text-3xl font-bold text-blue-900 mt-4">Reserva una clase de prueba</h4>
