@@ -48,14 +48,14 @@ const Landing = () => {
 
           <div className="pl-6 space-y-6 w-29">
             <Link to="/register/student">
-              <button className="bg-[#FFFF45] text-black px-6 py-2 rounded-full w-full">
+              <button className="bg-[#FFFF45] text-black px-6 py-2 rounded-2xl w-full">
                 Aprende
               </button>
             </Link>
 
             <div>
               <Link to="/register/teacher">
-                <button className="bg-[#5CEFFF] text-black px-6 py-2 rounded-full w-full">
+                <button className="bg-[#5CEFFF] text-black px-6 py-2 rounded-2xl w-full">
                   Enseña
                 </button>
               </Link>
