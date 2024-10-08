@@ -1,5 +1,3 @@
-import React from "react";
-
 const Steps = () => {
   return (
     <div className="bg-white py-12 px-4 h-auto w-full">
