@@ -7,7 +7,7 @@ const Tutor = () => {
     <div className="bg-white h-auto w-full pb-20">
       <div className="bg-white max-w-screen-lg mx-auto p-4 h-auto w-full mb-10">
         <Title/>
-        <div className="flex flex-col lg:flex-row items-center">
+      <div className="flex flex-col lg:flex-row items-center" style={{marginTop:'-20px'}}>
          <Images />
          <Text/>
         </div>
