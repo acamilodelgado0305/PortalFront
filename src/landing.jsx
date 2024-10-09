@@ -40,10 +40,10 @@ const Landing = () => {
           }}
         >
           <div className="mt-20 p-20 text-start text-white">
-            <h1 className="mb-4 text-5xl font-bold">
+            <h1 className="mb-4 text-[4.1rem] font-bold">
               Elije un buen maestro en 5 minutos
             </h1>
-            <p className="text-white-300 mb-6">El contacto es gratuito</p>
+            <p className="text-white-300 mb-6 text-[26px]">El contacto es gratuito</p>
           </div>
           <div className="w-29 space-y-6 pl-20">
             <Link to="/register/student">
