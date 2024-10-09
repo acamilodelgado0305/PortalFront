@@ -25,7 +25,7 @@ function Target({ number }) {
     3: "https://randomuser.me/api/portraits/men/45.jpg",
   };
   return (
-    <div className="bg-[#F3E8FF] h-auto w-full rounded-lg p-14 shadow-lg">
+    <div className="bg-[#d2edf7] h-auto w-full rounded-lg p-14 shadow-lg">
       <div className="mb-6 flex flex-col">
         {number in badgeColors && (
           <div

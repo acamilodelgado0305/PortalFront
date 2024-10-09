@@ -21,7 +21,7 @@ const Subject = () => {
       <div className="max-w-screen-lg mx-auto ">
 
       <div className="text-center mb-8 ">
-        <h2 className="text-4xl font-bold text-blue-800">Asignaturas más solicitadas</h2>
+        <h2 className="text-4xl font-bold text-[#3b82f6]">Asignaturas más solicitadas</h2>
         <p className="mt-2"> Matemáticas, Física... Recibe clases particulares de apoyo en más de 30 asignaturas</p>
       </div>
 
