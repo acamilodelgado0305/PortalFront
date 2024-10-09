@@ -6,7 +6,10 @@ import HowBranakWorks from "./components/HowBranakWorks";
 import Tutor from "./components/Tutor";
 import Subject from "./components/Subject";
 
+import './landing.css'
+
 const Landing = () => {
+
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Header fijo */}
@@ -30,16 +33,10 @@ const Landing = () => {
 
       {/* Main content */}
       <main className="mt-15.5 flex min-h-screen flex-col items-start justify-center">
-        <div
-          className="flex w-full flex-col items-start justify-center"
-          style={{
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            height: "100vh",
-          }}
-        >
-          <div className="mt-20 p-20 text-start text-white">
+      <div
+      className="landing_background flex w-full flex-col items-start justify-center"
+      style={{ backgroundImage: `url(${backgroundImage})` }} // Mantén la imagen en línea
+    >     <div className="mt-20 p-20 text-start text-white">
             <h1 className="mb-4 text-[4.1rem] font-bold">
               Elije un buen maestro en 5 minutos
             </h1>
