@@ -47,14 +47,14 @@ const Landing = () => {
           </div>
           <div className="w-29 space-y-6 pl-20">
             <Link to="/register/student">
-              <button className="h-[45px] w-[125px] w-full rounded-2xl bg-[#FFFF45] px-6 py-2 text-lg text-black">
+              <button className="h-[47px] w-[145px] w-full rounded-2xl bg-[#FFFF45] px-6 py-2 text-[1.3rem] text-black">
                 Aprende
               </button>
             </Link>
 
             <div>
               <Link to="/register/teacher">
-                <button className="h-[45px] w-[125px] rounded-2xl bg-[#5CEFFF] px-6 py-2 text-lg text-black">
+                <button className="h-[47px] w-[145px] rounded-2xl bg-[#5CEFFF] px-6 py-2 text-[1.3rem] text-black">
                   Enseña
                 </button>
               </Link>
@@ -64,7 +64,7 @@ const Landing = () => {
           <div className="flex h-[18em] w-full items-end justify-end">
             <div className="mr-12">
               <Link to="/form">
-                <button className="w-full h-[45px] rounded-2xl bg-purple-500 px-6 py-2 text-white text-lg ">
+                <button className="w-full h-[47px] rounded-2xl bg-purple-500 px-6 py-2 text-white text-[1.3rem]  ">
                   Anuncia lo que buscas
                 </button>
               </Link>
