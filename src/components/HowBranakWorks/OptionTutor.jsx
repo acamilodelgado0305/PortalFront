@@ -1,7 +1,7 @@
 const TutorCard = (props) => {
     const { imgSrc, name, subject, rating, languages } = props;
     return (
-      <div className={`border border-gray rounded-lg p-4 mb-4`}>
+      <div className={`bg-white rounded-lg p-4 mb-4`}>
         <div className="flex items-center mb-2">
           <img className="w-12 h-12 rounded-md mr-3" src={imgSrc} alt={`Tutor ${name}`} />
           <div>
