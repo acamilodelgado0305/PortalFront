@@ -25,7 +25,7 @@ function Images() {
           width: isWideScreen ? '200px' : '400px',
           height: isWideScreen ? '200px' : '400px',
           top: '50px',
-          left: isWideScreen ? '-50px' : '60px',
+          left: '60px',
           zIndex: 1
         }}
       >
@@ -41,7 +41,7 @@ function Images() {
           width: isWideScreen ? '200px' : '400px',
           height: isWideScreen ? '250px' : '450px',
           top: '25px',
-          left: isWideScreen ? '-20px' : '90px',
+          left: '90px',
           zIndex: 2
         }}
       >
@@ -57,7 +57,7 @@ function Images() {
           width: isWideScreen ? '200px' : '400px',
           height: isWideScreen ? '300px' : '500px',
           top: '0',
-          left: isWideScreen ? '10px' : '120px',
+          left: '120px',
           zIndex: 3
         }}
       >
