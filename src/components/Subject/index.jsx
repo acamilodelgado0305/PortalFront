@@ -29,7 +29,7 @@ const Subject = () => {
         {subjects.map((subject, index) => (
           <div
             key={index}
-            className="flex flex-col items-center p-4 border border-blue-800 rounded-md shadow-lg transition-shadow"
+            className="flex flex-col items-center p-4 md:p-4 border border-blue-800 rounded-md shadow-lg transition-shadow"
           >
             <div className="text-4xl mb-2">{subject.icon}</div>
             <p className="text-blue-600 font-semibold">{subject.name}</p>
