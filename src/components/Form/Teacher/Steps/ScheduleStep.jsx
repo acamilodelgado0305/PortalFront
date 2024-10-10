@@ -71,7 +71,7 @@ React.useEffect(()=>{
 
       <Form form={form}  layout="vertical">
         {daysOfWeek.map(day => (
-          <Card key={day} className="mb-4" title={
+          <Card key={day} className="mb-4  border-2 border-black rounded-md" title={
             <div className="flex justify-between items-center">
               <span>{day}</span>
               <Switch

@@ -95,6 +95,7 @@ const ProfileDescriptionStep = ({ onChange }) => {
                 rules={[{ required: true, message: item.message }]}
               >
                 <TextArea
+                className="text-lg border-2 border-black rounded-md"
                   rows={6}
                   placeholder={item.placeholder}
                   name={item.name}

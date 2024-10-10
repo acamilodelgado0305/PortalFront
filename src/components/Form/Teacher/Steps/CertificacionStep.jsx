@@ -67,7 +67,7 @@ const CertificationStep = ({ onChange }) => {
   );
 
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles) => {}, // This will be overridden for each certificate
+    onDrop: (acceptedFiles) => { }, // This will be overridden for each certificate
     accept: "image/*,application/pdf",
   });
 
@@ -162,7 +162,7 @@ const CertificationStep = ({ onChange }) => {
                   ]}
                 >
                   <Select
-                    className="text-lg"
+                    className="text-lg border-2 border-black rounded-md"
                     size="large"
                     onChange={(value) =>
                       handleFieldChange(index, "subject", value)
@@ -185,7 +185,7 @@ const CertificationStep = ({ onChange }) => {
                   ]}
                 >
                   <Select
-                    className="text-lg"
+                    className="text-lg border-2 border-black rounded-md"
                     size="large"
                     onChange={(value) => {
                       handleFieldChange(index, "certification", value);
@@ -205,6 +205,27 @@ const CertificationStep = ({ onChange }) => {
                   </Select>
                 </Form.Item>
 
+                <Form.Item
+                  name={["issuedby", index, "issuedby"]}
+                  label={<span className="text-lg">Issued by</span>}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please write",
+                    },
+                  ]}
+                >
+                  <Input
+                    className="text-lg border-2 border-black rounded-md"
+                    size="large"
+                    onChange={(e) => {
+                      const value = e.target.value; // Obtener el valor del input
+                      handleFieldChange(index, "certification", value);
+                      handleFieldChange(index, "certificateNotListed", value === "not_listed");
+                    }}
+                  />
+                </Form.Item>
+
                 {cert.certificateNotListed && (
                   <Form.Item
                     name={["certificates", index, "customCertificate"]}
@@ -217,7 +238,7 @@ const CertificationStep = ({ onChange }) => {
                     ]}
                   >
                     <Input
-                      className="p-3 text-lg"
+                      className="text-lg border-2 border-black rounded-md"
                       placeholder="Write the name exactly as it appears on your certificate"
                       onChange={(e) =>
                         handleFieldChange(
@@ -243,7 +264,7 @@ const CertificationStep = ({ onChange }) => {
                       ]}
                     >
                       <Select
-                        className="w-1/2 text-lg"
+                        className="w-1/2 text-lg border-2 border-black rounded-md"
                         size="large"
                         placeholder="Start year"
                         onChange={(value) =>
@@ -265,7 +286,7 @@ const CertificationStep = ({ onChange }) => {
                       ]}
                     >
                       <Select
-                        className="w-1/2 text-lg"
+                        className="w-1/2 text-lg border-2 border-black rounded-md"
                         size="large"
                         placeholder="End year"
                         onChange={(value) =>
@@ -300,7 +321,7 @@ const CertificationStep = ({ onChange }) => {
                         onClick: (event) => event.stopPropagation(),
                         onChange: (e) => onDrop(e.target.files, index),
                       })}
-                      style={{ display: "none" }} 
+                      style={{ display: "none" }}
                     />
                     <Button
                       className="rounded-md bg-[#FFFF45] px-4 py-2 text-black hover:bg-pink-600"
