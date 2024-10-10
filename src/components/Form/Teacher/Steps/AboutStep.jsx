@@ -3,10 +3,11 @@ import { Form, Input, Select, Checkbox } from 'antd';
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { allCountries } from '../../../../services/allcountries';
 
 const { Option } = Select;
 
-const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
+const AboutStep = ({ onChange }) => {
   const handleValuesChange = (changedValues) => {
     onChange(changedValues);
   };
@@ -28,7 +29,7 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
             <Input
               prefix={<UserOutlined className="text-gray-400" />}
               placeholder="Your first name"
-              className="text-lg p-3 border-2 border-gray-300 rounded-md"
+              className="text-lg p-3 border-2 border-black rounded-md"
             />
           </Form.Item>
 
@@ -40,7 +41,7 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
             <Input
               prefix={<UserOutlined className="text-gray-400" />}
               placeholder="Your last name"
-              className="text-lg p-3 border-2 border-gray-300 rounded-md"
+              className="text-lg p-3 border-2 border-black rounded-md"
             />
           </Form.Item>
         </div>
@@ -53,7 +54,7 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
           <Input
             prefix={<MailOutlined className="text-gray-400" />}
             placeholder="Your email address"
-            className="text-lg p-3 border-2 border-gray-300 rounded-md"
+            className="text-lg p-3 border-2 border-black rounded-md"
           />
         </Form.Item>
 
@@ -64,10 +65,10 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
         >
           <Select
             placeholder="Select your country of birth"
-            className="text-lg border-2 border-gray-300 rounded-md"
+            className="text-lg border-2 border-black rounded-md"
             size="large"
           >
-            {countriesOfLatinAmerica.map((country) => (
+            {allCountries.map((country) => (
               <Option key={country.code} value={country.code}>
                 {country.name}
               </Option>
@@ -82,7 +83,7 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
         >
           <Select
             placeholder="Select the subject you teach"
-            className="text-lg border-2 border-gray-300 rounded-md"
+            className="text-lg border-2 border-black rounded-md"
             size="large"
           >
             <Option value="math">Mathematics</Option>
@@ -92,13 +93,13 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
-            label={<span className="text-lg font-medium">Language</span>}
+            label={<span className="text-lg font-medium">Languages you speak</span>}
             name="language"
             rules={[{ required: true, message: 'Please select your language!' }]}
           >
             <Select
               placeholder="Select your language"
-              className="text-lg border-2 border-gray-300 rounded-md"
+              className="text-lg border-2 border-black rounded-md"
               size="large"
             >
               <Option value="english">English</Option>
@@ -113,7 +114,7 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
           >
             <Select
               placeholder="Select your level"
-              className="text-lg border-2 border-gray-300 rounded-md"
+              className="text-lg border-2 border-black rounded-md"
               size="large"
             >
               <Option value="native">Native</Option>
@@ -133,8 +134,14 @@ const AboutStep = ({ countriesOfLatinAmerica, onChange }) => {
             country={'us'}
             placeholder="Your phone number"
             containerClass="text-lg"
-            inputStyle={{ width: '100%', height: '48px', fontSize: '18px' }}
+            inputStyle={{
+              width: '100%',
+              height: '48px',
+              fontSize: '18px',
+              border: '1px solid black' 
+            }}
           />
+
         </Form.Item>
 
         <Form.Item name="isOver18" valuePropName="checked">
