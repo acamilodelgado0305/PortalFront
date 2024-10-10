@@ -63,6 +63,7 @@ const PricingStep = ({ onChange }) => {
       <Form form={form} layout="vertical">
         <Form.Item name="hourlyRate" label="Hourly Rate (USD)">
           <InputNumber
+          className='text-lg border-2 border-black rounded-md'
             min={1}
             max={200}
             value={hourlyRate}
