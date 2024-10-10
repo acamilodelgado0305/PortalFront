@@ -138,7 +138,7 @@ const AboutStep = ({ onChange }) => {
               width: '100%',
               height: '48px',
               fontSize: '18px',
-              border: '1px solid black' 
+              border: '2px solid black' 
             }}
           />
 

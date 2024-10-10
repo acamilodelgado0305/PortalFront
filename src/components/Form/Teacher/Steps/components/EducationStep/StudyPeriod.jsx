@@ -12,7 +12,7 @@ const StudyPeriod = ({ index, logChange }) => (
         rules={[{ required: true, message: 'Start year is required' }]}
       >
         <Select 
-          className="w-1/2 text-lg" 
+          className="w-1/2 text-lg border-2 border-black rounded-md" 
           size="large" 
           placeholder="Start year" 
           onSelect={(value) => logChange('studyStart', value, index)}
@@ -28,7 +28,7 @@ const StudyPeriod = ({ index, logChange }) => (
         rules={[{ required: true, message: 'End year is required' }]}
       >
         <Select 
-          className="w-1/2 text-lg" 
+          className="w-1/2 text-lg border-2 border-black rounded-md" 
           size="large" 
           placeholder="End year" 
           onSelect={(value) => logChange('studyEnd', value, index)}
