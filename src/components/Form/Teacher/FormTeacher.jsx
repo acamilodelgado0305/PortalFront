@@ -11,6 +11,7 @@ import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 import { createTeacher } from '../../../services/teacher.services'
 
+import './FormTeacher.css'
 
 
 const { Step } = AntSteps;
@@ -86,7 +87,6 @@ const MultiStepForm = () => {
 
   const handleModalOk = () => {
     setIsModalVisible(false);
-    // Reset form or redirect to another page
     form.resetFields();
     setCurrentStep(0);
     setFormData({});
@@ -135,7 +135,7 @@ const MultiStepForm = () => {
     <div>
       <Header />
       <div className="p-4 bg-gray-200 mb-6">
-        <AntSteps current={currentStep}>
+        <AntSteps current={currentStep} >
           {stepTitles.map((title) => (
             <Step key={title} title={title} />
           ))}
@@ -154,7 +154,7 @@ const MultiStepForm = () => {
             className="space-y-6"
           >
             {getCurrentStepContent()}
-            <div className="flex justify-between mt-6">
+            <div className={`flex mt-6 ${currentStep === 0 ? 'justify-end' : 'justify-between'}`}>
               {currentStep > 0 && (
                 <Button
                   onClick={prev}
