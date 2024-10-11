@@ -6,3 +6,12 @@ export const extractVideoId = (url, platform) => {
     const matches = url.match(regexes[platform]);
     return matches ? matches[1] : null;
   };
+
+  export const extractPlatform = (url) => {
+    if (/youtube\.com|youtu\.be/.test(url)) {
+      return 'Youtube';
+    } else if (/vimeo\.com/.test(url)) {
+      return 'Vimeo';
+    }
+    return null; // Add logic for other platforms if needed
+  };
