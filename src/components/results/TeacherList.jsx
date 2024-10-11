@@ -41,12 +41,16 @@ function TeacherList({ teachers = [], openModal }) {
               <div className="flex items-center gap-[40%]  md:justify-between ">
                 <h2 className="pb-2 pt-6 text-lg font-semibold">
                   {teacher.firstName} {teacher.lastName}
-                </h2>
-                <p className="text-xl text-gray-600">
-                  Tarifa:{" "}
-                  <span className="font-semibold">${teacher.hourlyRate}</span>
-                </p>
+                </h2>        
               </div>
+             <div className="relative">
+                  <p className="absolute right-5  text-xl text-gray-600">
+                    Tarifa:{" "}
+                    <span className="font-semibold">${teacher.hourlyRate}</span>
+                  </p>
+                </div>
+
+                
               <p className="mt-2 text-[17px] text-sm text-gray-500">
                 <span className="text-[#8f34ea]">Country:</span>{" "}
                 {country ? country.name : "No country info"}
