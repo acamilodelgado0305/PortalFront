@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   svgProfessional,
@@ -11,6 +11,8 @@ import {
   svgFlagUK,
   svgDominicanRepublic,
 } from "./icons";
+import { useNavigate } from 'react-router-dom';
+
 
 const questions = [
   {
@@ -30,9 +32,7 @@ const questions = [
       { text: "Soy principiante" },
       { text: "Conozco lo básico" },
       { text: "Puedo conversar" },
-      {
-        text: "Me desenvuelvo con soltura en la mayoría de las conversaciones",
-      },
+      { text: "Me desenvuelvo con soltura en la mayoría de las conversaciones" },
     ],
   },
   {
@@ -61,11 +61,11 @@ const questions = [
     id: 5,
     question: "¿Cuándo te vienen bien las clases?",
     options: [
-      { text: "Inglés estadounidense" },
-      { text: "Inglés de negocios" },
-      { text: "Inglés conversacional" },
-      { text: "BEC" },
-      { text: "Inglés para niños" },
+      { text: "Mañanas" },
+      { text: "Tardes" },
+      { text: "Noches" },
+      { text: "Fines de semana" },
+      { text: "Horario flexible" },
     ],
   },
   {
@@ -79,10 +79,37 @@ const questions = [
   },
 ];
 
+function LoadingModal({ isOpen }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
+      <div className="bg-white p-5 rounded-lg flex flex-col items-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
+        <p className="mt-4 text-lg font-semibold text-purple-600">Cargando...</p>
+      </div>
+    </div>
+  );
+}
+
 function FormStudent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [budget, setBudget] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedAnswers = localStorage.getItem('studentPreferences');
+    if (savedAnswers) {
+      setAnswers(JSON.parse(savedAnswers));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('studentPreferences', JSON.stringify(answers));
+  }, [answers]);
 
   const handleOptionSelected = (option) => {
     const newAnswers = [...answers];
@@ -94,8 +121,17 @@ function FormStudent() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      console.log("Final answers: ", answers);
+      finishForm();
     }
+  };
+
+  const finishForm = () => {
+    setIsLoading(true);
+    // Simulate an API call or processing time
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsFormComplete(true);
+    }, 2000); // Adjust the timeout as needed
   };
 
   const handleBack = () => {
@@ -113,10 +149,20 @@ function FormStudent() {
     setAnswers(newAnswers);
   };
 
+  const renderProgressBar = () => {
+    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+    return (
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+        <div className="bg-purple-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen flex flex-col justify-center bg-purple-400">
+    <div className="min-h-screen flex flex-col justify-center bg-gradient-to-r from-cyan-500 to-blue-500">
+      <LoadingModal isOpen={isLoading} />
       <button
-        onClick={handleBack}
+        onClick={() => navigate(-1)}
         className="absolute top-20 left-20 bg-transparent text-white font-bold text-5xl"
       >
         ←
@@ -135,8 +181,9 @@ function FormStudent() {
           </h1>
         </div>
 
-        <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center">
-          <div className="flex-grow space-y-6 flex-col items-center mt-96 mx-6 ">
+        <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center rounded-l-3xl">
+          {renderProgressBar()}
+          <div className="flex-grow space-y-6 flex-col items-center mt-[10em] mx-6 ">
             {questions[currentQuestionIndex].type === "slider" ? (
               <div className="flex flex-col items-center">
                 <input
@@ -146,26 +193,23 @@ function FormStudent() {
                   step={questions[currentQuestionIndex].step}
                   value={budget}
                   onChange={handleBudgetChange}
-                  className="w-full mt-8"
+                  className="w-full mt-8 accent-purple-600"
                 />
-                <div className="text-2xl font-bold mt-4">{`${
-                  questions[currentQuestionIndex].unit
-                }${budget} - ${
-                  budget === 40
+                <div className="text-2xl font-bold mt-4">{`${questions[currentQuestionIndex].unit
+                  }${budget} - ${budget === 40
                     ? `${questions[currentQuestionIndex].unit}40+`
                     : ""
-                }`}</div>
+                  }`}</div>
               </div>
             ) : (
               questions[currentQuestionIndex].options.map((option, index) => (
                 <div
                   key={index}
                   onClick={() => handleOptionSelected(option.text)}
-                  className={`flex justify-between text-2xl font-semibold border-4 rounded-xl p-6 items-center w-full cursor-pointer transition-colors duration-200 ${
-                    answers[currentQuestionIndex] === option.text
-                      ? "bg-purple-200 border-purple-400"
-                      : "border-gray-300 hover:bg-purple-100"
-                  }`}
+                  className={`flex justify-between text-2xl font-semibold border-4 rounded-xl p-6 items-center w-full cursor-pointer transition-all duration-300 ${answers[currentQuestionIndex] === option.text
+                      ? "bg-purple-200 border-purple-400 shadow-md transform scale-105"
+                      : "border-gray-300 hover:bg-purple-100 hover:shadow-sm"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <div>{option.svg}</div>
@@ -175,11 +219,10 @@ function FormStudent() {
                   </div>
                   <div className="relative">
                     <div
-                      className={`w-6 h-6 border-2 rounded-full ${
-                        answers[currentQuestionIndex] === option.text
+                      className={`w-6 h-6 border-2 rounded-full ${answers[currentQuestionIndex] === option.text
                           ? "border-purple-400"
                           : "border-gray-400"
-                      }`}
+                        }`}
                     >
                       {answers[currentQuestionIndex] === option.text && (
                         <div className="absolute inset-0 m-1 rounded-full bg-purple-400"></div>
@@ -192,17 +235,25 @@ function FormStudent() {
           </div>
 
           <div className="mt-auto">
-            <button
-              onClick={handleContinue}
-              disabled={!answers[currentQuestionIndex]}
-              className={`w-full text-white text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 ${
-                answers[currentQuestionIndex]
-                  ? "bg-purple-400 hover:bg-purple-500"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
-            >
-              Continuar
-            </button>
+            {isFormComplete ? (
+              <Link
+                to="/results"
+                className="block w-full text-center text-white text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105"
+              >
+                Encontrar Tutor
+              </Link>
+            ) : (
+              <button
+                onClick={handleContinue}
+                disabled={!answers[currentQuestionIndex]}
+                className={`w-full text-white text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 transition-all duration-300 ${answers[currentQuestionIndex]
+                    ? "bg-purple-600 hover:bg-purple-700 transform hover:scale-105"
+                    : "bg-gray-400 cursor-not-allowed"
+                  }`}
+              >
+                {currentQuestionIndex === questions.length - 1 ? "Finalizar" : "Continuar"}
+              </button>
+            )}
           </div>
         </div>
       </div>
