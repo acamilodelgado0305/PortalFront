@@ -1,32 +1,31 @@
-
- import { useState, useEffect } from "react";
- import { extractPlatform, extractVideoId } from "../../helpers/extractVideoId";
+import { useState, useEffect } from "react";
+import { extractPlatform, extractVideoId } from "../../helpers/extractVideoId";
 
 function VideoModal({ selectedTeacher, closeModal }) {
- const [previewUrl, setPreviewUrl] = useState(selectedTeacher.video);
- const [plataform, setPlataform ] = useState(null) 
+  const [previewUrl, setPreviewUrl] = useState(selectedTeacher.video);
+  const [videoPlatform, setVideoPlatform] = useState(null);
 
- useEffect(()=>{
-const getVideoPlataform = () =>{    
-   const videoPlataform =  extractPlatform(selectedTeacher.video)
-   if(videoPlataform){
-    handleVideoInput(videoPlataform)
-   } 
-}
-getVideoPlataform()
- },[])
+  useEffect(() => {
+    const detectVideoPlatform = () => {
+      const platform = extractPlatform(selectedTeacher.video);
+      if (platform) {
+        updateVideoInput(platform);
+      }
+    };
+    detectVideoPlatform();
+  }, [selectedTeacher.video]);
 
-
-const handleVideoInput = (plataform) => {
-    setPlataform(plataform)
-    const videoId = extractVideoId(selectedTeacher.video, plataform);
+  const updateVideoInput = (platform) => {
+    setVideoPlatform(platform);
+    const videoId = extractVideoId(selectedTeacher.video, platform);
     if (videoId) {
-      const url = plataform === "Youtube"
+      const url = platform === "Youtube"
         ? `https://www.youtube.com/embed/${videoId}`
         : `https://player.vimeo.com/video/${videoId}`;
-        setPreviewUrl(url);
+      setPreviewUrl(url);
     }
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-11/12 max-w-lg rounded-lg bg-white p-6 shadow-lg">
@@ -39,8 +38,8 @@ const handleVideoInput = (plataform) => {
           src={previewUrl}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen          
-          title={`${plataform} video`}
+          allowFullScreen
+          title={`${videoPlatform} video`}
         ></iframe>
         <button
           className="mt-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
