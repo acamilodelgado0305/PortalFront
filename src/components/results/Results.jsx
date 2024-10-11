@@ -51,8 +51,9 @@ function Results() {
           <p className="mt-2 text-xl">Explora nuestra selección completa de docentes</p>
         </div>
       </header>
-      <main className="container mx-auto p-4 mt-8">
-        {teachers.length === 0 ? (
+   
+      <main className="container mx-auto p-4 mt-8"> 
+        {teachers.length === 0 ? (  
           <p className="text-center text-xl text-gray-600">No se encontraron profesores disponibles.</p>
         ) : (
           <TeacherList teachers={teachers} openModal={openModal} />
