@@ -4,8 +4,9 @@ import { BookOutlined, ReadOutlined } from "@ant-design/icons";
 
 import DaysOfWeek from "./DaysOfWeek";
 import SearchAndFilter from "./SearchAndFilter";
+import CertificationModal from "./CertificationModal";
 
-function TeacherList({ teachers = [], openModal }) {
+function TeacherList({ teachers = [], openModal, setIsCertificationModalOpen,  isCertificationModalOpen}) {
   const [filterTeachers, setFilterTeachers] = useState(teachers);
 
   const capitalizeFirstLetter = (string) => {
@@ -76,7 +77,7 @@ function TeacherList({ teachers = [], openModal }) {
               </p>
 
               <div className="mt-4 flex w-full flex-col md:flex-row md:justify-start lg:justify-end">
-                <p className="mt-2 pr-5 text-[17px] text-sm text-gray-500">
+                <p className="mt-2 pr-5 text-[17px] text-sm text-gray-500" onClick={()=>{ setIsCertificationModalOpen (!isCertificationModalOpen)}}>
                   <span className="transform cursor-pointer border border-[#8f34ea] p-2 italic text-[#8f34ea] transition duration-300 ease-in-out hover:scale-105 hover:bg-[#8f34ea] hover:text-white">
                     Certification <BookOutlined style={{ fontSize: "24px" }} />
                   </span>
