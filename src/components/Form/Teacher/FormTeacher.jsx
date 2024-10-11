@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Steps as AntSteps, Card, Modal, message } from "antd";
 import { CheckCircle, Circle } from 'lucide-react';
-import Header from "../Header";
+import Header from "../../Header";
 import AboutStep from "./Steps/AboutStep";
 import PhotoStep from "./Steps/PhotoStep";
 import CertificationStep from "./Steps/CertificacionStep";

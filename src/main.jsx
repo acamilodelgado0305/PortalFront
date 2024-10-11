@@ -10,6 +10,7 @@ import Landing from "./landing";
 
 import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
+import Results from "./components/results/Results";
 
 import "./index.css";
 
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/register/teacher",
     element: <MultiStepForm />,
+  },
+  {
+    path: "/results",
+    element: <Results />,
   }
  
 ]);
