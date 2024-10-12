@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  svgProfessional,
-  svgSmile,
-  svgExams,
-  svgBriefcase,
   svgFlagUsa,
   svgFlagSpain,
   svgFlagCanada,
@@ -17,12 +13,12 @@ import { useNavigate } from 'react-router-dom';
 const questions = [
   {
     id: 1,
-    question: "¿Cuál es tu objetivo?",
+    question: "¿Qué quieres aprender?",
     options: [
-      { text: "Carrera profesional y negocios", svg: svgProfessional },
-      { text: "Clases para niños", svg: svgSmile },
-      { text: "Examenes y cursos", svg: svgExams },
-      { text: "Cultura, pasatiempos o para viajar", svg: svgBriefcase },
+      { text: "Lenguajes" },
+      { text: "Matematica"},
+      { text: "Ciencia"},
+      { text: "Arte"},
     ],
   },
   {
