@@ -4,7 +4,7 @@ import { readAllTeachers } from '../../services/teacher.services';
 import Header from '../Header';
 import TeacherList from './TeacherList';
 import VideoModal from './VideoModal';
-import CertificationModal from './CertificationModal';
+
 
 function Results() {
   const [teachers, setTeachers] = useState([]);
@@ -12,7 +12,6 @@ function Results() {
   const [error, setError] = useState(null);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCertificationModalOpen, setIsCertificationModalOpen] = useState(false)
   useEffect(() => {
     const fetchTeachers = async () => {
       try {

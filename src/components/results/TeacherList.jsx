@@ -5,9 +5,18 @@ import { BookOutlined, ReadOutlined } from "@ant-design/icons";
 import DaysOfWeek from "./DaysOfWeek";
 import SearchAndFilter from "./SearchAndFilter";
 import CertificationModal from "./CertificationModal";
+import ShowMoreText from "./ShowMoreText";
 
-function TeacherList({ teachers = [], openModal, setIsCertificationModalOpen,  isCertificationModalOpen}) {
+function TeacherList({ teachers = [], openModal}) {
   const [filterTeachers, setFilterTeachers] = useState(teachers);
+  const [teacherCertification, setTeacherCertification] = useState(null)
+  const [isCertificationModalOpen, setIsCertificationModalOpen ] = useState(null)
+  const openCertificarionModal = (teacher) =>{
+    setTeacherCertification(teacher);
+    setIsCertificationModalOpen(true);
+ 
+
+  }
 
   const capitalizeFirstLetter = (string) => {
     if (typeof string !== "string") return string;
@@ -19,6 +28,7 @@ function TeacherList({ teachers = [], openModal, setIsCertificationModalOpen,  i
   }, [filterTeachers]);
 
   return (
+    <>
     <ul className="space-y-4">
       <SearchAndFilter
         setFilterTeachers={setFilterTeachers}
@@ -69,17 +79,16 @@ function TeacherList({ teachers = [], openModal, setIsCertificationModalOpen,  i
                 <span className="text-[#8f34ea]">
                   Why Am I the Best Choice?:{" "}
                 </span>{" "}
-                "
+                
                 <span className="italic">
-                  {capitalizeFirstLetter(teacher.description.motivateStudents)}
+                <ShowMoreText text={teacher.description.motivateStudents}/>
                 </span>
-                "
+                
               </p>
-
               <div className="mt-4 flex w-full flex-col md:flex-row md:justify-start lg:justify-end">
-                <p className="mt-2 pr-5 text-[17px] text-sm text-gray-500" onClick={()=>{ setIsCertificationModalOpen (!isCertificationModalOpen)}}>
+                <p className="mt-2 pr-5 text-[17px] text-sm text-gray-500" onClick={()=>openCertificarionModal(teacher)}>
                   <span className="transform cursor-pointer border border-[#8f34ea] p-2 italic text-[#8f34ea] transition duration-300 ease-in-out hover:scale-105 hover:bg-[#8f34ea] hover:text-white">
-                    Certification <BookOutlined style={{ fontSize: "24px" }} />
+                    Education <BookOutlined style={{ fontSize: "24px" }} />
                   </span>
                 </p>
                 <DaysOfWeek Availability={teacher.Availability} />
@@ -103,6 +112,9 @@ function TeacherList({ teachers = [], openModal, setIsCertificationModalOpen,  i
         );
       })}
     </ul>
+
+    <CertificationModal teacherCertification={teacherCertification} isCertificationModalOpen={isCertificationModalOpen} setIsCertificationModalOpen={setIsCertificationModalOpen}/>
+    </>
   );
 }
 
