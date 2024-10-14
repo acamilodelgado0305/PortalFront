@@ -9,9 +9,9 @@ import {
 } from "./icons";
 import { useNavigate } from "react-router-dom";
 import {
-  BookOutlined, // Icono para Lenguajes
-  CalculatorOutlined, // Icono para Matemática
-  ExperimentOutlined, // Icono para Ciencia
+  BookOutlined,
+  CalculatorOutlined,
+  ExperimentOutlined,
   SignatureOutlined  
 } from "@ant-design/icons";
 

@@ -1,5 +1,4 @@
-// Results.js
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { readAllTeachers } from '../../services/teacher.services';
 import Header from '../Header';
 import TeacherList from './TeacherList';

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { allCountries } from "../../services/allcountries";
-import { BookOutlined, ReadOutlined } from "@ant-design/icons";
+import { BookOutlined } from "@ant-design/icons";
 
 import DaysOfWeek from "./DaysOfWeek";
 import SearchAndFilter from "./SearchAndFilter";
