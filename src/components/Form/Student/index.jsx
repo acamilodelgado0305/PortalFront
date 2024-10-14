@@ -7,18 +7,23 @@ import {
   svgFlagUK,
   svgDominicanRepublic,
 } from "./icons";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
+import {
+  BookOutlined, // Icono para Lenguajes
+  CalculatorOutlined, // Icono para Matemática
+  ExperimentOutlined, // Icono para Ciencia
+  SignatureOutlined  
+} from "@ant-design/icons";
 
 const questions = [
   {
     id: 1,
     question: "¿Qué quieres aprender?",
     options: [
-      { text: "Lenguajes" },
-      { text: "Matematica"},
-      { text: "Ciencia"},
-      { text: "Arte"},
+      { text: "Lenguajes", svg: (<BookOutlined />) },
+      { text: "Matemática", svg: (<CalculatorOutlined />) },
+      { text: "Ciencia", svg: (<ExperimentOutlined />) },
+      { text: "Arte", svg: (<SignatureOutlined />) },
     ],
   },
   {
@@ -28,7 +33,9 @@ const questions = [
       { text: "Soy principiante" },
       { text: "Conozco lo básico" },
       { text: "Puedo conversar" },
-      { text: "Me desenvuelvo con soltura en la mayoría de las conversaciones" },
+      {
+        text: "Me desenvuelvo con soltura en la mayoría de las conversaciones",
+      },
     ],
   },
   {
@@ -79,10 +86,12 @@ function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
-      <div className="bg-white p-5 rounded-lg flex flex-col items-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
-        <p className="mt-4 text-lg font-semibold text-purple-600">Cargando...</p>
+    <div className="fixed inset-0 flex h-full w-full items-center justify-center overflow-y-auto bg-gray-600 bg-opacity-50">
+      <div className="flex flex-col items-center rounded-lg bg-white p-5">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+        <p className="mt-4 text-lg font-semibold text-purple-600">
+          Cargando...
+        </p>
       </div>
     </div>
   );
@@ -97,14 +106,14 @@ function FormStudent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedAnswers = localStorage.getItem('studentPreferences');
+    const savedAnswers = localStorage.getItem("studentPreferences");
     if (savedAnswers) {
       setAnswers(JSON.parse(savedAnswers));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('studentPreferences', JSON.stringify(answers));
+    localStorage.setItem("studentPreferences", JSON.stringify(answers));
   }, [answers]);
 
   const handleOptionSelected = (option) => {
@@ -148,38 +157,41 @@ function FormStudent() {
   const renderProgressBar = () => {
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
     return (
-      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-        <div className="bg-purple-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+      <div className="mb-4 h-2.5 w-full rounded-full bg-gray-200">
+        <div
+          className="h-2.5 rounded-full bg-purple-600"
+          style={{ width: `${progress}%` }}
+        ></div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center bg-gradient-to-r from-cyan-500 to-blue-500">
+    <div className="flex min-h-screen flex-col justify-center bg-gradient-to-r from-cyan-500 to-blue-500">
       <LoadingModal isOpen={isLoading} />
       <button
         onClick={() => navigate(-1)}
-        className="absolute top-20 left-20 bg-transparent text-white font-bold text-5xl"
+        className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-white"
       >
         ←
       </button>
       <button
         onClick={handleContinue}
-        className="absolute top-20 right-20 bg-transparent text-white font-bold text-2xl"
+        className="absolute right-20 top-20 bg-transparent text-2xl font-bold text-white"
       >
         Saltar
       </button>
 
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-1/2 p-10 h-full flex items-center pl-20">
-          <h1 className="text-white text-7xl font-bold">
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex h-full w-1/2 items-center p-10 pl-20">
+          <h1 className="text-7xl font-bold text-white">
             {questions[currentQuestionIndex].question}
           </h1>
         </div>
 
-        <div className="w-1/2 bg-white p-10 shadow-lg h-full flex flex-col justify-center rounded-l-3xl">
+        <div className="flex h-full w-1/2 flex-col justify-center rounded-l-3xl bg-white p-10 shadow-lg">
           {renderProgressBar()}
-          <div className="flex-grow space-y-6 flex-col items-center mt-[10em] mx-6 ">
+          <div className="mx-6 mt-[10em] flex-grow flex-col items-center space-y-6">
             {questions[currentQuestionIndex].type === "slider" ? (
               <div className="flex flex-col items-center">
                 <input
@@ -189,36 +201,40 @@ function FormStudent() {
                   step={questions[currentQuestionIndex].step}
                   value={budget}
                   onChange={handleBudgetChange}
-                  className="w-full mt-8 accent-purple-600"
+                  className="mt-8 w-full accent-purple-600"
                 />
-                <div className="text-2xl font-bold mt-4">{`${questions[currentQuestionIndex].unit
-                  }${budget} - ${budget === 40
+                <div className="mt-4 text-2xl font-bold">{`${
+                  questions[currentQuestionIndex].unit
+                }${budget} - ${
+                  budget === 40
                     ? `${questions[currentQuestionIndex].unit}40+`
                     : ""
-                  }`}</div>
+                }`}</div>
               </div>
             ) : (
               questions[currentQuestionIndex].options.map((option, index) => (
                 <div
                   key={index}
                   onClick={() => handleOptionSelected(option.text)}
-                  className={`flex justify-between text-2xl font-semibold border-4 rounded-xl p-6 items-center w-full cursor-pointer transition-all duration-300 ${answers[currentQuestionIndex] === option.text
-                      ? "bg-purple-200 border-purple-400 shadow-md transform scale-105"
+                  className={`flex w-full cursor-pointer items-center justify-between rounded-xl border-4 p-6 text-2xl font-semibold transition-all duration-300 ${
+                    answers[currentQuestionIndex] === option.text
+                      ? "scale-105 transform border-purple-400 bg-purple-200 shadow-md"
                       : "border-gray-300 hover:bg-purple-100 hover:shadow-sm"
-                    }`}
+                  }`}
                 >
                   <div className="flex items-center space-x-2">
                     <div>{option.svg}</div>
-                    <span className="block text-gray-700 w-full">
+                    <span className="block w-full text-gray-700">
                       {option.text}
                     </span>
                   </div>
                   <div className="relative">
                     <div
-                      className={`w-6 h-6 border-2 rounded-full ${answers[currentQuestionIndex] === option.text
+                      className={`h-6 w-6 rounded-full border-2 ${
+                        answers[currentQuestionIndex] === option.text
                           ? "border-purple-400"
                           : "border-gray-400"
-                        }`}
+                      }`}
                     >
                       {answers[currentQuestionIndex] === option.text && (
                         <div className="absolute inset-0 m-1 rounded-full bg-purple-400"></div>
@@ -234,7 +250,7 @@ function FormStudent() {
             {isFormComplete ? (
               <Link
                 to="/results"
-                className="block w-full text-center text-white text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 bg-purple-600 hover:bg-purple-700 transition-all duration-300 transform hover:scale-105"
+                className="mb-6 block w-full transform rounded-lg bg-purple-600 px-4 py-4 text-center text-2xl font-bold text-white shadow transition-all duration-300 hover:scale-105 hover:bg-purple-700"
               >
                 Encontrar Tutor
               </Link>
@@ -242,12 +258,15 @@ function FormStudent() {
               <button
                 onClick={handleContinue}
                 disabled={!answers[currentQuestionIndex]}
-                className={`w-full text-white text-2xl font-bold py-4 px-4 rounded-lg shadow mb-6 transition-all duration-300 ${answers[currentQuestionIndex]
-                    ? "bg-purple-600 hover:bg-purple-700 transform hover:scale-105"
-                    : "bg-gray-400 cursor-not-allowed"
-                  }`}
+                className={`mb-6 w-full rounded-lg px-4 py-4 text-2xl font-bold text-white shadow transition-all duration-300 ${
+                  answers[currentQuestionIndex]
+                    ? "transform bg-purple-600 hover:scale-105 hover:bg-purple-700"
+                    : "cursor-not-allowed bg-gray-400"
+                }`}
               >
-                {currentQuestionIndex === questions.length - 1 ? "Finalizar" : "Continuar"}
+                {currentQuestionIndex === questions.length - 1
+                  ? "Finalizar"
+                  : "Continuar"}
               </button>
             )}
           </div>
