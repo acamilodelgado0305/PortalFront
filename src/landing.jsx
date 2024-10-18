@@ -17,13 +17,13 @@ const Landing = () => {
         <div></div>
         <div>
           <Link
-            to="/signup"
+            to="/sign-in"
             className="mr-4 rounded bg-[#5CEFFF] px-4 py-2 text-black"
           >
             Sign Up
           </Link>
           <Link
-            to="/signin"
+            to="/sign-out"
             className="rounded bg-[#FFFF45] px-4 py-2 text-black"
           >
             Sign In

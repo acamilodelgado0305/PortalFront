@@ -1,7 +1,8 @@
+import Header from "../../Header"
 
 function SingOut() {
   return (
-    <div>SingOut</div>
+    <div><Header/><p>SingOut</p></div>
   )
 }
 
