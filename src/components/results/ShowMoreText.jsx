@@ -3,6 +3,10 @@ import { useState } from "react";
 const ShowMoreText = ({ text ,maxLength = 40 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  if(!text) {
+    return
+  }
+
   if (text.length <= maxLength) {
     return <span>{text}</span>;
   }

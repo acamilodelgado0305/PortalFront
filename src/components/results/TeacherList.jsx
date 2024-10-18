@@ -11,6 +11,7 @@ function TeacherList({ teachers = [], openModal}) {
   const [filterTeachers, setFilterTeachers] = useState(teachers);
   const [teacherCertification, setTeacherCertification] = useState(null)
   const [isCertificationModalOpen, setIsCertificationModalOpen ] = useState(null)
+
   const openCertificarionModal = (teacher) =>{
     setTeacherCertification(teacher);
     setIsCertificationModalOpen(true);
@@ -26,6 +27,7 @@ function TeacherList({ teachers = [], openModal}) {
   useEffect(() => {
     console.log("teachers: " + JSON.stringify(filterTeachers));
   }, [filterTeachers]);
+
 
   return (
     <>
@@ -81,7 +83,7 @@ function TeacherList({ teachers = [], openModal}) {
                 </span>{" "}
                 
                 <span className="italic">
-                <ShowMoreText text={teacher.description.motivateStudents}/>
+                <ShowMoreText text={teacher?.description?.motivateStudents && 'No info'}/>
                 </span>
                 
               </p>
@@ -91,7 +93,7 @@ function TeacherList({ teachers = [], openModal}) {
                     Education <BookOutlined style={{ fontSize: "24px" }} />
                   </span>
                 </p>
-                <DaysOfWeek Availability={teacher.Availability} />
+                <DaysOfWeek Availability={teacher?.Availability} />
                 <div className="flex md:ml-2">
                   <button
                     className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
