@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { CalendarOutlined } from '@ant-design/icons';
 
 function DaysOfWeek({ Availability }) {
+
+  if(!Availability) {
+    return
+  }
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(window.innerWidth < 750 || window.innerWidth > 1040);
 
