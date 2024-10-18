@@ -13,7 +13,7 @@ const createTeacher = async (data) => {
   
   const readAllTeachers = async () => {
     try {
-      const response = await backApi.get('/api/teachers/');
+      const response = await backApi.get('/api/teachers');
       return response.data; 
     } catch (error) {
       console.error("Error reading teachers:", error);
