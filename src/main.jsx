@@ -11,6 +11,8 @@ import Landing from "./landing";
 import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Results from "./components/results/Results";
+import SignIn from "./components/Login/SingIn/Index.jsx"
+import SingOut from "./components/Login/SingOut/Index.jsx"
 
 import "./index.css";
 
@@ -37,6 +39,14 @@ const router = createBrowserRouter([
   {
     path: "/results",
     element: <Results />,
+  },
+  {
+    path:"/sign-in",
+    element:<SignIn/>
+  },
+  {
+    path:"/sign-out",
+    element:<SingOut/>
   }
  
 ]);
