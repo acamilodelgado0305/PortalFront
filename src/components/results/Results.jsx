@@ -14,10 +14,11 @@ function Results() {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const data = await readAllTeachers();
+        const response = await fetch('https://back.app.esturio.com/api/teachers');
+        const data = await response.json();
         setTeachers(data.data);
         setLoading(false);
-        console.log("teacher datos", data.data)
+        console.log("teacher datos", data.data);
       } catch (err) {
         setError('Error al cargar los profesores');
         setLoading(false);
