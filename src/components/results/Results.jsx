@@ -17,7 +17,7 @@ function Results() {
         const data = await readAllTeachers();
         setTeachers(data.data);
         setLoading(false);
-        console.log(data.data)
+        console.log("teacher datos", data.data)
       } catch (err) {
         setError('Error al cargar los profesores');
         setLoading(false);
