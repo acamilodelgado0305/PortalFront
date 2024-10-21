@@ -46,7 +46,7 @@ function Results() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Header />
-      <header className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-6 shadow-lg">
+      <header className="bg-purple-500 text-white py-6 shadow-lg">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold">Todos los Profesores</h1>
           <p className="mt-2 text-xl">Explora nuestra selección completa de docentes</p>
