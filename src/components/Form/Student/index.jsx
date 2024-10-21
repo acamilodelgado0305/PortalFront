@@ -1,86 +1,8 @@
+// FormStudent.js
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  svgFlagUsa,
-  svgFlagSpain,
-  svgFlagCanada,
-  svgFlagUK,
-  svgDominicanRepublic,
-} from "./icons";
 import { useNavigate } from "react-router-dom";
-import {
-  BookOutlined,
-  CalculatorOutlined,
-  ExperimentOutlined,
-  SignatureOutlined  
-} from "@ant-design/icons";
-
-const questions = [
-  {
-    id: 1,
-    question: "¿Qué quieres aprender?",
-    options: [
-      { text: "Lenguajes", svg: (<BookOutlined />) },
-      { text: "Matemática", svg: (<CalculatorOutlined />) },
-      { text: "Ciencia", svg: (<ExperimentOutlined />) },
-      { text: "Arte", svg: (<SignatureOutlined />) },
-    ],
-  },
-  {
-    id: 2,
-    question: "¿Cuál es tu nivel de inglés?",
-    options: [
-      { text: "Soy principiante" },
-      { text: "Conozco lo básico" },
-      { text: "Puedo conversar" },
-      {
-        text: "Me desenvuelvo con soltura en la mayoría de las conversaciones",
-      },
-    ],
-  },
-  {
-    id: 3,
-    question: "¿Buscas un acento o cultura concretos?",
-    options: [
-      { text: "Canada", svg: svgFlagCanada },
-      { text: "España", svg: svgFlagSpain },
-      { text: "Estados Unidos", svg: svgFlagUsa },
-      { text: "Reino Unido", svg: svgFlagUK },
-      { text: "República Dominicana", svg: svgDominicanRepublic },
-    ],
-  },
-  {
-    id: 4,
-    question: "¿Algún interés en concreto?",
-    options: [
-      { text: "Inglés estadounidense" },
-      { text: "Inglés de negocios" },
-      { text: "Inglés conversacional" },
-      { text: "BEC" },
-      { text: "Inglés para niños" },
-    ],
-  },
-  {
-    id: 5,
-    question: "¿Cuándo te vienen bien las clases?",
-    options: [
-      { text: "Mañanas" },
-      { text: "Tardes" },
-      { text: "Noches" },
-      { text: "Fines de semana" },
-      { text: "Horario flexible" },
-    ],
-  },
-  {
-    id: 6,
-    question: "¿Cuál es tu presupuesto para una clase?",
-    type: "slider",
-    min: 1,
-    max: 40,
-    step: 1,
-    unit: "US$",
-  },
-];
+import { questions } from "./questionsData";
 
 function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
@@ -103,6 +25,8 @@ function FormStudent() {
   const [budget, setBudget] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormComplete, setIsFormComplete] = useState(false);
+  const [showSuboptions, setShowSuboptions] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -116,15 +40,52 @@ function FormStudent() {
     localStorage.setItem("studentPreferences", JSON.stringify(answers));
   }, [answers]);
 
-  const handleOptionSelected = (option) => {
+  const handleOptionSelected = (option, suboption = null) => {
     const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = option;
-    setAnswers(newAnswers);
+
+    if (suboption) {
+      // Si se selecciona una subopción, marca como respuesta
+      newAnswers[currentQuestionIndex] = suboption;
+      setAnswers(newAnswers);
+      setSelectedOption(suboption.text); // Marca la subopción como seleccionada
+    } else {
+      // Si se hace clic en la opción principal
+      newAnswers[currentQuestionIndex] = option;
+      setAnswers(newAnswers);
+      localStorage.setItem("studentPreferences", JSON.stringify(newAnswers)); // Guarda en localStorage
+
+      if (selectedOption === option.text) {
+        setShowSuboptions(null); // Oculta subopciones si ya estaba seleccionada
+        setSelectedOption(null);  // Limpiar la opción seleccionada
+      } else {
+        setShowSuboptions(option.suboptions); // Mostrar subopciones
+        setSelectedOption(option.text); // Actualizar opción seleccionada
+      }
+    }
   };
+
+
+
+  const OptionButton = ({ text, isSelected, onClick }) => {
+    return (
+      <button
+        onClick={onClick}
+        className={`flex items-center justify-between w-full rounded-lg p-4 text-left text-lg font-semibold hover:bg-purple-100 border ${isSelected ? 'border-purple-500 bg-purple-300' : 'border-gray-300'}`}
+      >
+        <span>{text}</span>
+        {/* Aquí puedes agregar el SVG si lo necesitas */}
+      </button>
+    );
+  };
+
+
+
+
 
   const handleContinue = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setShowSuboptions(null); // Reset suboptions
     } else {
       finishForm();
     }
@@ -132,11 +93,10 @@ function FormStudent() {
 
   const finishForm = () => {
     setIsLoading(true);
-    // Simulate an API call or processing time
     setTimeout(() => {
       setIsLoading(false);
       setIsFormComplete(true);
-    }, 2000); // Adjust the timeout as needed
+    }, 2000); // Simulate API call
   };
 
   const handleBack = () => {
@@ -167,19 +127,13 @@ function FormStudent() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-gradient-to-r from-cyan-500 to-blue-500">
+    <div className="flex min-h-screen flex-col justify-center bg-purple-400">
       <LoadingModal isOpen={isLoading} />
       <button
         onClick={() => navigate(-1)}
         className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-white"
       >
         ←
-      </button>
-      <button
-        onClick={handleContinue}
-        className="absolute right-20 top-20 bg-transparent text-2xl font-bold text-white"
-      >
-        Saltar
       </button>
 
       <div className="flex h-screen items-center justify-center">
@@ -189,90 +143,88 @@ function FormStudent() {
           </h1>
         </div>
 
-        <div className="flex h-full w-1/2 flex-col justify-center rounded-l-3xl bg-white p-10 shadow-lg">
+        <div className="flex h-[100vh] w-[50%] flex-col items-center justify-center bg-white p-10 shadow-lg">
           {renderProgressBar()}
-          <div className="mx-6 mt-[10em] flex-grow flex-col items-center space-y-6">
-            {questions[currentQuestionIndex].type === "slider" ? (
-              <div className="flex flex-col items-center">
-                <input
-                  type="range"
-                  min={questions[currentQuestionIndex].min}
-                  max={questions[currentQuestionIndex].max}
-                  step={questions[currentQuestionIndex].step}
-                  value={budget}
-                  onChange={handleBudgetChange}
-                  className="mt-8 w-full accent-purple-600"
-                />
-                <div className="mt-4 text-2xl font-bold">{`${
-                  questions[currentQuestionIndex].unit
-                }${budget} - ${
-                  budget === 40
-                    ? `${questions[currentQuestionIndex].unit}40+`
-                    : ""
-                }`}</div>
-              </div>
-            ) : (
-              questions[currentQuestionIndex].options.map((option, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleOptionSelected(option.text)}
-                  className={`flex w-full cursor-pointer items-center justify-between rounded-xl border-4 p-6 text-2xl font-semibold transition-all duration-300 ${
-                    answers[currentQuestionIndex] === option.text
-                      ? "scale-105 transform border-purple-400 bg-purple-200 shadow-md"
-                      : "border-gray-300 hover:bg-purple-100 hover:shadow-sm"
-                  }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <div>{option.svg}</div>
-                    <span className="block w-full text-gray-700">
-                      {option.text}
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <div
-                      className={`h-6 w-6 rounded-full border-2 ${
-                        answers[currentQuestionIndex] === option.text
-                          ? "border-purple-400"
-                          : "border-gray-400"
-                      }`}
-                    >
-                      {answers[currentQuestionIndex] === option.text && (
-                        <div className="absolute inset-0 m-1 rounded-full bg-purple-400"></div>
-                      )}
+          {questions[currentQuestionIndex].type === "slider" ? (
+            <div className="w-full">
+              <input
+                type="range"
+                min={questions[currentQuestionIndex].min}
+                max={questions[currentQuestionIndex].max}
+                step={questions[currentQuestionIndex].step}
+                value={budget}
+                onChange={handleBudgetChange}
+                className="w-full"
+              />
+              <p className="mt-2 text-lg text-center">
+                Presupuesto: {budget} {questions[currentQuestionIndex].unit}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-6">
+              {questions[currentQuestionIndex].options.map((option, idx) => (
+                <div key={idx}>
+                  <OptionButton
+                    text={option.text}
+                    isSelected={selectedOption === option.text}
+                    onClick={() => handleOptionSelected(option)}
+                  />
+                  {option.suboptions && showSuboptions === option.suboptions && (
+                    <div className=" grid grid-cols-2 mt-2 pl-4">
+                      {option.suboptions.map((suboption, subidx) => (
+                        <button
+                          key={subidx}
+                          onClick={() => handleOptionSelected(option, suboption)}
+                          className={`block w-full p-2 text-left text-sm font-normal hover:bg-purple-200 ${answers[currentQuestionIndex] && answers[currentQuestionIndex].text === suboption.text ? "bg-purple-300" : ""
+                            }`}
+                        >
+                          {suboption.text}
+                        </button>
+                      ))}
                     </div>
-                  </div>
+                  )}
                 </div>
-              ))
-            )}
-          </div>
+              ))}
 
-          <div className="mt-auto">
-            {isFormComplete ? (
-              <Link
-                to="/results"
-                className="mb-6 block w-full transform rounded-lg bg-purple-600 px-4 py-4 text-center text-2xl font-bold text-white shadow transition-all duration-300 hover:scale-105 hover:bg-purple-700"
-              >
-                Encontrar Tutor
-              </Link>
-            ) : (
-              <button
-                onClick={handleContinue}
-                disabled={!answers[currentQuestionIndex]}
-                className={`mb-6 w-full rounded-lg px-4 py-4 text-2xl font-bold text-white shadow transition-all duration-300 ${
-                  answers[currentQuestionIndex]
-                    ? "transform bg-purple-600 hover:scale-105 hover:bg-purple-700"
-                    : "cursor-not-allowed bg-gray-400"
-                }`}
-              >
-                {currentQuestionIndex === questions.length - 1
-                  ? "Finalizar"
-                  : "Continuar"}
-              </button>
-            )}
+            </div>
+          )}
+          <div className="mt-8 flex w-full justify-between">
+            <button
+              onClick={handleBack}
+              disabled={currentQuestionIndex === 0}
+              className={`${currentQuestionIndex === 0 ? "opacity-50" : ""
+                } bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-pruple-700`}
+            >
+              Atrás
+            </button>
+            <button
+              onClick={handleContinue}
+              className="bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-purple-700"
+            >
+              Continuar
+            </button>
           </div>
         </div>
       </div>
-    </div>
+
+      {isFormComplete && (
+        <div div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-700 bg-opacity-75">
+          <div className="p-6 w-[20em] bg-white rounded-lg shadow-lg flex flex-col items-center">
+            <h2 className="w-full text-2xl font-semibold text-gray-800 text-center">
+              ¡Formulario completado!
+            </h2>
+            <Link
+              to="/results"
+              className="mt-4 inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-800"
+            >
+              Continuar
+            </Link>
+          </div>
+        </div>
+
+      )
+      }
+    </div >
   );
 }
 
