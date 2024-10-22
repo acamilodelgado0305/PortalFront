@@ -31,8 +31,7 @@ const Login = () => {
 
             // Si la autenticación es exitosa, almacenar el token y redirigir
             if (data.success) {
-                console.log('Token recibido:', data.token);
-                // Almacenar el token en el localStorage
+
                 localStorage.setItem('token', data.token);
 
                 // Redirigir al dashboard
