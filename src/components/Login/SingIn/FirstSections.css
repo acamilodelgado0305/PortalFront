@@ -1,0 +1,12 @@
+.signin-icon {
+    color: #7c3aed; 
+    font-size: 2.8rem;
+    transition: transform 0.3s ease, color 0.3s ease, filter 0.3s ease; 
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1)); 
+  }
+  
+  .hover-effect:hover {
+    transform: scale(1.2); 
+    color: #6c04b6; 
+    filter: drop-shadow(0 8px 15px rgba(79, 70, 229, 0.6)) brightness(1.2); 
+  }

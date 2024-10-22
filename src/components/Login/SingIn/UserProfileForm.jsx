@@ -2,9 +2,9 @@ import { UserOutlined } from "@ant-design/icons";
 
 function UserProfileForm() {
   return (
-    <div className="mt-[10vh] h-[700px] w-[500px] p-6">
+    <div className="mt-[10vh] h-[700px] w-[500px] p-6 m-auto">
       <div className="icon-container">
-        <UserOutlined className="text-[64px] text-violet-600" />
+        <UserOutlined className="text-[64px] text-violet-600 " />
       </div>
       <h2 className="text-[20px] text-violet-600">Registration Form</h2>
       <form>
@@ -12,7 +12,7 @@ function UserProfileForm() {
           Name
           <input
             type="text"
-            className="mt-2 rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="mt-2 bg-[#dbc9fa91] rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
             aria-label="name"
             required
           />
@@ -22,7 +22,7 @@ function UserProfileForm() {
           Password
           <input
             type="password"
-            className="mt-2 rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="mt-2 bg-[#dbc9fa91] rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
             aria-label="password"
             required
           />
@@ -32,7 +32,7 @@ function UserProfileForm() {
           Confirm Password
           <input
             type="password"
-            className="mt-2 rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="mt-2 bg-[#dbc9fa91] rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
             aria-label="confirm password"
             required
           />
@@ -42,7 +42,7 @@ function UserProfileForm() {
           WhatsApp Number
           <input
             type="text"
-            className="mt-2 rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="mt-2 bg-[#dbc9fa91] rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
             aria-label="whatsapp number"
             required
           />
@@ -52,7 +52,7 @@ function UserProfileForm() {
           Email
           <input
             type="email"
-            className="mt-2 rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="mt-2 bg-[#dbc9fa91] rounded border-2 border-violet-600 p-2 transition duration-200 ease-in-out focus:border-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500"
             aria-label="email"
             required
           />

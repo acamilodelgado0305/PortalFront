@@ -4,7 +4,7 @@ import TerceraStep from './TerceraStep'
 import UserProfileForm from './UserProfileForm'
 function SingIn() {
   return (
-    <div>
+    <div className='bg-[#BB9EED]'>
       <Header/>
       <FirstSections/>
       <UserProfileForm/>
