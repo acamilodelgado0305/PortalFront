@@ -1,4 +1,3 @@
-// FormStudent.js
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +26,7 @@ function FormStudent() {
   const [isFormComplete, setIsFormComplete] = useState(false);
   const [showSuboptions, setShowSuboptions] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedSuboption, setSelectedSuboption] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,28 +43,34 @@ function FormStudent() {
   const handleOptionSelected = (option, suboption = null) => {
     const newAnswers = [...answers];
 
-    if (suboption) {
-      // Si se selecciona una subopción, marca como respuesta
-      newAnswers[currentQuestionIndex] = suboption;
+    if (currentQuestionIndex === 0) {
+      if (suboption) {
+        newAnswers[currentQuestionIndex] = `${option.text}+${suboption.text}`;
+        setSelectedSuboption(suboption.text);
+      } else {
+        newAnswers[currentQuestionIndex] = option.text;
+        setSelectedSuboption(null);
+      }
       setAnswers(newAnswers);
-      setSelectedOption(suboption.text); // Marca la subopción como seleccionada
+      setSelectedOption(option.text);
+      setShowSuboptions(option.suboptions);
     } else {
-      // Si se hace clic en la opción principal
-      newAnswers[currentQuestionIndex] = option;
+      if (suboption) {
+        newAnswers[currentQuestionIndex] = suboption;
+      } else {
+        newAnswers[currentQuestionIndex] = option;
+      }
       setAnswers(newAnswers);
-      localStorage.setItem("studentPreferences", JSON.stringify(newAnswers)); // Guarda en localStorage
 
       if (selectedOption === option.text) {
-        setShowSuboptions(null); // Oculta subopciones si ya estaba seleccionada
-        setSelectedOption(null);  // Limpiar la opción seleccionada
+        setShowSuboptions(null);
+        setSelectedOption(null);
       } else {
-        setShowSuboptions(option.suboptions); // Mostrar subopciones
-        setSelectedOption(option.text); // Actualizar opción seleccionada
+        setShowSuboptions(option.suboptions);
+        setSelectedOption(option.text);
       }
     }
   };
-
-
 
   const OptionButton = ({ text, isSelected, onClick }) => {
     return (
@@ -73,19 +79,16 @@ function FormStudent() {
         className={`flex items-center justify-between w-full rounded-lg p-4 text-left text-lg font-semibold hover:bg-purple-100 border ${isSelected ? 'border-purple-500 bg-purple-300' : 'border-gray-300'}`}
       >
         <span>{text}</span>
-        {/* Aquí puedes agregar el SVG si lo necesitas */}
       </button>
     );
   };
 
-
-
-
-
   const handleContinue = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setShowSuboptions(null); // Reset suboptions
+      setShowSuboptions(null);
+      setSelectedOption(null);
+      setSelectedSuboption(null);
     } else {
       finishForm();
     }
@@ -96,12 +99,16 @@ function FormStudent() {
     setTimeout(() => {
       setIsLoading(false);
       setIsFormComplete(true);
-    }, 2000); // Simulate API call
+      localStorage.setItem("studentPreferences", JSON.stringify(answers));
+    }, 2000);
   };
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setSelectedOption(null);
+      setSelectedSuboption(null);
+      setShowSuboptions(null);
     }
   };
 
@@ -170,13 +177,14 @@ function FormStudent() {
                     onClick={() => handleOptionSelected(option)}
                   />
                   {option.suboptions && showSuboptions === option.suboptions && (
-                    <div className=" grid grid-cols-2 mt-2 pl-4">
+                    <div className="grid grid-cols-2 mt-2 pl-4">
                       {option.suboptions.map((suboption, subidx) => (
                         <button
                           key={subidx}
                           onClick={() => handleOptionSelected(option, suboption)}
-                          className={`block w-full p-2 text-left text-sm font-normal hover:bg-purple-200 ${answers[currentQuestionIndex] && answers[currentQuestionIndex].text === suboption.text ? "bg-purple-300" : ""
-                            }`}
+                          className={`block w-full p-2 text-left text-sm font-normal hover:bg-purple-200 ${
+                            selectedSuboption === suboption.text ? "bg-purple-300" : ""
+                          }`}
                         >
                           {suboption.text}
                         </button>
@@ -185,15 +193,15 @@ function FormStudent() {
                   )}
                 </div>
               ))}
-
             </div>
           )}
           <div className="mt-8 flex w-full justify-between">
             <button
               onClick={handleBack}
               disabled={currentQuestionIndex === 0}
-              className={`${currentQuestionIndex === 0 ? "opacity-50" : ""
-                } bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-pruple-700`}
+              className={`${
+                currentQuestionIndex === 0 ? "opacity-50" : ""
+              } bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-purple-700`}
             >
               Atrás
             </button>
@@ -208,7 +216,7 @@ function FormStudent() {
       </div>
 
       {isFormComplete && (
-        <div div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-700 bg-opacity-75">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-700 bg-opacity-75">
           <div className="p-6 w-[20em] bg-white rounded-lg shadow-lg flex flex-col items-center">
             <h2 className="w-full text-2xl font-semibold text-gray-800 text-center">
               ¡Formulario completado!
@@ -221,10 +229,8 @@ function FormStudent() {
             </Link>
           </div>
         </div>
-
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }
 
