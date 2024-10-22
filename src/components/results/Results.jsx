@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { readAllTeachers } from '../../services/teacher.services';
 import Header from '../Header';
 import TeacherList from './TeacherList';
@@ -14,9 +14,11 @@ function Results() {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const data = await readAllTeachers();
+        const response = await fetch('https://back.app.esturio.com/api/teachers');
+        const data = await response.json();
         setTeachers(data.data);
         setLoading(false);
+        console.log("teacher datos", data.data);
       } catch (err) {
         setError('Error al cargar los profesores');
         setLoading(false);
@@ -50,12 +52,20 @@ function Results() {
           <p className="mt-2 text-xl">Explora nuestra selección completa de docentes</p>
         </div>
       </header>
-   
-      <main className="container mx-auto p-4 mt-8"> 
-        {teachers.length === 0 ? (  
-          <p className="text-center text-xl text-gray-600">No se encontraron profesores disponibles.</p>
+
+      <main className="container mx-auto p-4 mt-8">
+        {Array.isArray(teachers) && teachers.length === 0 ? (
+          <p className="text-center text-xl text-gray-600">
+            No se encontraron profesores disponibles.
+          </p>
         ) : (
-          <TeacherList teachers={teachers} openModal={openModal} />
+          Array.isArray(teachers) && teachers.length > 0 ? (
+            <TeacherList teachers={teachers} openModal={openModal} />
+          ) : (
+            <p className="text-center text-xl text-red-600">
+              Error cargando los profesores.
+            </p>
+          )
         )}
       </main>
       {isModalOpen && selectedTeacher && (
