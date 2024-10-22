@@ -16,14 +16,14 @@ const Landing = () => {
       <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between bg-[#7BD8FF] p-4">
         <div></div>
         <div>
-          <Link
-            to="/signIn"
+        <Link
+            to="/signup"
             className="mr-4 rounded bg-[#5CEFFF] px-4 py-2 text-black"
           >
             Sign Up
           </Link>
           <Link
-            to="/signOut"
+            to="/signin"
             className="rounded bg-[#FFFF45] px-4 py-2 text-black"
           >
             Sign In
