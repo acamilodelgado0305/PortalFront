@@ -50,11 +50,7 @@ const MultiStepForm = () => {
 
 
   const onFinish = async () => {
-    if(currentStep == '7'){
-      alert('ingrese')
-      setPasswordModal(true)
-    }
-    if (currentStep != '8') {
+     if (currentStep != '7') {
       return
     }
     setIsSubmitting(true);
@@ -66,7 +62,7 @@ const MultiStepForm = () => {
       message.error("Registration failed. Please try again.");
     } finally {
       setIsSubmitting(false);
-    }
+    } 
   };
 
   const handleModalOk = () => {
