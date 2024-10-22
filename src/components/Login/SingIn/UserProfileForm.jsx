@@ -1,13 +1,17 @@
 import { UserOutlined } from "@ant-design/icons";
 
-function UserProfileForm() {
+function UserProfileForm({handleRegisterStatus}) {
+const signUpUser = () => {
+  handleRegisterStatus()
+}
+
   return (
     <div className="mt-[10vh] h-[700px] md:w-[500px] p-6 m-auto">
       <div className="icon-container">
         <UserOutlined className="text-[64px] text-violet-600 " />
       </div>
       <h2 className="text-[20px] text-violet-600">Registration Form</h2>
-      <form>
+
         <label className="flex flex-col text-[18px] text-violet-800">
           Name
           <input
@@ -59,12 +63,12 @@ function UserProfileForm() {
         </label>
 
         <button
-          type="submit"
+          onClick={signUpUser}
           className="mt-4 bg-violet-600 text-white rounded p-2 transition duration-200 hover:bg-violet-800"
         >
           Register
         </button>
-      </form>
+    
     </div>
   );
 }

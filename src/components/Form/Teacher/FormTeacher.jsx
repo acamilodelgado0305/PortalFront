@@ -23,6 +23,8 @@ const MultiStepForm = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // modificacions
+  const [passwordModal, setPasswordModal] = useState(false)
 
 
   const handleFormChange = (changedValues) => {
@@ -48,7 +50,11 @@ const MultiStepForm = () => {
 
 
   const onFinish = async () => {
-    if (currentStep != '7') {
+    if(currentStep == '7'){
+      alert('ingrese')
+      setPasswordModal(true)
+    }
+    if (currentStep != '8') {
       return
     }
     setIsSubmitting(true);

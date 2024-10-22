@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Select, Checkbox } from 'antd';
-import { UserOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined, MailOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { allCountries } from '../../../../services/allcountries';
@@ -8,6 +8,9 @@ import { allCountries } from '../../../../services/allcountries';
 const { Option } = Select;
 
 const AboutStep = ({ onChange }) => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
   const handleValuesChange = (changedValues) => {
     onChange(changedValues);
   };
@@ -16,10 +19,7 @@ const AboutStep = ({ onChange }) => {
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Personal Information</h2>
 
-      <Form
-        layout="vertical"
-        onValuesChange={handleValuesChange}
-      >
+      <Form layout="vertical" onValuesChange={handleValuesChange}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             label={<span className="text-lg font-medium">First Name</span>}
@@ -55,6 +55,34 @@ const AboutStep = ({ onChange }) => {
             prefix={<MailOutlined className="text-gray-400" />}
             placeholder="Your email address"
             className="text-lg p-3 border-2 border-black rounded-md"
+          />
+        </Form.Item>
+
+        {/* Input para la contraseña */}
+        <Form.Item
+          label={<span className="text-lg font-medium">Password</span>}
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <Input.Password
+            placeholder="Enter your password"
+            className="text-lg p-3 border-2 border-black rounded-md"
+            iconRender={visible => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
+            visibilityToggle={{ onClick: () => setPasswordVisible(!passwordVisible) }}
+          />
+        </Form.Item>
+
+        {/* Input para la confirmación de contraseña */}
+        <Form.Item
+          label={<span className="text-lg font-medium">Confirm Password</span>}
+          name="confirmPassword"
+          rules={[{ required: true, message: 'Please confirm your password!' }]}
+        >
+          <Input.Password
+            placeholder="Confirm your password"
+            className="text-lg p-3 border-2 border-black rounded-md"
+            iconRender={visible => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
+            visibilityToggle={{ onClick: () => setConfirmPasswordVisible(!confirmPasswordVisible) }}
           />
         </Form.Item>
 
@@ -141,7 +169,6 @@ const AboutStep = ({ onChange }) => {
               border: '2px solid black' 
             }}
           />
-
         </Form.Item>
 
         <Form.Item name="isOver18" valuePropName="checked">
