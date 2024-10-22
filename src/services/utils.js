@@ -2,8 +2,7 @@
 
 import axios from "axios";
 
-const BACK_URL = import.meta.env.VITE_API_BACKEND;
-console.log(import.meta.env.VITE_API_BACKEND)
+const BACK_URL = "https://back.app.esturio.com";
 
 
 // Instancia de axios personalizada
