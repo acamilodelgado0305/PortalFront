@@ -10,10 +10,12 @@ import Landing from "./landing";
 
 import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
+import Login from "./components/auth/Login";
 import Results from "./components/results/Results";
 
 
 import "./index.css";
+import Dashboard from "./components/dashboard/dashboard";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
     path: "/register/student",
     element: <FormStudent />,
   },
@@ -39,7 +49,7 @@ const router = createBrowserRouter([
     path: "/results",
     element: <Results />,
   }
- 
+
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
