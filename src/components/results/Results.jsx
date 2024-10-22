@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { readAllTeachers } from '../../services/teacher.services';
+//import { readAllTeachers } from '../../services/teacher.services';
 import Header from '../Header';
 import TeacherList from './TeacherList';
 import VideoModal from './VideoModal';
