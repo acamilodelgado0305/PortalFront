@@ -2,7 +2,7 @@ import { UserOutlined } from "@ant-design/icons";
 
 function UserProfileForm() {
   return (
-    <div className="mt-[10vh] h-[700px] w-[500px] p-6 m-auto">
+    <div className="mt-[10vh] h-[700px] md:w-[500px] p-6 m-auto">
       <div className="icon-container">
         <UserOutlined className="text-[64px] text-violet-600 " />
       </div>
