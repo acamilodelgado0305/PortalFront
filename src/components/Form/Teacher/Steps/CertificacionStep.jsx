@@ -14,7 +14,17 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
 
   useEffect(() => {
     onChange({ certifications: certificates });
-  }, [certificates, onChange]);
+    if(hasCertificate){
+       const allCertificatesValid = certificates.every(cert => {
+        return cert.subject && cert.studyStart && cert.studyEnd && cert.fileUrl;
+      });
+      if (allCertificatesValid) {
+        setIsVerified(true);
+      } else {
+        setIsVerified(false);
+      }
+    }
+  }, [certificates]);
 
   const addCertificate = () => {
     setCertificates([...certificates, {}]);
@@ -151,7 +161,6 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
             I don't have a teaching certificate
           </Checkbox>
         </Form.Item>
-
         {hasCertificate && (
           <>
             {certificates.map((cert, index) => (
