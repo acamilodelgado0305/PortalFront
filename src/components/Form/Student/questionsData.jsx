@@ -34,83 +34,114 @@ export const questions = [
           { text: "Turco" },
           { text: "Hebreo" },
           { text: "Húngaro" },
-          { text: "Checo" }
+          { text: "Checo" },
+          { text: "Polaco" },
+          { text: "Danés" },
+          { text: "Islandés" },
+          { text: "Tailandés" },
+          { text: "Vietnamita" },
+          { text: "Indonesio" },
+          { text: "Malayo" },
+          { text: "Tagalo" },
+          { text: "Hindi" },
+          { text: "Bengalí" },
+          { text: "Punjabi" },
+          { text: "Ucraniano" },
+          { text: "Serbio" },
+          { text: "Croata" },
+          { text: "Eslovaco" },
+          { text: "Esloveno" },
+          { text: "Letón" },
+          { text: "Lituano" },
+          { text: "Estonio" },
+          { text: "Georgiano" },
+          { text: "Armenio" },
+          { text: "Tamil" },
+          { text: "Telugu" },
+          { text: "Persa" },
+          { text: "Kazajo" },
+          { text: "Uzbeco" },
+          { text: "Romaní" }
         ]
-
       },
+
       {
         text: "Arte",
         svg: (<SignatureOutlined />),
         suboptions: [
           { text: "Pintura" },
           { text: "Escultura" },
+          { text: "Arquitectura" },
           { text: "Música" },
-          { text: "Teatro" }
+          { text: "Poesía/Literatura" },
+          { text: "Danza" },
+          { text: "Artes Escénicas" }
         ]
       },
+
       {
         text: "Matemáticas",
         svg: (<CalculatorOutlined />),
         suboptions: [
+          { text: "Aritmética" },
           { text: "Álgebra" },
           { text: "Geometría" },
+          { text: "Trigonometría" },
           { text: "Cálculo" },
-          { text: "Estadística" }
+          { text: "Probabilidad y Estadística" },
+          { text: "Teoría de Números" },
+          { text: "Topología" }
         ]
-      },
+      }
+      ,
       {
         text: "Ciencias Naturales",
         svg: (<ExperimentOutlined />),
         suboptions: [
+          { text: "Ciencia Natural" },
+          { text: "Ciencia Física" },
           { text: "Física" },
           { text: "Química" },
-          { text: "Biología" }
+          { text: "Astronomía" }
         ]
-      },
+      }
+      ,
       {
         text: "Ciencias Sociales",
         svg: (<ExperimentOutlined />),
         suboptions: [
+          { text: "Arqueología" },
           { text: "Historia" },
+          { text: "Geografía" },
+          { text: "Derecho" },
+          { text: "Lingüística" },
           { text: "Psicología" },
-          { text: "Sociología" }
+          { text: "Ciencia Política" },
+          { text: "Antropología" },
+          { text: "Economía" },
+          { text: "Sociología" },
+          { text: "Psicología Social" }
         ]
       },
+
       {
-        text: "Ciencia y Tecnología",
+        text: "Tecnología",
         svg: (<ExperimentOutlined />),
         suboptions: [
-          { text: "Ingeniería" },
-          { text: "Astronomía" },
-          { text: "Ciencias de la Computación" }
-        ]
-      },
-      {
-        text: "Lenguajes de Programación",
-        svg: (<BookOutlined />),
-        suboptions: [
-          { text: "JavaScript" },
-          { text: "Python" },
-          { text: "Java" },
-          { text: "C++" }
-        ]
-      },
-      {
-        text: "Negocios",
-        svg: (<CalculatorOutlined />),
-        suboptions: [
-          { text: "Finanzas" },
-          { text: "Gestión" },
-          { text: "Marketing" }
-        ]
-      },
-      {
-        text: "Salud",
-        svg: (<CalculatorOutlined />),
-        suboptions: [
-          { text: "Nutrición" },
-          { text: "Fisioterapia" },
-          { text: "Salud Mental" }
+          { text: "Tecnología" },
+          { text: "Desarrollo Web" },
+          { text: "Diseño Gráfico" },
+          { text: "Ciencia de Datos y Analítica" },
+          { text: "Inteligencia Artificial y Aprendizaje Automático" },
+          { text: "Ciberseguridad" },
+          { text: "Desarrollo Web y Móvil" },
+          { text: "Negocios" },
+          { text: "Marketing Digital" },
+          { text: "SEO" },
+          { text: "Excel" },
+          { text: "Power BI" },
+          { text: "Finanzas y Contabilidad" },
+          { text: "Coaching Online" }
         ]
       },
       {
