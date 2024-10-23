@@ -21,7 +21,7 @@ const EducationStep = ({ onChange, setIsVerified }) => {
   const handleCheckboxChange = async (e) => {
     const isChecked = e.target.checked;
     setHasHigherEducation(!isChecked);
-    setIsVerified(!isChecked);
+    setIsVerified(isChecked);
     if (isChecked) {
       setList([{}]);
       onChange({ 'education': 'empty' });
