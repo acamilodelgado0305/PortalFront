@@ -104,6 +104,7 @@ if(isVerified) {
 
   const prev = () => {
     setCurrentStep(currentStep - 1);
+    setIsVerified(false)
   };
 
   const getCurrentStepContent = () => {
