@@ -6,7 +6,7 @@ import { uploadImage } from "../../../../services/utils.js";
 
 const { Option } = Select;
 
-const CertificationStep = ({ onChange }) => {
+const CertificationStep = ({ onChange, setIsVerified }) => {
   const [uploading, setUploading] = useState(false);
   const [form] = Form.useForm();
   const [hasCertificate, setHasCertificate] = useState(true);
@@ -141,7 +141,12 @@ const CertificationStep = ({ onChange }) => {
           <Checkbox
             className="text-xl"
             checked={!hasCertificate}
-            onChange={(e) => setHasCertificate(!e.target.checked)}
+            onChange={(e) => {
+              e.preventDefault();
+              const isChecked = !e.target.checked;
+              setHasCertificate(isChecked);
+              setIsVerified(!isChecked);
+            }}
           >
             I don't have a teaching certificate
           </Checkbox>

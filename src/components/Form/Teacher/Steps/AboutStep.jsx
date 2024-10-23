@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Checkbox } from 'antd';
 import { UserOutlined, MailOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import PhoneInput from 'react-phone-input-2';
@@ -8,20 +8,22 @@ import { checkTeacherEmailExists } from '../../../../services/teacher.services';
 
 const { Option } = Select;
 
-const AboutStep = ({ onChange }) => {
+const AboutStep = ({ onChange, setIsVerified }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [emailStatus, setEmailStatus] = useState(null); // null, 'success', 'error'
+  const [formValues, setFormValues] = useState({}); // To track form values
 
   const handleValuesChange = (changedValues) => {
+    setFormValues((prevValues) => ({ ...prevValues, ...changedValues })); // Update local form values
     onChange(changedValues);
   };
 
   const handleEmailBlur = async (email) => {
     if (email) {
       const emailExists = await checkTeacherEmailExists(email);
-      if (emailExists) { 
+      if (emailExists) {
         setEmailStatus('error');
         setEmailError('This email is already registered');
       } else {
@@ -30,6 +32,24 @@ const AboutStep = ({ onChange }) => {
       }
     }
   };
+
+  // Effect to check if all required fields are filled
+  useEffect(() => {
+    const allFieldsFilled = Object.keys(formValues).length >= 10 && // Check for the expected number of filled fields
+      formValues.firstName &&
+      formValues.lastName &&
+      formValues.email &&
+      formValues.password &&
+      formValues.confirmPassword &&
+      formValues.countryOfBirth &&
+      formValues.subjectYouTeach &&
+      formValues.language &&
+      formValues.languageLevel &&
+      formValues.phoneNumber &&
+      formValues.isOver18;
+
+    setIsVerified(allFieldsFilled);
+  }, [formValues, setIsVerified]);
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
