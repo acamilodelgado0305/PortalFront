@@ -2,8 +2,8 @@
 
 import axios from "axios";
 
+const BACK_URL = "https://back.app.esturio.com";
 
-const BACK_URL = import.meta.env.VITE_API_BACKEND ;
 
 // Instancia de axios personalizada
 export const backApi = axios.create({
