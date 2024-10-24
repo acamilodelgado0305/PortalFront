@@ -136,7 +136,7 @@ const Login = () => {
                     <div className="text-center">
                         <button
                             type="submit"
-                            className="w-full p-3 bg-pink-500 text-white rounded-lg font-bold hover:bg-pink-600"
+                            className="w-full p-3 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600"
                         >
                             Iniciar sesión
                         </button>

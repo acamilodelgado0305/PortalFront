@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'antd';
-import { FaEye, FaUserCircle } from 'react-icons/fa';  // Importamos el ícono del ojo
+import { FaEye, FaUserCircle } from 'react-icons/fa';
 
 const TeachersSection = () => {
-    const [teachers, setTeachers] = useState([]); // Estado para almacenar los profesores
+    const [teachers, setTeachers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showInactive, setShowInactive] = useState(true); // Controla si se muestran inactivos o activos
+    const [showInactive, setShowInactive] = useState(true);
     const [approvalModalVisible, setApprovalModalVisible] = useState(false);
 
-    // Llamada a la API para obtener los profesores
     useEffect(() => {
         const fetchTeachers = async () => {
             try {
-                const response = await fetch('https://back.app.esturio.com/api/teachers'); // Llamada a tu API real
+                const response = await fetch('https://back.app.esturio.com/api/teachers');
                 const data = await response.json();
-                setTeachers(data.data); // Asignar los datos recibidos de la API
+                setTeachers(data.data);
                 setLoading(false);
             } catch (err) {
                 setError('Error al cargar los profesores');
@@ -25,31 +24,22 @@ const TeachersSection = () => {
             }
         };
 
-        fetchTeachers(); // Ejecutar la función para traer los profesores
+        fetchTeachers();
     }, []);
 
-    // Función para mostrar el modal de detalles
     const showModal = (teacher) => {
         setSelectedTeacher(teacher);
         setIsModalVisible(true);
     };
 
-    // Función para cerrar el modal de detalles
-    const handleOk = () => {
-        setIsModalVisible(false);
-    };
+    const handleOk = () => setIsModalVisible(false);
+    const handleCancel = () => setIsModalVisible(false);
 
-    const handleCancel = () => {
-        setIsModalVisible(false);
-    };
-
-    // Función para aprobar a un profesor
     const approveTeacher = (teacher) => {
-        console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`); // Simula la aprobación
-        setApprovalModalVisible(true); // Muestra el modal de aprobación
+        console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
+        setApprovalModalVisible(true);
     };
 
-    // Filtrar profesores por su estado (activos o inactivos)
     const filteredTeachers = teachers.filter(teacher => teacher.status === !showInactive);
 
     return (
@@ -58,10 +48,9 @@ const TeachersSection = () => {
                 {showInactive ? 'Profesores Inactivos' : 'Profesores Activos'}
             </h1>
 
-            {/* Botón para alternar entre los profesores activos e inactivos */}
             <Button
                 type="default"
-                style={{ marginBottom: '16px' }}
+                className="mb-4"
                 onClick={() => setShowInactive(!showInactive)}
             >
                 {showInactive ? 'Mostrar Profesores Activos' : 'Mostrar Profesores Inactivos'}
@@ -69,50 +58,62 @@ const TeachersSection = () => {
 
             {loading && <p>Cargando profesores...</p>}
             {error && <p className="text-red-500">{error}</p>}
-            <div className="flex flex-wrap">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filteredTeachers.map(teacher => (
-                    <div className="bg-white p-4 shadow rounded-md flex flex-col justify-between w-72 m-4" key={teacher.id}>
+                    <div className="bg-white p-6 shadow-sm rounded-lg hover:shadow-md transition-shadow" key={teacher.id}>
                         <div className="flex items-center mb-4">
-                            <div className="w-16 h-16 bg-gray-300 rounded-full flex-shrink-0 overflow-hidden">
+                            <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
                                 {teacher.profileImageUrl ? (
                                     <img
                                         src={teacher.profileImageUrl}
                                         alt={`${teacher.firstName} ${teacher.lastName}`}
                                         className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.currentTarget.src = '/api/placeholder/64/64';
+                                        }}
                                     />
                                 ) : (
-                                    <FaUserCircle className="w-full h-full text-gray-400" />
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <FaUserCircle className="w-12 h-12 text-gray-400" />
+                                    </div>
                                 )}
                             </div>
-                            <div className="ml-4">
-                                <h4 className="text-lg font-bold">{teacher.firstName} {teacher.lastName}</h4>
-                                <p className="text-sm text-gray-500">{teacher.email}</p>
+                            <div className="ml-4 flex-1">
+                                <h4 className="text-lg font-bold text-gray-800 line-clamp-1">
+                                    {teacher.firstName} {teacher.lastName}
+                                </h4>
+                                <p className="text-sm text-gray-500 line-clamp-1">{teacher.email}</p>
                             </div>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <p className="text-sm text-gray-600">Tarifa por hora: ${teacher.hourlyRate}</p>
-                            {/* Reemplazamos el botón "Ver detalles" por el icono del ojo */}
-                            <FaEye
-                                className="text-purple-500 cursor-pointer"
-                                size={24}
-                                onClick={() => showModal(teacher)}
-                            />
-                            {/* Botón de aprobar con un color diferente */}
-                            {showInactive && (
-                                <Button
-                                    type="default"
-                                    style={{ backgroundColor: '#a855f7', borderColor: '#c631e7', color: 'white' }}  // Cambiamos el color del botón
-                                    onClick={() => approveTeacher(teacher)}
+                        
+                        <div className="flex justify-between items-center mt-4">
+                            <p className="text-sm font-medium text-gray-700">
+                                ${teacher.hourlyRate}/hora
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                    onClick={() => showModal(teacher)}
                                 >
-                                    Aprobar
-                                </Button>
-                            )}
+                                    <FaEye className="text-purple-500" size={20} />
+                                </button>
+                                {showInactive && (
+                                    <Button
+                                        type="default"
+                                        className="bg-purple-500 hover:bg-purple-600 text-white border-purple-500"
+                                        onClick={() => approveTeacher(teacher)}
+                                    >
+                                        Aprobar
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Modal para mostrar detalles del profesor */}
             <Modal
                 title="Detalles del Profesor"
                 visible={isModalVisible}
@@ -124,18 +125,38 @@ const TeachersSection = () => {
                 ]}
             >
                 {selectedTeacher && (
-                    <div>
-                        <p><strong>Nombre:</strong> {selectedTeacher.firstName} {selectedTeacher.lastName}</p>
-                        <p><strong>Email:</strong> {selectedTeacher.email}</p>
-                        <p><strong>Tarifa por Hora:</strong> ${selectedTeacher.hourlyRate}</p>
-                        <p><strong>Comisión:</strong> ${selectedTeacher.commissionAmount} ({selectedTeacher.commissionRate * 100}%)</p>
-                        <p><strong>Última Actualización:</strong> {new Date(selectedTeacher.updatedAt).toLocaleDateString()}</p>
-                        <p><strong>Estado:</strong> {selectedTeacher.status ? "Activo" : "Inactivo"}</p>
+                    <div className="space-y-3">
+                        <div className="flex items-center mb-4">
+                            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 mr-4">
+                                {selectedTeacher.profileImageUrl ? (
+                                    <img
+                                        src={selectedTeacher.profileImageUrl}
+                                        alt={`${selectedTeacher.firstName} ${selectedTeacher.lastName}`}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.currentTarget.src = '/api/placeholder/80/80';
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <FaUserCircle className="w-16 h-16 text-gray-400" />
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold">{selectedTeacher.firstName} {selectedTeacher.lastName}</h3>
+                                <p className="text-gray-500">{selectedTeacher.email}</p>
+                            </div>
+                        </div>
+                        <p className="text-gray-700"><strong>Tarifa por Hora:</strong> ${selectedTeacher.hourlyRate}</p>
+                        <p className="text-gray-700"><strong>Comisión:</strong> ${selectedTeacher.commissionAmount} ({selectedTeacher.commissionRate * 100}%)</p>
+                        <p className="text-gray-700"><strong>Última Actualización:</strong> {new Date(selectedTeacher.updatedAt).toLocaleDateString()}</p>
+                        <p className="text-gray-700"><strong>Estado:</strong> {selectedTeacher.status ? "Activo" : "Inactivo"}</p>
                     </div>
                 )}
             </Modal>
 
-            {/* Modal de confirmación de aprobación */}
             <Modal
                 title="Aprobación Exitosa"
                 visible={approvalModalVisible}
