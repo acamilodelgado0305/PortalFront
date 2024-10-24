@@ -3,7 +3,7 @@ import { Form, Checkbox, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import EducationForm from './components/EducationStep/index'; 
 
-const EducationStep = ({ onChange }) => {
+const EducationStep = ({ onChange, setIsVerified }) => {
   const [form] = Form.useForm();
   const [hasHigherEducation, setHasHigherEducation] = useState(true);
   const [list, setList] = useState([{}]);
@@ -21,7 +21,7 @@ const EducationStep = ({ onChange }) => {
   const handleCheckboxChange = async (e) => {
     const isChecked = e.target.checked;
     setHasHigherEducation(!isChecked);
-
+    setIsVerified(isChecked);
     if (isChecked) {
       setList([{}]);
       onChange({ 'education': 'empty' });
@@ -56,6 +56,7 @@ const EducationStep = ({ onChange }) => {
                 list={list}
                 setList={setList}
                 onChange={onChange}
+                setIsVerified={setIsVerified}
               />
             ))}
 

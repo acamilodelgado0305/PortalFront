@@ -1,4 +1,3 @@
-import React from "react";
 
 const Steps = () => {
   return (
@@ -12,7 +11,7 @@ const Steps = () => {
         </p>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
+      <div className="md:h-[400px] flex flex-col items-center justify-center gap-6 sm:flex-row">
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-xs">
           <h3 className="text-6xl font-bold text-purple-500">1</h3>
           <h4 className="text-3xl font-bold text-blue-900 mt-4">Reserva una clase de prueba</h4>
@@ -21,7 +20,7 @@ const Steps = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-xs">
+        <div className="md:h-[400px] bg-white rounded-lg shadow-xl p-6 max-w-xs">
           <h3 className="text-6xl font-bold text-purple-500">2</h3>
           <h4 className="text-3xl font-bold text-blue-900 mt-4">Pruébalo gratis</h4>
           <p className="text-gray-600 mt-7 text-xl">
@@ -29,7 +28,7 @@ const Steps = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-xs">
+        <div className="md:h-[400px] bg-white rounded-lg shadow-xl p-6 max-w-xs">
           <h3 className="text-6xl font-bold text-purple-500">3</h3>
           <h4 className="text-3xl font-bold text-blue-900 mt-4">Empieza a aprender</h4>
           <p className="text-gray-600 mt-7 text-xl">

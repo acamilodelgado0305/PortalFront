@@ -3,7 +3,7 @@ import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
 
-const PhotoStep = ({ onChange }) => {
+const PhotoStep = ({ onChange, setIsVerified }) => {
   const [uploading, setUploading] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [rotation, setRotation] = useState(0);
@@ -28,6 +28,7 @@ const PhotoStep = ({ onChange }) => {
       const imageDataUrl = await readFile(file);
       setProfileImageUrl(imageDataUrl);
       setIsEditing(true);
+      setIsVerified(true)
     } catch (error) {
       console.error("Error reading image:", error);
       Swal.fire({
@@ -100,6 +101,7 @@ const PhotoStep = ({ onChange }) => {
       if (result.isConfirmed) {
         setProfileImageUrl(null);
         setIsEditing(false);
+        setIsVerified(false)
         setRotation(0);
         setZoom(1);
         onChange({ profileImageUrl: null });

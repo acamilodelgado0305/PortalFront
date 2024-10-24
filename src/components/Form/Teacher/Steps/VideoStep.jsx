@@ -6,7 +6,7 @@ import VideoPreview from "./components/videoStep/VideoPreview.jsx";
 import VideoRecorder from "./components/videoStep/VideoRecorder.jsx";
 import { fileUpload } from "../../../../helpers/fileUpload";
 
-const VideoStep = ({onChange}) => {
+const VideoStep = ({ onChange, setIsVerified }) => {
   const [form] = Form.useForm();
   const [videoUploadMethod, setVideoUploadMethod] = useState("file");
   const [urlPreview, setUrlPreview] = useState("");
@@ -19,6 +19,7 @@ const VideoStep = ({onChange}) => {
 
   useEffect(()=>{
     onChange({'video':urlPreview})
+    setIsVerified(urlPreview.trim() !== "");
   },[urlPreview])
   return (
     <div className="max-w-lg mx-auto p-6">

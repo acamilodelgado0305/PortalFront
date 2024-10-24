@@ -7,7 +7,8 @@ const { RangePicker } = TimePicker;
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const ScheduleStep = ({onChange}) => {
+const ScheduleStep = ({onChange, setIsVerified}) => {
+  setIsVerified(true)
   const [form] = Form.useForm();
   const [schedule, setSchedule] = useState(
     daysOfWeek.reduce((acc, day) => ({
