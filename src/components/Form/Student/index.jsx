@@ -139,43 +139,45 @@ function FormStudent() {
     }
 
     return (
-      <div className="w-full">
-        {showSuboptions ? (
-          <>
-            <h2 className="text-2xl font-bold mb-4">Subopciones de {selectedOption.text}</h2>
-            <div className="max-h-[50em] overflow-y-auto">
-              {showSuboptions.map((suboption, idx) => (
+        <div className="w-full">
+          {showSuboptions ? (
+            <>
+              <div className="flex items-center mb-4">
                 <button
-                  key={idx}
-                  onClick={() => handleSuboptionSelected(suboption)}
-                  className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
+                  onClick={handleShowAllOptions}
+                  className="text-3xl mr-2"
                 >
-                  {suboption.text}
+                  ←
                 </button>
-              ))}
-            </div>
-            <button
-              onClick={handleShowAllOptions}
-              className="mt-4 w-full bg-gray-200 p-2 text-lg font-semibold text-center hover:bg-gray-300"
-            >
-              Mostrar todas las opciones
-            </button>
-          </>
-        ) : (
-          <>
-            {currentQuestion.options.map((option, idx) => (
-              <div key={idx} className="mb-4">
-                <OptionButton
-                  text={option.text}
-                  isSelected={selectedOption === option}
-                  onClick={() => handleOptionSelected(option)}
-                />
+                <h2 className="text-2xl font-bold">Subopciones de {selectedOption.text}</h2>
               </div>
-            ))}
-          </>
-        )}
-      </div>
-    );
+              <div className="max-h-[45em] overflow-y-auto">
+                {showSuboptions.map((suboption, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSuboptionSelected(suboption)}
+                    className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
+                  >
+                    {suboption.text}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              {currentQuestion.options.map((option, idx) => (
+                <div key={idx} className="mb-4">
+                  <OptionButton
+                    text={option.text}
+                    isSelected={selectedOption === option}
+                    onClick={() => handleOptionSelected(option)}
+                  />
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      );
   };
 
   return (
@@ -183,7 +185,7 @@ function FormStudent() {
       <LoadingModal isOpen={isLoading} />
       <button
         onClick={() => navigate(-1)}
-        className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-white"
+        className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-purple"
       >
         ←
       </button>
