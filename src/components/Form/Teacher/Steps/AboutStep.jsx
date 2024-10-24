@@ -170,8 +170,28 @@ const AboutStep = ({ onChange, setIsVerified }) => {
               className="text-lg border-2 border-black rounded-md"
               size="large"
             >
-              <Option value="english">English</Option>
-              <Option value="spanish">Spanish</Option>
+              <Option value="ingles">Inglés</Option>
+              <Option value="espanol">Español</Option>
+              <Option value="frances">Francés</Option>
+              <Option value="aleman">Alemán</Option>
+              <Option value="mandarin">Mandarín</Option>
+              <Option value="italiano">Italiano</Option>
+              <Option value="portugues">Portugués</Option>
+              <Option value="ruso">Ruso</Option>
+              <Option value="arabe">Árabe</Option>
+              <Option value="japones">Japonés</Option>
+              <Option value="coreano">Coreano</Option>
+              <Option value="holandes">Holandés</Option>
+              <Option value="sueco">Sueco</Option>
+              <Option value="danes">Danés</Option>
+              <Option value="noruego">Noruego</Option>
+              <Option value="finlandes">Finlandés</Option>
+              <Option value="griego">Griego</Option>
+              <Option value="turco">Turco</Option>
+              <Option value="hebreo">Hebreo</Option>
+              <Option value="hungaro">Húngaro</Option>
+              <Option value="checo">Checo</Option>
+
             </Select>
           </Form.Item>
 
@@ -206,7 +226,7 @@ const AboutStep = ({ onChange, setIsVerified }) => {
               width: '100%',
               height: '48px',
               fontSize: '18px',
-              border: '2px solid black' 
+              border: '2px solid black'
             }}
           />
         </Form.Item>

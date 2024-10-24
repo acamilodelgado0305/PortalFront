@@ -40,36 +40,23 @@ function FormStudent() {
     localStorage.setItem("studentPreferences", JSON.stringify(answers));
   }, [answers]);
 
-  const handleOptionSelected = (option, suboption = null) => {
+  const handleOptionSelected = (option) => {
+    setSelectedOption(option);
+    setShowSuboptions(option.suboptions);
+    setSelectedSuboption(null);
+  };
+
+  const handleSuboptionSelected = (suboption) => {
+    setSelectedSuboption(suboption);
     const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = `${selectedOption.text}+${suboption.text}`;
+    setAnswers(newAnswers);
+  };
 
-    if (currentQuestionIndex === 0) {
-      if (suboption) {
-        newAnswers[currentQuestionIndex] = `${option.text}+${suboption.text}`;
-        setSelectedSuboption(suboption.text);
-      } else {
-        newAnswers[currentQuestionIndex] = option.text;
-        setSelectedSuboption(null);
-      }
-      setAnswers(newAnswers);
-      setSelectedOption(option.text);
-      setShowSuboptions(option.suboptions);
-    } else {
-      if (suboption) {
-        newAnswers[currentQuestionIndex] = suboption;
-      } else {
-        newAnswers[currentQuestionIndex] = option;
-      }
-      setAnswers(newAnswers);
-
-      if (selectedOption === option.text) {
-        setShowSuboptions(null);
-        setSelectedOption(null);
-      } else {
-        setShowSuboptions(option.suboptions);
-        setSelectedOption(option.text);
-      }
-    }
+  const handleShowAllOptions = () => {
+    setShowSuboptions(null);
+    setSelectedOption(null);
+    setSelectedSuboption(null);
   };
 
   const OptionButton = ({ text, isSelected, onClick }) => {
@@ -86,9 +73,7 @@ function FormStudent() {
   const handleContinue = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setShowSuboptions(null);
-      setSelectedOption(null);
-      setSelectedSuboption(null);
+      handleShowAllOptions();
     } else {
       finishForm();
     }
@@ -106,9 +91,7 @@ function FormStudent() {
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setSelectedOption(null);
-      setSelectedSuboption(null);
-      setShowSuboptions(null);
+      handleShowAllOptions();
     }
   };
 
@@ -133,75 +116,97 @@ function FormStudent() {
     );
   };
 
+  const renderQuestionContent = () => {
+    const currentQuestion = questions[currentQuestionIndex];
+
+    if (currentQuestion.type === "slider") {
+      return (
+        <div className="w-full">
+          <input
+            type="range"
+            min={currentQuestion.min}
+            max={currentQuestion.max}
+            step={currentQuestion.step}
+            value={budget}
+            onChange={handleBudgetChange}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <div className="mt-4 text-center text-xl font-semibold">
+            {budget} {currentQuestion.unit}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+        <div className="w-full">
+          {showSuboptions ? (
+            <>
+              <div className="flex items-center mb-4">
+                <button
+                  onClick={handleShowAllOptions}
+                  className="text-3xl mr-2"
+                >
+                  ←
+                </button>
+                <h2 className="text-2xl font-bold">Subopciones de {selectedOption.text}</h2>
+              </div>
+              <div className="max-h-[45em] overflow-y-auto">
+                {showSuboptions.map((suboption, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSuboptionSelected(suboption)}
+                    className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
+                  >
+                    {suboption.text}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              {currentQuestion.options.map((option, idx) => (
+                <div key={idx} className="mb-4">
+                  <OptionButton
+                    text={option.text}
+                    isSelected={selectedOption === option}
+                    onClick={() => handleOptionSelected(option)}
+                  />
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      );
+  };
+
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-purple-400">
+    <div className="flex min-h-screen flex-col justify-center bg-white-400">
       <LoadingModal isOpen={isLoading} />
       <button
         onClick={() => navigate(-1)}
-        className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-white"
+        className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-purple"
       >
         ←
       </button>
 
       <div className="flex h-screen items-center justify-center">
         <div className="flex h-full w-1/2 items-center p-10 pl-20">
-          <h1 className="text-7xl font-bold text-white">
+          <h1 className="text-7xl font-bold text-black">
             {questions[currentQuestionIndex].question}
           </h1>
         </div>
 
         <div className="flex h-[100vh] w-[50%] flex-col items-center justify-center bg-white p-10 shadow-lg">
           {renderProgressBar()}
-          {questions[currentQuestionIndex].type === "slider" ? (
-            <div className="w-full">
-              <input
-                type="range"
-                min={questions[currentQuestionIndex].min}
-                max={questions[currentQuestionIndex].max}
-                step={questions[currentQuestionIndex].step}
-                value={budget}
-                onChange={handleBudgetChange}
-                className="w-full"
-              />
-              <p className="mt-2 text-lg text-center">
-                Presupuesto: {budget} {questions[currentQuestionIndex].unit}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-6">
-              {questions[currentQuestionIndex].options.map((option, idx) => (
-                <div key={idx}>
-                  <OptionButton
-                    text={option.text}
-                    isSelected={selectedOption === option.text}
-                    onClick={() => handleOptionSelected(option)}
-                  />
-                  {option.suboptions && showSuboptions === option.suboptions && (
-                    <div className="grid grid-cols-2 mt-2 pl-4">
-                      {option.suboptions.map((suboption, subidx) => (
-                        <button
-                          key={subidx}
-                          onClick={() => handleOptionSelected(option, suboption)}
-                          className={`block w-full p-2 text-left text-sm font-normal hover:bg-purple-200 ${
-                            selectedSuboption === suboption.text ? "bg-purple-300" : ""
-                          }`}
-                        >
-                          {suboption.text}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          {renderQuestionContent()}
+
           <div className="mt-8 flex w-full justify-between">
             <button
               onClick={handleBack}
               disabled={currentQuestionIndex === 0}
-              className={`${
-                currentQuestionIndex === 0 ? "opacity-50" : ""
-              } bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-purple-700`}
+              className={`${currentQuestionIndex === 0 ? "opacity-50" : ""
+                } bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-purple-700`}
             >
               Atrás
             </button>
