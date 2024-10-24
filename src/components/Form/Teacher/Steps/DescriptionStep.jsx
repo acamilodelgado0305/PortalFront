@@ -36,7 +36,7 @@ const stepsContent = [
   },
 ];
 
-const ProfileDescriptionStep = ({ onChange }) => {
+const ProfileDescriptionStep = ({ onChange, setIsVerified }) => {
   const [form] = Form.useForm();
   const [charCount, setCharCount] = useState(0);
   const [step, setStep] = useState(0);
@@ -69,6 +69,8 @@ const ProfileDescriptionStep = ({ onChange }) => {
 
   useEffect(() => {
     onChange({ 'description': formValues });
+    const allFieldsFilled = Object.values(formValues).every(value => value.trim() !== "");
+    setIsVerified(allFieldsFilled);
   }, [formValues]);
 
   return (
