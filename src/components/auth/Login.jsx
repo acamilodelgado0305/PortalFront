@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import KeyIcon from '../../assets/icons/key1.svg';  // Ajusta la ruta si es necesario
+import { FaEye, FaEyeSlash, FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);  // Para el checkbox de "Recuérdame"
     const navigate = useNavigate();  // Para la redirección
 
     // Función para alternar la visibilidad de la contraseña
@@ -31,7 +31,6 @@ const Login = () => {
 
             // Si la autenticación es exitosa, almacenar el token y redirigir
             if (data.success) {
-
                 localStorage.setItem('token', data.token);
 
                 // Redirigir al dashboard
@@ -46,20 +45,41 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen bg-gradient-to-r from-blue-200 to-purple-300">
-            <div className="bg-white bg-opacity-20 backdrop-blur-md rounded-lg shadow-lg p-8 w-96">
+        <div className="flex items-center justify-center h-screen bg-gray-100">
+            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+
+                {/* Encabezado de inicio de sesión */}
+                <h2 className="text-2xl font-bold text-center mb-6">Iniciar sesión</h2>
+
+                {/* Botones de inicio de sesión con redes sociales (sin color de fondo) */}
+                <div className="mb-6">
+                    <button className="w-full p-2 mb-3 border rounded-lg flex items-center justify-center">
+                        <FaGoogle className="mr-2 text-red-500" /> {/* El icono de Google con sus colores */}
+                        Continuar con Google
+                    </button>
+                    <button className="w-full p-2 mb-3 border rounded-lg flex items-center justify-center">
+                        <FaFacebook className="mr-2 text-blue-600" /> {/* El icono de Facebook en azul */}
+                        Continuar con Facebook
+                    </button>
+                    <button className="w-full p-2 border rounded-lg flex items-center justify-center">
+                        <FaApple className="mr-2 text-black" /> {/* El icono de Apple en negro */}
+                        Continuar con Apple
+                    </button>
+                </div>
+
+                <div className="text-center text-gray-500 mb-4">o</div>
 
                 {/* Campos de formulario */}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
-                            User
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                            Dirección de correo
                         </label>
                         <input
-                            className="w-full p-2 text-gray-900 rounded-lg bg-opacity-50 focus:outline-none"
-                            type="text"
-                            id="username"
-                            placeholder="Enter your username"
+                            className="w-full p-2 border rounded-lg focus:outline-none"
+                            type="email"
+                            id="email"
+                            placeholder="Introduce tu correo"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -67,14 +87,14 @@ const Login = () => {
                     </div>
 
                     <div className="mb-4 relative">
-                        <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-                            Password
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                            Contraseña
                         </label>
                         <input
-                            className="w-full p-2 text-gray-900 rounded-lg bg-opacity-50 focus:outline-none"
+                            className="w-full p-2 border rounded-lg focus:outline-none"
                             type={passwordVisible ? "text" : "password"}
                             id="password"
-                            placeholder="Enter your password"
+                            placeholder="Introduce tu contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -84,25 +104,48 @@ const Login = () => {
                             onClick={togglePasswordVisibility}
                         >
                             {passwordVisible ? (
-                                <FaEyeSlash className="text-gray-400 mt-6" />
+                                <FaEyeSlash className="text-gray-400 mt-7" />
                             ) : (
-                                <FaEye className="text-gray-400 mt-6" />
+                                <FaEye className="text-gray-400 mt-7" />
                             )}
                         </div>
                     </div>
 
-                    {/* Ícono de llave como botón de login */}
-                    <div className="text-center mt-6">
-                        <button type="submit">
-                            <img src={KeyIcon} alt="Key Icon" className="mx-auto w-16 h-16 cursor-pointer" />
+                    {/* Checkbox de recordar */}
+                    <div className="mb-4 flex items-center">
+                        <input
+                            className="mr-2 leading-tight"
+                            type="checkbox"
+                            id="rememberMe"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                        />
+                        <label className="text-sm text-gray-700" htmlFor="rememberMe">
+                            Recuérdame
+                        </label>
+                    </div>
+
+                    {/* reCAPTCHA simulado */}
+                    <div className="mb-4 flex justify-center">
+                        <div className="bg-gray-200 w-full h-12 rounded-lg flex items-center justify-center">
+                            <p className="text-gray-500">reCAPTCHA</p>
+                        </div>
+                    </div>
+
+                    {/* Botón de Iniciar sesión */}
+                    <div className="text-center">
+                        <button
+                            type="submit"
+                            className="w-full p-3 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600"
+                        >
+                            Iniciar sesión
                         </button>
                     </div>
                 </form>
 
-                <div className="flex justify-between text-white text-sm mt-4">
-                    <a href="#" className="hover:underline">Forgot password</a>
-                    <a href="#" className="hover:underline">Change password</a>
-                    <a href="#" className="hover:underline">Register</a>
+                <div className="flex justify-between text-gray-600 text-sm mt-4">
+                    <a href="#" className="hover:underline">¿Olvidaste tu contraseña?</a>
+                    <a href="#" className="hover:underline">Regístrate</a>
                 </div>
             </div>
         </div>
