@@ -152,7 +152,7 @@ export const questions = [
       }
 
     ],
-  },
+  }, 
   {
     id: 2,
     question: "¿Cuál es tu nivel de inglés?",

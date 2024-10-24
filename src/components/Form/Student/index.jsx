@@ -43,6 +43,11 @@ function FormStudent() {
   const handleOptionSelected = (option) => {
     setSelectedOption(option);
     setShowSuboptions(option.suboptions);
+    if(!option.suboptions) {
+      const newAnswers = [...answers];
+      newAnswers[currentQuestionIndex] = `${option.text}`;
+      setAnswers(newAnswers);
+    }
     setSelectedSuboption(null);
   };
 
