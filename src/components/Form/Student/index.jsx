@@ -7,6 +7,7 @@ import {
   questionLanguajes,
   questionOther,
 } from "./questionsData";
+import './index.css'
 
 function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
@@ -116,7 +117,6 @@ function FormStudent() {
       setIsLoading(false);
       setIsFormComplete(true);
       localStorage.setItem("studentPreferences", JSON.stringify(answers));
-      console.log("studentPreferences", JSON.stringify(answers))
     }, 2000);
   };
 
@@ -155,19 +155,21 @@ function FormStudent() {
     if (currentQuestion.type === "slider") {
       return (
         <div className="w-full">
-          <input
-            type="range"
-            min={currentQuestion.min}
-            max={currentQuestion.max}
-            step={currentQuestion.step}
-            value={budget}
-            onChange={handleBudgetChange}
-            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
-          />
-          <div className="mt-4 text-center text-xl font-semibold">
-            {budget} {currentQuestion.unit}
-          </div>
+        <input
+          type="range"
+          min={currentQuestion.min}
+          max={currentQuestion.max}
+          step={currentQuestion.step}
+          value={budget}
+          onChange={handleBudgetChange}
+          className="h-4 mt-6 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 custom-range"
+        />
+        <div className="mt-4 text-center text-xl font-semibold">
+          {budget} {currentQuestion.unit}
         </div>
+      </div>
+      
+      
       );
     }
 
