@@ -33,6 +33,7 @@ function FormStudent() {
   const [showSuboptions, setShowSuboptions] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedSuboption, setSelectedSuboption] = useState(null);
+  const [handleOtherValue, setHandleOtherValue] = useState(null)
   const navigate = useNavigate();
 
   const [currentQuestions, setCurrentQuestions] = useState(questions);
@@ -49,6 +50,14 @@ function FormStudent() {
   }, [answers]);
 
   const handleOptionSelected = (option) => {
+    if(handleOtherValue && currentQuestionIndex == 0 ) {
+      setSelectedOption(handleOtherValue);
+      const newAnswers = [...answers];
+      newAnswers[currentQuestionIndex] = `${handleOtherValue}`;
+      setAnswers(newAnswers); 
+      setCurrentQuestions(questionOther);
+      return
+    }else{
     setSelectedOption(option);
     setShowSuboptions(option.suboptions);
     if (!option.suboptions) {
@@ -56,7 +65,7 @@ function FormStudent() {
       newAnswers[currentQuestionIndex] = `${option.text}`;
       setAnswers(newAnswers);
     }
-   
+       }
   };
 
   const handleOptionList = (optionName, suboptions) => {
@@ -88,16 +97,54 @@ function FormStudent() {
     setSelectedSuboption(null);
   };
 
-  const OptionButton = ({ text, isSelected, onClick }) => {
-    return (
-      <button
-        onClick={onClick}
-        className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"}`}
-      >
-        <span>{text}</span>
-      </button>
-    );
+
+
+
+  const [isInputVisible, setIsInputVisible] = useState(false);
+
+const OptionButton = ({ text, isSelected, onClick }) => {
+
+
+
+  const handleInputSubmit = () => {
+      onClick(); 
   };
+
+  return (
+    <>
+      {text === "Otro (especificar)" && isInputVisible ? (
+        <input
+          type="text"
+          value={handleOtherValue}
+          onChange={(e)=>{setHandleOtherValue(e.target.value)}} // Permite escribir
+          onBlur={handleInputSubmit} // Ejecuta al perder el foco
+          className="w-full rounded-lg border p-4 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          placeholder="Especifica tu respuesta..."
+          autoFocus
+        />
+      ) : (
+        <button
+          onClick={() => {
+            if (text === "Otro (especificar)") {
+              setIsInputVisible(true); // Muestra el input cuando seleccionas "Otro"
+            } else {
+              onClick(); // Ejecuta onClick para otras opciones
+            }
+          }}
+          className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
+            isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
+          }`}
+        >
+          <span>{text}</span>
+        </button>
+      )}
+    </>
+  );
+};
+
+
+  
+  
 
   const handleContinue = () => {
     if(currentQuestionIndex == 1)
@@ -149,7 +196,7 @@ function FormStudent() {
     );
   };
 
-  const renderQuestionContent = () => {
+  const renderQuestionContent = ( ) => {
     const currentQuestion = currentQuestions[currentQuestionIndex];
 
     if (currentQuestion.type === "slider") {
@@ -205,6 +252,8 @@ function FormStudent() {
                   text={option.text}
                   isSelected={selectedOption === option}
                   onClick={() => handleOptionSelected(option)}
+                  handleOtherValue={handleOtherValue}
+                  setHandleOtherValue={setHandleOtherValue}
                 />
               </div>
             ))}
