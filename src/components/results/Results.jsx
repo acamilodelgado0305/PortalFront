@@ -1,14 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { X,ArrowLeft  } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
+  const [filteredTeachers, setFilteredTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({
-    priceRange: '$ 36.000 - $ 145.500+',
-    country: 'Colombia',
-    availability: 'Mar'
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const navigate = useNavigate();
+  const [activeFilters, setActiveFilters] = useState({
+    priceRange: '',
+    country: '',
+    availability: '',
+    specialty: '',
+    language: '',
+    isNative: false,
+    category: ''
   });
+
+  const [showFilterModal, setShowFilterModal] = useState({
+    price: false,
+    country: false,
+    availability: false,
+    specialty: false,
+    language: false,
+    category: false
+  });
+
+  // Opciones de filtro predefinidas
+  const filterOptions = {
+    priceRange: [
+      '$ 36.000 - $ 50.000',
+      '$ 50.000 - $ 75.000',
+      '$ 75.000 - $ 100.000',
+      '$ 100.000 - $ 145.500+'
+    ],
+    availability: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+    specialty: ['Matemáticas', 'Inglés', 'Ciencias', 'Historia', 'Literatura', 'Física', 'Química'],
+    language: ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano']
+  };
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -16,8 +48,8 @@ const Results = () => {
         const response = await fetch('https://back.app.esturio.com/api/teachers');
         const data = await response.json();
         setTeachers(data.data);
+        setFilteredTeachers(data.data);
         setLoading(false);
-        console.log("Datos de profesores cargados:", data.data);
       } catch (err) {
         setError('Error al cargar los profesores');
         setLoading(false);
@@ -28,25 +60,136 @@ const Results = () => {
     fetchTeachers();
   }, []);
 
-  const FilterButton = ({ label, value, icon }) => (
+
+  const handleBack = () => {
+    navigate(-1); // Regresa a la página anterior
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [activeFilters, teachers]);
+
+  const applyFilters = () => {
+    let filtered = [...teachers];
+
+    if (activeFilters.priceRange) {
+      const [min, max] = activeFilters.priceRange
+        .replace(/[^0-9.-]+/g, '')
+        .split('-')
+        .map(Number);
+      filtered = filtered.filter(teacher => {
+        const rate = teacher.hourlyRate * 1000;
+        return rate >= min && (max ? rate <= max : true);
+      });
+    }
+
+    if (activeFilters.country) {
+      filtered = filtered.filter(teacher =>
+        teacher.countryOfBirth?.toLowerCase() === activeFilters.country.toLowerCase()
+      );
+    }
+
+    if (activeFilters.isNative) {
+      filtered = filtered.filter(teacher =>
+        teacher.languageLevel === 'native'
+      );
+    }
+
+    if (activeFilters.specialty) {
+      filtered = filtered.filter(teacher =>
+        teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+      );
+    }
+
+    setFilteredTeachers(filtered);
+  };
+
+  const VideoModal = ({ videoUrl, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg w-full max-w-4xl">
+        <div className="p-4 border-b flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Video de presentación</h3>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-full"
+          >
+            <X size={24} />
+          </button>
+        </div>
+        <div className="aspect-video">
+          <iframe
+            src={videoUrl}
+            className="w-full h-full"
+            allowFullScreen
+            title="Presentación del profesor"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const FilterModal = ({ title, options, onSelect, onClose, isOpen }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+        <div className="p-4">
+          <h3 className="font-semibold mb-3">{title}</h3>
+          <div className="space-y-2">
+            {options.map((option) => (
+              <button
+                key={option}
+                onClick={() => {
+                  onSelect(option);
+                  onClose();
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const FilterButton = ({ label, value, filterKey }) => (
     <div className="relative inline-block">
-      <button className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border border-gray-200">
+      <button
+        className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border border-gray-200"
+        onClick={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: !prev[filterKey] }))}
+      >
         <span>{label}</span>
-        <span className="text-gray-400">{value}</span>
+        {value && <span className="text-gray-400">{value}</span>}
         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
+
+      <FilterModal
+        title={label}
+        options={filterOptions[filterKey] || []}
+        onSelect={(selected) => {
+          setActiveFilters(prev => ({ ...prev, [filterKey]: selected }));
+        }}
+        onClose={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: false }))}
+        isOpen={showFilterModal[filterKey]}
+      />
     </div>
   );
 
   const TeacherCard = ({ teacher }) => {
-    // Formatear el precio para mostrarlo en formato de moneda
     const formatPrice = (price) => {
       return new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP'
-      }).format(price * 1000); // Multiplicamos por 1000 para convertir a pesos colombianos
+      }).format(price * 1000);
+    };
+
+    const handleVideoClick = (videoUrl) => {
+      setSelectedVideo(videoUrl);
+      setShowVideoModal(true);
     };
 
     return (
@@ -108,7 +251,7 @@ const Results = () => {
             Enviar mensaje
           </button>
           <button
-            onClick={() => window.open(teacher.video, '_blank')}
+            onClick={() => handleVideoClick(teacher.video)}
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200"
           >
             Ver presentación
@@ -117,7 +260,6 @@ const Results = () => {
       </div>
     );
   };
-
 
   if (loading) {
     return (
@@ -135,27 +277,64 @@ const Results = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
-            Profesores particulares online: reserva ya tus clases
-          </h1>
+          <div className="flex items-center mb-6">
+            <button
+              onClick={handleBack}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
+              aria-label="Regresar"
+            >
+              <ArrowLeft size={24} className="text-gray-600" />
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Profesores particulares online: reserva ya tus clases
+            </h1>
+          </div>
 
           <div className="flex flex-wrap gap-4 mb-6">
-            <FilterButton label="Precio de la clase" value={filters.priceRange} />
-            <FilterButton label="País de nacimiento" value={filters.country} />
-            <FilterButton label="Disponibilidad" value={filters.availability} />
+            <FilterButton
+              label="Precio de la clase"
+              value={activeFilters.priceRange}
+              filterKey="priceRange"
+            />
+            <FilterButton
+              label="País de nacimiento"
+              value={activeFilters.country}
+              filterKey="country"
+            />
+            <FilterButton
+              label="Disponibilidad"
+              value={activeFilters.availability}
+              filterKey="availability"
+            />
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <button className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200">
+            <button
+              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.specialty ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setShowFilterModal(prev => ({ ...prev, specialty: !prev.specialty }))}
+            >
               Especialidades
             </button>
-            <button className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200">
+            <button
+              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.language ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setShowFilterModal(prev => ({ ...prev, language: !prev.language }))}
+            >
               El profesor habla
             </button>
-            <button className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200">
+            <button
+              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
+            >
               Hablante nativo
             </button>
-            <button className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200">
+            <button
+              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.category ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setShowFilterModal(prev => ({ ...prev, category: !prev.category }))}
+            >
               Categorías del profesor
             </button>
           </div>
@@ -164,20 +343,30 @@ const Results = () => {
 
       <div className="container mx-auto px-4 py-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          {teachers.length} profesores disponibles para ajustarse a tus necesidades
+          {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
         </h2>
 
         <div className="space-y-6">
-          {Array.isArray(teachers) && teachers.map((teacher) => (
+          {filteredTeachers.map((teacher) => (
             <TeacherCard key={teacher.id} teacher={teacher} />
           ))}
-          {Array.isArray(teachers) && teachers.length === 0 && (
+          {filteredTeachers.length === 0 && (
             <p className="text-center text-gray-600">
-              No se encontraron profesores disponibles.
+              No se encontraron profesores con los filtros seleccionados.
             </p>
           )}
         </div>
       </div>
+
+      {showVideoModal && selectedVideo && (
+        <VideoModal
+          videoUrl={selectedVideo}
+          onClose={() => {
+            setShowVideoModal(false);
+            setSelectedVideo(null);
+          }}
+        />
+      )}
     </div>
   );
 };
