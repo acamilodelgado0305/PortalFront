@@ -7,7 +7,7 @@ import SearchAndFilter from "./SearchAndFilter";
 import CertificationModal from "./CertificationModal";
 import ShowMoreText from "./ShowMoreText";
 
-function TeacherList({ teachers = [], openModal}) {
+function TeacherList({ teachers = [], openModal, closeRegisterModal}) {
   const [filterTeachers, setFilterTeachers] = useState(teachers);
   const [teacherCertification, setTeacherCertification] = useState(null)
   const [isCertificationModalOpen, setIsCertificationModalOpen ] = useState(null)
@@ -43,7 +43,7 @@ function TeacherList({ teachers = [], openModal}) {
         return (
           <li
             key={teacher.id}
-            className="flex items-center space-x-4 rounded-xl bg-white p-4 shadow-md"
+            className="flex items-center space-x-4 rounded-xl bg-white p-4 shadow-md flex-col md:flex-row"
           >
             <img
               src={teacher.profileImageUrl || "/api/placeholder/400/400"}
@@ -88,6 +88,13 @@ function TeacherList({ teachers = [], openModal}) {
                 
               </p>
               <div className="mt-4 flex w-full flex-col md:flex-row md:justify-start lg:justify-end">
+              <div className="flex md:ml-2">
+                  <button
+                  onClick={()=>closeRegisterModal(teacher)} 
+                  className="mr-40 h-[47px] w-[100px] rounded-2xl bg-[#5CEFFF] px-2 py-2 text-[1rem] text-black">
+                    Register
+                  </button>
+                </div>
                 <p className="mt-2 pr-5 text-[17px] text-sm text-gray-500" onClick={()=>openCertificarionModal(teacher)}>
                   <span className="transform cursor-pointer border border-[#8f34ea] p-2 italic text-[#8f34ea] transition duration-300 ease-in-out hover:scale-105 hover:bg-[#8f34ea] hover:text-white">
                     Education <BookOutlined style={{ fontSize: "24px" }} />

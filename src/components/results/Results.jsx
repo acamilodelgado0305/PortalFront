@@ -3,6 +3,7 @@ import { readAllTeachers } from '../../services/teacher.services';
 import Header from '../Header';
 import TeacherList from './TeacherList';
 import VideoModal from './VideoModal';
+import ModalRegister from './modalRegister';
 
 
 function Results() {
@@ -11,6 +12,7 @@ function Results() {
   const [error, setError] = useState(null);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [registerModal, setRegisterModal] = useState(false);
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
@@ -37,6 +39,19 @@ function Results() {
     setSelectedTeacher(null);
     setIsModalOpen(false);
   };
+  
+  
+  const closeRegisterModal = (teacher) => {
+    setSelectedTeacher(teacher);
+    setRegisterModal(!registerModal);
+    if (teacher == null) {
+      setSelectedTeacher(null)
+      return;
+    }
+  };
+  
+  
+  
 
   if (loading) return <div className="flex justify-center items-center h-screen">
     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
@@ -60,7 +75,7 @@ function Results() {
           </p>
         ) : (
           Array.isArray(teachers) && teachers.length > 0 ? (
-            <TeacherList teachers={teachers} openModal={openModal} />
+            <TeacherList closeRegisterModal={closeRegisterModal} teachers={teachers} openModal={openModal} />
           ) : (
             <p className="text-center text-xl text-red-600">
               Error cargando los profesores.
@@ -71,6 +86,13 @@ function Results() {
       {isModalOpen && selectedTeacher && (
         <VideoModal selectedTeacher={selectedTeacher} closeModal={closeModal} />
       )}
+  
+       {
+        // modal de registro
+        registerModal?
+        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal}/>
+        :null
+       }
     </div>
   );
 }
