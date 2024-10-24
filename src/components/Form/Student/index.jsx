@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { questions } from "./questionsData";
+import {
+  questions,
+  questionsEnglish,
+  questionLanguajes,
+  questionOther,
+} from "./questionsData";
 
 function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
@@ -29,6 +34,8 @@ function FormStudent() {
   const [selectedSuboption, setSelectedSuboption] = useState(null);
   const navigate = useNavigate();
 
+  const [currentQuestions, setCurrentQuestions] = useState(questions);
+
   useEffect(() => {
     const savedAnswers = localStorage.getItem("studentPreferences");
     if (savedAnswers) {
@@ -43,20 +50,36 @@ function FormStudent() {
   const handleOptionSelected = (option) => {
     setSelectedOption(option);
     setShowSuboptions(option.suboptions);
-    if(!option.suboptions) {
+    if (!option.suboptions) {
       const newAnswers = [...answers];
       newAnswers[currentQuestionIndex] = `${option.text}`;
       setAnswers(newAnswers);
     }
-    setSelectedSuboption(null);
+   
+  };
+
+  const handleOptionList = (optionName, suboptions) => {
+    if (optionName == "Idiomas" && suboptions == "Inglés") {
+      setCurrentQuestions(questionsEnglish);
+    } else if (optionName == "Idiomas") {
+      setCurrentQuestions(questionLanguajes);
+    } else {
+      setCurrentQuestions(questionOther);
+    }
+   
   };
 
   const handleSuboptionSelected = (suboption) => {
     setSelectedSuboption(suboption);
     const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = `${selectedOption.text}+${suboption.text}`;
+    newAnswers[currentQuestionIndex] =
+      `${selectedOption.text}+${suboption.text}`;
     setAnswers(newAnswers);
+    if (selectedOption.text, suboption.text) {
+      handleOptionList(selectedOption.text, suboption.text);
+    }
   };
+
 
   const handleShowAllOptions = () => {
     setShowSuboptions(null);
@@ -68,7 +91,7 @@ function FormStudent() {
     return (
       <button
         onClick={onClick}
-        className={`flex items-center justify-between w-full rounded-lg p-4 text-left text-lg font-semibold hover:bg-purple-100 border ${isSelected ? 'border-purple-500 bg-purple-300' : 'border-gray-300'}`}
+        className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"}`}
       >
         <span>{text}</span>
       </button>
@@ -76,7 +99,10 @@ function FormStudent() {
   };
 
   const handleContinue = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if(currentQuestionIndex == 1)
+      setShowSuboptions(false)
+
+    if (currentQuestionIndex < currentQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       handleShowAllOptions();
     } else {
@@ -90,6 +116,7 @@ function FormStudent() {
       setIsLoading(false);
       setIsFormComplete(true);
       localStorage.setItem("studentPreferences", JSON.stringify(answers));
+      console.log("studentPreferences", JSON.stringify(answers))
     }, 2000);
   };
 
@@ -110,7 +137,8 @@ function FormStudent() {
   };
 
   const renderProgressBar = () => {
-    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+    const progress =
+      ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     return (
       <div className="mb-4 h-2.5 w-full rounded-full bg-gray-200">
         <div
@@ -122,7 +150,7 @@ function FormStudent() {
   };
 
   const renderQuestionContent = () => {
-    const currentQuestion = questions[currentQuestionIndex];
+    const currentQuestion = currentQuestions[currentQuestionIndex];
 
     if (currentQuestion.type === "slider") {
       return (
@@ -134,7 +162,7 @@ function FormStudent() {
             step={currentQuestion.step}
             value={budget}
             onChange={handleBudgetChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
           />
           <div className="mt-4 text-center text-xl font-semibold">
             {budget} {currentQuestion.unit}
@@ -144,53 +172,52 @@ function FormStudent() {
     }
 
     return (
-        <div className="w-full">
-          {showSuboptions ? (
-            <>
-              <div className="flex items-center mb-4">
+      <div className="w-full">
+        {showSuboptions ? (
+          <>
+            <div className="mb-4 flex items-center">
+              <button onClick={handleShowAllOptions} className="mr-2 text-3xl">
+                ←
+              </button>
+              <h2 className="text-2xl font-bold">
+                Subopciones de {selectedOption.text}
+              </h2>
+            </div>
+            <div className="max-h-[45em] overflow-y-auto">
+              {showSuboptions.map((suboption, idx) => (
                 <button
-                  onClick={handleShowAllOptions}
-                  className="text-3xl mr-2"
+                  key={idx}
+                  onClick={() => handleSuboptionSelected(suboption)}
+                  className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
                 >
-                  ←
+                  {suboption.text}
                 </button>
-                <h2 className="text-2xl font-bold">Subopciones de {selectedOption.text}</h2>
-              </div>
-              <div className="max-h-[45em] overflow-y-auto">
-                {showSuboptions.map((suboption, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSuboptionSelected(suboption)}
-                    className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
-                  >
-                    {suboption.text}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              {currentQuestion.options.map((option, idx) => (
-                <div key={idx} className="mb-4">
-                  <OptionButton
-                    text={option.text}
-                    isSelected={selectedOption === option}
-                    onClick={() => handleOptionSelected(option)}
-                  />
-                </div>
               ))}
-            </>
-          )}
-        </div>
-      );
+            </div>
+          </>
+        ) : (
+          <>
+            {currentQuestion.options.map((option, idx) => (
+              <div key={idx} className="mb-4">
+                <OptionButton
+                  text={option.text}
+                  isSelected={selectedOption === option}
+                  onClick={() => handleOptionSelected(option)}
+                />
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    );
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-white-400">
+    <div className="bg-white-400 flex min-h-screen flex-col justify-center">
       <LoadingModal isOpen={isLoading} />
       <button
         onClick={() => navigate(-1)}
-        className="absolute left-20 top-20 bg-transparent text-5xl font-bold text-purple"
+        className="text-purple absolute left-20 top-20 bg-transparent text-5xl font-bold"
       >
         ←
       </button>
@@ -198,7 +225,7 @@ function FormStudent() {
       <div className="flex h-screen items-center justify-center">
         <div className="flex h-full w-1/2 items-center p-10 pl-20">
           <h1 className="text-7xl font-bold text-black">
-            {questions[currentQuestionIndex].question}
+            {currentQuestions[currentQuestionIndex].question}
           </h1>
         </div>
 
@@ -210,14 +237,15 @@ function FormStudent() {
             <button
               onClick={handleBack}
               disabled={currentQuestionIndex === 0}
-              className={`${currentQuestionIndex === 0 ? "opacity-50" : ""
-                } bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-purple-700`}
+              className={`${
+                currentQuestionIndex === 0 ? "opacity-50" : ""
+              } rounded-lg bg-purple-500 px-4 py-2 text-white hover:bg-purple-700`}
             >
               Atrás
             </button>
             <button
               onClick={handleContinue}
-              className="bg-purple-500 px-4 py-2 text-white rounded-lg hover:bg-purple-700"
+              className="rounded-lg bg-purple-500 px-4 py-2 text-white hover:bg-purple-700"
             >
               Continuar
             </button>
@@ -227,13 +255,13 @@ function FormStudent() {
 
       {isFormComplete && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-700 bg-opacity-75">
-          <div className="p-6 w-[20em] bg-white rounded-lg shadow-lg flex flex-col items-center">
-            <h2 className="w-full text-2xl font-semibold text-gray-800 text-center">
+          <div className="flex w-[20em] flex-col items-center rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="w-full text-center text-2xl font-semibold text-gray-800">
               ¡Formulario completado!
             </h2>
             <Link
               to="/results"
-              className="mt-4 inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-800"
+              className="mt-4 inline-block rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-800"
             >
               Continuar
             </Link>
