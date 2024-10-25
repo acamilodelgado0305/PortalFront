@@ -14,14 +14,14 @@ function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex h-full w-full items-center justify-center overflow-y-auto bg-gray-600 bg-opacity-50">
-      <div className="flex flex-col items-center rounded-lg bg-white p-5">
-        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
-        <p className="mt-4 text-lg font-semibold text-purple-600">
-          Cargando...
-        </p>
-      </div>
-    </div>
+<div className="fixed inset-0 flex h-full w-full items-center justify-center overflow-y-auto bg-gray-600 bg-opacity-50 z-[9999]">
+  <div className="flex flex-col items-center rounded-lg bg-white p-5">
+    <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+    <p className="mt-4 text-lg font-semibold text-purple-600">
+      Cargando...
+    </p>
+  </div>
+</div>
   );
 }
 
@@ -138,7 +138,9 @@ function FormStudent() {
                 onClick();
               }
             }}
-            className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
+            className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold ${
+              !isSelected ? "hover:bg-purple-100" : ""
+            }  ${
               isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
             }`}
           >
@@ -247,7 +249,7 @@ function FormStudent() {
                 <button
                   key={idx}
                   onClick={() => handleSuboptionSelected(suboption)}
-                  className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
+                  className={`block w-full p-2 text-left text-lg font-normal ${selectedSuboption != suboption ? "hover:bg-purple-200" : ""}  ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
                 >
                   {suboption.text}
                 </button>

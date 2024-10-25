@@ -21,7 +21,9 @@ export const TimeOptionButton = ({ text, isSelected, onClick }) => {
     return (
       <button
         onClick={onClick}
-        className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
+        className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold ${
+          !isSelected ? "hover:bg-purple-100" : ""
+        } ${
           isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
         }`}
       >
