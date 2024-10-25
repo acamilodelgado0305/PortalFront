@@ -15,6 +15,7 @@ const TeachersSection = () => {
         const fetchTeachers = async () => {
             try {
                 const response = await fetch('https://back.app.esturio.com/api/teachers');
+                console.log(JSON.stringify(response))
                 const data = await response.json();
                 setTeachers(data.data);
                 setLoading(false);
