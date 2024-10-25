@@ -1,19 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Checkbox } from 'antd';
 import { UserOutlined, MailOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { allCountries } from '../../../../services/allcountries';
+import { checkTeacherEmailExists } from '../../../../services/teacher.services';
 
 const { Option } = Select;
 
-const AboutStep = ({ onChange }) => {
+const AboutStep = ({ onChange, setIsVerified }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [emailStatus, setEmailStatus] = useState(null); // null, 'success', 'error'
+  const [formValues, setFormValues] = useState({}); // To track form values
 
   const handleValuesChange = (changedValues) => {
+    setFormValues((prevValues) => ({ ...prevValues, ...changedValues })); // Update local form values
     onChange(changedValues);
   };
+
+  const handleEmailBlur = async (email) => {
+    if (email) {
+      const emailExists = await checkTeacherEmailExists(email);
+      if (emailExists) {
+        setEmailStatus('error');
+        setEmailError('This email is already registered');
+      } else {
+        setEmailStatus('success');
+        setEmailError('');
+      }
+    }
+  };
+
+  // Effect to check if all required fields are filled
+  useEffect(() => {
+    const allFieldsFilled = Object.keys(formValues).length >= 10 && // Check for the expected number of filled fields
+      formValues.firstName &&
+      formValues.lastName &&
+      formValues.email &&
+      formValues.password &&
+      formValues.confirmPassword &&
+      formValues.countryOfBirth &&
+      formValues.subjectYouTeach &&
+      formValues.language &&
+      formValues.languageLevel &&
+      formValues.phoneNumber &&
+      formValues.isOver18;
+
+    setIsVerified(allFieldsFilled);
+  }, [formValues, setIsVerified]);
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -46,19 +82,23 @@ const AboutStep = ({ onChange }) => {
           </Form.Item>
         </div>
 
+        {/* Email Field with Validation */}
         <Form.Item
           label={<span className="text-lg font-medium">Email Address</span>}
           name="email"
+          validateStatus={emailStatus}
+          help={emailError}
           rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}
         >
           <Input
             prefix={<MailOutlined className="text-gray-400" />}
             placeholder="Your email address"
-            className="text-lg p-3 border-2 border-black rounded-md"
+            className={`text-lg p-3 border-2 rounded-md ${emailStatus === 'error' ? 'border-red-500' : 'border-black'}`}
+            onBlur={(e) => handleEmailBlur(e.target.value)}
           />
         </Form.Item>
 
-        {/* Input para la contraseña */}
+        {/* Password Fields */}
         <Form.Item
           label={<span className="text-lg font-medium">Password</span>}
           name="password"
@@ -72,7 +112,6 @@ const AboutStep = ({ onChange }) => {
           />
         </Form.Item>
 
-        {/* Input para la confirmación de contraseña */}
         <Form.Item
           label={<span className="text-lg font-medium">Confirm Password</span>}
           name="confirmPassword"
@@ -86,6 +125,7 @@ const AboutStep = ({ onChange }) => {
           />
         </Form.Item>
 
+        {/* Country of Birth */}
         <Form.Item
           label={<span className="text-lg font-medium">Country of Birth</span>}
           name="countryOfBirth"
