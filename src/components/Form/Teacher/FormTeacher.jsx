@@ -54,7 +54,6 @@ const MultiStepForm = () => {
 
 
   const onFinish = async () => {
-    
      if (currentStep != '7') {
       return
     }
@@ -78,12 +77,7 @@ const MultiStepForm = () => {
     setFormData({});
   };
 
-
-/* ¿Por que no esta validando el formulario antes de pasar ?
-
-
- */
-  const next = () => {
+const next = () => {
 if(isVerified) {
     form
       .validateFields()
@@ -96,7 +90,6 @@ if(isVerified) {
         console.error("Validation failed:", error);
       });
     } else{
-      // que en vez de sacar este alert haya abajo un mensaje de que diga, al lado del boton next
       setErrorMessage("Please ensure all required fields are complete.")
     }
   

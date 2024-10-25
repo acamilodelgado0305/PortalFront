@@ -152,7 +152,7 @@ export const questions = [
       }
 
     ]
-  } ]
+  },{},{},{},{},{}] // para que tenga el mismo proporcion .length la barra de progreso
 
 // Idiomas.suboptions ingles
   export const questionsEnglish = [   {
