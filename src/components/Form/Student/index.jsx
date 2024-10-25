@@ -1,13 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Sun, Sunset, Moon, Calendar, Clock } from "lucide-react";
 import {
   questions,
   questionsEnglish,
   questionLanguajes,
   questionOther,
 } from "./questionsData";
-import './index.css'
+
+const TimeOptionButton = ({ text, isSelected, onClick }) => {
+  const getIcon = () => {
+    switch (text) {
+      case "Mañanas":
+        return <Sun className="h-6 w-6 text-yellow-500" />;
+      case "Tardes":
+        return <Sunset className="h-6 w-6 text-orange-500" />;
+      case "Noches":
+        return <Moon className="h-6 w-6 text-blue-900" />;
+      case "Fines de semana":
+        return <Calendar className="h-6 w-6 text-purple-500" />;
+      case "Horario flexible":
+        return <Clock className="h-6 w-6 text-green-500" />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
+        isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
+      }`}
+    >
+      <span className="flex items-center gap-3">
+        {getIcon()}
+        {text}
+      </span>
+    </button>
+  );
+};
 
 function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
@@ -33,10 +66,10 @@ function FormStudent() {
   const [showSuboptions, setShowSuboptions] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedSuboption, setSelectedSuboption] = useState(null);
-  const [handleOtherValue, setHandleOtherValue] = useState(null)
+  const [handleOtherValue, setHandleOtherValue] = useState(null);
   const navigate = useNavigate();
-
   const [currentQuestions, setCurrentQuestions] = useState(questions);
+  const [isInputVisible, setIsInputVisible] = useState(false);
 
   useEffect(() => {
     const savedAnswers = localStorage.getItem("studentPreferences");
@@ -50,22 +83,22 @@ function FormStudent() {
   }, [answers]);
 
   const handleOptionSelected = (option) => {
-    if(handleOtherValue && currentQuestionIndex == 0 ) {
+    if (handleOtherValue && currentQuestionIndex == 0) {
       setSelectedOption(handleOtherValue);
       const newAnswers = [...answers];
       newAnswers[currentQuestionIndex] = `${handleOtherValue}`;
-      setAnswers(newAnswers); 
-      setCurrentQuestions(questionOther);
-      return
-    }else{
-    setSelectedOption(option);
-    setShowSuboptions(option.suboptions);
-    if (!option.suboptions) {
-      const newAnswers = [...answers];
-      newAnswers[currentQuestionIndex] = `${option.text}`;
       setAnswers(newAnswers);
+      setCurrentQuestions(questionOther);
+      return;
+    } else {
+      setSelectedOption(option);
+      setShowSuboptions(option.suboptions);
+      if (!option.suboptions) {
+        const newAnswers = [...answers];
+        newAnswers[currentQuestionIndex] = `${option.text}`;
+        setAnswers(newAnswers);
+      }
     }
-       }
   };
 
   const handleOptionList = (optionName, suboptions) => {
@@ -76,20 +109,17 @@ function FormStudent() {
     } else {
       setCurrentQuestions(questionOther);
     }
-   
   };
 
   const handleSuboptionSelected = (suboption) => {
     setSelectedSuboption(suboption);
     const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] =
-      `${selectedOption.text}+${suboption.text}`;
+    newAnswers[currentQuestionIndex] = `${selectedOption.text}+${suboption.text}`;
     setAnswers(newAnswers);
-    if (selectedOption.text, suboption.text) {
+    if ((selectedOption.text, suboption.text)) {
       handleOptionList(selectedOption.text, suboption.text);
     }
   };
-
 
   const handleShowAllOptions = () => {
     setShowSuboptions(null);
@@ -97,58 +127,8 @@ function FormStudent() {
     setSelectedSuboption(null);
   };
 
-
-
-
-  const [isInputVisible, setIsInputVisible] = useState(false);
-
-const OptionButton = ({ text, isSelected, onClick }) => {
-
-
-
-  const handleInputSubmit = () => {
-      onClick(); 
-  };
-
-  return (
-    <>
-      {text === "Otro (especificar)" && isInputVisible ? (
-        <input
-          type="text"
-          value={handleOtherValue}
-          onChange={(e)=>{setHandleOtherValue(e.target.value)}} // Permite escribir
-          onBlur={handleInputSubmit} // Ejecuta al perder el foco
-          className="w-full rounded-lg border p-4 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          placeholder="Especifica tu respuesta..."
-          autoFocus
-        />
-      ) : (
-        <button
-          onClick={() => {
-            if (text === "Otro (especificar)") {
-              setIsInputVisible(true); // Muestra el input cuando seleccionas "Otro"
-            } else {
-              onClick(); // Ejecuta onClick para otras opciones
-            }
-          }}
-          className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
-            isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
-          }`}
-        >
-          <span>{text}</span>
-        </button>
-      )}
-    </>
-  );
-};
-
-
-  
-  
-
   const handleContinue = () => {
-    if(currentQuestionIndex == 1)
-      setShowSuboptions(false)
+    if (currentQuestionIndex == 1) setShowSuboptions(false);
 
     if (currentQuestionIndex < currentQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -184,8 +164,7 @@ const OptionButton = ({ text, isSelected, onClick }) => {
   };
 
   const renderProgressBar = () => {
-    const progress =
-      ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     return (
       <div className="mb-4 h-2.5 w-full rounded-full bg-gray-200">
         <div
@@ -196,29 +175,29 @@ const OptionButton = ({ text, isSelected, onClick }) => {
     );
   };
 
-  const renderQuestionContent = ( ) => {
+  const renderQuestionContent = () => {
     const currentQuestion = currentQuestions[currentQuestionIndex];
 
     if (currentQuestion.type === "slider") {
       return (
         <div className="w-full">
-        <input
-          type="range"
-          min={currentQuestion.min}
-          max={currentQuestion.max}
-          step={currentQuestion.step}
-          value={budget}
-          onChange={handleBudgetChange}
-          className="h-4 mt-6 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 custom-range"
-        />
-        <div className="mt-4 text-center text-xl font-semibold">
-          {budget} {currentQuestion.unit}
+          <input
+            type="range"
+            min={currentQuestion.min}
+            max={currentQuestion.max}
+            step={currentQuestion.step}
+            value={budget}
+            onChange={handleBudgetChange}
+            className="h-4 mt-6 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 custom-range"
+          />
+          <div className="mt-4 text-center text-xl font-semibold">
+            {budget} {currentQuestion.unit}
+          </div>
         </div>
-      </div>
-      
-      
       );
     }
+
+    const isTimeQuestion = currentQuestion.question.includes("¿Cuándo te vienen bien las clases?");
 
     return (
       <div className="w-full">
@@ -237,7 +216,9 @@ const OptionButton = ({ text, isSelected, onClick }) => {
                 <button
                   key={idx}
                   onClick={() => handleSuboptionSelected(suboption)}
-                  className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${selectedSuboption === suboption ? "bg-purple-300" : ""}`}
+                  className={`block w-full p-2 text-left text-lg font-normal hover:bg-purple-200 ${
+                    selectedSuboption === suboption ? "bg-purple-300" : ""
+                  }`}
                 >
                   {suboption.text}
                 </button>
@@ -248,13 +229,24 @@ const OptionButton = ({ text, isSelected, onClick }) => {
           <>
             {currentQuestion.options.map((option, idx) => (
               <div key={idx} className="mb-4">
-                <OptionButton
-                  text={option.text}
-                  isSelected={selectedOption === option}
-                  onClick={() => handleOptionSelected(option)}
-                  handleOtherValue={handleOtherValue}
-                  setHandleOtherValue={setHandleOtherValue}
-                />
+                {isTimeQuestion ? (
+                  <TimeOptionButton
+                    text={option.text}
+                    isSelected={selectedOption === option}
+                    onClick={() => handleOptionSelected(option)}
+                  />
+                ) : (
+                  <button
+                    onClick={() => handleOptionSelected(option)}
+                    className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
+                      selectedOption === option
+                        ? "border-purple-500 bg-purple-300"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <span>{option.text}</span>
+                  </button>
+                )}
               </div>
             ))}
           </>
