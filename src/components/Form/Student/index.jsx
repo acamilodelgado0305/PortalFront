@@ -109,7 +109,7 @@ function FormStudent() {
   
     const handleInputSubmit = () => {
       onClick(); 
-      setIsInputVisible(false);
+      setIsInputVisible(false); 
     };
   
   
@@ -190,12 +190,11 @@ function FormStudent() {
   };
 
   const renderProgressBar = () => {
-    const progress =
-      ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     return (
-      <div className="mb-4 h-2.5 w-full rounded-full bg-gray-200">
+      <div className="mb-4 h-[2px] w-full rounded-full bg-gray-200">
         <div
-          className="h-2.5 rounded-full bg-purple-600"
+          className="h-[2px] rounded-full bg-purple-600"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
@@ -207,7 +206,13 @@ function FormStudent() {
 
     if (currentQuestion.type === "slider") {
       return (
-        <div className="w-full">
+        <div className="w-full py-6 my-6 relative">
+        <div className="h-4 w-full rounded-lg bg-gray-200">
+          <div
+            style={{ width: `${((budget - currentQuestion.min) / (currentQuestion.max - currentQuestion.min)) * 100}%` }}
+            className="h-4 rounded-lg bg-purple-600"
+          ></div>
+        </div>
         <input
           type="range"
           min={currentQuestion.min}
@@ -215,13 +220,12 @@ function FormStudent() {
           step={currentQuestion.step}
           value={budget}
           onChange={handleBudgetChange}
-          className="h-4 mt-6 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 custom-range"
+          className="absolute -top-2 h-[50px] mt-4 w-full cursor-pointer appearance-none rounded-lg bg-transparent custom-range"
         />
         <div className="mt-4 text-center text-xl font-semibold">
           {budget} {currentQuestion.unit}
         </div>
       </div>
-      
       
       );
     }
