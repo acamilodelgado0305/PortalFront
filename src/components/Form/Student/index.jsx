@@ -8,6 +8,7 @@ import {
   questionOther,
 } from "./questionsData";
 import './index.css'
+import { TimeOptionButton } from "./components/TimeOptionButton";
 
 function LoadingModal({ isOpen }) {
   if (!isOpen) return null;
@@ -102,46 +103,51 @@ function FormStudent() {
 
   const [isInputVisible, setIsInputVisible] = useState(false);
 
-const OptionButton = ({ text, isSelected, onClick }) => {
-
-
-
-  const handleInputSubmit = () => {
+  const OptionButton = ({ text, isSelected, onClick }) => {
+    const [isInputVisible, setIsInputVisible] = useState(false);
+    const [handleOtherValue, setHandleOtherValue] = useState("");
+  
+    const handleInputSubmit = () => {
       onClick(); 
+      setIsInputVisible(false);
+    };
+  
+  
+    const timeOptions = ["Mañanas", "Tardes", "Noches", "Fines de semana", "Horario flexible"];
+  
+    return (
+      <>
+        {text === "Otro (especificar)" && isInputVisible ? (
+          <input
+            type="text"
+            value={handleOtherValue}
+            onChange={(e) => setHandleOtherValue(e.target.value)}
+            onBlur={handleInputSubmit}
+            className="w-full rounded-lg border p-4 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Especifica tu respuesta..."
+            autoFocus
+          />
+        ) : timeOptions.includes(text) ? (
+          <TimeOptionButton text={text} isSelected={isSelected} onClick={onClick} />
+        ) : (
+          <button
+            onClick={() => {
+              if (text === "Otro (especificar)") {
+                setIsInputVisible(true);
+              } else {
+                onClick();
+              }
+            }}
+            className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
+              isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
+            }`}
+          >
+            <span>{text}</span>
+          </button>
+        )}
+      </>
+    );
   };
-
-  return (
-    <>
-      {text === "Otro (especificar)" && isInputVisible ? (
-        <input
-          type="text"
-          value={handleOtherValue}
-          onChange={(e)=>{setHandleOtherValue(e.target.value)}} // Permite escribir
-          onBlur={handleInputSubmit} // Ejecuta al perder el foco
-          className="w-full rounded-lg border p-4 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          placeholder="Especifica tu respuesta..."
-          autoFocus
-        />
-      ) : (
-        <button
-          onClick={() => {
-            if (text === "Otro (especificar)") {
-              setIsInputVisible(true); // Muestra el input cuando seleccionas "Otro"
-            } else {
-              onClick(); // Ejecuta onClick para otras opciones
-            }
-          }}
-          className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold hover:bg-purple-100 ${
-            isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
-          }`}
-        >
-          <span>{text}</span>
-        </button>
-      )}
-    </>
-  );
-};
-
 
   
   
