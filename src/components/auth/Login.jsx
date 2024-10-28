@@ -72,7 +72,7 @@ const Login = () => {
 
                         </label>
                         <input
-                            className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none text-center"
+                            className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
                             type="email"
                             id="email"
                             placeholder="Introduce tu correo"
@@ -87,7 +87,7 @@ const Login = () => {
 
                         </label>
                         <input
-                            className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none text-center"
+                            className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
                             type={passwordVisible ? "text" : "password"}
                             id="password"
                             placeholder="Introduce tu contraseña"
