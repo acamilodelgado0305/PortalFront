@@ -34,10 +34,7 @@ const MultiStepForm = () => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
-  useEffect(() => {
-    processImageUpload(formData, uploadImage, setFormData); // svg to s3
-  }, [formData]);
-  
+ 
 
 
 
@@ -62,7 +59,7 @@ const MultiStepForm = () => {
       return
     }
     setIsSubmitting(true);
-
+    await  processImageUpload(formData, uploadImage, setFormData); 
       try {
       await createTeacher(formData);
       setIsModalVisible(true);
