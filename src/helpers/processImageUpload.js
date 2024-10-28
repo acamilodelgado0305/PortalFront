@@ -16,7 +16,7 @@ export const processImageUpload = async (formData, uploadImage, setFormData) => 
         const file = new File([blob], `profile-image.${mimeType.split('/')[1]}`, { type: mimeType });
   
         const uploadedImageUrl = await uploadImage(file, mimeType);
-  
+        console.log('Se modifico la url a '+uploadedImageUrl)
         setFormData((prevFormData) => ({
           ...prevFormData,
           profileImageUrl: uploadedImageUrl
