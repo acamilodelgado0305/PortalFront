@@ -1,23 +1,22 @@
-import { useState } from "react";
-import { FaEye, FaEyeSlash, FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { FaEye, FaEyeSlash, FaFacebook, FaApple } from 'react-icons/fa';
+import GoogleLogo from '../../assets/icons/icons8-logo-de-google.svg';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
+import { message } from 'antd';
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);  // Para el checkbox de "Recuérdame"
-    const navigate = useNavigate();  // Para la redirección
+    const [rememberMe, setRememberMe] = useState(false);
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
-    // Función para alternar la visibilidad de la contraseña
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
-    };
+    const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
-    // Función para manejar el envío del formulario de login
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const response = await fetch('https://back.app.esturio.com/api/users/login', {
                 method: 'POST',
@@ -29,18 +28,15 @@ const Login = () => {
 
             const data = await response.json();
 
-            // Si la autenticación es exitosa, almacenar el token y redirigir
             if (data.success) {
-                localStorage.setItem('token', data.token);
-
-                // Redirigir al dashboard
+                login(data.user, data.token);
                 navigate('/dashboard');
             } else {
-                alert('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
+                message.error('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
             }
         } catch (error) {
             console.error('Error durante el inicio de sesión:', error);
-            alert('Error en el servidor. Intente de nuevo más tarde.');
+            message.error('Error en el servidor. Intente de nuevo más tarde.');
         }
     };
 
@@ -51,18 +47,18 @@ const Login = () => {
                 {/* Encabezado de inicio de sesión */}
                 <h2 className="text-2xl font-bold text-center mb-6">Iniciar sesión</h2>
 
-                {/* Botones de inicio de sesión con redes sociales (sin color de fondo) */}
+                {/* Botones de inicio de sesión con redes sociales */}
                 <div className="mb-6">
-                    <button className="w-full p-2 mb-3 border rounded-lg flex items-center justify-center">
-                        <FaGoogle className="mr-2 text-red-500" /> {/* El icono de Google con sus colores */}
+                    <button className="w-full p-2 mb-3 border-2  border-black rounded-lg flex items-center justify-center text-red-600 font-semibold transition duration-200  hover:bg-red-200">
+                        <img src={GoogleLogo} alt="Google Logo" className="w-6 h-6 mr-2" />
                         Continuar con Google
                     </button>
-                    <button className="w-full p-2 mb-3 border rounded-lg flex items-center justify-center">
-                        <FaFacebook className="mr-2 text-blue-600" /> {/* El icono de Facebook en azul */}
+                    <button className="w-full p-2 mb-3 border-2 border-black rounded-lg flex items-center justify-center text-blue-600 font-semibold hover:bg-blue-100">
+                        <FaFacebook size={24} className="mr-2" />
                         Continuar con Facebook
                     </button>
-                    <button className="w-full p-2 border rounded-lg flex items-center justify-center">
-                        <FaApple className="mr-2 text-black" /> {/* El icono de Apple en negro */}
+                    <button className="w-full p-2 border-2 border-black rounded-lg flex items-center justify-center text-black font-semibold hover:bg-gray-200">
+                        <FaApple size={24} className="mr-2" />
                         Continuar con Apple
                     </button>
                 </div>
@@ -73,10 +69,10 @@ const Login = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                            Dirección de correo
+
                         </label>
                         <input
-                            className="w-full p-2 border rounded-lg focus:outline-none"
+                            className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none text-center"
                             type="email"
                             id="email"
                             placeholder="Introduce tu correo"
@@ -88,10 +84,10 @@ const Login = () => {
 
                     <div className="mb-4 relative">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                            Contraseña
+
                         </label>
                         <input
-                            className="w-full p-2 border rounded-lg focus:outline-none"
+                            className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none text-center"
                             type={passwordVisible ? "text" : "password"}
                             id="password"
                             placeholder="Introduce tu contraseña"
@@ -101,12 +97,13 @@ const Login = () => {
                         />
                         <div
                             className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                            style={{ top: "50%", transform: "translateY(-50%)" }} // Centrar el icono verticalmente
                             onClick={togglePasswordVisibility}
                         >
                             {passwordVisible ? (
-                                <FaEyeSlash className="text-gray-400 mt-7" />
+                                <FaEyeSlash className="text-gray-400" />
                             ) : (
-                                <FaEye className="text-gray-400 mt-7" />
+                                <FaEye className="text-gray-400" />
                             )}
                         </div>
                     </div>
@@ -136,7 +133,7 @@ const Login = () => {
                     <div className="text-center">
                         <button
                             type="submit"
-                            className="w-full p-3 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600"
+                            className="w-full p-2 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600 border-2 border-purple-500"
                         >
                             Iniciar sesión
                         </button>
