@@ -152,7 +152,34 @@ export const questions = [
       }
 
     ]
-  },{},{},{},{},{}] // para que tenga el mismo proporcion .length la barra de progreso
+  },{
+    id: 2,
+    question: "¿Cuál es tu nivel de conocimiento actual?",
+    options: [
+      { text: "Soy principiante" },
+      { text: "Conozco lo básico" },
+      { text: "Me desenvuelvo con soltura en esta disiplina" },
+    ],
+  },  {
+    id: 3,
+    question: "¿Cuándo te vienen bien las clases?",
+    options: [
+      { text: "Mañanas" },
+      { text: "Tardes" },
+      { text: "Noches" },
+      { text: "Fines de semana" },
+      { text: "Horario flexible" },
+    ],
+  },
+  {
+    id: 4,
+    question: "¿Cuál es tu presupuesto para una clase?",
+    type: "slider",
+    min: 1,
+    max: 40,
+    step: 1,
+    unit: "US$",
+  }] // para que tenga el mismo proporcion .length la barra de progreso
 
 // Idiomas.suboptions ingles
   export const questionsEnglish = [   {
