@@ -30,13 +30,25 @@ const Results = () => {
     category: false
   });
 
-  // Opciones de filtro predefinidas
+  // Opciones de filtro predefinidas con precios en dólares
   const filterOptions = {
     priceRange: [
-      '$ 36.000 - $ 50.000',
-      '$ 50.000 - $ 75.000',
-      '$ 75.000 - $ 100.000',
-      '$ 100.000 - $ 145.500+'
+      '$10 - $25',
+      '$25 - $50',
+      '$50 - $75',
+      '$75 - $100+'
+    ],
+    country: [
+      { code: 'us', name: 'Estados Unidos' },
+      { code: 'es', name: 'España' },
+      { code: 'mx', name: 'México' },
+      { code: 'ar', name: 'Argentina' },
+      { code: 'co', name: 'Colombia' },
+      { code: 'cl', name: 'Chile' },
+      { code: 'pe', name: 'Perú' },
+      { code: 've', name: 'Venezuela' },
+      { code: 'gb', name: 'Reino Unido' },
+      { code: 'ca', name: 'Canadá' }
     ],
     availability: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
     specialty: ['Matemáticas', 'Inglés', 'Ciencias', 'Historia', 'Literatura', 'Física', 'Química'],
@@ -62,7 +74,6 @@ const Results = () => {
     fetchTeachers();
   }, []);
 
-
   const handleVideoClick = (videoUrl) => {
     if (videoUrl) {
       setSelectedVideo(videoUrl);
@@ -71,12 +82,24 @@ const Results = () => {
   };
 
   const handleBack = () => {
-    navigate(-1); // Regresa a la página anterior
+    navigate(-1);
   };
 
   useEffect(() => {
     applyFilters();
   }, [activeFilters, teachers]);
+
+  const clearFilters = () => {
+    setActiveFilters({
+      priceRange: '',
+      country: '',
+      availability: '',
+      specialty: '',
+      language: '',
+      isNative: false,
+      category: ''
+    });
+  };
 
   const applyFilters = () => {
     let filtered = [...teachers];
@@ -87,15 +110,18 @@ const Results = () => {
         .split('-')
         .map(Number);
       filtered = filtered.filter(teacher => {
-        const rate = teacher.hourlyRate * 1000;
+        const rate = teacher.hourlyRate;
         return rate >= min && (max ? rate <= max : true);
       });
     }
 
     if (activeFilters.country) {
-      filtered = filtered.filter(teacher =>
-        teacher.countryOfBirth?.toLowerCase() === activeFilters.country.toLowerCase()
-      );
+      const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
+      if (selectedCountry) {
+        filtered = filtered.filter(teacher =>
+          teacher.countryOfBirth?.toLowerCase() === selectedCountry.code.toLowerCase()
+        );
+      }
     }
 
     if (activeFilters.isNative) {
@@ -178,7 +204,7 @@ const Results = () => {
 
       <FilterModal
         title={label}
-        options={filterOptions[filterKey] || []}
+        options={filterKey === 'country' ? filterOptions[filterKey].map(item => item.name) : filterOptions[filterKey] || []}
         onSelect={(selected) => {
           setActiveFilters(prev => ({ ...prev, [filterKey]: selected }));
         }}
@@ -187,8 +213,6 @@ const Results = () => {
       />
     </div>
   );
-
-
 
   if (loading) {
     return (
@@ -219,9 +243,9 @@ const Results = () => {
             </h1>
           </div>
 
-          <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex items-center gap-4">
             <FilterButton
-              label="Precio de la clase"
+              label="Precio por hora"
               value={activeFilters.priceRange}
               filterKey="priceRange"
             />
@@ -235,36 +259,28 @@ const Results = () => {
               value={activeFilters.availability}
               filterKey="availability"
             />
-          </div>
-
-          <div className="flex flex-wrap gap-4">
+            <FilterButton
+              label="Especialidades"
+              value={activeFilters.specialty}
+              filterKey="specialty"
+            />
+            <FilterButton
+              label="Idiomas"
+              value={activeFilters.language}
+              filterKey="language"
+            />
             <button
-              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.specialty ? 'ring-2 ring-purple-500' : ''
-                }`}
-              onClick={() => setShowFilterModal(prev => ({ ...prev, specialty: !prev.specialty }))}
-            >
-              Especialidades
-            </button>
-            <button
-              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.language ? 'ring-2 ring-purple-500' : ''
-                }`}
-              onClick={() => setShowFilterModal(prev => ({ ...prev, language: !prev.language }))}
-            >
-              El profesor habla
-            </button>
-            <button
-              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''
-                }`}
+              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
               onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
             >
               Hablante nativo
             </button>
             <button
-              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.category ? 'ring-2 ring-purple-500' : ''
-                }`}
-              onClick={() => setShowFilterModal(prev => ({ ...prev, category: !prev.category }))}
+              onClick={clearFilters}
+              className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 hover:bg-gray-200 border border-gray-200 flex items-center gap-2"
             >
-              Categorías del profesor
+              <X size={16} />
+              Limpiar filtros
             </button>
           </div>
         </div>
@@ -303,6 +319,5 @@ const Results = () => {
     </div>
   );
 };
-
 
 export default Results;
