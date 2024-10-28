@@ -87,33 +87,42 @@ function TeacherList({ teachers = [], openModal, closeRegisterModal}) {
                 </span>
                 
               </p>
-              <div className="mt-4 flex w-full flex-col md:flex-row md:justify-start lg:justify-end">
-              <div className="flex md:ml-2">
+              <div className="mt-4 flex w-full flex-col md:flex-row md:justify-start lg:justify-end items-end">
+                <div className="flex flex-start gap-5 flex-row mr-7">
                   <button
                   onClick={()=>closeRegisterModal(teacher)} 
-                  className="mr-40 h-[47px] w-[100px] rounded-2xl bg-[#5CEFFF] px-2 py-2 text-[1rem] text-black">
-                    Register
+                  className="  w-[160px] h-[40px] rounded-2xl bg-[#5CEFFF] px-2 py-2 text-[1rem] text-black">
+                    Quiero aprender!
+                  </button>
+                  <button
+                  onClick={()=>closeRegisterModal(teacher)} 
+                  className=" w-[160px] h-[40px] rounded-2xl border px-2 py-2 text-[1rem] text-black">
+                    Enviar un mensaje!
                   </button>
                 </div>
-                <p className="mt-2 pr-5 text-[17px] text-sm text-gray-500" onClick={()=>openCertificarionModal(teacher)}>
-                  <span className="transform cursor-pointer border border-[#8f34ea] p-2 italic text-[#8f34ea] transition duration-300 ease-in-out hover:scale-105 hover:bg-[#8f34ea] hover:text-white">
-                    Education <BookOutlined style={{ fontSize: "24px" }} />
-                  </span>
-                </p>
-                <DaysOfWeek Availability={teacher?.Availability} />
-                <div className="flex md:ml-2">
-                  <button
-                    className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                    onClick={() => openModal(teacher)}
-                  >
-                    One Free Class
-                  </button>
-                  <button
-                    className="rounded bg-[#8f34ea] px-4 py-2 text-white hover:bg-blue-600"
-                    onClick={() => openModal(teacher)}
-                  >
-                    View Video
-                  </button>
+                <div className="flex flex-col md:flex-row items-end w-full">
+                  <div className="flex flex-col md:flex-row items-center md:ml-2 w-full">
+                    <p className="mt-2 text-[17px] text-sm text-gray-500 mb-3" onClick={()=>openCertificarionModal(teacher)}>
+                      <span className="transform cursor-pointer border border-[#8f34ea] p-2 italic text-[#8f34ea] transition duration-300 ease-in-out hover:scale-105 hover:bg-[#8f34ea] hover:text-white">
+                       Education <BookOutlined style={{ fontSize: "24px" }} />
+                      </span>
+                    </p>
+                    <DaysOfWeek Availability={teacher?.Availability} />
+                   </div>
+                  <div className="flex flex-row md:flex-col md:ml-2  items-center gap-2">
+                    <button
+                     className="mr-2 w-[140px] h-[40px] rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                     onClick={() => openModal(teacher)}
+                    >
+                     One Free Class
+                    </button>
+                    <button
+                     className="mr-2 w-[140px] h-[40px] rounded bg-[#8f34ea] px-4 py-2 text-white hover:bg-blue-600"
+                     onClick={() => openModal(teacher)}
+                    >
+                     View Video
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
