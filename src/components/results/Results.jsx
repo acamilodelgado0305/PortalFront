@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { X, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { readAllTeachers } from "../../services/teacher.services.js";
-import { getFlagUrl } from "../../services/allcountries.js";
-import { FcGraduationCap, FcReading, FcQuestions   } from "react-icons/fc";
+import React, { useState, useEffect } from 'react';
+import { X, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import TeacherCard from './TeacherCard';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -14,13 +12,13 @@ const Results = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const navigate = useNavigate();
   const [activeFilters, setActiveFilters] = useState({
-    priceRange: "",
-    country: "",
-    availability: "",
-    specialty: "",
-    language: "",
+    priceRange: '',
+    country: '',
+    availability: '',
+    specialty: '',
+    language: '',
     isNative: false,
-    category: "",
+    category: ''
   });
 
   const [showFilterModal, setShowFilterModal] = useState({
@@ -29,54 +27,33 @@ const Results = () => {
     availability: false,
     specialty: false,
     language: false,
-    category: false,
+    category: false
   });
 
   // Opciones de filtro predefinidas
   const filterOptions = {
     priceRange: [
-      "$ 36.000 - $ 50.000",
-      "$ 50.000 - $ 75.000",
-      "$ 75.000 - $ 100.000",
-      "$ 100.000 - $ 145.500+",
+      '$ 36.000 - $ 50.000',
+      '$ 50.000 - $ 75.000',
+      '$ 75.000 - $ 100.000',
+      '$ 100.000 - $ 145.500+'
     ],
-    availability: [
-      "Lunes",
-      "Martes",
-      "Miércoles",
-      "Jueves",
-      "Viernes",
-      "Sábado",
-      "Domingo",
-    ],
-    specialty: [
-      "Matemáticas",
-      "Inglés",
-      "Ciencias",
-      "Historia",
-      "Literatura",
-      "Física",
-      "Química",
-    ],
-    language: [
-      "Español",
-      "Inglés",
-      "Francés",
-      "Alemán",
-      "Portugués",
-      "Italiano",
-    ],
+    availability: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+    specialty: ['Matemáticas', 'Inglés', 'Ciencias', 'Historia', 'Literatura', 'Física', 'Química'],
+    language: ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano']
   };
 
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await readAllTeachers();
-        setTeachers(response.data);
-        setFilteredTeachers(response.data);
+        const response = await fetch('https://back.app.esturio.com/api/teachers');
+        const data = await response.json();
+        setTeachers(data.data);
+        setFilteredTeachers(data.data);
+        console.log(data.data)
         setLoading(false);
       } catch (err) {
-        setError("Error al cargar los profesores");
+        setError('Error al cargar los profesores');
         setLoading(false);
         console.error("Error al cargar profesores:", err);
       }
@@ -84,6 +61,14 @@ const Results = () => {
 
     fetchTeachers();
   }, []);
+
+
+  const handleVideoClick = (videoUrl) => {
+    if (videoUrl) {
+      setSelectedVideo(videoUrl);
+      setShowVideoModal(true);
+    }
+  };
 
   const handleBack = () => {
     navigate(-1); // Regresa a la página anterior
@@ -98,34 +83,30 @@ const Results = () => {
 
     if (activeFilters.priceRange) {
       const [min, max] = activeFilters.priceRange
-        .replace(/[^0-9.-]+/g, "")
-        .split("-")
+        .replace(/[^0-9.-]+/g, '')
+        .split('-')
         .map(Number);
-      filtered = filtered.filter((teacher) => {
+      filtered = filtered.filter(teacher => {
         const rate = teacher.hourlyRate * 1000;
         return rate >= min && (max ? rate <= max : true);
       });
     }
 
     if (activeFilters.country) {
-      filtered = filtered.filter(
-        (teacher) =>
-          teacher.countryOfBirth?.toLowerCase() ===
-          activeFilters.country.toLowerCase(),
+      filtered = filtered.filter(teacher =>
+        teacher.countryOfBirth?.toLowerCase() === activeFilters.country.toLowerCase()
       );
     }
 
     if (activeFilters.isNative) {
-      filtered = filtered.filter(
-        (teacher) => teacher.languageLevel === "native",
+      filtered = filtered.filter(teacher =>
+        teacher.languageLevel === 'native'
       );
     }
 
     if (activeFilters.specialty) {
-      filtered = filtered.filter((teacher) =>
-        teacher.subjectYouTeach
-          ?.toLowerCase()
-          .includes(activeFilters.specialty.toLowerCase()),
+      filtered = filtered.filter(teacher =>
+        teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
       );
     }
 
@@ -133,13 +114,13 @@ const Results = () => {
   };
 
   const VideoModal = ({ videoUrl, onClose }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="w-full max-w-4xl rounded-lg bg-white">
-        <div className="flex items-center justify-between border-b p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg w-full max-w-4xl">
+        <div className="p-4 border-b flex justify-between items-center">
           <h3 className="text-lg font-semibold">Video de presentación</h3>
           <button
             onClick={onClose}
-            className="rounded-full p-1 hover:bg-gray-100"
+            className="p-1 hover:bg-gray-100 rounded-full"
           >
             <X size={24} />
           </button>
@@ -147,7 +128,7 @@ const Results = () => {
         <div className="aspect-video">
           <iframe
             src={videoUrl}
-            className="h-full w-full"
+            className="w-full h-full"
             allowFullScreen
             title="Presentación del profesor"
           />
@@ -160,9 +141,9 @@ const Results = () => {
     if (!isOpen) return null;
 
     return (
-      <div className="absolute z-20 mt-2 rounded-lg border border-gray-200 bg-white shadow-lg">
+      <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
         <div className="p-4">
-          <h3 className="mb-3 font-semibold">{title}</h3>
+          <h3 className="font-semibold mb-3">{title}</h3>
           <div className="space-y-2">
             {options.map((option) => (
               <button
@@ -171,7 +152,7 @@ const Results = () => {
                   onSelect(option);
                   onClose();
                 }}
-                className="block w-full rounded px-4 py-2 text-left hover:bg-gray-50"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded"
               >
                 {option}
               </button>
@@ -185,28 +166,13 @@ const Results = () => {
   const FilterButton = ({ label, value, filterKey }) => (
     <div className="relative inline-block">
       <button
-        className="flex items-center space-x-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-        onClick={() =>
-          setShowFilterModal((prev) => ({
-            ...prev,
-            [filterKey]: !prev[filterKey],
-          }))
-        }
+        className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border border-gray-200"
+        onClick={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: !prev[filterKey] }))}
       >
         <span>{label}</span>
         {value && <span className="text-gray-400">{value}</span>}
-        <svg
-          className="h-4 w-4 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M19 9l-7 7-7-7"
-          />
+        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
@@ -214,138 +180,36 @@ const Results = () => {
         title={label}
         options={filterOptions[filterKey] || []}
         onSelect={(selected) => {
-          setActiveFilters((prev) => ({ ...prev, [filterKey]: selected }));
+          setActiveFilters(prev => ({ ...prev, [filterKey]: selected }));
         }}
-        onClose={() =>
-          setShowFilterModal((prev) => ({ ...prev, [filterKey]: false }))
-        }
+        onClose={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: false }))}
         isOpen={showFilterModal[filterKey]}
       />
     </div>
   );
 
-  const TeacherCard = ({ teacher }) => {
-    const formatPrice = (price) => {
-      return new Intl.NumberFormat("es-CO", {
-        style: "currency",
-        currency: "COP",
-      }).format(price * 1000);
-    };
 
-    const handleVideoClick = (videoUrl) => {
-      setSelectedVideo(videoUrl);
-      setShowVideoModal(true);
-    };
-
-    const flagImageUrl = getFlagUrl(teacher.countryOfBirth)
-    return (
-      <div className="mb-4 rounded-lg bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg">
-        <div className="flex items-start space-x-4">
-          <div className="h-32 w-32 flex-shrink-0  mt-4">
-            <img
-              src={
-                teacher.profileImageUrl || "https://via.placeholder.com/128x128"
-              }
-              alt={`${teacher.firstName || "Nombre"} ${teacher.lastName || "Apellido"}`}
-              className="h-full w-full rounded-lg bg-gray-200 object-cover"
-              onError={(e) => {
-                e.target.src = "https://via.placeholder.com/128x128";
-              }}
-            />
-          </div>
-          <div className="flex-grow">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="flex items-center space-x-2 text-xl font-semibold mt-2">
-                  <span>{`${teacher.firstName || "Nombre"} ${teacher.lastName || "Apellido"}`}</span>
-                  <span className="rounded bg-purple-100 px-2 py-1 text-sm text-purple-600">
-                    {teacher.languageLevel === "native"
-                      ? "✓ Nativo"
-                      : "✓ Verificado"}
-                  </span>
-                </h3>
-                <span className="flex items-center gap-1"><FcReading style={{fontSize: '22px'}}/> 
-                <p className="mt-1 text-[15px]  text-gray-600"> 
-                  {teacher.subjectYouTeach
-                    ? teacher.subjectYouTeach.charAt(0).toUpperCase() +
-                      teacher.subjectYouTeach.slice(1)
-                    : "Materia no disponible"}
-                </p></span>
-                {teacher.description?.headline && (<span className="flex items-center gap-1"> <FcQuestions  style={{fontSize: '20px'}} />
-                  <p className="mt-1 text-[15px]  text-gray-500">
-                    {teacher.description.headline}
-                  </p></span>
-                )}
-              </div>
-              <div className="text-right mt-4">
-                <p className="text-lg font-semibold text-purple-600">
-                  {formatPrice(teacher.hourlyRate)}/hora
-                </p>
-              </div>
-            </div>
-            <div className="mt-4">
-              <p className="line-clamp-2 text-gray-700">
-                {teacher.description?.introduction ||
-                  "No hay descripción disponible"}
-              </p>
-              <div className="mt-4 flex lg:absolute flex-wrap items-center gap-4 text-[15px] text-gray-600">
-                {teacher.certifications?.length > 0 && (
-                  <span>✓{teacher.certifications.length} certificaciones</span>
-                )}
-                {teacher.education?.length > 0 && (
-                  <span className="flex items-center gap-1 text-[15px]"><FcGraduationCap/> {teacher.education.length} títulos académicos</span>
-                )}
-            <span className="flex items-center gap-1">
-                  <img
-                    style={{ width: "25px", height: "15.4px" }}
-                    src={flagImageUrl}
-                    alt="flag"
-                  />
-                  {teacher.countryOfBirth?.toUpperCase() ||
-                    "País no disponible"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mt-6 flex justify-end space-x-4 w-[auto]">
-          <button
-            onClick={() => console.log("Enviar mensaje a:", teacher.email)}
-            className="rounded-lg border border-purple-600 px-6 py-2 text-purple-600 transition-colors duration-200 hover:bg-purple-50"
-          >
-            Enviar mensaje
-          </button>
-          <button
-            onClick={() => handleVideoClick(teacher.video)}
-            className="rounded-lg bg-purple-600 px-6 py-2 text-white transition-colors duration-200 hover:bg-purple-700"
-          >
-            Ver presentación
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="p-4 text-center text-xl text-red-600">{error}</div>;
+    return <div className="text-red-600 text-center text-xl p-4">{error}</div>;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="border-b bg-white">
+      <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="mb-6 flex items-center">
+          <div className="flex items-center mb-6">
             <button
               onClick={handleBack}
-              className="mr-2 rounded-full p-2 transition-colors duration-200 hover:bg-gray-100"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
               aria-label="Regresar"
             >
               <ArrowLeft size={24} className="text-gray-600" />
@@ -355,7 +219,7 @@ const Results = () => {
             </h1>
           </div>
 
-          <div className="mb-6 flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 mb-6">
             <FilterButton
               label="Precio de la clase"
               value={activeFilters.priceRange}
@@ -375,54 +239,30 @@ const Results = () => {
 
           <div className="flex flex-wrap gap-4">
             <button
-              className={`rounded-lg bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
-                activeFilters.specialty ? "ring-2 ring-purple-500" : ""
-              }`}
-              onClick={() =>
-                setShowFilterModal((prev) => ({
-                  ...prev,
-                  specialty: !prev.specialty,
-                }))
-              }
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.specialty ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setShowFilterModal(prev => ({ ...prev, specialty: !prev.specialty }))}
             >
               Especialidades
             </button>
             <button
-              className={`rounded-lg  bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
-                activeFilters.language ? "ring-2 ring-purple-500" : ""
-              }`}
-              onClick={() =>
-                setShowFilterModal((prev) => ({
-                  ...prev,
-                  language: !prev.language,
-                }))
-              }
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.language ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setShowFilterModal(prev => ({ ...prev, language: !prev.language }))}
             >
               El profesor habla
             </button>
             <button
-              className={`rounded-lg  bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
-                activeFilters.isNative ? "ring-2 ring-purple-500" : ""
-              }`}
-              onClick={() =>
-                setActiveFilters((prev) => ({
-                  ...prev,
-                  isNative: !prev.isNative,
-                }))
-              }
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
             >
               Hablante nativo
             </button>
             <button
-              className={`rounded-lg bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
-                activeFilters.category ? "ring-2 ring-purple-500" : ""
-              }`}
-              onClick={() =>
-                setShowFilterModal((prev) => ({
-                  ...prev,
-                  category: !prev.category,
-                }))
-              }
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.category ? 'ring-2 ring-purple-500' : ''
+                }`}
+              onClick={() => setShowFilterModal(prev => ({ ...prev, category: !prev.category }))}
             >
               Categorías del profesor
             </button>
@@ -431,14 +271,17 @@ const Results = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <h2 className="mb-6 text-xl font-semibold text-gray-800">
-          {filteredTeachers.length} profesores disponibles para ajustarse a tus
-          necesidades
+        <h2 className="text-xl font-semibold text-gray-800 mb-6">
+          {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
         </h2>
 
-        <div className="space-y-6">
+        <div className="space-y-6 w-[70em]">
           {filteredTeachers.map((teacher) => (
-            <TeacherCard key={teacher.id} teacher={teacher} />
+            <TeacherCard
+              key={teacher.id}
+              teacher={teacher}
+              onVideoClick={handleVideoClick}
+            />
           ))}
           {filteredTeachers.length === 0 && (
             <p className="text-center text-gray-600">
@@ -460,5 +303,6 @@ const Results = () => {
     </div>
   );
 };
+
 
 export default Results;
