@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
-import { fileUpload } from "../../../../helpers/fileUpload";
 
 const PhotoStep = ({ onChange, setIsVerified }) => {
   const [uploading, setUploading] = useState(false);
@@ -11,11 +10,6 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [zoom, setZoom] = useState(1);
   const imgRef = useRef(null);
-
-
-  useEffect(()=>{
-    onChange({ profileImageUrl: profileImageUrl });
-  },[profileImageUrl])
 
   const onDrop = useCallback(async (acceptedFiles) => {
     if (acceptedFiles[0].size > 20 * 1024 * 1024) {
@@ -30,7 +24,8 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
 
     setUploading(true);
     try {
-      const imageDataUrl = await fileUpload(acceptedFiles,  "image");
+      const file = acceptedFiles[0];
+      const imageDataUrl = await readFile(file);
       setProfileImageUrl(imageDataUrl);
       setIsEditing(true);
       setIsVerified(true)
@@ -56,6 +51,13 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
     maxSize: 20 * 1024 * 1024, // 20MB
   });
 
+  const readFile = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => resolve(reader.result), false);
+      reader.readAsDataURL(file);
+    });
+  };
 
   const rotateImage = () => {
     setRotation((prevRotation) => (prevRotation + 90) % 360);
@@ -63,27 +65,28 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
 
   const saveEditedImage = useCallback(async () => {
     if (!imgRef.current) return;
-    //¿ no hay otra forma de gestionar la imagen?
-    // tengo la url s3. profileImageUrl
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
+    // Set canvas size to match the original image size
     canvas.width = imgRef.current.naturalWidth;
     canvas.height = imgRef.current.naturalHeight;
 
+    // Apply zoom and rotation
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
     ctx.scale(zoom, zoom);
     ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
     ctx.drawImage(imgRef.current, 0, 0);
-// aqui canvas es un elemeno html y no esta funcionando esto: canvas.toDataURl 
+
     const base64Image = canvas.toDataURL('image/jpeg');
     
     setProfileImageUrl(base64Image);
     setIsEditing(false);
-    onChange({ profileImageUrl: profileImageUrl });
-  }, [zoom, rotation]);
+    onChange({ profileImageUrl: base64Image });
+  }, [zoom, rotation, onChange]);
 
   const deleteImage = () => {
     Swal.fire({
