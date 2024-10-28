@@ -155,15 +155,18 @@ function FormStudent() {
   
 
   const handleContinue = () => {
+    if(!selectedOption && !selectedSuboption && currentQuestionIndex < 2 ){
+      return
+    } 
+     
     if(currentQuestionIndex == 1)
       setShowSuboptions(false)
-
-    if (currentQuestionIndex < currentQuestions.length - 1) {
+    if (currentQuestionIndex < currentQuestions.length - 1 ) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       handleShowAllOptions();
     } else {
       finishForm();
-    }
+    }  
   };
 
   const finishForm = () => {

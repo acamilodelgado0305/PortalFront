@@ -239,28 +239,28 @@ const Results = () => {
 
           <div className="flex flex-wrap gap-4">
             <button
-              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.specialty ? 'ring-2 ring-purple-500' : ''
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.specialty ? 'ring-2 ring-purple-500' : ''
                 }`}
               onClick={() => setShowFilterModal(prev => ({ ...prev, specialty: !prev.specialty }))}
             >
               Especialidades
             </button>
             <button
-              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.language ? 'ring-2 ring-purple-500' : ''
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.language ? 'ring-2 ring-purple-500' : ''
                 }`}
               onClick={() => setShowFilterModal(prev => ({ ...prev, language: !prev.language }))}
             >
               El profesor habla
             </button>
             <button
-              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''
                 }`}
               onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
             >
               Hablante nativo
             </button>
             <button
-              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-gray-200 ${activeFilters.category ? 'ring-2 ring-purple-500' : ''
+              className={`bg-white rounded-lg px-2 py-1 text-gray-700 hover:bg-gray-50 border border-gray-100 ${activeFilters.category ? 'ring-2 ring-purple-500' : ''
                 }`}
               onClick={() => setShowFilterModal(prev => ({ ...prev, category: !prev.category }))}
             >

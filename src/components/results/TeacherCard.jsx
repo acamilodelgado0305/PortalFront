@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { getFlagUrl } from "../../services/allcountries.js" 
 import { Play, X } from 'lucide-react';
+
 
 const TeacherCard = ({ teacher, onVideoClick }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -11,12 +13,10 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
     }).format(price * 1000);
   };
 
-  // Función para formatear la hora
   const formatTime = (time) => {
     return time.toString().padStart(2, '0') + ':00';
   };
 
-  // Función para obtener el thumbnail de YouTube
   const getYouTubeThumbnail = (url) => {
     const videoId = url.split('/').pop();
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
@@ -32,6 +32,18 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
       Saturday: 'Sábado',
       Sunday: 'Domingo'
     };
+
+    function convertToLocalTime(startISO, endISO) {
+      // Crear objetos de fecha a partir de las cadenas ISO
+      const startDate = new Date(startISO);
+      const endDate = new Date(endISO);
+      
+      // Obtener la hora y los minutos en formato local
+      const localStartTime = startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const localEndTime = endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      return `${localStartTime} - ${localEndTime}`;
+  }  
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -58,7 +70,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
                           key={index}
                           className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"
                         >
-                          {`${formatTime(slot.start)} - ${formatTime(slot.end)}`}
+                          {convertToLocalTime(slot.start, slot.end)}
                         </span>
                       ))}
                     </div>
@@ -96,10 +108,12 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="text-xl font-medium">
-                    {teacher.firstName} {teacher.lastName}
+                 {teacher.firstName} {teacher.lastName} 
                   </h3>
-                  <div className="flex items-center">
+                  <div className="flex items-center">  
+                    <img src={getFlagUrl(teacher.countryOfBirth)} style={{width:'20px', heigth:'20px'}} className='mx-2'/>
                     <span className="text-yellow-400">★</span>
+                  
                     <span className="font-medium">{teacher.rating || 5}</span>
                     <span className="text-gray-600 text-sm ml-1">
                       ({teacher.reviews || 3} opiniones)
@@ -121,12 +135,9 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
                   <span>
                     Habla {teacher.language} ({teacher.languageLevel === 'native' ? 'Nativo' : 'Avanzado'})
                   </span>
+
                 </div>
               </div>
-
-              <p className="text-gray-700 text-sm line-clamp-2 mb-4">
-                {teacher.description?.introduction}
-              </p>
 
               {/* Precio */}
               <div className="text-right">
@@ -136,7 +147,9 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
                 <p className="text-sm text-gray-500">Lección de 50 minutos</p>
               </div>
             </div>
-
+            <div className="text-gray-700 ">
+                {teacher.description?.introduction}
+              </div>
             {/* Botones */}
             <div className="mt-[-4em] flex flex-col w-[56em] gap-3 text-right justify-end items-end">
               <button
