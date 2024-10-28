@@ -15,7 +15,6 @@ import { uploadImage } from "../../../services/utils";
 import { processImageUpload } from "../../../helpers/processImageUpload";
 
 
-
 const { Step } = AntSteps;
 
 const MultiStepForm = () => {
@@ -64,14 +63,7 @@ const MultiStepForm = () => {
     }
     setIsSubmitting(true);
 
-    if (formData.profileImageUrl) {
-      const imageUrl = formData.profileImageUrl;
-      if (imageUrl.endsWith('.svg') || imageUrl.includes('image/svg+xml')) {
-        console.log('La imagen es un SVG');
-      }
-    }
-
-    try {
+      try {
       await createTeacher(formData);
       setIsModalVisible(true);
     } catch (error) {
