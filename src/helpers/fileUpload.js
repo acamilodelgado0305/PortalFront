@@ -19,6 +19,7 @@ export const fileUpload = async (acceptedFiles, type) => {
   }
 };
 
+
 const contentTypeSuccessMessage = (type, file) => {
   switch (type) {
     case "image":
@@ -52,3 +53,5 @@ const contentTypeErrorMessage = (type, file) => {
       break;
   }
 };
+
+
