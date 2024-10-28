@@ -13,9 +13,6 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
     }).format(price * 1000);
   };
 
-  const formatTime = (time) => {
-    return time.toString().padStart(2, '0') + ':00';
-  };
 
   const getYouTubeThumbnail = (url) => {
     const videoId = url.split('/').pop();
@@ -34,11 +31,9 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
     };
 
     function convertToLocalTime(startISO, endISO) {
-      // Crear objetos de fecha a partir de las cadenas ISO
       const startDate = new Date(startISO);
       const endDate = new Date(endISO);
       
-      // Obtener la hora y los minutos en formato local
       const localStartTime = startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const localEndTime = endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
@@ -46,7 +41,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
   }  
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 py-6">
         <div className="bg-white rounded-lg w-full max-w-lg">
           <div className="p-4 border-b flex justify-between items-center">
             <h3 className="text-lg font-semibold">Horario disponible</h3>
@@ -87,7 +82,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
   return (
     <div className="relative group">
       {/* Tarjeta Principal */}
-      <div className="bg-white rounded-lg shadow-sm border h-[17em] border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-black">
+      <div className="h-[37vh] bg-white rounded-lg shadow-sm border h-[17em] border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-black">
         <div className="flex gap-6">
           {/* Columna izquierda con imagen */}
           <div className="w-32">
@@ -141,7 +136,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
 
               {/* Precio */}
               <div className="text-right">
-                <p className="text-lg font-semibold text-gray-900">
+              <p className="text-xl font-semibold text-gray-900">
                   {formatPrice(teacher.hourlyRate)}
                 </p>
                 <p className="text-sm text-gray-500">Lección de 50 minutos</p>
@@ -151,7 +146,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
                 {teacher.description?.introduction}
               </div>
             {/* Botones */}
-            <div className="mt-[-4em] flex flex-col w-[56em] gap-3 text-right justify-end items-end">
+            <div className="flex flex-col w-[56em] gap-3 text-right justify-end items-end">
               <button
                 onClick={() => console.log('Clase de prueba gratuita')}
                 className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
@@ -172,9 +167,9 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
 
       {/* Vista previa del video flotante */}
       <div className="absolute top-0 left-full ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-        <div className=" border border-black !border-black bg-white rounded-lg shadow-lg p-3 w-[27em] h-[17em]">
+        <div className="h-[37vh] border border-black !border-black bg-white rounded-lg shadow-lg p-3 w-[27em] h-[17em]">
           <div
-            className={` relative w-full h-[12em] bg-gray-100 rounded-lg ${teacher.video ? 'cursor-pointer' : ''} overflow-hidden`}
+            className={` relative w-full h-[15em] bg-gray-100 rounded-lg ${teacher.video ? 'cursor-pointer' : ''} overflow-hidden`}
             onClick={() => teacher.video && onVideoClick(teacher.video)}
           >
             {teacher.video ? (
