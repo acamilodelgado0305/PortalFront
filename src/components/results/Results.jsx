@@ -241,7 +241,7 @@ const Results = () => {
     return (
       <div className="mb-4 rounded-lg bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg">
         <div className="flex items-start space-x-4">
-          <div className="h-32 w-32 flex-shrink-0">
+          <div className="h-32 w-32 flex-shrink-0  mt-4">
             <img
               src={
                 teacher.profileImageUrl || "https://via.placeholder.com/128x128"
@@ -256,7 +256,7 @@ const Results = () => {
           <div className="flex-grow">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="flex items-center space-x-2 text-xl font-semibold">
+                <h3 className="flex items-center space-x-2 text-xl font-semibold mt-2">
                   <span>{`${teacher.firstName || "Nombre"} ${teacher.lastName || "Apellido"}`}</span>
                   <span className="rounded bg-purple-100 px-2 py-1 text-sm text-purple-600">
                     {teacher.languageLevel === "native"
@@ -277,7 +277,7 @@ const Results = () => {
                   </p></span>
                 )}
               </div>
-              <div className="text-right">
+              <div className="text-right mt-4">
                 <p className="text-lg font-semibold text-purple-600">
                   {formatPrice(teacher.hourlyRate)}/hora
                 </p>
@@ -288,7 +288,7 @@ const Results = () => {
                 {teacher.description?.introduction ||
                   "No hay descripción disponible"}
               </p>
-              <div className="mt-4 flex flex-wrap items-center gap-4 text-[15px] text-gray-600">
+              <div className="mt-4 flex lg:absolute flex-wrap items-center gap-4 text-[15px] text-gray-600">
                 {teacher.certifications?.length > 0 && (
                   <span>✓{teacher.certifications.length} certificaciones</span>
                 )}
@@ -308,7 +308,7 @@ const Results = () => {
             </div>
           </div>
         </div>
-        <div className="mt-6 flex justify-end space-x-4">
+        <div className="mt-6 flex justify-end space-x-4 w-[auto]">
           <button
             onClick={() => console.log("Enviar mensaje a:", teacher.email)}
             className="rounded-lg border border-purple-600 px-6 py-2 text-purple-600 transition-colors duration-200 hover:bg-purple-50"
@@ -388,7 +388,7 @@ const Results = () => {
               Especialidades
             </button>
             <button
-              className={`rounded-lg  bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 ${
+              className={`rounded-lg  bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
                 activeFilters.language ? "ring-2 ring-purple-500" : ""
               }`}
               onClick={() =>
@@ -401,7 +401,7 @@ const Results = () => {
               El profesor habla
             </button>
             <button
-              className={`rounded-lg  bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 ${
+              className={`rounded-lg  bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
                 activeFilters.isNative ? "ring-2 ring-purple-500" : ""
               }`}
               onClick={() =>
@@ -414,7 +414,7 @@ const Results = () => {
               Hablante nativo
             </button>
             <button
-              className={`rounded-lg bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 ${
+              className={`rounded-lg bg-white px-3 py-1 text-gray-700 hover:bg-gray-50 ${
                 activeFilters.category ? "ring-2 ring-purple-500" : ""
               }`}
               onClick={() =>
