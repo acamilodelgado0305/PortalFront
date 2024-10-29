@@ -3,10 +3,19 @@ import { MessageCircle, HeadphonesIcon, LogOut } from 'lucide-react';
 import Sidebar from './Sidebar';
 import StudentsSection from './StudentsSection';
 import TeachersSection from './TeacherSection';
+import { useAuth } from '../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const Dashboard = () => {
     const [activeSection, setActiveSection] = useState('students');
+    const { logout } = useAuth();
+    const navigate = useNavigate();
 
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
     return (
         <div className="flex min-h-screen">
             <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
@@ -24,7 +33,8 @@ const Dashboard = () => {
                                 <span>Soporte</span>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-2 cursor-pointer text-red-600 hover:text-red-700">
+                        <div className="flex items-center space-x-2 cursor-pointer text-red-600 hover:text-red-700"
+                            onClick={handleLogout}>
                             <LogOut size={20} />
                             <span>Salir</span>
                         </div>
