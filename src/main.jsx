@@ -55,7 +55,7 @@ const router = createBrowserRouter([
     element: <Results />,
   },
   {
-    path:"/whiteboard",
+    path:"/whiteboard/:room",
     element: <WhiteBoard/>
   }
 
