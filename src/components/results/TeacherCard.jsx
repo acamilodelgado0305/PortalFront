@@ -86,7 +86,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             <div className="w-[50%] py-3 text-gray-700 lg:absolute lg:py-0">
               {teacher.description?.introduction}
             </div>
-            <div className="flex w-[56em] flex-col gap-3 text-right lg:items-end lg:justify-end">
+            <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end">
               <button
                 onClick={() => console.log("Clase de prueba gratuita")}
                 className="w-[12em] rounded-lg bg-purple-500 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-purple-600"
