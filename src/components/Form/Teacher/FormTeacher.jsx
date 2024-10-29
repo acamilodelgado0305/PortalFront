@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Form, Button, Steps as AntSteps, Card, Modal, message } from "antd";
 import { CheckCircle, Circle } from 'lucide-react';
 import Header from "../../Header";
@@ -22,9 +22,11 @@ const MultiStepForm = () => {
   const [formData, setFormData] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // 
+  const [isVerified, setIsVerified] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // modificacions
-  const [passwordModal, setPasswordModal] = useState(false)
+
 
 
   const handleFormChange = (changedValues) => {
@@ -46,6 +48,8 @@ const MultiStepForm = () => {
     "Availability",
     "Pricing",
   ];
+
+
 
 
 
@@ -73,38 +77,45 @@ const MultiStepForm = () => {
     setFormData({});
   };
 
-  const next = () => {
+const next = () => {
+if(isVerified) {
     form
       .validateFields()
       .then(() => {
         setCurrentStep(currentStep + 1);
+        setIsVerified(false);
+        setErrorMessage("");
       })
       .catch((error) => {
         console.error("Validation failed:", error);
       });
+    } else{
+      setErrorMessage("Please ensure all required fields are complete.")
+    }
+  
   };
 
   const prev = () => {
     setCurrentStep(currentStep - 1);
+    setIsVerified(false)
   };
 
   const getCurrentStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <AboutStep  onChange={handleFormChange} />;
+        return <AboutStep  onChange={handleFormChange} setIsVerified={setIsVerified}/>;
       case 1:
-        return <PhotoStep onChange={handleFormChange} />;
+        return <PhotoStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 2:
-        return <CertificationStep onChange={handleFormChange} />;
-
+        return <CertificationStep onChange={handleFormChange} setIsVerified={setIsVerified}  />;
       case 3:
-        return <EducationStep onChange={handleFormChange} />;
+        return <EducationStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 4:
-        return <DescriptionSet onChange={handleFormChange} />;
+        return <DescriptionSet onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 5:
-        return <VideoStep onChange={handleFormChange} />;
+        return <VideoStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 6:
-        return <ScheduleStep onChange={handleFormChange} />;
+        return <ScheduleStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 7:
         return <PricingStep onChange={handleFormChange} />;
       default:
@@ -160,6 +171,7 @@ const MultiStepForm = () => {
                 Previous
               </Button>
             )}
+          {(currentStep != 0 && errorMessage) && errorMessage}
             {currentStep < stepTitles.length - 1 && (
               <Button
                 onClick={next}
@@ -167,7 +179,7 @@ const MultiStepForm = () => {
               >
                 Next
               </Button>
-            )}
+            )}  {(currentStep == 0 && errorMessage) && errorMessage}
             {currentStep === stepTitles.length - 1 && (
               <Button
                 type="primary"

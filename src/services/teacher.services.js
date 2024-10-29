@@ -31,6 +31,16 @@ const getTeacherById = async (id) => {
   }
 };
 
+const checkTeacherEmailExists = async (email) =>{
+  try {
+    const response = await backApi.get(`/api/teachers/email/${email}`);
+   return response.data.isEmail;
+  } catch (error) {
+    console.error(`Error getting teacher with id ${email}:`, error);
+    throw error;
+  }
+}
+
 const updateTeacher = async (id, updatedData) => {
   try {
     const response = await backApi.put(`/api/teachers/${id}`, updatedData);
@@ -55,6 +65,7 @@ export {
   createTeacher,
   readAllTeachers,
   getTeacherById,
+  checkTeacherEmailExists,
   updateTeacher,
   deleteTeacherById
 };
