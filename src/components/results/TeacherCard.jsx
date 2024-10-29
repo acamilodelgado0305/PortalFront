@@ -142,7 +142,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
                 <p className="text-sm text-gray-500">Lección de 50 minutos</p>
               </div>
             </div>
-            <div className="text-gray-700 ">
+            <div className="text-gray-700 w-[50%] absolute">
                 {teacher.description?.introduction}
               </div>
             {/* Botones */}
