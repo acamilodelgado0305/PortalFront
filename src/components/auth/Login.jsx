@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { message } from 'antd';
 
-const Login = () => {
+const Login = ({setInicioSesion}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -132,6 +132,7 @@ const Login = () => {
                     {/* Botón de Iniciar sesión */}
                     <div className="text-center">
                         <button
+                       
                             type="submit"
                             className="w-full p-2 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600 border-2 border-purple-500"
                         >
@@ -141,8 +142,11 @@ const Login = () => {
                 </form>
 
                 <div className="flex justify-between text-gray-600 text-sm mt-4">
-                    <a href="#" className="hover:underline">¿Olvidaste tu contraseña?</a>
-                    <a href="#" className="hover:underline">Regístrate</a>
+                    <a 
+                    href="#" className="hover:underline">¿Olvidaste tu contraseña?</a>
+                    <a
+                     onClick={() => setInicioSesion(false)}
+                    href="#" className="hover:underline">Regístrate</a>
                 </div>
             </div>
         </div>

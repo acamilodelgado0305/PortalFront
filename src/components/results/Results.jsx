@@ -330,6 +330,7 @@ const Results = () => {
       key={teacher.id}
       teacher={teacher}
       onVideoClick={handleVideoClick}
+      closeRegisterModal={closeRegisterModal}
     />
   ))}
 

@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
-import { verifyNumber } from "../../services/validations";
+import { verifyEmail, verifyNumber } from "../../services/validations";
+import { createStudent } from "../../services/studendent.services";
 
 export const Register = ({selectedTeacher, closeRegisterModal, setInicioSesion}) => {
 
-    const [classMode, setClassMode] = useState(null);
     const [manejoDatos, setManejoDatos] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [email, setEmail]= useState("");
    
     const showFormF =() => {
-        console.log(email)
         if (email.length > 0) {
           setShowForm(true)
         } else {
@@ -26,9 +25,7 @@ export const Register = ({selectedTeacher, closeRegisterModal, setInicioSesion})
       const onchangeData = async (data) => {
         data.preventDefault();
         const dataForm= Object.fromEntries( new FormData(data.target));
-        if (!classMode) {
-          return;
-        }
+        
         if (!dataForm.manejoDatos) {
           setManejoDatos(true)
           return;
@@ -36,25 +33,26 @@ export const Register = ({selectedTeacher, closeRegisterModal, setInicioSesion})
         setManejoDatos(false)
     
         if (!verifyNumber(dataForm.phone)) {
-          console.log("es numero")
           return;
         }
-        
+        if (!verifyEmail(dataForm.email)) {
+          return;
+        }
        const student = {
         ...dataForm,
         idTeacher: selectedTeacher.id,
         status: false,
-        modalidad:classMode
        }
-       console.log(student)
-       console.log(selectedTeacher)
-       /*
+       
        try {
-       const result = await createStudent(dataForm)
-       console.log(result);
+       const result = await createStudent(student)
+      if (result.success) {
+        console.log("estudiante registrado")
+      }
+       
        } catch (error) {
         console.log(error)
-       }*/
+       }
       }
       
    
@@ -112,7 +110,7 @@ export const Register = ({selectedTeacher, closeRegisterModal, setInicioSesion})
         <div className="w-full flex justify-center m-3 text-xs"
         onClick={() => setInicioSesion(true)}
         >
-          <p className="cursor-pointer underline decoration-sky-600 hover:text-blue-500">inicia sesion</p>
+          <p className="cursor-pointer underline decoration-sky-600 hover:text-blue-500">Inicia sesion</p>
         </div>
 
         <div className="w-full flex justify-center m-3 text-xs">
@@ -120,13 +118,13 @@ export const Register = ({selectedTeacher, closeRegisterModal, setInicioSesion})
              className="text-center cursor-pointer border w-28 rounded p-1 hover:bg-red-400 mr-20"
              onClick={()=>closeRegisterModal(null)}
             >
-             cancel
+             Elegir otro profesor
            </div>
 
            <button
              className="w-5/12 bg-green-200 border rounded-md hover:bg-green-600"
              type="submit">
-              Register 
+              Registrarme 
            </button>
         </div>
       </form>  
