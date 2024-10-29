@@ -22,7 +22,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
     <div className="group relative">
       <div className="h-[auto] w-[50%] rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-black hover:shadow-md lg:h-[37vh] lg:w-[100%]">
         <div className="flex gap-6">
-          <div className="w-32">
+          <div >
             <img
               src={teacher.profileImageUrl}
               alt={`${teacher.firstName} ${teacher.lastName}`}
@@ -33,7 +33,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             />
           </div>
 
-          <div className="w-[50%] flex-1 md:w-[100%]">
+          <div className="w-[50%] flex-1 lg:w-[100%]">
             <div className="flex items-start justify-between">
               <div>
                 <div className="mb-2 flex items-center gap-2">
