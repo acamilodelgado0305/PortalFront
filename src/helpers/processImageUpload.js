@@ -1,5 +1,7 @@
-export const processImageUpload = async (formData, uploadImage, setFormData) => {
-    //svg a s3 service
+import { uploadImage } from "../services/utils";
+
+export const uploadImageToS3 = async (formData, setFormData) => {
+  // teacher formData src\components\Form\Teacher\FormTeacher.jsx line 99
     if (formData.profileImageUrl) {
       const imageUrl = formData.profileImageUrl;
   
@@ -16,10 +18,9 @@ export const processImageUpload = async (formData, uploadImage, setFormData) => 
         const file = new File([blob], `profile-image.${mimeType.split('/')[1]}`, { type: mimeType });
   
         const uploadedImageUrl = await uploadImage(file, mimeType);
-        console.log('Se modifico la url a '+uploadedImageUrl)
         setFormData((prevFormData) => ({
           ...prevFormData,
-          profileImageUrl: uploadedImageUrl
+          profileImageUrl: uploadedImageUrl.url
         }));
       } 
     } 

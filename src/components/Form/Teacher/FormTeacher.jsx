@@ -11,7 +11,8 @@ import VideoStep from "./Steps/VideoStep";
 import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 import { createTeacher } from '../../../services/teacher.services'
-import { uploadImage } from "../../../services/utils";
+
+import { uploadImageToS3 } from "../../../helpers/processImageUpload";
 
 
 
@@ -35,43 +36,6 @@ const MultiStepForm = () => {
   };
 
 useEffect(() => {
-  const processImageUpload = async () => {
-    if (formData.profileImageUrl) {
-      const imageUrl = formData.profileImageUrl;
-
-      // Verifica que imageUrl sea un string antes de usar startsWith
-      if (typeof imageUrl === 'string' && imageUrl.startsWith('data:image/')) {
-        console.log('La imagen es un data URL');
-        
-        // Obtener el tipo de la imagen del data URL
-        const mimeType = imageUrl.match(/data:(.*?);base64/)[1];
-  
-        // Convertir el data URL en un Blob
-        const byteString = atob(imageUrl.split(',')[1]);
-        const arrayBuffer = new Uint8Array(byteString.length);
-        for (let i = 0; i < byteString.length; i++) {
-          arrayBuffer[i] = byteString.charCodeAt(i);
-        }
-        const blob = new Blob([arrayBuffer], { type: mimeType });
-        const file = new File([blob], `profile-image.${mimeType.split('/')[1]}`, { type: mimeType });
-        
-        // Esto espera que uploadImage retorne una URL
-        const uploadedImageUrl = await uploadImage(file, mimeType);
-
-        // Guarda la URL en formData.profileImageUrl
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          profileImageUrl: uploadedImageUrl.url
-        }));
-      } else {
-        console.log('La URL de la imagen no es un data URL o no es un string.');
-      }
-    } else {
-      console.log(JSON.stringify(formData));
-    }
-  };
-
-  processImageUpload();
 }, [formData]);
   
 
@@ -119,7 +83,7 @@ useEffect(() => {
     setFormData({});
   };
 
-const next = () => {
+const next = async() => {
 if(isVerified) {
     form
       .validateFields()
@@ -131,6 +95,9 @@ if(isVerified) {
       .catch((error) => {
         console.error("Validation failed:", error);
       });
+      if(currentStep == '2'){
+       await uploadImageToS3(formData, setFormData)
+      }
     } else{
       setErrorMessage("Please ensure all required fields are complete.")
     }
