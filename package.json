@@ -16,6 +16,7 @@
     "@mui/material": "^5.15.6",
     "@mui/x-data-grid": "^6.19.1",
     "@shadcn/ui": "^0.0.4",
+    "@tldraw/sync": "^3.4.0",
     "antd": "^5.20.6",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.2",
@@ -35,7 +36,8 @@
     "react-phone-input-2": "^2.15.1",
     "react-router-dom": "^6.21.2",
     "recharts": "^2.12.7",
-    "sweetalert2": "^11.6.13"
+    "sweetalert2": "^11.6.13",
+    "tldraw": "^3.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

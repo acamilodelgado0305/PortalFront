@@ -12,6 +12,7 @@ import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
 import Results from "./components/results/Results";
+import WhiteBoard from "./components/Whiteboard/index.jsx";
 
 
 import "./index.css";
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
   {
     path: "/results",
     element: <Results />,
+  },
+  {
+    path:"/whiteboard",
+    element: <WhiteBoard/>
   }
 
 ]);
