@@ -82,7 +82,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
   return (
     <div className="relative group">
       {/* Tarjeta Principal */}
-      <div className="h-[37vh] bg-white rounded-lg shadow-sm border h-[17em] border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-black">
+      <div className="h-[37vh] w-[50%] lg:w-[100%] bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 hover:border-black  overflow-hidden">
         <div className="flex gap-6">
           {/* Columna izquierda con imagen */}
           <div className="w-32">
@@ -166,7 +166,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
       </div>
 
       {/* Vista previa del video flotante */}
-      <div className="absolute top-0 left-full ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+      <div className="absolute top-0 left-[30%] lg:left-full ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
         <div className="h-[37vh] border border-black !border-black bg-white rounded-lg shadow-lg p-3 w-[27em] h-[17em]">
           <div
             className={` relative w-full h-[15em] bg-gray-100 rounded-lg ${teacher.video ? 'cursor-pointer' : ''} overflow-hidden`}
