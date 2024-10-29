@@ -325,30 +325,23 @@ const Results = () => {
         </h2>
 
         <div className="space-y-6 w-[70em]">
-          {filteredTeachers.map((teacher) => (
-            <TeacherCard
-              key={teacher.id}
-              teacher={teacher}
-              onVideoClick={handleVideoClick}
-            />
-          ))}
-          {filteredTeachers.length === 0 && (
-            <p className="text-center text-gray-600">
-              No se encontraron profesores con los filtros seleccionados.
-      <main className="container mx-auto p-4 mt-8">
-        {Array.isArray(teachers) && teachers.length === 0 ? (
-          <p className="text-center text-xl text-gray-600">
-            No se encontraron profesores disponibles.
-          </p>
-        ) : (
-          Array.isArray(teachers) && teachers.length > 0 ? (
-            <TeacherList closeRegisterModal={closeRegisterModal} teachers={teachers} openModal={openModal} />
-          ) : (
-            <p className="text-center text-xl text-red-600">
-              Error cargando los profesores.
-            </p>
-          )}
-        </div>
+  {filteredTeachers.map((teacher) => (
+    <TeacherCard
+      key={teacher.id}
+      teacher={teacher}
+      onVideoClick={handleVideoClick}
+    />
+  ))}
+
+  {filteredTeachers.length === 0 && (
+    <p className="text-center text-gray-600">
+      No se encontraron profesores con los filtros seleccionados.
+    </p> 
+  )}
+
+ 
+</div>
+
       </div>
 
       {showVideoModal && selectedVideo && (
