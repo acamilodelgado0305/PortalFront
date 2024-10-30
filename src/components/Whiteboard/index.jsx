@@ -7,42 +7,78 @@
    http://localhost:5173/whiteboard
 
 */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Tldraw } from "tldraw";
 import { useSyncDemo } from "@tldraw/sync";
 import { useParams } from "react-router-dom";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
 
-
-// componenst
+// components
 import Header from "../Header.jsx";
-import AudioPlayer from "./components/AudioPlayer/index.jsx"
+import AudioPlayer from "./components/AudioPlayer/index.jsx";
 
 import "tldraw/tldraw.css";
-import "./index.css"
+import "./index.css";
 
-
-  /*bg-[#7066e0] <Tldraw store={store}>
-          </Tldraw> */
 function WhiteBoard() {
-  
-  const [name, setName] = useState("cancion.mp3");
-  const [audioContent, setAudioContent] = useState(true);
+  const [audioFile, setAudioFile] = useState(null);
+  const [audioContent, setAudioContent] = useState(false); 
   const { room } = useParams();
   const store = useSyncDemo({ roomId: room || "myapp-abc123" });
+
+  // Reference para el input de archivo
+  const fileInputRef = useRef(null);
+
+  const handleFloatButtonClick = () => {
+    // Abre el selector de archivos al hacer clic
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]; // Obtiene el primer archivo
+    if (file) {
+      setAudioFile(file); 
+      setAudioContent(true); 
+
+      // Restablecer el valor del input para permitir volver a cargar el mismo archivo
+      event.target.value = null; 
+    }
+  };
+  
+  const handleCloseAudioPlayer = () => {
+    setAudioContent(false);
+    setAudioFile(null);
+  };
 
   return (
     <>
       <Header />
-      <div className="fixed flex h-full w-full justify-center bg-[#7066e0]  ">
-        <FloatButton icon={<PlayCircleOutlined className="iconAudioFloat" />} onClick={()=>setAudioContent(!audioContent)} className="floatButtonAudio iconAudioFloat"/>
-   
+      <div className="fixed flex h-full w-full justify-center bg-[#7066e0]">
+        <FloatButton 
+          icon={<PlayCircleOutlined className="iconAudioFloat" />} 
+          onClick={handleFloatButtonClick} 
+          className="floatButtonAudio iconAudioFloat" 
+        />
+        
+        <input
+          type="file"
+          accept="audio/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: 'none' }} // Ocultar el input
+        />
+        
         <div className="h-[92%] w-[90%] pt-[0.5rem]">
-       <Tldraw store={store}> 
-           <AudioPlayer audioContent={audioContent} setAudioContent={setAudioContent} name={name}/> 
-         </Tldraw>  
-           </div>
+          <Tldraw store={store}> 
+            <AudioPlayer 
+              audioContent={audioContent} 
+              setAudioContent={setAudioContent} 
+              file={audioFile} 
+              handleCloseAudioPlayer={handleCloseAudioPlayer} 
+            />
+          </Tldraw>  
+        </div>
       </div>
     </>
   );

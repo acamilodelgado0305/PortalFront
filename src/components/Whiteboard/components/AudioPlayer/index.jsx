@@ -1,21 +1,18 @@
 import { useState } from "react"
 import AudioClose from "./AudioClose"
 import AudioOpen from "./AudioOpen"
-function AudioPlayer({ name, audioContent, setAudioContent }) {
-  const [audioBar, setAudioBar] = useState(true);
+function AudioPlayer({ file, audioContent, handleCloseAudioPlayer }) {
+  const [audioBar, setAudioBar] = useState(false);
   if(!audioContent){
     return null
   }
 
-const handleCloseAudioPlayer = () =>{
-  setAudioContent(!audioContent)
-}
 
   return (
     <>
       {!audioBar ? (
-        <AudioClose name={name} audioBar={audioBar} setAudioBar={setAudioBar} onClose={handleCloseAudioPlayer}  />) :(
-        <AudioOpen name={name} audioBar={audioBar} setAudioBar={setAudioBar} />)
+        <AudioClose name={file?.name || 'cancion.mp3'} audioBar={audioBar} setAudioBar={setAudioBar} onClose={handleCloseAudioPlayer}  />) :(
+        <AudioOpen name={file?.name || 'cancion.mp3'} audioBar={audioBar} setAudioBar={setAudioBar} />)
       }
     </>
   )
