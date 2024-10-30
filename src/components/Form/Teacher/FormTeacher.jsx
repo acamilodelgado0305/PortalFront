@@ -30,6 +30,7 @@ const MultiStepForm = () => {
 
 
   const handleFormChange = (changedValues) => {
+    console.log(changedValues)
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
@@ -54,7 +55,7 @@ const MultiStepForm = () => {
 
 
   const onFinish = async () => {
-     if (currentStep != '7') {
+    /* if (currentStep != '7') {
       return
     }
     setIsSubmitting(true);
@@ -66,7 +67,7 @@ const MultiStepForm = () => {
       message.error("Registration failed. Please try again.");
     } finally {
       setIsSubmitting(false);
-    } 
+    } */
   };
 
   const handleModalOk = () => {
@@ -161,7 +162,7 @@ if(isVerified) {
           onFinish={onFinish}
           className="space-y-6"
         >
-          {getCurrentStepContent()}
+          {/*getCurrentStepContent()*/ <PhotoStep onChange={handleFormChange} setIsVerified={setIsVerified} />}
           <div className="flex justify-between mt-8">
             {currentStep > 0 && (
               <Button

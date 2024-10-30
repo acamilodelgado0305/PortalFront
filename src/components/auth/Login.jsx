@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { message } from 'antd';
 
-const Login = () => {
+const Login = ({setInicioSesion}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -142,7 +142,9 @@ const Login = () => {
 
                 <div className="flex justify-between text-gray-600 text-sm mt-4">
                     <a href="#" className="hover:underline">¿Olvidaste tu contraseña?</a>
-                    <a href="#" className="hover:underline">Regístrate</a>
+                    <a 
+                    onClick={() => setInicioSesion(false)}
+                    href="#" className="hover:underline">Regístrate</a>
                 </div>
             </div>
         </div>
