@@ -9,12 +9,12 @@ import {
     StepForwardOutlined,
 } from "@ant-design/icons";
 import { FaVolumeMute, FaVolumeDown, FaVolumeUp  } from "react-icons/fa";
-import './controlls.css';
+
 
 function Controlls() {
   const [play, setPlay] = useState(true);
   const [isVolumeDialOpen, setIsVolumeDialOpen] =useState(false);
-  const [volumeLevel, setVolumeLevel] = useState(0); 
+  const [volumeLevel, setVolumeLevel] = useState(100); 
  // Nivel de volumen inicial
 
   return (
@@ -44,7 +44,7 @@ function Controlls() {
         <StepForwardOutlined />
       </button>
       <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500 mt-[2px]" onClick={() => setIsVolumeDialOpen(!isVolumeDialOpen)}>
-        { volumeLevel === 0 ?  (<FaVolumeMute  />) : 
+        { volumeLevel === 0 ?  (<FaVolumeMute className="animate-textChange"  />) : 
           (volumeLevel <= 50 ? <FaVolumeDown /> : <FaVolumeUp /> ) }
       </button>
    

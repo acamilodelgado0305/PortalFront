@@ -29,4 +29,64 @@
     color: white !important; 
 }
 
+@keyframes textChange {
+    0% {
+      color: #504b85;
 
+    }
+    50% {
+      color: #8A82EB;
+    }
+    100% {
+      color: #504b85;
+    
+    }
+  }
+  @keyframes dialChange {
+    0% {
+   background-color: #504b85; 
+ 
+
+    }
+    50% {
+   background-color:#8A82EB;  
+    }
+    100% {
+background-color: #504b85; 
+    
+    }
+  }
+
+  @keyframes audioOpenChange {
+    0% {
+   background: #504b858f;
+
+    }
+    50% {
+     background: #504b85;
+    }
+    100% {
+    background: #504b858f;
+    
+    }
+  }
+
+
+
+  .animate-textChange {
+    animation: textChange 3s infinite; 
+  }
+  
+
+
+  @keyframes movementOnce {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(15px); }
+    50% { transform: translateX(0px); }
+    75% { transform: translateX(15px); }
+    100% {transform: translateX(0);} /* Ajusta el valor según el movimiento deseado */
+}
+
+.animate-audioOpen {
+    animation: audioOpenChange 25s infinite, movementOnce 5s forwards; /* 'forwards' para mantener el estado final */
+}
