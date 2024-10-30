@@ -1,0 +1,16 @@
+@keyframes textChange {
+    0% {
+      color: white;
+    }
+    50% {
+      color: #8A82EB;
+    }
+    100% {
+      color: white;
+    }
+  }
+  
+  .animate-textChange {
+    animation: textChange 5s infinite; 
+  }
+  
