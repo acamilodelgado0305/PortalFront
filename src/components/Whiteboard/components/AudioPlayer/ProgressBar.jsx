@@ -52,6 +52,17 @@ function ProgressBar({ currentTime, duration, setCurrentTime }) {
     }
   };
 
+  // Handle click on the progress bar (both white and violet areas)
+  const handleProgressClick = (event) => {
+    if (progressRef.current) {
+      const { left, width } = progressRef.current.getBoundingClientRect();
+      const clickX = event.clientX - left;
+      const newProgress = Math.max(0, Math.min(clickX / width, 1)); // Limit value between 0 and 1
+      setProgressWidth(newProgress * 100);
+      setCurrentTime(newProgress * duration); // Update current time
+    }
+  };
+
   // Add event listeners for dragging and cleanup
   useEffect(() => {
     if (isDragging) {
@@ -68,22 +79,44 @@ function ProgressBar({ currentTime, duration, setCurrentTime }) {
     };
   }, [isDragging]);
 
-  return (
-    <div className="relative bottom-5 w-full px-[20px]">
-      {/* Background line for the progress */}
-      <div className="h-[2px] bg-white w-full rounded" ref={progressRef} />
+  // Calculate remaining time in mm:ss format
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
 
-      {/* Foreground line representing the progress */}
-      <div
-        className="relative h-[4px] bg-[#4B2B94] rounded mt-[-4px]"
-        style={{ width: `${progressWidth}%` }}
-      >
-        {/* Draggable circle */}
+  const timeRemaining = duration - currentTime;
+
+  return (
+    <div className="relative flex items-center bottom-7 w-full pl-[40px] pr-[20px]">
+      {/* Progress bar container */}
+      <div className="flex-1">
+        {/* Background line for the progress */}
         <div
-          className="absolute -top-2 w-3 h-3 mt-1 bg-[#4B2B94] rounded-full cursor-pointer"
-          style={{ left: `${getCirclePosition() - 8}px` }} // Adjust position based on width
-          onMouseDown={handleMouseDown}
+          className="h-[5px] bg-white w-full rounded"
+          ref={progressRef}
+          onClick={handleProgressClick} // Add click event to update progress
         />
+
+        {/* Foreground line representing the progress */}
+        <div
+          className="relative h-[6px] bg-[#7066E0] rounded mt-[-5px]"
+          style={{ width: `${progressWidth}%` }}
+          onClick={handleProgressClick} // Add click event to violet line
+        >
+          {/* Draggable circle */}
+          <div
+            className="absolute -top-2 w-3 h-3 mt-1 bg-[#7066E0] rounded-full cursor-pointer"
+            style={{ left: `${getCirclePosition() - 8}px` }} // Adjust position based on width
+            onMouseDown={handleMouseDown}
+          />
+        </div>
+      </div>
+
+      {/* Display remaining time next to the progress bar */}
+      <div className=" ml-2 mt-[-2px] text-white text-sm">
+        { '15:00' ||formatTime(timeRemaining)}
       </div>
     </div>
   );
