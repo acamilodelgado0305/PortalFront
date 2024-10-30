@@ -14,17 +14,27 @@ function Controlls({ handleSeek, audioRef, currentTime, duration }) {
     const [playing, setPlaying] = useState(true);
     const [isVolumeDialOpen, setIsVolumeDialOpen] = useState(false);
     const [volumeLevel, setVolumeLevel] = useState(100);
+    const [lastPlayPauseClick, setLastPlayPauseClick] = useState(0);
+
+
+    useEffect(() => {
+      const audio = audioRef.current;
+      if (audio) {
+        if(!playing) 
+          {console.log('play')
+             audio.play();
+
+         } else {
+          console.log('stop')
+          audio.pause()};
+      }
+    }, [playing]);
 
     const togglePlayPause = () => {
-        const audioElement = audioRef.current;
-        if (audioElement) {
-            if (audioElement.paused) {
-                audioElement.play();
-            } else {
-                audioElement.pause();
-            }
-            setPlaying(!playing);
-        }
+     const now = Date.now();
+    if (now - lastPlayPauseClick < 300) return;
+    setLastPlayPauseClick(now);
+    setPlaying(prev => !prev);
     };
 
     // Controlar el nivel de volumen del audio
