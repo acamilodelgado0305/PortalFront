@@ -56,26 +56,43 @@ function Controlls() {
 export default Controlls;
 
 
-function VolumeSlider({  isOpen }) {
+function VolumeSlider({ isOpen }) {
     const [isDragging, setIsDragging] = useState(false);
-    const [volumeLevel, setVolumeLevel] = useState(50); 
-
+    const [volumeLevel, setVolumeLevel] = useState(50); // Nivel de volumen inicial
+  
     const handleMouseMove = (event) => {
       if (isDragging) {
-        const slider = event.target.getBoundingClientRect();
+        const slider = event.currentTarget.getBoundingClientRect();
         const newWidth = Math.min(Math.max(event.clientX - slider.left, 0), slider.width);
         const newVolume = (newWidth / slider.width) * 100;
         setVolumeLevel(newVolume);
       }
     };
   
+    const handleMouseDown = () => {
+      setIsDragging(true);
+    };
+  
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+  
+    const handleClick = (event) => {
+      const slider = event.currentTarget.getBoundingClientRect();
+      const newWidth = Math.min(Math.max(event.clientX - slider.left, 0), slider.width);
+      const newVolume = (newWidth / slider.width) * 100;
+      setVolumeLevel(newVolume);
+    };
+  
     return (
       <div
-      className={`relative w-24 h-[3.5px] bg-gray-200 rounded mt-[15px] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+        className={`relative w-24 h-[3.5px] bg-gray-200 rounded mt-[15px] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
         onMouseMove={handleMouseMove}
-        onMouseUp={() => setIsDragging(false)}
-        onMouseLeave={() => setIsDragging(false)}
-        onMouseDown={() => setIsDragging(true)}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onMouseDown={handleMouseDown}
+        onClick={handleClick} 
+        style={{ cursor: 'pointer' }} 
       >
         <div
           className="absolute h-full bg-[#7066E0] rounded"
