@@ -101,13 +101,13 @@ function ProgressBar({ currentTime, duration, setCurrentTime }) {
 
         {/* Foreground line representing the progress */}
         <div
-          className="relative h-[6px] bg-[#7066E0] rounded mt-[-5px]"
+          className="relative h-[6px] bg-[#8A82EB] rounded mt-[-5px]"
           style={{ width: `${progressWidth}%` }}
           onClick={handleProgressClick} // Add click event to violet line
         >
           {/* Draggable circle */}
           <div
-            className="absolute -top-2 w-3 h-3 mt-1 bg-[#7066E0] rounded-full cursor-pointer"
+            className="absolute -top-2 w-3 h-3 mt-1 bg-[#8A82EB] rounded-full cursor-pointer"
             style={{ left: `${getCirclePosition() - 8}px` }} // Adjust position based on width
             onMouseDown={handleMouseDown}
           />
