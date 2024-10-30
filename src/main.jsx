@@ -11,6 +11,7 @@ import Landing from "./landing";
 import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
+import SigUp from "./components/auth/SigUp";
 import Results from "./components/results/Results";
 
 
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/sigup",
+    element: <FormStudent />,
   },
   {
     path: "/dashboard",
