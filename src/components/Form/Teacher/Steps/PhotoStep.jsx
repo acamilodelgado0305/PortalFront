@@ -29,7 +29,7 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
       const imageDataUrl = await readFile(file);
       setProfileImageUrl(imageDataUrl);
       setIsEditing(true);
-      setIsVerified(true)
+      //setIsVerified(true)
     } catch (error) {
       console.error("Error reading image:", error);
       Swal.fire({
@@ -84,9 +84,9 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
 
     const base64Image = canvas.toDataURL('image/jpeg');
     */
-   console.log(canvas)
     setProfileImageUrl(canvas);
     setIsEditing(false);
+    setIsVerified(true)
     onChange({ profileImageUrl: canvas });
   }, [zoom, rotation, onChange]);
 
