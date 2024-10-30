@@ -9,15 +9,16 @@ import {
     StepForwardOutlined,
     SoundOutlined,
 } from "@ant-design/icons";
-import './controlls.css'
-
+import './controlls.css';
 
 function Controlls() {
   const [play, setPlay] = useState(true);
-  const [volume, setVolume] = useState(false)
-  
+  const [isVolumeDialOpen, setIsVolumeDialOpen] =useState(false);
+
+ // Nivel de volumen inicial
+
   return (
-    <div className="controls flex justify-center h-full w-full pl-[20%] pt-6 space-x-6">
+    <div className="controls flex justify-center h-full w-full pl-[15%] pt-6 space-x-6">
       <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
         <StepBackwardOutlined />
       </button>
@@ -33,8 +34,8 @@ function Controlls() {
         </button>
       ) : (
         <button className="flex justify-center text-3xl text-white transition-all duration-500 animate-textChange" onClick={() => setPlay(!play)}>
-        <PauseOutlined />
-      </button>
+          <PauseOutlined />
+        </button>
       )}
       <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
         <RightOutlined />
@@ -42,19 +43,48 @@ function Controlls() {
       <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
         <StepForwardOutlined />
       </button>
-      <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500" onClick={() => setVolume(!volume)}>
+      <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500" onClick={() => setIsVolumeDialOpen(!isVolumeDialOpen)}>
         <SoundOutlined />
       </button>
- 
-        {/* Barra de volumen */}
-        <div className={`relative w-24 h-[3.5px] bg-gray-200 rounded mt-[15px] transition-opacity duration-500 ${volume ? 'opacity-100' : 'opacity-0'}`}>
-        <div
-          className="absolute h-full bg-[#7066E0] rounded"
-          style={{ width: `50%` }} // Ajusta el ancho según el nivel de volumen
-        />
-      </div>
+
+      {/* Componente VolumeSlider */}
+        <VolumeSlider isOpen={isVolumeDialOpen}  />
     </div>
   );
 }
 
 export default Controlls;
+
+
+function VolumeSlider({  isOpen }) {
+    const [isDragging, setIsDragging] = useState(false);
+    const [volumeLevel, setVolumeLevel] = useState(50); 
+
+    const handleMouseMove = (event) => {
+      if (isDragging) {
+        const slider = event.target.getBoundingClientRect();
+        const newWidth = Math.min(Math.max(event.clientX - slider.left, 0), slider.width);
+        const newVolume = (newWidth / slider.width) * 100;
+        setVolumeLevel(newVolume);
+      }
+    };
+  
+    return (
+      <div
+      className={`relative w-24 h-[3.5px] bg-gray-200 rounded mt-[15px] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+        onMouseMove={handleMouseMove}
+        onMouseUp={() => setIsDragging(false)}
+        onMouseLeave={() => setIsDragging(false)}
+        onMouseDown={() => setIsDragging(true)}
+      >
+        <div
+          className="absolute h-full bg-[#7066E0] rounded"
+          style={{ width: `${volumeLevel}%` }}
+        />
+        <div
+          className="absolute h-3 w-3 bg-white rounded-full border border-gray-300"
+          style={{ left: `calc(${volumeLevel}% - 8px)`, top: '-4px' }} 
+        />
+      </div>
+    );
+  }
