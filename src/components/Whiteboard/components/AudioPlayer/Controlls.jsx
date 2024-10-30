@@ -37,15 +37,13 @@ function Controlls({ handleSeek, audioRef, currentTime, duration }) {
     setPlaying(prev => !prev);
     };
 
-    // Controlar el nivel de volumen del audio
     useEffect(() => {
         const audioElement = audioRef.current;
         if (audioElement) {
-            audioElement.volume = volumeLevel / 100; // Ajusta el volumen entre 0 y 1
+            audioElement.volume = volumeLevel / 100; 
         }
     }, [volumeLevel, audioRef]);
 
-    // Comprobar si el audio ha terminado
     useEffect(() => {
         if (currentTime >= duration && duration > 0) {
             setPlaying(false);

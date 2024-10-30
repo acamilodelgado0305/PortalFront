@@ -1,27 +1,33 @@
-import { SoundOutlined, CloseOutlined, PlayCircleOutlined } from "@ant-design/icons";
-function AudioClose({ name, audioBar, setAudioBar, onClose  }) {
+import {
+  SoundOutlined,
+  CloseOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+function AudioClose({ name, audioBar, setAudioBar, onClose }) {
   return (
-    <div className="absolute w-[210px] top-[50px] left-[50px] z-[1] overflow-hidden"   
- >
-    <div className="animate-audioClose flex items-center border border-gray backdrop-blur-[10px] rounded-[10px] p-[5px] cursor-pointer text-white bg-[#7066E0] z-[-1]">
-    <PlayCircleOutlined className="text-[16px] pl-2" />
-      <span className="flex-1 text-center ml-[10px] font-bold text-white"       onClick={() => {
-      setAudioBar(!audioBar); 
-  }} >
-        {name.length > 14 ? `${name.substring(0, 14)}...` : name}
-      </span>
-      <button className="audio-close mr-2 flex items-center justify-center p-2 bg-transparent  rounded z-[99] transition duration-200" 
+    <div className="absolute left-[50px] top-[50px] z-[1] w-[210px] overflow-hidden">
+      <div className="animate-audioClose border-gray z-[-1] flex cursor-pointer items-center rounded-[10px] border bg-[#7066E0] p-[5px] text-white backdrop-blur-[10px]">
+        <PlayCircleOutlined className="pl-2 text-[16px]" />
+        <span
+          className="ml-[10px] flex-1 text-center font-bold text-white"
+          onClick={() => {
+            setAudioBar(!audioBar);
+          }}
+        >
+          {name.length > 14 ? `${name.substring(0, 14)}...` : name}
+        </span>
+        <button
+          className="audio-close z-[99] mr-2 flex items-center justify-center rounded bg-transparent p-2 transition duration-200"
+          onClick={onClose}
+        >
+          <CloseOutlined
             onClick={onClose}
-      >
-    <CloseOutlined 
-    onClick={onClose}
-        className="text-white hover:text-gray-300" 
-    />
-</button>
-
+            className="text-white hover:text-gray-300"
+          />
+        </button>
+      </div>
     </div>
-  </div>
-  )
+  );
 }
 
-export default AudioClose
+export default AudioClose;
