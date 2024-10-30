@@ -1,0 +1,32 @@
+@keyframes floatButtonKeys {
+    0% {
+        background-color: #504b85;
+
+  
+      }
+      50% {
+        background-color: #8A82EB;
+
+     
+  
+      }
+      100% {
+        background-color: #504b85;
+       
+     
+      
+      }
+}
+
+
+
+.floatButtonAudio {
+    animation: floatButtonKeys 3s infinite; 
+    color: white !important; 
+}
+
+.iconAudioFloat:hover {
+    color: white !important; 
+}
+
+

@@ -7,14 +7,14 @@ import {
     PauseOutlined,
     RightOutlined,
     StepForwardOutlined,
-    SoundOutlined,
 } from "@ant-design/icons";
+import { FaVolumeMute, FaVolumeDown, FaVolumeUp  } from "react-icons/fa";
 import './controlls.css';
 
 function Controlls() {
   const [play, setPlay] = useState(true);
   const [isVolumeDialOpen, setIsVolumeDialOpen] =useState(false);
-
+  const [volumeLevel, setVolumeLevel] = useState(0); 
  // Nivel de volumen inicial
 
   return (
@@ -29,7 +29,7 @@ function Controlls() {
         <LeftOutlined />
       </button>
       {play ? (
-        <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500" onClick={() => setPlay(!play)}>
+        <button className="flex justify-center text-3xl text-[#8A82EB] transition-all duration-500" onClick={() => setPlay(!play)}>
           <CaretRightOutlined />
         </button>
       ) : (
@@ -43,12 +43,13 @@ function Controlls() {
       <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
         <StepForwardOutlined />
       </button>
-      <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500" onClick={() => setIsVolumeDialOpen(!isVolumeDialOpen)}>
-        <SoundOutlined />
+      <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500 mt-[2px]" onClick={() => setIsVolumeDialOpen(!isVolumeDialOpen)}>
+        { volumeLevel === 0 ?  (<FaVolumeMute  />) : 
+          (volumeLevel <= 50 ? <FaVolumeDown /> : <FaVolumeUp /> ) }
       </button>
-
+   
       {/* Componente VolumeSlider */}
-        <VolumeSlider isOpen={isVolumeDialOpen}  />
+        <VolumeSlider isOpen={isVolumeDialOpen} setVolumeLevel={setVolumeLevel} volumeLevel={volumeLevel}  />
     </div>
   );
 }
@@ -56,9 +57,8 @@ function Controlls() {
 export default Controlls;
 
 
-function VolumeSlider({ isOpen }) {
+function VolumeSlider({ isOpen, setVolumeLevel, volumeLevel }) {
     const [isDragging, setIsDragging] = useState(false);
-    const [volumeLevel, setVolumeLevel] = useState(50); // Nivel de volumen inicial
   
     const handleMouseMove = (event) => {
       if (isDragging) {
