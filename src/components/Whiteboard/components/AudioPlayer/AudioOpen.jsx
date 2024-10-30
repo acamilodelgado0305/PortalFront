@@ -9,7 +9,7 @@ function AudioOpen({ name, audioBar, setAudioBar, currentTime, duration, setCurr
     return (
         <div
             className={
-                'animate-audioOpen absolute w-[700px] h-[100px] border-2 border-[#7066E0] backdrop-blur-[10px] bg-[#7066E0]/50 rounded-[20px] top-[50px] left-[50px] z-[1] overflow-hidden'
+                'animate-audioOpen absolute w-[700px] h-[100px] border-2 border-[#7066E0] backdrop-blur-[10px] bg-[#7066E0]/50 rounded-[15px] top-[50px] left-[50px] z-[1] overflow-hidden'
             }
             style={{
                 top: window.innerHeight < 600 ? '23vh' : '',

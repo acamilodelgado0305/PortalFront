@@ -1,10 +1,10 @@
-import { SoundOutlined, CloseOutlined } from "@ant-design/icons";
+import { SoundOutlined, CloseOutlined, PlayCircleOutlined } from "@ant-design/icons";
 function AudioClose({ name, audioBar, setAudioBar, onClose  }) {
   return (
     <div className="absolute w-[210px] top-[50px] left-[50px] z-[1] overflow-hidden"   
  >
-    <div className="flex items-center border border-gray backdrop-blur-[10px] rounded-[20px] p-[5px] cursor-pointer text-white bg-[#7066E0] z-[-1]">
-    <SoundOutlined className="text-[16px] pl-2" />
+    <div className="animate-audioClose flex items-center border border-gray backdrop-blur-[10px] rounded-[10px] p-[5px] cursor-pointer text-white bg-[#7066E0] z-[-1]">
+    <PlayCircleOutlined className="text-[16px] pl-2" />
       <span className="flex-1 text-center ml-[10px] font-bold text-white"       onClick={() => {
       setAudioBar(!audioBar); 
   }} >

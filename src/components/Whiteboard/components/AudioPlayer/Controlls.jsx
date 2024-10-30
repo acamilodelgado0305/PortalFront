@@ -29,7 +29,7 @@ function Controlls() {
         <LeftOutlined />
       </button>
       {play ? (
-        <button className="flex justify-center text-3xl text-[#8A82EB] transition-all duration-500" onClick={() => setPlay(!play)}>
+        <button className="animate-playControl flex justify-center text-3xl text-[#7066e0]  hover:text-[#8A82EB] transition-all duration-500" onClick={() => setPlay(!play)}>
           <CaretRightOutlined />
         </button>
       ) : (

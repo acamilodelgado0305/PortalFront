@@ -1,92 +1,93 @@
+/* Keyframes */
 @keyframes floatButtonKeys {
     0% {
         background-color: #504b85;
-
-  
-      }
-      50% {
+    }
+    50% {
         background-color: #8A82EB;
-
-     
-  
-      }
-      100% {
+    }
+    100% {
         background-color: #504b85;
-       
-     
-      
-      }
-}
-
-
-
-.floatButtonAudio {
-    animation: floatButtonKeys 3s infinite; 
-    color: white !important; 
-}
-
-.iconAudioFloat:hover {
-    color: white !important; 
+    }
 }
 
 @keyframes textChange {
     0% {
-      color: #504b85;
-
+        color: #504b85;
     }
     50% {
-      color: #8A82EB;
+        color: #8A82EB;
     }
     100% {
-      color: #504b85;
-    
+        color: #504b85;
     }
-  }
-  @keyframes dialChange {
+}
+
+@keyframes dialChange {
     0% {
-   background-color: #504b85; 
- 
-
+        background-color: #504b85;
     }
     50% {
-   background-color:#8A82EB;  
+        background-color: #8A82EB;
     }
     100% {
-background-color: #504b85; 
-    
+        background-color: #504b85;
     }
-  }
+}
 
-  @keyframes audioOpenChange {
+@keyframes audioBackgraundChange {
     0% {
-   background: #504b858f;
-
+        background: #504b85;
+    }
+    25% {
+        background: #504b8567;
     }
     50% {
-     background: #504b85;
+        background: #504b85b5;
     }
     100% {
-    background: #504b858f;
-    
+        background: #504b85;
     }
-  }
+}
 
+@keyframes orangeShadow {
+    0% {}
+    50% {
+        box-shadow: 5px 5px 15px #ff3c0089;
+    }
+    100% {}
+}
 
+@keyframes orangePlayControl {
+    0% {}
+    50% {
+        color: #FF3D00;
+    }
+    100% {}
+}
 
-  .animate-textChange {
-    animation: textChange 3s infinite; 
-  }
-  
+/* Styles */
+.floatButtonAudio {
+    animation: floatButtonKeys 3s infinite;
+    color: white !important;
+}
 
+.iconAudioFloat:hover {
+    color: white !important;
+}
 
-  @keyframes movementOnce {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(15px); }
-    50% { transform: translateX(0px); }
-    75% { transform: translateX(15px); }
-    100% {transform: translateX(0);} /* Ajusta el valor según el movimiento deseado */
+.animate-textChange {
+    animation: textChange 3s infinite;
 }
 
 .animate-audioOpen {
-    animation: audioOpenChange 25s infinite, movementOnce 5s forwards; /* 'forwards' para mantener el estado final */
+    animation: audioBackgraundChange 25s infinite, orangeShadow 5s forwards;
+}
+
+.animate-audioClose {
+    animation: audioBackgraundChange 25s infinite;
+}
+
+.animate-playControl {
+    animation: orangePlayControl 3s forwards;
 }
