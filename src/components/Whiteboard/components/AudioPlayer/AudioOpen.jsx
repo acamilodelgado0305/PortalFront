@@ -1,93 +1,102 @@
-import { useEffect, useRef, useState } from 'react';
-import { CloseOutlined } from '@ant-design/icons'; // Adjust import based on your setup
-import Controlls from './Controlls'; // Adjust the import based on your setup
-import ProgressBar from './ProgressBar'; // Adjust the import based on your setup
+import { Component, createRef } from 'react';
+import { CloseOutlined } from '@ant-design/icons';
+import Controlls from './Controlls';
+import ProgressBar from './ProgressBar';
 
-function AudioOpen({ toggleAudioPlayer, setToggleAudioPlayer, file }) {
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const audioRef = useRef(null);
-    const url = URL.createObjectURL(file);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-
-        if (audio ) {
-            const handleLoadedMetadata = () => {
-                setDuration(audio.duration);
-                console.log('Duration ', audio.duration)
-            };
-
-            const handleTimeUpdate = () => {
-                /* setCurrentTime(audio.currentTime); //esto es lo que no funciona ¿Será por sincronia? */
-                console.log('current time ', audio.currentTime)
-            };
-
-            audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-            audio.addEventListener('timeupdate', handleTimeUpdate);
-
-            return () => {
-                audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-                audio.removeEventListener('timeupdate', handleTimeUpdate);
-            };
-        }
-
-        return () => {
-            URL.revokeObjectURL(url); // Clean up the URL when the component unmounts
+class AudioOpen extends Component {
+    constructor(props) {
+        super(props);
+        this.audioRef = createRef();
+        this.state = {
+            currentTime: 0,
+            duration: 0,
         };
-    }, [url]); // Use url in the dependency array
+    }
 
-    const handleSeek = (seconds) => {
-        if (audioRef.current) {
-            const newTime = Math.min(
-                Math.max(audioRef.current.currentTime + seconds, 0),
-                duration
-            );
-            audioRef.current.currentTime = newTime;
-            setCurrentTime(newTime);
+    componentDidMount() {
+        const audio = this.audioRef.current;
+        const { file } = this.props;
+        this.url = URL.createObjectURL(file);
+
+        if (audio) {
+            audio.addEventListener('loadedmetadata', this.handleLoadedMetadata);
+            audio.addEventListener('timeupdate', this.handleTimeUpdate);
+        }
+    }
+
+    componentWillUnmount() {
+        const audio = this.audioRef.current;
+        if (audio) {
+            audio.removeEventListener('loadedmetadata', this.handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', this.handleTimeUpdate);
+        }
+        URL.revokeObjectURL(this.url); 
+    }
+
+    handleLoadedMetadata = () => {
+        const audio = this.audioRef.current;
+        this.setState({ duration: audio.duration });
+        console.log('Duration ', audio.duration);
+    };
+
+    handleTimeUpdate = () => {
+        const audio = this.audioRef.current;
+        this.setState({ currentTime: audio.currentTime });
+        console.log('Current time ', audio.currentTime);
+    };
+
+    handleSeek = (seconds) => {
+        const audio = this.audioRef.current;
+        const { duration } = this.state;
+        if (audio) {
+            const newTime = Math.min(Math.max(audio.currentTime + seconds, 0), duration);
+            audio.currentTime = newTime;
+            this.setState({ currentTime: newTime });
         }
     };
 
-    const handleTimeChange = (newTime) => {
-        const audioElement = audioRef.current;
-        if (audioElement) {
-            audioElement.currentTime = newTime;
-            setCurrentTime(newTime);
+    handleTimeChange = (newTime) => {
+        const audio = this.audioRef.current;
+        if (audio) {
+            audio.currentTime = newTime;
+            this.setState({ currentTime: newTime });
         }
     };
 
-    return (
-        <div
-            className="animate-audioOpen absolute w-[700px] h-[100px] border-2 border-[#7066E0] backdrop-blur-[10px] bg-[#7066E0]/50 rounded-[15px] top-[50px] left-[50px] z-[1] overflow-hidden"
-            style={{
-                top: window.innerHeight < 600 ? '23vh' : '',
-                right: window.innerHeight < 600 ? '50px' : undefined,
-            }}
-        >
-            <CloseOutlined
-                className="absolute top-2 right-2 text-white hover:text-gray transition duration-200"
-                onClick={() => {
-                    setToggleAudioPlayer(!toggleAudioPlayer);
+    render() {
+        const { toggleAudioPlayer, setToggleAudioPlayer, file } = this.props;
+        const { currentTime, duration } = this.state;
+
+        return (
+            <div
+                className="animate-audioOpen absolute w-[700px] h-[100px] border-2 border-[#7066E0] backdrop-blur-[10px] bg-[#7066E0]/50 rounded-[15px] top-[50px] left-[50px] z-[1] overflow-hidden"
+                style={{
+                    top: window.innerHeight < 600 ? '23vh' : '',
+                    right: window.innerHeight < 600 ? '50px' : undefined,
                 }}
-            />
+            >
+                <CloseOutlined
+                    className="absolute top-2 right-2 text-white hover:text-gray transition duration-200"
+                    onClick={() => {
+                        setToggleAudioPlayer(!toggleAudioPlayer);
+                    }}
+                />
 
-            <Controlls
-                audioRef={audioRef}
-                handleSeek={handleSeek}
-                currentTime={currentTime}
-                duration={duration}
-            />
+                <Controlls
+                    audioRef={this.audioRef}
+                    handleSeek={this.handleSeek}
+                    currentTime={currentTime}
+                    duration={duration}
+                />
 
-            {/* ProgressBar component should be uncommented and used if needed */}
-             <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={handleTimeChange} />
+                <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={this.handleTimeChange} />
 
-            {file && (
-                <audio ref={audioRef} src={url}  />
-            )}
-        </div>
-    );
+                {file && (
+                    <audio ref={this.audioRef} src={this.url} />
+                )}
+            </div>
+        );
+    }
 }
 
 export default AudioOpen;
-
-
