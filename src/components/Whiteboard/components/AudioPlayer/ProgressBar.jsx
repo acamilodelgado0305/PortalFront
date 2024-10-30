@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 
 function ProgressBar({ currentTime, duration, setCurrentTime }) {
-  console.log('duration time '+duration)
-  const [progressWidth, setProgressWidth] = useState(0);
+
+useEffect(()=>{console.log(currentTime +'  c-d  '+ duration)}, [currentTime, duration,])
+
+
+
+
+
+
+   const [progressWidth, setProgressWidth] = useState(0);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
   const progressRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);

@@ -12,14 +12,16 @@ function AudioOpen({  toggleAudioPlayer, setToggleAudioPlayer, file }) {
 
     useEffect(() => {
         const audio = audioRef.current;
-        if (audio) {
-          const handleLoadedMetadata = () => {
+        if (audio && !duration) {
+            const handleLoadedMetadata = () => {
             setDuration(audio.duration);
           };
     
           const handleTimeUpdate = () => {
             setCurrentTime(audio.currentTime);
-          };
+          }; 
+
+      
     
           audio.addEventListener('loadedmetadata', handleLoadedMetadata);
           audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -29,7 +31,20 @@ function AudioOpen({  toggleAudioPlayer, setToggleAudioPlayer, file }) {
             audio.removeEventListener('timeupdate', handleTimeUpdate);
           };
         }
-      }, [url]);
+      }, [url, duration]);
+
+      const handleSeek = seconds => {
+        if (audioRef.current) {
+          const newTime = Math.min(
+            Math.max(audioRef.current.currentTime + seconds, 0),
+            duration
+          );
+          audioRef.current.currentTime = newTime;
+          setCurrentTime(newTime);
+        }
+      };
+
+
 
     const handleTimeChange = (newTime) => {
         const audioElement = audioRef.current;
@@ -57,7 +72,7 @@ function AudioOpen({  toggleAudioPlayer, setToggleAudioPlayer, file }) {
             />
 
             {/* Controles de audio */}
-            <Controlls audioRef={audioRef} />
+            <Controlls audioRef={audioRef} handleSeek={handleSeek} currentTime={currentTime} duration={duration} />
 
             {/* Barra de progreso */}
             <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={handleTimeChange} />
