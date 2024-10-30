@@ -12,14 +12,14 @@ function AudioOpen({ toggleAudioPlayer, setToggleAudioPlayer, file }) {
     useEffect(() => {
         const audio = audioRef.current;
 
-        if (audio) {
+        if (audio ) {
             const handleLoadedMetadata = () => {
                 setDuration(audio.duration);
                 console.log('Duration ', audio.duration)
             };
 
             const handleTimeUpdate = () => {
-                setCurrentTime(audio.currentTime);
+                /* setCurrentTime(audio.currentTime); //esto es lo que no funciona ¿Será por sincronia? */
                 console.log('current time ', audio.currentTime)
             };
 
@@ -82,7 +82,7 @@ function AudioOpen({ toggleAudioPlayer, setToggleAudioPlayer, file }) {
              <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={handleTimeChange} />
 
             {file && (
-                <audio ref={audioRef} src={url} preload="metadata" />
+                <audio ref={audioRef} src={url}  />
             )}
         </div>
     );
