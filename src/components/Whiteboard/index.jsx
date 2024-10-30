@@ -27,21 +27,19 @@ function WhiteBoard() {
   const { room } = useParams();
   const store = useSyncDemo({ roomId: room || "myapp-abc123" });
 
-  // Reference para el input de archivo
   const fileInputRef = useRef(null);
 
   const handleFloatButtonClick = () => {
-    // Abre el selector de archivos al hacer clic
     fileInputRef.current.click();
   };
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Obtiene el primer archivo
+    const file = event.target.files[0]; 
     if (file) {
       setAudioFile(file); 
       setAudioContent(true); 
 
-      // Restablecer el valor del input para permitir volver a cargar el mismo archivo
+// quiero obtener la url del audio
       event.target.value = null; 
     }
   };
@@ -66,7 +64,7 @@ function WhiteBoard() {
           accept="audio/*"
           ref={fileInputRef}
           onChange={handleFileChange}
-          style={{ display: 'none' }} // Ocultar el input
+          style={{ display: 'none' }}
         />
         
         <div className="h-[92%] w-[90%] pt-[0.5rem]">

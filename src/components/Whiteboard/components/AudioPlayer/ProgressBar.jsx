@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 function ProgressBar({ currentTime, duration, setCurrentTime }) {
+  console.log('duration time '+duration)
   const [progressWidth, setProgressWidth] = useState(0);
   const [progressBarWidth, setProgressBarWidth] = useState(0);
   const progressRef = useRef(null);
@@ -116,7 +117,7 @@ function ProgressBar({ currentTime, duration, setCurrentTime }) {
 
       {/* Display remaining time next to the progress bar */}
       <div className=" ml-2 mt-[-2px] text-white text-sm">
-        { '15:00' ||formatTime(timeRemaining)}
+        { formatTime(timeRemaining)}
       </div>
     </div>
   );

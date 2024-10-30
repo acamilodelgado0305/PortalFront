@@ -1,10 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Controlls from "./Controlls";
 import { CloseOutlined } from "@ant-design/icons";
 import ProgressBar from './ProgressBar';
 
-function AudioOpen({ name, audioBar, setAudioBar, currentTime, duration, setCurrentTime }) {
- 
+function AudioOpen({  toggleAudioPlayer, setToggleAudioPlayer, file }) {
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const audioRef = useRef(null);
+    const url = URL.createObjectURL(file);
+
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (audio) {
+          const handleLoadedMetadata = () => {
+            setDuration(audio.duration);
+          };
+    
+          const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+          };
+    
+          audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+          audio.addEventListener('timeupdate', handleTimeUpdate);
+    
+          return () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+          };
+        }
+      }, [url]);
+
+    const handleTimeChange = (newTime) => {
+        const audioElement = audioRef.current;
+        if (audioElement) {
+            audioElement.currentTime = newTime;
+            setCurrentTime(newTime);
+        }
+    };
 
     return (
         <div
@@ -16,20 +49,29 @@ function AudioOpen({ name, audioBar, setAudioBar, currentTime, duration, setCurr
                 right: window.innerHeight < 600 && '50px'
             }}
         >
+            {/* Botón para cerrar el reproductor */}
             <CloseOutlined className="absolute top-2 right-2 text-white hover:text-gray transition duration-200" 
                 onClick={() => {
-                    setAudioBar(!audioBar); 
+                    setToggleAudioPlayer(!toggleAudioPlayer); 
                 }}
             />
-            <Controlls />
-            <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={setCurrentTime} />
-            
-            
+
+            {/* Controles de audio */}
+            <Controlls audioRef={audioRef} />
+
+            {/* Barra de progreso */}
+            <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={handleTimeChange} />
+
+            {/* Elemento de audio oculto */}
+            {file && (
+                <audio ref={audioRef} src={url} preload="metadata" />
+            )}
         </div>
     );
 }
 
 export default AudioOpen;
+
 
 
 
