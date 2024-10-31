@@ -58,7 +58,8 @@ function WhiteBoard() {
           style={{ display: 'none' }}
         />
 
-        <div className="h-[92%] w-[90%] pt-[0.5rem]">
+        <div className="h-[91%] w-[90%] pt-[0.5rem]"> 
+           
             <Tldraw store={store}> 
               <AudioPlayer 
                 audioContent={audioContent} 
@@ -66,7 +67,10 @@ function WhiteBoard() {
                 file={audioFile} 
                 handleCloseAudioPlayer={handleCloseAudioPlayer} 
               />
+              <div className="hidden md:block">
+              <div className="coverWatermark absolute bottom-0 right-0  bg-white w-[120px] h-[45px] z-[999] " ></div></div>
             </Tldraw>
+          
         </div>
       </div>
     </WhiteBoardSocketProvider>
