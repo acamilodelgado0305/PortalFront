@@ -12,6 +12,8 @@ import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 import { createTeacher } from '../../../services/teacher.services'
 
+import { uploadImageToS3 } from "../../../helpers/processImageUpload";
+
 
 
 const { Step } = AntSteps;
@@ -34,8 +36,10 @@ const MultiStepForm = () => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
-  useEffect(() => {
-  }, [formData])
+useEffect(() => {
+}, [formData]);
+  
+
 
 
 
@@ -59,10 +63,12 @@ const MultiStepForm = () => {
       return
     }
     setIsSubmitting(true);
+
     try {
       await createTeacher(formData);
       setIsModalVisible(true);
     } catch (error) {
+      console.log(formData)
       console.error("Registration failed:", error);
       message.error("Registration failed. Please try again.");
     } finally {
@@ -78,7 +84,7 @@ const MultiStepForm = () => {
     setFormData({});
   };
 
-const next = () => {
+const next = async() => {
 if(isVerified) {
     form
       .validateFields()
@@ -90,6 +96,9 @@ if(isVerified) {
       .catch((error) => {
         console.error("Validation failed:", error);
       });
+      if(currentStep == '2'){
+       await uploadImageToS3(formData, setFormData)
+      }
     } else{
       setErrorMessage("Please ensure all required fields are complete.")
     }

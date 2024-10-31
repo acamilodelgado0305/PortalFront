@@ -269,51 +269,54 @@ const Results = () => {
             </h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <FilterButton
-              label="Precio por hora"
-              value={activeFilters.priceRange}
-              filterKey="priceRange"
-              className="border border-black rounded-lg px-4 py-2" // Cambiado a borde negro
-            />
-            <FilterButton
-              label="País de nacimiento"
-              value={activeFilters.country}
-              filterKey="country"
-              className="border border-black rounded-lg px-4 py-2" // Cambiado a borde negro
-            />
-            <FilterButton
-              label="Disponibilidad"
-              value={activeFilters.availability}
-              filterKey="availability"
-              className="border border-black rounded-lg px-4 py-2" // Cambiado a borde negro
-            />
-            <FilterButton
-              label="Especialidades"
-              value={activeFilters.specialty}
-              filterKey="specialty"
-              className="border border-black rounded-lg px-4 py-2" // Cambiado a borde negro
-            />
-            <FilterButton
-              label="Idiomas"
-              value={activeFilters.language}
-              filterKey="language"
-              className="border border-black rounded-lg px-4 py-2" // Cambiado a borde negro
-            />
-            <button
-              className={`bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 border border-black ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
-              onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
-            >
-              Hablante nativo
-            </button>
-            <button
-              onClick={clearFilters}
-              className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 hover:bg-gray-200 border border-black flex items-center gap-2"
-            >
-              <X size={16} />
-              Limpiar filtros
-            </button>
-          </div>
+  <div className="flex flex-col lg:flex-row items-center gap-4">
+    <div className="UNO flex flex-wrap items-center gap-4">
+      <FilterButton
+        label="Precio por hora"
+        value={activeFilters.priceRange}
+        filterKey="priceRange"
+        className="border border-black rounded-lg px-4 py-2"
+      />
+      <FilterButton
+        label="País de nacimiento"
+        value={activeFilters.country}
+        filterKey="country"
+        className="border border-black rounded-lg px-4 py-2"
+      />
+      <FilterButton
+        label="Disponibilidad"
+        value={activeFilters.availability}
+        filterKey="availability"
+        className="border border-black rounded-lg px-4 py-2"
+      />
+      <FilterButton
+        label="Especialidades"
+        value={activeFilters.specialty}
+        filterKey="specialty"
+        className="border border-black rounded-lg px-4 py-2"
+      />
+      <FilterButton
+        label="Idiomas"
+        value={activeFilters.language}
+        filterKey="language"
+        className="border border-black rounded-lg px-4 py-2"
+      />
+      <button
+        className={`bg-white rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-700 hover:bg-gray-50 border border-gray ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
+        onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
+      >
+        Hablante nativo
+      </button>
+      <button
+        onClick={clearFilters}
+        className="bg-gray-100 rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-600 hover:bg-gray-200 border border-gray flex items-center gap-2"
+      >
+        <X size={16} />
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+
 
 
         </div>
