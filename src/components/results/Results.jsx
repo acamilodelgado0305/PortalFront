@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
+import ModalRegister from './modalRegister';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -55,6 +56,9 @@ const Results = () => {
     language: ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano']
   };
 
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [registerModal, setRegisterModal] = useState(false);
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
@@ -213,6 +217,28 @@ const Results = () => {
       />
     </div>
   );
+  const openModal = (teacher) => {
+    setSelectedTeacher(teacher);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedTeacher(null);
+    setIsModalOpen(false);
+  };
+  
+  
+  const closeRegisterModal = (teacher) => {
+    setSelectedTeacher(teacher);
+    setRegisterModal(!registerModal);
+    if (teacher == null) {
+      setSelectedTeacher(null)
+      return;
+    }
+  };
+  
+  
+  
 
   if (loading) {
     return (
@@ -302,19 +328,24 @@ const Results = () => {
         </h2>
 
         <div className="space-y-6 w-[70em]">
-          {filteredTeachers.map((teacher) => (
-            <TeacherCard
-              key={teacher.id}
-              teacher={teacher}
-              onVideoClick={handleVideoClick}
-            />
-          ))}
-          {filteredTeachers.length === 0 && (
-            <p className="text-center text-gray-600">
-              No se encontraron profesores con los filtros seleccionados.
-            </p>
-          )}
-        </div>
+  {filteredTeachers.map((teacher) => (
+    <TeacherCard
+      key={teacher.id}
+      teacher={teacher}
+      onVideoClick={handleVideoClick}
+      closeRegisterModal={closeRegisterModal}
+    />
+  ))}
+
+  {filteredTeachers.length === 0 && (
+    <p className="text-center text-gray-600">
+      No se encontraron profesores con los filtros seleccionados.
+    </p> 
+  )}
+
+ 
+</div>
+
       </div>
 
       {showVideoModal && selectedVideo && (
@@ -326,6 +357,13 @@ const Results = () => {
           }}
         />
       )}
+  
+       {
+        // modal de registro
+        registerModal?
+        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal}/>
+        :null
+       }
     </div>
   );
 };

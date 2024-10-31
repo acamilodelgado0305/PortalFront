@@ -3,7 +3,7 @@ import { getFlagUrl } from "../../services/allcountries.js";
 import { Play, X } from "lucide-react";
 import { ScheduleModal } from "./components/ScheduleModal.jsx";
 
-const TeacherCard = ({ teacher, onVideoClick }) => {
+const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   const formatPrice = (price) => {
@@ -88,16 +88,16 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             </div>
             <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end">
               <button
-                onClick={() => console.log("Clase de prueba gratuita")}
-                className="w-[12em] rounded-lg bg-purple-500 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-purple-600"
+                onClick={() => closeRegisterModal(teacher)}
+                className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
               >
                 Clase de prueba gratuita
               </button>
 
               <button
-                onClick={() => console.log("Enviar mensaje")}
-                className="w-[12em] rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50"
-              >
+                onClick={() => closeRegisterModal(teacher)}
+                className="w-[12em] border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
+                >
                 Enviar mensaje
               </button>
             </div>
