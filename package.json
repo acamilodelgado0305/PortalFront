@@ -37,6 +37,7 @@
     "react-rnd": "^10.4.13",
     "react-router-dom": "^6.21.2",
     "recharts": "^2.12.7",
+    "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.6.13",
     "tldraw": "^3.4.0"
   },
