@@ -16,7 +16,7 @@ class AudioOpen extends Component {
     componentDidMount() {
         const audio = this.audioRef.current;
         const { file } = this.props;
-        this.url = URL.createObjectURL(file);
+        this.url = file.url;
 
         if (audio) {
             audio.addEventListener('loadedmetadata', this.handleLoadedMetadata);
