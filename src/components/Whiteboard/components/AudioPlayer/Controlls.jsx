@@ -7,8 +7,10 @@ import {
     PauseOutlined,
     RightOutlined,
     StepForwardOutlined,
-    ForwardOutlined
+    ForwardOutlined,
+    FullscreenOutlined
 } from "@ant-design/icons";
+
 
 import { FaVolumeMute, FaVolumeDown, FaVolumeUp  } from "react-icons/fa";
 
@@ -60,6 +62,9 @@ function Controlls({ handleSeek, audioRef, currentTime, duration, setCurrentTime
 
     return (
         <div className="controls flex justify-center h-full w-full pl-[15%] pt-6 space-x-6">
+             <button className="drag-handle flex justify-center text-3xl text-[#8A82EB] transition-all duration-500" style={{ cursor: 'grab' }}>
+                <FullscreenOutlined  style={{ cursor: 'grabbing' }} />{' '}
+              </button>
             <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
                 <StepBackwardOutlined  onClick={handleRestart} onTouchStart={handleRestart} />
             </button>

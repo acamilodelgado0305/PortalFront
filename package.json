@@ -34,6 +34,7 @@
     "react-icons": "^5.0.1",
     "react-image-crop": "^11.0.7",
     "react-phone-input-2": "^2.15.1",
+    "react-rnd": "^10.4.13",
     "react-router-dom": "^6.21.2",
     "recharts": "^2.12.7",
     "sweetalert2": "^11.6.13",
