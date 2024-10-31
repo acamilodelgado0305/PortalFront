@@ -8,7 +8,7 @@ import { FloatButton } from "antd";
 // components
 import Header from "../Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
-import { WhiteBoardSocketProvider } from './WhiteBoardSocketProvider'; // Importación del socket provider
+import { WhiteBoardSocketProvider } from './WhiteBoardSocketProvider'; 
 
 import "tldraw/tldraw.css";
 import "./animations.css";
