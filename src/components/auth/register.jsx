@@ -154,7 +154,7 @@ export const Register = ({selectedTeacher, closeRegisterModal, setInicioSesion})
 
         <div className=" w-11/12 md:w-3/12 rounded-lg bg-white p-6 shadow-lg font-normal z-40">
         <div className=" w-full grid justify-items-center grid-cols-1 border-b">
-          <div className="w-3/12 rounded-md ">
+          <div className="w-[90px] h-[90px] rounded-md ">
             <img className="rounded-2xl" src={selectedTeacher.profileImageUrl} alt="Teacher" />
           </div>
           <p className="text-sm">Aprende mas con el profesor  {selectedTeacher.firstName}</p>
