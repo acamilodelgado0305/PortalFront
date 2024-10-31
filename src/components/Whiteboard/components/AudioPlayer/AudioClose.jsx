@@ -1,5 +1,4 @@
 import {
-  SoundOutlined,
   CloseOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";

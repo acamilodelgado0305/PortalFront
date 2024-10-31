@@ -106,7 +106,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
       </div>
 
       <div className="absolute left-[30%] top-0 z-10 ml-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:left-full">
-        <div className="h-[17em] h-[auto] w-[27em] rounded-lg border !border-black border-black bg-white p-3 shadow-lg lg:h-[37vh]">
+        <div className="h-[17em] h-[auto] w-[27em] rounded-lg border !border-black border-black bg-white p-3 shadow-lg lg:h-[auto]">
           <div
             className={`relative h-[15em] w-full rounded-lg bg-gray-100 ${teacher.video ? "cursor-pointer" : ""} overflow-hidden`}
             onClick={() => teacher.video && onVideoClick(teacher.video)}

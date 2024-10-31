@@ -40,6 +40,8 @@ function WhiteBoard() {
     setAudioFile(null);
   };
 
+
+
   return (
     <WhiteBoardSocketProvider>
       <Header />
@@ -59,9 +61,9 @@ function WhiteBoard() {
         />
 
         <div className="h-[91%] w-[90%] pt-[0.5rem]"> 
-           
-            <Tldraw store={store}> 
-              <AudioPlayer 
+         
+            <Tldraw store={store}>   
+               <AudioPlayer 
                 audioContent={audioContent} 
                 setAudioContent={setAudioContent} 
                 file={audioFile} 
