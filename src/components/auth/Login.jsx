@@ -29,7 +29,11 @@ const Login = () => {
             const data = await response.json();
 
             if (data.success) {
-                login(data.user, data.token);
+                console.log("Role:", data);
+                // Llamada a `login` con el usuario y los tokens
+                login(data.user, data.accessToken, data.idToken, data.refreshToken);
+
+                // Redirección después del inicio de sesión exitoso
                 navigate('/dashboard');
             } else {
                 message.error('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
