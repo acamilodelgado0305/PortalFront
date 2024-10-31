@@ -63,6 +63,12 @@ class AudioOpen extends Component {
         }
     };
 
+    // New function to update currentTime in the parent
+    setCurrentTime = (time) => {
+        this.setState({ currentTime: time });
+        this.handleTimeChange(time); // Update the audio currentTime
+    };
+
     render() {
         const { toggleAudioPlayer, setToggleAudioPlayer, file } = this.props;
         const { currentTime, duration } = this.state;
@@ -87,6 +93,7 @@ class AudioOpen extends Component {
                     handleSeek={this.handleSeek}
                     currentTime={currentTime}
                     duration={duration}
+                    setCurrentTime={this.setCurrentTime} 
                 />
 
                 <ProgressBar currentTime={currentTime} duration={duration} setCurrentTime={this.handleTimeChange} />

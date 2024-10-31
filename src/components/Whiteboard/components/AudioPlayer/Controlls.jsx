@@ -7,11 +7,13 @@ import {
     PauseOutlined,
     RightOutlined,
     StepForwardOutlined,
+    ForwardOutlined
 } from "@ant-design/icons";
-import { FaVolumeMute, FaVolumeDown, FaVolumeUp } from "react-icons/fa";
 
-function Controlls({ handleSeek, audioRef, currentTime, duration }) {
-    const [playing, setPlaying] = useState(true);
+import { FaVolumeMute, FaVolumeDown, FaVolumeUp  } from "react-icons/fa";
+
+function Controlls({ handleSeek, audioRef, currentTime, duration, setCurrentTime }) {
+    const [playing, setPlaying] = useState(false);
     const [isVolumeDialOpen, setIsVolumeDialOpen] = useState(false);
     const [volumeLevel, setVolumeLevel] = useState(100);
     const [lastPlayPauseClick, setLastPlayPauseClick] = useState(0);
@@ -21,11 +23,10 @@ function Controlls({ handleSeek, audioRef, currentTime, duration }) {
       const audio = audioRef.current;
       if (audio) {
         if(!playing) 
-          {console.log('play')
+          {
              audio.play();
 
          } else {
-          console.log('stop')
           audio.pause()};
       }
     }, [playing]);
@@ -34,8 +35,14 @@ function Controlls({ handleSeek, audioRef, currentTime, duration }) {
      const now = Date.now();
     if (now - lastPlayPauseClick < 300) return;
     setLastPlayPauseClick(now);
-    setPlaying(prev => !prev);
+    setPlaying(!playing);
     };
+    const handleRestart = () => {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          setCurrentTime(0);
+        }
+      };
 
     useEffect(() => {
         const audioElement = audioRef.current;
@@ -45,21 +52,22 @@ function Controlls({ handleSeek, audioRef, currentTime, duration }) {
     }, [volumeLevel, audioRef]);
 
     useEffect(() => {
-        if (currentTime >= duration && duration > 0) {
-            setPlaying(false);
+        if (currentTime >= duration) { 
+            setPlaying(!playing);
+            handleRestart();
         }
     }, [currentTime, duration]);
 
     return (
         <div className="controls flex justify-center h-full w-full pl-[15%] pt-6 space-x-6">
             <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <StepBackwardOutlined onClick={() => handleSeek(-5)} onTouchStart={() => handleSeek(-5)} />
+                <StepBackwardOutlined  onClick={handleRestart} onTouchStart={handleRestart} />
             </button>
             <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <BackwardOutlined onClick={() => handleSeek(-1)} onTouchStart={() => handleSeek(-1)} />
+                <BackwardOutlined onClick={() => handleSeek(-5)} onTouchStart={() => handleSeek(-5)} />
             </button>
             <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <LeftOutlined />
+                <LeftOutlined onClick={() => handleSeek(-1)} onTouchStart={() => handleSeek(-1)}/>
             </button>
             {playing ? (
                 <button className="animate-playControl flex justify-center text-3xl text-[#7066e0] hover:text-[#8A82EB] transition-all duration-500" onClick={togglePlayPause}>
@@ -70,9 +78,13 @@ function Controlls({ handleSeek, audioRef, currentTime, duration }) {
                     <PauseOutlined />
                 </button>
             )}
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
+              <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
                 <RightOutlined onClick={() => handleSeek(1)} onTouchStart={() => handleSeek(1)} />
             </button>
+            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
+            <ForwardOutlined   onClick={() => handleSeek(5)} onTouchStart={() => handleSeek(5)} />
+            </button>
+          
             <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
                 <StepForwardOutlined onClick={() => handleSeek(5)} onTouchStart={() => handleSeek(5)} />
             </button>
