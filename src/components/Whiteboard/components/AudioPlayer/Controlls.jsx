@@ -1,155 +1,207 @@
 import { useState, useEffect } from "react";
 import {
-    StepBackwardOutlined,
-    BackwardOutlined,
-    LeftOutlined,
-    CaretRightOutlined,
-    PauseOutlined,
-    RightOutlined,
-    StepForwardOutlined,
-    ForwardOutlined,
-    FullscreenOutlined
+  StepBackwardOutlined,
+  BackwardOutlined,
+  LeftOutlined,
+  CaretRightOutlined,
+  PauseOutlined,
+  RightOutlined,
+  StepForwardOutlined,
+  ForwardOutlined,
+  FullscreenOutlined,
 } from "@ant-design/icons";
 
+import { FaVolumeMute, FaVolumeDown, FaVolumeUp } from "react-icons/fa";
 
-import { FaVolumeMute, FaVolumeDown, FaVolumeUp  } from "react-icons/fa";
+function Controlls({
+  handleSeek,
+  audioRef,
+  currentTime,
+  duration,
+  setCurrentTime,
+}) {
+  const [playing, setPlaying] = useState(false);
+  const [isVolumeDialOpen, setIsVolumeDialOpen] = useState(false);
+  const [volumeLevel, setVolumeLevel] = useState(100);
+  const [lastPlayPauseClick, setLastPlayPauseClick] = useState(0);
 
-function Controlls({ handleSeek, audioRef, currentTime, duration, setCurrentTime }) {
-    const [playing, setPlaying] = useState(false);
-    const [isVolumeDialOpen, setIsVolumeDialOpen] = useState(false);
-    const [volumeLevel, setVolumeLevel] = useState(100);
-    const [lastPlayPauseClick, setLastPlayPauseClick] = useState(0);
-
-
-    useEffect(() => {
-      const audio = audioRef.current;
-      if (audio) {
-        if(!playing) 
-          {
-             audio.play();
-
-         } else {
-          audio.pause()};
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (!playing) {
+        audio.play();
+      } else {
+        audio.pause();
       }
-    }, [playing]);
+    }
+  }, [playing]);
 
-    const togglePlayPause = () => {
-     const now = Date.now();
+  const togglePlayPause = () => {
+    const now = Date.now();
     if (now - lastPlayPauseClick < 300) return;
     setLastPlayPauseClick(now);
     setPlaying(!playing);
-    };
-    const handleRestart = () => {
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-          setCurrentTime(0);
-        }
-      };
+  };
+  const handleRestart = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      setCurrentTime(0);
+    }
+  };
 
-    useEffect(() => {
-        const audioElement = audioRef.current;
-        if (audioElement) {
-            audioElement.volume = volumeLevel / 100; 
-        }
-    }, [volumeLevel, audioRef]);
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      audioElement.volume = volumeLevel / 100;
+    }
+  }, [volumeLevel, audioRef]);
 
-    useEffect(() => {
-        if (currentTime >= duration) { 
-            setPlaying(!playing);
-            handleRestart();
-        }
-    }, [currentTime, duration]);
+  useEffect(() => {
+    if (currentTime >= duration) {
+      setPlaying(!playing);
+      handleRestart();
+    }
+  }, [currentTime, duration]);
 
-    return (
-        <div className="controls flex justify-center h-full w-full pl-[15%] pt-6 space-x-6">
-             <button className="drag-handle flex justify-center text-3xl text-[#8A82EB] transition-all duration-500" style={{ cursor: 'grab' }}>
-                <FullscreenOutlined  style={{ cursor: 'grabbing' }} />{' '}
-              </button>
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <StepBackwardOutlined  onClick={handleRestart} onTouchStart={handleRestart} />
-            </button>
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <BackwardOutlined onClick={() => handleSeek(-5)} onTouchStart={() => handleSeek(-5)} />
-            </button>
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <LeftOutlined onClick={() => handleSeek(-1)} onTouchStart={() => handleSeek(-1)}/>
-            </button>
-            {playing ? (
-                <button className="animate-playControl flex justify-center text-3xl text-[#7066e0] hover:text-[#8A82EB] transition-all duration-500" onClick={togglePlayPause}>
-                    <CaretRightOutlined />
-                </button>
-            ) : (
-                <button className="flex justify-center text-3xl text-white transition-all duration-500 animate-textChange" onClick={togglePlayPause}>
-                    <PauseOutlined />
-                </button>
-            )}
-              <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <RightOutlined onClick={() => handleSeek(1)} onTouchStart={() => handleSeek(1)} />
-            </button>
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-            <ForwardOutlined   onClick={() => handleSeek(5)} onTouchStart={() => handleSeek(5)} />
-            </button>
-          
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500">
-                <StepForwardOutlined onClick={() => handleSeek(5)} onTouchStart={() => handleSeek(5)} />
-            </button>
-            <button className="flex justify-center text-3xl text-white hover:text-[#8A82EB] transition-all duration-500 mt-[2px]" onClick={() => setIsVolumeDialOpen(!isVolumeDialOpen)}>
-                {volumeLevel === 0 ? <FaVolumeMute className="animate-textChange" /> : (volumeLevel <= 50 ? <FaVolumeDown /> : <FaVolumeUp />)}
-            </button>
+  return (
+    <div className="controls flex h-full w-full justify-center space-x-6 pl-[12%] pt-6">
+      <button
+        className="drag-handle flex justify-center text-3xl text-[#8A82EB] transition-all duration-500"
+        style={{ cursor: "grab" }}
+      >
+        <FullscreenOutlined style={{ cursor: "grabbing" }} />{" "}
+      </button>
+      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+        <StepBackwardOutlined
+          onClick={handleRestart}
+          onTouchStart={handleRestart}
+        />
+      </button>
+      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+        <BackwardOutlined
+          onClick={() => handleSeek(-5)}
+          onTouchStart={() => handleSeek(-5)}
+        />
+      </button>
+      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+        <LeftOutlined
+          onClick={() => handleSeek(-1)}
+          onTouchStart={() => handleSeek(-1)}
+        />
+      </button>
+      {playing ? (
+        <button
+          className="animate-playControl flex justify-center text-3xl text-[#7066e0] transition-all duration-500 hover:text-[#8A82EB]"
+          onClick={togglePlayPause}
+        >
+          <CaretRightOutlined />
+        </button>
+      ) : (
+        <button
+          className="animate-textChange flex justify-center text-3xl text-white transition-all duration-500"
+          onClick={togglePlayPause}
+        >
+          <PauseOutlined />
+        </button>
+      )}
+      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+        <RightOutlined
+          onClick={() => handleSeek(1)}
+          onTouchStart={() => handleSeek(1)}
+        />
+      </button>
+      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+        <ForwardOutlined
+          onClick={() => handleSeek(5)}
+          onTouchStart={() => handleSeek(5)}
+        />
+      </button>
 
-            {/* Componente VolumeSlider */}
-            <VolumeSlider isOpen={isVolumeDialOpen} setVolumeLevel={setVolumeLevel} volumeLevel={volumeLevel} />
-        </div>
-    );
+      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+        <StepForwardOutlined
+          onClick={() => handleSeek(5)}
+          onTouchStart={() => handleSeek(5)}
+        />
+      </button>
+
+      {/* Componente VolumeSlider */}
+      <VolumeSlider
+        isOpen={isVolumeDialOpen}
+        setVolumeLevel={setVolumeLevel}
+        volumeLevel={volumeLevel}
+        setIsVolumeDialOpen={setIsVolumeDialOpen}
+      />
+    </div>
+  );
 }
 
-function VolumeSlider({ isOpen, setVolumeLevel, volumeLevel }) {
-    const [isDragging, setIsDragging] = useState(false);
+function VolumeSlider({ isOpen, setVolumeLevel, volumeLevel, setIsVolumeDialOpen }) {
+  const [isDragging, setIsDragging] = useState(false);
 
-    const handleMouseMove = (event) => {
-        if (isDragging) {
-            const slider = event.currentTarget.getBoundingClientRect();
-            const newWidth = Math.min(Math.max(event.clientX - slider.left, 0), slider.width);
-            const newVolume = (newWidth / slider.width) * 100;
-            setVolumeLevel(newVolume);
-        }
-    };
+  const handleMouseMove = (event) => {
+    if (isDragging) {
+      const slider = event.currentTarget.getBoundingClientRect();
+      const newWidth = Math.min(
+        Math.max(event.clientX - slider.left, 0),
+        slider.width,
+      );
+      const newVolume = (newWidth / slider.width) * 100;
+      setVolumeLevel(newVolume);
+    }
+  };
 
-    const handleMouseDown = () => {
-        setIsDragging(true);
-    };
+  const handleMouseDown = () => {
+    setIsDragging(true);
+  };
 
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
-    const handleClick = (event) => {
-        const slider = event.currentTarget.getBoundingClientRect();
-        const newWidth = Math.min(Math.max(event.clientX - slider.left, 0), slider.width);
-        const newVolume = (newWidth / slider.width) * 100;
-        setVolumeLevel(newVolume);
-    };
-
-    return (
-        <div
-            className={`relative w-24 h-[3.5px] bg-gray-200 rounded mt-[15px] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onMouseDown={handleMouseDown}
-            onClick={handleClick}
-            style={{ cursor: 'pointer' }}
-        >
-            <div
-                className="absolute h-full bg-[#7066E0] rounded"
-                style={{ width: `${volumeLevel}%` }}
-            />
-            <div
-                className="absolute h-3 w-3 bg-white rounded-full border border-gray-300"
-                style={{ left: `calc(${volumeLevel}% - 8px)`, top: '-4px' }}
-            />
-        </div>
+  const handleClick = (event) => {
+    const slider = event.currentTarget.getBoundingClientRect();
+    const newWidth = Math.min(
+      Math.max(event.clientX - slider.left, 0),
+      slider.width,
     );
+    const newVolume = (newWidth / slider.width) * 100;
+    setVolumeLevel(newVolume);
+  };
+
+  return (
+    <>
+      <button
+        className="mt-[2px] flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]"
+        onClick={() => setIsVolumeDialOpen(!isOpen)}
+      >
+        {volumeLevel === 0 ? (
+          <FaVolumeMute className="text-[#8A82EB]" />
+        ) : volumeLevel <= 50 ? (
+          <FaVolumeDown />
+        ) : (
+          <FaVolumeUp />
+        )}
+      </button>
+      <div
+        className={`relative mt-[15px] h-[3.5px] w-24 rounded bg-gray-200 transition-opacity duration-500 ${isOpen ? "opacity-100" : "opacity-0"}`}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
+        style={{ cursor: "pointer" }}
+      >
+        <div
+          className="absolute h-full rounded bg-[#7066E0]"
+          style={{ width: `${volumeLevel}%` }}
+        />
+        <div
+          className="absolute h-3 w-3 rounded-full border border-gray-300 bg-white"
+          style={{ left: `calc(${volumeLevel}% - 8px)`, top: "-4px" }}
+        />
+      </div>
+    </>
+  );
 }
 
 export default Controlls;
