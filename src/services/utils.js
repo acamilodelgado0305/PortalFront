@@ -2,8 +2,8 @@
 
 import axios from "axios";
 
-const BACK_URL = "http://localhost:4005";
-//const BACK_URL = "https://back.app.esturio.com";
+
+const BACK_URL = "https://back.app.esturio.com";
 
 
 
