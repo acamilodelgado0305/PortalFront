@@ -75,15 +75,15 @@ class AudioOpen extends Component {
 
         return (
             <div
-                className="animate-audioOpen absolute w-[700px] h-[100px] border-2 border-[#7066E0] backdrop-blur-[10px] bg-[#7066E0]/50 rounded-[15px] top-[50px] left-[50px] z-[1] overflow-hidden"
-                style={{
-                    top: window.innerHeight < 600 ? '23vh' : '',
-                    right: window.innerHeight < 600 ? '50px' : undefined,
-                }}
+                className="animate-audioOpen absolute w-[350px]  md:w-[700px] h-[100px] border-2 border-[#7066E0] backdrop-blur-[10px] bg-[#7066E0]/50 rounded-[15px] top-[50px] left-[5px]  md:left-[50px] z-[9999] overflow-hidden"
+            
             >
                 <CloseOutlined
                     className="absolute top-2 right-2 text-white hover:text-gray transition duration-200"
                     onClick={() => {
+                        setToggleAudioPlayer(!toggleAudioPlayer);
+                    }}
+                    onTouchStart={() => {
                         setToggleAudioPlayer(!toggleAudioPlayer);
                     }}
                 />

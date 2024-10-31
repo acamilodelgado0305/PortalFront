@@ -28,7 +28,6 @@ function AudioPlayer({ file, audioContent, handleCloseAudioPlayer }) {
             y: 0, 
           }}
           dragHandleClassName={'drag-handle'}
-          bounds="window"
         >
           <AudioOpen 
             toggleAudioPlayer={toggleAudioPlayer} 

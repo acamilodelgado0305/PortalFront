@@ -63,27 +63,29 @@ function Controlls({
     }
   }, [currentTime, duration]);
 
+  const buttonClasessTailwind  = "flex justify-center text-lg md:text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]";
+
   return (
-    <div className="controls flex h-full w-full justify-center space-x-6 pl-[12%] pt-6">
+    <div className="controls flex h-full w-full justify-center space-x-3 md:space-x-6 pl-[10%]  md:pl-[12%] pt-6">
       <button
-        className="drag-handle flex justify-center text-3xl text-[#8A82EB] transition-all duration-500"
+        className="drag-handle flex justify-center text-lg md:text-3xl text-[#8A82EB] transition-all duration-500"
         style={{ cursor: "grab" }}
       >
         <FullscreenOutlined style={{ cursor: "grabbing" }} />{" "}
       </button>
-      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+      <button className={buttonClasessTailwind}>
         <StepBackwardOutlined
           onClick={handleRestart}
           onTouchStart={handleRestart}
         />
       </button>
-      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+      <button className={buttonClasessTailwind}>
         <BackwardOutlined
           onClick={() => handleSeek(-5)}
           onTouchStart={() => handleSeek(-5)}
         />
       </button>
-      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+      <button className={buttonClasessTailwind}>
         <LeftOutlined
           onClick={() => handleSeek(-1)}
           onTouchStart={() => handleSeek(-1)}
@@ -91,33 +93,33 @@ function Controlls({
       </button>
       {playing ? (
         <button
-          className="animate-playControl flex justify-center text-3xl text-[#7066e0] transition-all duration-500 hover:text-[#8A82EB]"
+          className="animate-playControl flex justify-center text-lg md:text-3xl text-[#7066e0] transition-all duration-500 hover:text-[#8A82EB]"
           onClick={togglePlayPause}
         >
           <CaretRightOutlined />
         </button>
       ) : (
         <button
-          className="animate-textChange flex justify-center text-3xl text-white transition-all duration-500"
+          className="animate-textChange flex justify-center text-lg md:text-3xl text-white transition-all duration-500"
           onClick={togglePlayPause}
         >
           <PauseOutlined />
         </button>
       )}
-      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+      <button className={buttonClasessTailwind}>
         <RightOutlined
           onClick={() => handleSeek(1)}
           onTouchStart={() => handleSeek(1)}
         />
       </button>
-      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+      <button className={buttonClasessTailwind}>
         <ForwardOutlined
           onClick={() => handleSeek(5)}
           onTouchStart={() => handleSeek(5)}
         />
       </button>
 
-      <button className="flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]">
+      <button className={buttonClasessTailwind}>
         <StepForwardOutlined
           onClick={() => handleSeek(5)}
           onTouchStart={() => handleSeek(5)}
@@ -171,7 +173,7 @@ function VolumeSlider({ isOpen, setVolumeLevel, volumeLevel, setIsVolumeDialOpen
   return (
     <>
       <button
-        className="mt-[2px] flex justify-center text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]"
+        className="mt-[2px] flex justify-center text-lg md:text-3xl text-white transition-all duration-500 hover:text-[#8A82EB]"
         onClick={() => setIsVolumeDialOpen(!isOpen)}
       >
         {volumeLevel === 0 ? (
@@ -183,7 +185,7 @@ function VolumeSlider({ isOpen, setVolumeLevel, volumeLevel, setIsVolumeDialOpen
         )}
       </button>
       <div
-        className={`relative mt-[15px] h-[3.5px] w-24 rounded bg-gray-200 transition-opacity duration-500 ${isOpen ? "opacity-100" : "opacity-0"}`}
+        className={`relative mt-[10px] md:mt-[15px] h-[3.5px] w-24 rounded bg-gray-200 transition-opacity duration-500 ${isOpen ? "opacity-100" : "opacity-0"}`}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
