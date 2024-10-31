@@ -8,29 +8,44 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token') || null);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+    const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken') || null);
+    const [idToken, setIdToken] = useState(localStorage.getItem('idToken') || null);
+    const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken') || null);
 
-    // Función para almacenar el usuario y el token
-    const login = (userData, userToken) => {
+    // Función para almacenar el usuario y los tokens
+    const login = (userData, access, id, refresh) => {
         setUser(userData);
-        setToken(userToken);
-        localStorage.setItem('token', userToken);
+        setAccessToken(access);
+        setIdToken(id);
+        setRefreshToken(refresh);
+
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('accessToken', access);
+        localStorage.setItem('idToken', id);
+        localStorage.setItem('refreshToken', refresh);
     };
 
     // Función para cerrar sesión
     const logout = () => {
         setUser(null);
-        setToken(null);
-        localStorage.removeItem('token');
+        setAccessToken(null);
+        setIdToken(null);
+        setRefreshToken(null);
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('idToken');
+        localStorage.removeItem('refreshToken');
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, accessToken, idToken, refreshToken, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
 };
+
 AuthProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };

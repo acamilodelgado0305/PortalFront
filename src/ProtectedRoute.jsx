@@ -3,9 +3,9 @@ import { useAuth } from './Context/AuthContext';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ children }) => {
-    const { token } = useAuth();
+    const { accessToken } = useAuth();
 
-    if (!token) {
+    if (!accessToken) {
         // Redirigir a login si no hay token
         return <Navigate to="/login" />;
     }
