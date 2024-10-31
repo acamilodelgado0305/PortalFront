@@ -51,12 +51,46 @@ const deleteStudentById = async (id) => {
   }
 };
 
+const createStudentCognito = async (data) => {
+  try {
+    const response = await backApi.post('/api/users/', data);
+    console.log('create Student cognito? ' + JSON.stringify(response))
+    return response.data;
+  } catch (error) {
+    console.error("Error creating Student:", error);
+    throw error;
+  }
+};
+const codeStudentCognito = async (data) => {
+  try {
+    const response = await backApi.post('/api/users/verify-email', data);
+    console.log("code send")
+    return response.data;
+  } catch (error) {
+    console.error("err:", error);
+    throw error;
+  }
+};
+const resendCodeCognito = async (data) => {
+  try {
+    const response = await backApi.post('/api/users/resend-verification', data);
+    console.log("code send")
+    return response.data;
+  } catch (error) {
+    console.error("err:", error);
+    throw error;
+  }
+};
+
 export {
   createStudent,
   readAllStudents,
   getStudentById,
   updateStudent,
-  deleteStudentById
+  deleteStudentById,
+  createStudentCognito,
+  codeStudentCognito,
+  resendCodeCognito
 };
 
 
