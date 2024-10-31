@@ -37,16 +37,11 @@
 
 @keyframes audioBackgraundChange {
     0% {
-        background: #504b85;
+        background: linear-gradient(to right, #7069c0, rgba(80, 75, 133, 0.637));
     }
-    25% {
-        background: #504b8567;
-    }
-    50% {
-        background: #504b85b5;
-    }
+ 
     100% {
-        background: #504b85;
+        background: linear-gradient(to left, #8A82EB, #4d487f);
     }
 }
 
@@ -81,7 +76,7 @@
 }
 
 .animate-audioOpen {
-    animation: audioBackgraundChange 25s infinite, orangeShadow 5s forwards;
+    animation: audioBackgraundChange 15s infinite, orangeShadow 5s forwards;
 }
 
 .animate-audioClose {

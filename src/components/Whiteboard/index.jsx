@@ -1,12 +1,3 @@
-/*
-   npm i tldraw
-   npm i @tldraw/sync 
-   son dos librerias distintas, una es para la pizarrra otra
-   para la sincronización 
-
-   http://localhost:5173/whiteboard
-
-*/
 import { useState, useRef } from "react";
 import { Tldraw } from "tldraw";
 import { useSyncDemo } from "@tldraw/sync";
@@ -19,7 +10,7 @@ import Header from "../Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
 
 import "tldraw/tldraw.css";
-import "./index.css";
+import "./animations.css";
 
 function WhiteBoard() {
   const [audioFile, setAudioFile] = useState(null);
