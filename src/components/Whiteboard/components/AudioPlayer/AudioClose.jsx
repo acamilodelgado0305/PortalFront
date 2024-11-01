@@ -8,7 +8,7 @@ function AudioClose({ name, audioBar, setAudioBar, onClose }) {
       <div className="animate-audioClose border-gray z-[-1] flex cursor-pointer items-center rounded-[10px] border bg-[#7066E0] p-[5px] text-white backdrop-blur-[10px]">
         <PlayCircleOutlined className="pl-1 text-[18px] " />
         <span
-          className="ml-[10px] flex-1 text-center font-bold text-white"
+          className="ml-[10px] flex-1 text-center font-bold text-[13px] text-white"
           onClick={() => {
             setAudioBar(!audioBar);
           }}
