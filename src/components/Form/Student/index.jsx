@@ -197,9 +197,9 @@ function FormStudent() {
   const renderProgressBar = () => {
     const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     return (
-      <div className="mb-4 h-[2px] w-full rounded-full bg-gray-200">
+      <div className="mb-4 h-[4px] w-full rounded-full bg-gray-200">
         <div
-          className="h-[2px] rounded-full bg-purple-600"
+          className="h-[4px] rounded-full bg-purple-600"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
