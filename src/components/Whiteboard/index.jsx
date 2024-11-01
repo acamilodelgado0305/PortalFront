@@ -4,6 +4,7 @@ import { useSyncDemo } from "@tldraw/sync";
 import { useParams } from "react-router-dom";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
+import { events }  from "../../enums/whiteboardEvents.js";
 
 // components
 import Header from "../Header.jsx";
@@ -29,17 +30,19 @@ function WhiteBoard() {
     fileInputRef.current.click();
   };
   const handleFileChange = async(event) => {
+    console.log('Prueba de enums ' + events.AUDIOFILE_OPENED )
     const file = event.target.files[0]; 
     if (file) {
        event.target.value = null; 
       const data = await uploadFile(file,file.type)
-      console.log('RESPONSE '+JSON.stringify(data))
-
       if (whiteBoardSocket) {
-        whiteBoardSocket.emit('audioFileOpened', 
-         { name: file.name,
-           url: data.url
-         });
+        console.log('Hay socket')
+             whiteBoardSocket.emit(events.AUDIOFILE_OPENED, 
+          { 
+            name: file.name,
+            url: data.url,
+            room: room 
+          });
       } 
     }
   };
@@ -49,13 +52,14 @@ function WhiteBoard() {
   };
 
 
-  /* Socket Listener  */
+  /* prop in <WhiteBoardListener/>  */
   const listenerAudioFileOpened = (file) =>{
     if (file) {
       setAudioFile(file); 
       setAudioContent(true);
     }
   }
+  
   
  
   useEffect(()=>{},[audioContent])
@@ -66,6 +70,7 @@ function WhiteBoard() {
       <WhiteBoardListener 
       socket={whiteBoardSocket}
       listenerAudioFileOpened={listenerAudioFileOpened}
+      room={room}
       />
       <Header  />
       <div className="fixed flex h-full w-full justify-center bg-[#7066e0]">

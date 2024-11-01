@@ -1,18 +1,21 @@
 import { useEffect } from "react";
+import { events } from "../../../../enums/whiteboardEvents.js";
 
-function WhiteBoardListener({socket, listenerAudioFileOpened}) {
+
+function WhiteBoardListener({socket, listenerAudioFileOpened, room}) {
 useEffect(() => {
-  if (socket) {
-    socket.on('connection', (data) => {
+  if (socket) {   
+    socket.on(events.CONNECTION , (data) => {
       console.log(data);
     });
-    socket.on('audioFileOpened', (file) => {
+    socket.emit(events.JOIN_ROOM ,room)
+ 
+    socket.on(events.AUDIOFILE_OPENED, (file) => {
       listenerAudioFileOpened(file)
     });
-    socket.emit('draw', { x: 10, y: 20 });
 
     return () => {
-      socket.off('connection');
+      socket.off(events.CONNECTION);
     };
   }
 }, [socket]);
