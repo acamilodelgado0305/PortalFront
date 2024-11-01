@@ -2,7 +2,9 @@
 
 import axios from "axios";
 
+
 const BACK_URL = "https://back.app.esturio.com";
+
 
 
 // Instancia de axios personalizada

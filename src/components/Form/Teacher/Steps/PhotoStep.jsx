@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from "react";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";
+import AvatarEditor from "react-avatar-editor";
 
 const PhotoStep = ({ onChange, setIsVerified }) => {
   const [uploading, setUploading] = useState(false);
@@ -28,7 +29,7 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
       const imageDataUrl = await readFile(file);
       setProfileImageUrl(imageDataUrl);
       setIsEditing(true);
-      setIsVerified(true)
+      //setIsVerified(true)
     } catch (error) {
       console.error("Error reading image:", error);
       Swal.fire({
@@ -65,8 +66,8 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
 
   const saveEditedImage = useCallback(async () => {
     if (!imgRef.current) return;
-
-    const canvas = document.createElement('canvas');
+    const canvas = imgRef.current.getImage().toDataURL('image/jpeg');
+    /*const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
     // Set canvas size to match the original image size
@@ -82,10 +83,11 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
     ctx.drawImage(imgRef.current, 0, 0);
 
     const base64Image = canvas.toDataURL('image/jpeg');
-    
-    setProfileImageUrl(base64Image);
+    */
+    setProfileImageUrl(canvas);
     setIsEditing(false);
-    onChange({ profileImageUrl: base64Image });
+    setIsVerified(true)
+    onChange({ profileImageUrl: canvas });
   }, [zoom, rotation, onChange]);
 
   const deleteImage = () => {
@@ -124,8 +126,11 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
       <div className="w-full flex justify-center items-center mb-6">
         {isEditing ? (
           <div className="flex flex-col items-center">
-            <div className="w-48 h-48 overflow-hidden rounded-full">
-              <img
+            <div className="overflow-hidden rounded-full">
+              
+              {
+                /*
+                <img
                 ref={imgRef}
                 src={profileImageUrl}
                 style={{
@@ -136,6 +141,18 @@ const PhotoStep = ({ onChange, setIsVerified }) => {
                   objectFit: 'cover'
                 }}
                 alt="Edit me"
+              />
+                */        
+              }
+              <AvatarEditor 
+              ref={imgRef}
+              image={profileImageUrl}
+              width={250}
+              height={250}
+              border={0}
+              scale={zoom}
+              rotate={rotation}
+             
               />
             </div>
             <div className="mt-4 w-full">

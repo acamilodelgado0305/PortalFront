@@ -32,6 +32,7 @@ const MultiStepForm = () => {
 
 
   const handleFormChange = (changedValues) => {
+    console.log(changedValues)
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
@@ -58,7 +59,7 @@ useEffect(() => {
 
 
   const onFinish = async () => {
-     if (currentStep != '7') {
+    if (currentStep != '7') {
       return
     }
     setIsSubmitting(true);
