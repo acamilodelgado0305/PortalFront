@@ -16,7 +16,7 @@ export const backApi = axios.create({
 });
 
 
-export const uploadImage = async (file, contentType) => {
+export const uploadFile = async (file, contentType) => {
   try {
     const response = await backApi.post('/api/upload', file, {
       headers: { 'Content-Type': contentType },
