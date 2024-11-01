@@ -63,10 +63,9 @@ class AudioOpen extends Component {
         }
     };
 
-    // New function to update currentTime in the parent
     setCurrentTime = (time) => {
         this.setState({ currentTime: time });
-        this.handleTimeChange(time); // Update the audio currentTime
+        this.handleTimeChange(time); 
     };
 
     render() {
