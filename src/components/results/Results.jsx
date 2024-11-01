@@ -226,8 +226,8 @@ const Results = () => {
     setSelectedTeacher(null);
     setIsModalOpen(false);
   };
-  
-  
+
+
   const closeRegisterModal = (teacher) => {
     setSelectedTeacher(teacher);
     setRegisterModal(!registerModal);
@@ -236,9 +236,9 @@ const Results = () => {
       return;
     }
   };
-  
-  
-  
+
+
+
 
   if (loading) {
     return (
@@ -269,53 +269,53 @@ const Results = () => {
             </h1>
           </div>
 
-  <div className="flex flex-col lg:flex-row items-center gap-4">
-    <div className="UNO flex flex-wrap items-center gap-4">
-      <FilterButton
-        label="Precio por hora"
-        value={activeFilters.priceRange}
-        filterKey="priceRange"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="País de nacimiento"
-        value={activeFilters.country}
-        filterKey="country"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="Disponibilidad"
-        value={activeFilters.availability}
-        filterKey="availability"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="Especialidades"
-        value={activeFilters.specialty}
-        filterKey="specialty"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="Idiomas"
-        value={activeFilters.language}
-        filterKey="language"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <button
-        className={`bg-white rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-700 hover:bg-gray-50 border border-gray ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
-        onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
-      >
-        Hablante nativo
-      </button>
-      <button
-        onClick={clearFilters}
-        className="bg-gray-100 rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-600 hover:bg-gray-200 border border-gray flex items-center gap-2"
-      >
-        <X size={16} />
-        Limpiar filtros
-      </button>
-    </div>
-  </div>
+          <div className="flex flex-col lg:flex-row items-center gap-4">
+            <div className="UNO flex flex-wrap items-center gap-4">
+              <FilterButton
+                label="Precio por hora"
+                value={activeFilters.priceRange}
+                filterKey="priceRange"
+                className="border border-black rounded-lg px-4 py-2"
+              />
+              <FilterButton
+                label="País de nacimiento"
+                value={activeFilters.country}
+                filterKey="country"
+                className="border border-black rounded-lg px-4 py-2"
+              />
+              <FilterButton
+                label="Disponibilidad"
+                value={activeFilters.availability}
+                filterKey="availability"
+                className="border border-black rounded-lg px-4 py-2"
+              />
+              <FilterButton
+                label="Especialidades"
+                value={activeFilters.specialty}
+                filterKey="specialty"
+                className="border border-black rounded-lg px-4 py-2"
+              />
+              <FilterButton
+                label="Idiomas"
+                value={activeFilters.language}
+                filterKey="language"
+                className="border border-black rounded-lg px-4 py-2"
+              />
+              <button
+                className={`bg-white rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-700 hover:bg-gray-50 border border-gray ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
+                onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
+              >
+                Hablante nativo
+              </button>
+              <button
+                onClick={clearFilters}
+                className="bg-gray-100 rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-600 hover:bg-gray-200 border border-gray flex items-center gap-2"
+              >
+                <X size={16} />
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
 
 
 
@@ -328,23 +328,23 @@ const Results = () => {
         </h2>
 
         <div className="space-y-6 w-[70em]">
-  {filteredTeachers.map((teacher) => (
-    <TeacherCard
-      key={teacher.id}
-      teacher={teacher}
-      onVideoClick={handleVideoClick}
-      closeRegisterModal={closeRegisterModal}
-    />
-  ))}
+          {filteredTeachers.map((teacher) => (
+            <TeacherCard
+              key={teacher.id}
+              teacher={teacher}
+              onVideoClick={handleVideoClick}
+              closeRegisterModal={closeRegisterModal}
+            />
+          ))}
 
-  {filteredTeachers.length === 0 && (
-    <p className="text-center text-gray-600">
-      No se encontraron profesores con los filtros seleccionados.
-    </p> 
-  )}
+          {filteredTeachers.length === 0 && (
+            <p className="text-center text-gray-600">
+              No se encontraron profesores con los filtros seleccionados.
+            </p>
+          )}
 
- 
-</div>
+
+        </div>
 
       </div>
 
@@ -357,13 +357,13 @@ const Results = () => {
           }}
         />
       )}
-  
-       {
+
+      {
         // modal de registro
-        registerModal?
-        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal}/>
-        :null
-       }
+        registerModal ?
+          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+          : null
+      }
     </div>
   );
 };
