@@ -2,18 +2,17 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "../src/Context/AuthContext";
+import { WhiteBoardSocketProvider } from "./components/Whiteboard/WhiteBoardSocketProvider.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 
 import ErrorPage from "./error-page";
 import Landing from "./landing";
-
 
 import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
 import Results from "./components/results/Results";
 import WhiteBoard from "./components/Whiteboard/index";
-
 
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
@@ -59,16 +58,17 @@ const router = createBrowserRouter([
     element: <Results />,
   },
   {
-    path:"/whiteboard/:room",
-    element: <WhiteBoard/>
-  }
-
+    path: "/whiteboard/:room",
+    element: <WhiteBoard />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </React.StrictMode>
+    <WhiteBoardSocketProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </WhiteBoardSocketProvider>
+  </React.StrictMode>,
 );

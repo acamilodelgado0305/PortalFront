@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Form, Select, Input, Checkbox, Button, message } from "antd";
 import { PlusOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { useDropzone } from "react-dropzone";
-import { uploadImage } from "../../../../services/utils.js";
+import { uploadFile } from "../../../../services/utils.js";
 
 const { Option } = Select;
 
@@ -47,7 +47,7 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
       setUploading(true);
       try {
         const contentType = file.type || "application/octet-stream";
-        const response = await uploadImage(file, contentType);
+        const response = await uploadFile(file, contentType);
 
         if (response && response.url) {
           const uploadedFileUrl = response.url;

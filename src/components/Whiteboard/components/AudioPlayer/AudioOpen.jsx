@@ -16,7 +16,7 @@ class AudioOpen extends Component {
     componentDidMount() {
         const audio = this.audioRef.current;
         const { file } = this.props;
-        this.url = URL.createObjectURL(file);
+        this.url = file.url;
 
         if (audio) {
             audio.addEventListener('loadedmetadata', this.handleLoadedMetadata);
@@ -36,13 +36,11 @@ class AudioOpen extends Component {
     handleLoadedMetadata = () => {
         const audio = this.audioRef.current;
         this.setState({ duration: audio.duration });
-        console.log('Duration ', audio.duration);
     };
 
     handleTimeUpdate = () => {
         const audio = this.audioRef.current;
         this.setState({ currentTime: audio.currentTime });
-        console.log('Current time ', audio.currentTime);
     };
 
     handleSeek = (seconds) => {
@@ -63,10 +61,9 @@ class AudioOpen extends Component {
         }
     };
 
-    // New function to update currentTime in the parent
     setCurrentTime = (time) => {
         this.setState({ currentTime: time });
-        this.handleTimeChange(time); // Update the audio currentTime
+        this.handleTimeChange(time); 
     };
 
     render() {

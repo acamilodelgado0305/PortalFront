@@ -1,4 +1,4 @@
-import { uploadImage } from "../services/utils";
+import { uploadFile } from "../services/utils";
 
 export const uploadImageToS3 = async (formData, setFormData) => {
   if (formData.profileImageUrl) {
@@ -7,7 +7,7 @@ export const uploadImageToS3 = async (formData, setFormData) => {
     if (typeof imageUrl === 'string' && imageUrl.startsWith('data:image/')) {
       const fileName = 'uploaded-image'; 
       const file = convertBase64ToFile(imageUrl, fileName);
-      const uploadedImageUrl = await uploadImage(file, file.type);
+      const uploadedImageUrl = await uploadFile(file, file.type);
       
       setFormData((prevFormData) => ({
         ...prevFormData,

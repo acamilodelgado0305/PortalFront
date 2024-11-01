@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Button, message } from "antd";
 import { VideoCameraOutlined, PauseOutlined, DeleteOutlined } from "@ant-design/icons";
-import { uploadImage } from "../../../../../../services/utils";
+import { uploadFile } from "../../../../../../services/utils";
 
 const VideoRecorder = ({ setUrlPreview, form }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -30,7 +30,7 @@ const VideoRecorder = ({ setUrlPreview, form }) => {
       mediaRecorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "video/webm" });
         const file = new File([blob], "recorded_video.webm", { type: "video/webm" });
-        const response = await uploadImage(file, file.type);
+        const response = await uploadFile(file, file.type);
 
         if (response.success) {
           setUrlPreview(response.url);
