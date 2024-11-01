@@ -3,28 +3,26 @@ import { useParams } from "react-router-dom";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
 import { events } from "../../enums/whiteboardEvents.js";
-import ErrorBoundary from "./ErrorBoundary.jsx";
 
 // components
 import Header from "../Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
-import Pizarra from "./components/Pizarra/Pizarra.jsx";
+import WhiteBoard from "./components/WhiteBoard/Index.jsx";
 
 
 import { useWhiteBoardSocket } from "./WhiteBoardSocketProvider";
 import "./animations.css";
-import WhiteBoardListener from "./components/WhiteBoardSocket/WhiteBoardListener.jsx";
+import WhiteBoardListener from "./components/Socket/WhiteBoardListener.jsx";
 import { uploadFile } from "../../services/utils.js";
 
 
-function WhiteBoard() {
+function WhiteBoardDashBoard() {
   const [audioFile, setAudioFile] = useState(null);
   const [audioContent, setAudioContent] = useState(false);
   const { room } = useParams();
   const whiteBoardSocket = useWhiteBoardSocket();
 
   const fileInputRef = useRef(null);
-  const canvasRef = useRef(null);
 
   const handleFloatButtonClick = () => {
     fileInputRef.current.click();
@@ -82,9 +80,7 @@ function WhiteBoard() {
         />
 
         <div className="relative top-[0.5rem] h-[91%] w-[90%] bg-white">
-          <ErrorBoundary>
-              <Pizarra/>
-          </ErrorBoundary>
+              <WhiteBoard/>
                 <AudioPlayer
               audioContent={audioContent}
               setAudioContent={setAudioContent}
@@ -97,4 +93,4 @@ function WhiteBoard() {
   );
 }
 
-export default WhiteBoard;
+export default WhiteBoardDashBoard;

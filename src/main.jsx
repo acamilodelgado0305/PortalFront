@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "../src/Context/AuthContext";
-import { WhiteBoardSocketProvider } from "./components/Whiteboard/WhiteBoardSocketProvider.jsx";
+import { WhiteBoardSocketProvider } from "./components/WhiteBoardDashBoard/WhiteBoardSocketProvider.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 
 import ErrorPage from "./error-page";
@@ -12,7 +12,7 @@ import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
 import Results from "./components/results/Results";
-import WhiteBoard from "./components/Whiteboard/index";
+import WhiteBoardDashBoard from "./components/WhiteBoardDashBoard/Index.jsx";
 
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/whiteboard/:room",
-    element: <WhiteBoard />,
+    element: <WhiteBoardDashBoard />,
   },
 ]);
 
