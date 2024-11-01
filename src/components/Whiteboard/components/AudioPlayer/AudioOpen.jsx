@@ -36,13 +36,11 @@ class AudioOpen extends Component {
     handleLoadedMetadata = () => {
         const audio = this.audioRef.current;
         this.setState({ duration: audio.duration });
-        console.log('Duration ', audio.duration);
     };
 
     handleTimeUpdate = () => {
         const audio = this.audioRef.current;
         this.setState({ currentTime: audio.currentTime });
-        console.log('Current time ', audio.currentTime);
     };
 
     handleSeek = (seconds) => {

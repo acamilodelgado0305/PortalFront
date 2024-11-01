@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Tldraw } from "tldraw";
 import { useSyncDemo } from "@tldraw/sync";
 import { useParams } from "react-router-dom";
@@ -30,13 +30,11 @@ function WhiteBoard() {
     fileInputRef.current.click();
   };
   const handleFileChange = async(event) => {
-    console.log('Prueba de enums ' + events.AUDIOFILE_OPENED )
     const file = event.target.files[0]; 
     if (file) {
        event.target.value = null; 
       const data = await uploadFile(file,file.type)
       if (whiteBoardSocket) {
-        console.log('Hay socket')
              whiteBoardSocket.emit(events.AUDIOFILE_OPENED, 
           { 
             name: file.name,
@@ -62,7 +60,6 @@ function WhiteBoard() {
   
   
  
-  useEffect(()=>{},[audioContent])
 
 
   return (
