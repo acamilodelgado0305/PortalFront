@@ -9,6 +9,11 @@ function WhiteBoard() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentLine, setCurrentLine] = useState([]);
   const [drawingMode, setDrawingMode] = useState('draw');
+  const [currentColor, setcurrentColor] = useState('red');
+
+  const changeColor = (newColor) => {
+    setcurrentColor(newColor); 
+  }
 
   return (
     <div
@@ -19,6 +24,7 @@ function WhiteBoard() {
       <DrawingControls
         drawingMode={drawingMode}
         toggleDrawingMode={() => toggleDrawingMode(drawingMode, setDrawingMode)}
+        changeColor={changeColor}
       />
       <DrawingCanvas
         lines={lines}
@@ -39,6 +45,7 @@ function WhiteBoard() {
           handleMouseMove(isDrawing, drawingMode, currentLine, lines, setCurrentLine, setLines, e)
         }
         currentLine={currentLine}
+        currentColor={currentColor}
       />
     </div>
   );

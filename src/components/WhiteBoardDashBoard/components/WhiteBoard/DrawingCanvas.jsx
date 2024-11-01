@@ -2,8 +2,9 @@ import React, { useRef } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import DrawingControls from './DrawingControls';
 
-function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handleMouseMove, currentLine }) {
+function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handleMouseMove, currentLine, currentColor }) {
   const containerRef = useRef(null);
+  // Quiero una funcion que pueda cambiar los colores en este componente, pero la quiero en el componente padre.
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
@@ -19,7 +20,7 @@ function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handl
             <Line
               key={index}
               points={line}
-              stroke="red"
+              stroke={currentColor}
               strokeWidth={2}
               tension={0.5}
               lineCap="round"
@@ -29,7 +30,7 @@ function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handl
           {isDrawing && (
             <Line
               points={currentLine}
-              stroke="red"
+              stroke={currentColor}
               strokeWidth={2}
               tension={0.5}
               lineCap="round"
