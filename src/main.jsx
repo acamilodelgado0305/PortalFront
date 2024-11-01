@@ -13,7 +13,7 @@ import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
 import SigUp from "./components/auth/SigUp";
 import Results from "./components/results/Results";
-import WhiteBoard from "./components/Whiteboard/Index.jsx";
+import WhiteBoard from "./components/Whiteboard/Index";
 
 
 import "./index.css";
