@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { getFlagUrl } from "../../services/allcountries.js";
-import { Play, X } from "lucide-react";
+import { Play } from "lucide-react";
 import { ScheduleModal } from "./components/ScheduleModal.jsx";
+import ModalRegister from "./modalRegister.jsx";
 
-const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
+const TeacherCard = ({ teacher, onVideoClick }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CO", {
@@ -22,7 +24,7 @@ const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
     <div className="group relative">
       <div className="h-[auto] w-[50%] rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-black hover:shadow-md lg:h-[37vh] lg:w-[100%]">
         <div className="flex gap-6">
-          <div >
+          <div>
             <img
               src={teacher.profileImageUrl}
               alt={`${teacher.firstName} ${teacher.lastName}`}
@@ -43,11 +45,10 @@ const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
                   <div className="flex items-center">
                     <img
                       src={getFlagUrl(teacher.countryOfBirth)}
-                      style={{ width: "20px", heigth: "20px" }}
+                      style={{ width: "20px", height: "20px" }}
                       className="mx-2"
                     />
                     <span className="text-yellow-400">★</span>
-
                     <span className="font-medium">{teacher.rating || 5}</span>
                     <span className="ml-1 hidden text-sm text-gray-600 md:block">
                       ({teacher.reviews || 3} opiniones)
@@ -55,9 +56,11 @@ const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
                   </div>
                 </div>
 
-                <p className="mb-1 text-gray-600 pb-4 lg:pb-0">{teacher.subjectYouTeach}</p>
+                <p className="mb-1 text-gray-600 pb-4 lg:pb-0">
+                  {teacher.subjectYouTeach}
+                </p>
 
-                <div className="mb-3 flex items-center gap-2 text-sm text-gray-600 ">
+                <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
                   <div className="flex items-center absolute lg:static">
                     <span>
                       {teacher.activeStudents || 3} estudiantes activos
@@ -88,16 +91,16 @@ const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
             </div>
             <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end">
               <button
-                onClick={() => closeRegisterModal(teacher)}
+                onClick={() => setShowRegisterModal(true)}
                 className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
               >
                 Clase de prueba gratuita
               </button>
 
               <button
-                onClick={() => closeRegisterModal(teacher)}
+                onClick={() => setShowRegisterModal(true)}
                 className="w-[12em] border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
-                >
+              >
                 Enviar mensaje
               </button>
             </div>
@@ -151,6 +154,14 @@ const TeacherCard = ({ teacher, onVideoClick, closeRegisterModal }) => {
         <ScheduleModal
           availability={teacher.Availability}
           onClose={() => setShowScheduleModal(false)}
+        />
+      )}
+
+      {/* Modal de registro */}
+      {showRegisterModal && (
+        <ModalRegister
+          isOpen={showRegisterModal}
+          onClose={() => setShowRegisterModal(false)}
         />
       )}
     </div>

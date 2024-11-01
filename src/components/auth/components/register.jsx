@@ -4,7 +4,6 @@ import { message, Spin, Progress, Checkbox } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { verifyEmail } from "../../../services/validations";
 import { codeStudentCognito, createStudentCognito, resendCodeCognito } from "../../../services/studendent.services";
-import CodeVerify from "../components/CodeVerify";
 import GoogleLogo from '../../../assets/icons/icons8-logo-de-google.svg';
 import { useNavigate } from 'react-router-dom';
 
@@ -175,7 +174,13 @@ const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
           </form>
         ) : (
           <div>
-            <CodeVerify setCode={setCode} />
+            <div className="grid justify-items-center grid-cols-1 pl-8 pr-8">
+              <div className="flex gap-4 flex-wrap justify-center">
+                <input onChange={(e) => setCode(e.target.value)} maxLength={6} className="w-10/12 border border-black rounded-md outline-none p-2 text-sm" type="text" name="1" id="" />
+
+              </div>
+              <p className="text-sx mt-2 text-center">Ingresa el codigo que llego a tu correo</p>
+            </div>
             <button
               onClick={handleSendCode}
               className="w-full p-2 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600 border-2 border-purple-500 mt-4"
