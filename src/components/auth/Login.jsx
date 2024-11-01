@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { message } from 'antd';
 
-const Login = () => {
+const Login = ({ closeRegisterModal, setInicioSesion }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);

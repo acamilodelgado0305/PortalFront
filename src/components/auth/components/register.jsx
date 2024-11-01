@@ -8,7 +8,7 @@ import CodeVerify from "../components/CodeVerify";
 import GoogleLogo from '../../../assets/icons/icons8-logo-de-google.svg';
 import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
+const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
