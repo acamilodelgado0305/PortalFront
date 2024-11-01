@@ -13,7 +13,7 @@ import { useWhiteBoardSocket  } from './WhiteBoardSocketProvider';
 import "tldraw/tldraw.css";
 import "./animations.css";
 import WhiteBoardListener from "./components/WhiteBoardSocket/WhiteBoardListener.jsx";
-import { uploadImage } from "../../services/utils.js";
+import { uploadFile } from "../../services/utils.js";
 
 function WhiteBoard() {
   const [audioFile, setAudioFile] = useState(null);
@@ -32,7 +32,7 @@ function WhiteBoard() {
     const file = event.target.files[0]; 
     if (file) {
        event.target.value = null; 
-      const data = await uploadImage(file,file.type)
+      const data = await uploadFile(file,file.type)
       console.log('RESPONSE '+JSON.stringify(data))
 
       if (whiteBoardSocket) {

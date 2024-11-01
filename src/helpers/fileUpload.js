@@ -1,4 +1,4 @@
-import { uploadImage } from "../services/utils";
+import { uploadFile } from "../services/utils";
 import { message } from "antd";
 
 export const fileUpload = async (acceptedFiles, type) => {
@@ -10,7 +10,7 @@ export const fileUpload = async (acceptedFiles, type) => {
   if (!file) return null;
   const contentType = file.type;
   try {
-    const response = await uploadImage(file, contentType);
+    const response = await uploadFile(file, contentType);
     contentTypeSuccessMessage(contentType, file);
     return response.url;
   } catch {
