@@ -8,7 +8,6 @@ export const useWhiteBoardSocket = () => {
   return useContext(WhiteBoardSocketContext);
 };
 
-// SocketProvider para la pizarra
 export const WhiteBoardSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 

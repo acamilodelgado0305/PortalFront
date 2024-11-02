@@ -3,10 +3,11 @@ import DrawingControls from './DrawingControls';
 import DrawingCanvas from './DrawingCanvas';
 import { pencilCursor, eraserCursor } from './utils/cursorIcons.js';
 import { WhiteBoardContext } from './WhiteBoardContext.jsx';
+import SocketListener  from "./SocketListener.jsx"
 
-function WhiteBoard() {
+
+function WhiteBoard({socket}) {
   const context = useContext(WhiteBoardContext); 
-
 
   return (
     <div
@@ -14,6 +15,10 @@ function WhiteBoard() {
         cursor: context.drawingMode === 'draw' ? pencilCursor : eraserCursor,
       }}
     >
+      <SocketListener
+       context={context}
+       socket={socket}
+      />
       <DrawingControls
        context={context}
       />

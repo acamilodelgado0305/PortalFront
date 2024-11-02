@@ -5,7 +5,7 @@ import { FloatButton } from 'antd';
 function DrawingControls({context}) {
   return (
     <> 
-   <ColorOption changeColor={context.changeColor} currentColor={context.currentColor}/>
+      <ColorOption changeColor={context.changeColor} currentColor={context.currentColor}/>
       <FloatButton
         onClick={context.toggleDrawingMode}
         type={context.drawingMode === 'draw' ? "primary" : "danger"}

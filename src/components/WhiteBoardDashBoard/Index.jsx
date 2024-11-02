@@ -45,9 +45,6 @@ function WhiteBoardDashBoard() {
     setAudioContent(false);
     setAudioFile(null);
   };
-
-
-  /* prop in <WhiteBoardListener/>  */
   const listenerAudioFileOpened = (file) => {
     if (file) {
       setAudioFile(file);
@@ -81,7 +78,7 @@ function WhiteBoardDashBoard() {
         />
 
         <div className="relative top-[0.5rem] h-[91%] w-[90%] bg-white">
-              <WhiteBoard/>
+              <WhiteBoard socket={whiteBoardSocket}/>
                 <AudioPlayer
               audioContent={audioContent}
               setAudioContent={setAudioContent}

@@ -9,6 +9,8 @@ import { createContext, useState } from 'react';
   const [currentLine, setCurrentLine] = useState([]);
   const [drawingMode, setDrawingMode] = useState('draw');
   const [currentColor, setCurrentColor] = useState('red');
+  
+
 
   const changeColor = (newColor) => {
     setCurrentColor(newColor);
@@ -61,7 +63,7 @@ import { createContext, useState } from 'react';
     }
   };
 
-
+    // 
   
    const toggleDrawingMode = () => {
     setDrawingMode(drawingMode === 'draw' ? 'erase' : 'draw');
