@@ -3,14 +3,16 @@ import { Stage, Layer, Line } from 'react-konva';
 
 function DrawingCanvas({context}) {
   const containerRef = useRef(null);
+  const emitToSocket = true;   
+  
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
       <Stage
         width={containerRef.current ? containerRef.current.clientWidth : 0} 
         height={window.innerHeight} 
-        onMouseDown={context.handleMouseDown}
-        onMouseUp={context.handleMouseUp}
-        onMouseMove={context.handleMouseMove}
+        onMouseDown={()=>context.handleMouseDown(e.target.getStage().getPointerPosition(),emitToSocket)}
+        onMouseUp={()=>context.handleMouseUp(emitToSocket)}
+        onMouseMove={()=>context.handleMouseMove(e.target.getStage().getPointerPosition(),emitToSocket )}
       >
         <Layer>
           {context.lines && context.lines.map((line, index) => (
