@@ -1,22 +1,19 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
-import DrawingControls from './DrawingControls';
 
-function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handleMouseMove, currentLine, currentColor }) {
+function DrawingCanvas({context}) {
   const containerRef = useRef(null);
-
-
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
       <Stage
         width={containerRef.current ? containerRef.current.clientWidth : 0} 
         height={window.innerHeight} 
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
+        onMouseDown={context.handleMouseDown}
+        onMouseUp={context.handleMouseUp}
+        onMouseMove={context.handleMouseMove}
       >
         <Layer>
-          {lines && lines.map((line, index) => (
+          {context.lines && context.lines.map((line, index) => (
             <Line
               key={index}
               points={line.points}
@@ -27,10 +24,10 @@ function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handl
               lineJoin="round"
             />
           ))}
-          {isDrawing && (
+          {context.isDrawing && (
             <Line
-              points={currentLine}
-              stroke={currentColor}
+              points={context.currentLine}
+              stroke={context.currentColor}
               strokeWidth={2}
               tension={0.5}
               lineCap="round"

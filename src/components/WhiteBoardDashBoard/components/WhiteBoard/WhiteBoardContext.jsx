@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 
 // Crear el contexto
  export const WhiteBoardContext = createContext();
@@ -61,7 +61,7 @@ import React, { createContext, useState } from 'react';
     }
   };
 
-    // 
+
   
    const toggleDrawingMode = () => {
     setDrawingMode(drawingMode === 'draw' ? 'erase' : 'draw');
