@@ -4,7 +4,7 @@ import DrawingControls from './DrawingControls';
 
 function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handleMouseMove, currentLine, currentColor }) {
   const containerRef = useRef(null);
-  // Quiero una funcion que pueda cambiar los colores en este componente, pero la quiero en el componente padre.
+
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
@@ -19,8 +19,8 @@ function DrawingCanvas({ lines, isDrawing, handleMouseDown, handleMouseUp, handl
           {lines && lines.map((line, index) => (
             <Line
               key={index}
-              points={line}
-              stroke={currentColor}
+              points={line.points}
+              stroke={line.color}
               strokeWidth={2}
               tension={0.5}
               lineCap="round"

@@ -54,7 +54,7 @@ const ColorOption = ({changeColor, currentColor}) => {
              {/* quiero que este icono */}
              <FloatButton
               onClick={()=>{setPaletColorOpened(!paletColorOpened) }}
-              type={"danger"}
+              type={ "danger"}
               style={{ bottom: 150}}
               icon={<FaCircle color={currentColor} /> }
              />

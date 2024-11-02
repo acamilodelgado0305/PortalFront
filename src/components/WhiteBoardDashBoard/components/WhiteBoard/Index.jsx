@@ -39,7 +39,8 @@ function WhiteBoard() {
             lines,
             setLines,
             setCurrentLine,
-            setIsDrawing
+            setIsDrawing,
+            currentColor
           )
         }
         handleMouseMove={(e) =>
