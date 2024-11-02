@@ -9,7 +9,7 @@ function WhiteBoard() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentLine, setCurrentLine] = useState([]);
   const [drawingMode, setDrawingMode] = useState('draw');
-  const [currentColor, setcurrentColor] = useState('red');
+  const [currentColor, setcurrentColor] = useState('red'); 
 
   const changeColor = (newColor) => {
     setcurrentColor(newColor); 
@@ -25,6 +25,7 @@ function WhiteBoard() {
         drawingMode={drawingMode}
         toggleDrawingMode={() => toggleDrawingMode(drawingMode, setDrawingMode)}
         changeColor={changeColor}
+        currentColor={currentColor}
       />
       <DrawingCanvas
         lines={lines}

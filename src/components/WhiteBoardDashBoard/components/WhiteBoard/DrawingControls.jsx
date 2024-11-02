@@ -2,12 +2,12 @@ import { useState } from "react";
 import { FaPen, FaEraser, FaCircle  } from "react-icons/fa";
 import { FloatButton } from 'antd';
 
-function DrawingControls({ drawingMode, toggleDrawingMode, changeColor }) {
+function DrawingControls({ drawingMode, toggleDrawingMode, changeColor,currentColor }) {
 
 
   return (
     <> 
-   <ColorOption/>
+   <ColorOption changeColor={changeColor} currentColor={currentColor}/>
       <FloatButton
         onClick={toggleDrawingMode}
         type={drawingMode === 'draw' ? "primary" : "danger"}
@@ -21,31 +21,42 @@ function DrawingControls({ drawingMode, toggleDrawingMode, changeColor }) {
 export default DrawingControls;
 
 
-const ColorOption = () => {
+const ColorOption = ({changeColor, currentColor}) => {
     const [paletColorOpened, setPaletColorOpened ] = useState(false)
 
     return(
 <>
       {paletColorOpened && (
-        <>
-        <FloatButton
-              style={{ bottom: 150, right:170}}
-              icon={<FaCircle/> }
-             />
-           <FloatButton
-              style={{ bottom: 150, right:120}}
-              icon={<FaCircle/> }
-             />
-              <FloatButton
-              style={{ bottom: 150, right:70}}
-              icon={<FaCircle/> }
-             /></>
+    <>
+       <FloatButton
+      onClick={() => changeColor('red')}
+      style={{ bottom: 150, right: 220 }}
+      icon={<FaCircle color="red" />} 
+    />
+    <FloatButton
+      onClick={() => changeColor('blue')}
+      style={{ bottom: 150, right: 170 }}
+      icon={<FaCircle color="blue" />} 
+    />
+    <FloatButton
+      onClick={() => changeColor('green')}
+      style={{ bottom: 150, right: 120 }}
+      icon={<FaCircle color="green" />} 
+    />
+    <FloatButton
+      onClick={() => changeColor('yellow')}
+      style={{ bottom: 150, right: 70 }}
+      icon={<FaCircle color="yellow" />} 
+    />
+  </>
+  
        )}
              {/* quiero que este icono */}
              <FloatButton
               onClick={()=>{setPaletColorOpened(!paletColorOpened) }}
+              type={"danger"}
               style={{ bottom: 150}}
-              icon={<FaCircle/> }
+              icon={<FaCircle color={currentColor} /> }
              />
 </>
     );
