@@ -1,19 +1,25 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import DrawingControls from './DrawingControls';
 import DrawingCanvas from './DrawingCanvas';
-import { handleMouseDown, handleMouseUp, handleMouseMove, toggleDrawingMode } from './utils/drawingUtils.js';
 import { pencilCursor, eraserCursor } from './utils/cursorIcons.js';
+import { WhiteBoardContext } from './WhiteBoardContext.jsx';
 
 function WhiteBoard() {
-  const [lines, setLines] = useState([]);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [currentLine, setCurrentLine] = useState([]);
-  const [drawingMode, setDrawingMode] = useState('draw');
-  const [currentColor, setcurrentColor] = useState('red'); 
+  const {      
+      lines,
+    setLines,
+    isDrawing,
+    setIsDrawing,
+    currentLine,
+    setCurrentLine,
+    drawingMode,
+    currentColor,
+    changeColor,
+    handleMouseDown,
+    handleMouseUp, 
+    handleMouseMove,
+    toggleDrawingMode } = useContext(WhiteBoardContext); 
 
-  const changeColor = (newColor) => {
-    setcurrentColor(newColor); 
-  }
 
   return (
     <div
@@ -23,14 +29,14 @@ function WhiteBoard() {
     >
       <DrawingControls
         drawingMode={drawingMode}
-        toggleDrawingMode={() => toggleDrawingMode(drawingMode, setDrawingMode)}
+        toggleDrawingMode={() => toggleDrawingMode()}
         changeColor={changeColor}
         currentColor={currentColor}
       />
       <DrawingCanvas
         lines={lines}
         isDrawing={isDrawing}
-        handleMouseDown={(e) => handleMouseDown(e, setIsDrawing, setCurrentLine)}
+        handleMouseDown={(e) => handleMouseDown(e)}
         handleMouseUp={() =>
           handleMouseUp(
             isDrawing,
@@ -44,7 +50,7 @@ function WhiteBoard() {
           )
         }
         handleMouseMove={(e) =>
-          handleMouseMove(isDrawing, drawingMode, currentLine, lines, setCurrentLine, setLines, e)
+          handleMouseMove(e)
         }
         currentLine={currentLine}
         currentColor={currentColor}

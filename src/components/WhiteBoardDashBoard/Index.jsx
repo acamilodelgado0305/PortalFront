@@ -8,7 +8,7 @@ import { events } from "../../enums/whiteboardEvents.js";
 import Header from "../Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
 import WhiteBoard from "./components/WhiteBoard/Index.jsx";
-
+import  WhiteBoardProvider  from "./components/WhiteBoard/WhiteBoardContext.jsx";
 
 import { useWhiteBoardSocket } from "./WhiteBoardSocketProvider";
 import "./animations.css";
@@ -46,6 +46,7 @@ function WhiteBoardDashBoard() {
     setAudioFile(null);
   };
 
+
   /* prop in <WhiteBoardListener/>  */
   const listenerAudioFileOpened = (file) => {
     if (file) {
@@ -57,7 +58,7 @@ function WhiteBoardDashBoard() {
 
 
   return (
-    <>
+    <WhiteBoardProvider>
       <WhiteBoardListener
         socket={whiteBoardSocket}
         listenerAudioFileOpened={listenerAudioFileOpened}
@@ -89,7 +90,7 @@ function WhiteBoardDashBoard() {
             />
         </div>
       </div>
-    </>
+    </WhiteBoardProvider>
   );
 }
 
