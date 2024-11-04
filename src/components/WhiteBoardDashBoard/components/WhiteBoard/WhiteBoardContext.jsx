@@ -35,34 +35,49 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
     }
   };
 
-     const handleMouseMove = (position, emitToSocket) => {
-    if (!isDrawing) return;
+     const handleMouseMoveDraw = (position, emitToSocket) => {
+  ///  if (!isDrawing) return;
     if (drawingMode === 'draw') {
       setCurrentLine([...currentLine, position.x, position.y]);
   
-    } else if (drawingMode === 'erase') {
-      const newLines = lines.filter(line => {
-        const { points } = line; 
-        const lineLength = points.length;
-  
-        for (let i = 0; i < lineLength; i += 2) {
-          const x = points[i];
-          const y = points[i + 1];
-  
-          if (Math.abs(x - position.x) < 10 && Math.abs(y - position.y) < 10) {
-            return false; 
-          }
-        }
-        return true;
-      });
-  
-      setLines(newLines); 
-    }
+    } 
     if(emitToSocket && socket) {
-      socket.emit('mouseMove', position)
+      socket.emit('mouseMoveDraw', position)
     }
   }; 
   
+
+  const handleMouseMoveErase = (position, emitToSocket) => {
+    const updatedLines = lines.filter(line => {
+      const { points } = line;
+      let shouldDeleteLine = false;
+  
+      for (let i = 0; i < points.length; i += 2) {
+        const x = points[i];
+        const y = points[i + 1];
+  
+        const distanceToCursor = Math.sqrt(Math.pow(x - position.x, 2) + Math.pow(y - position.y, 2));
+  
+        if (distanceToCursor < 10) {
+          shouldDeleteLine = true;
+          break;
+        }
+      }
+      return !shouldDeleteLine;
+    });
+  
+    setLines(updatedLines);
+  
+    if (emitToSocket && socket) {
+      socket.emit('mouseMoveErase', position);
+    }
+  };
+  
+  
+  
+  
+
+
   const toggleDrawingMode = (emitToSocket) => {
     setDrawingMode(drawingMode === 'draw' ? 'erase' : 'draw');
 
@@ -111,7 +126,8 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
         changeColor,
         handleMouseDown,
         handleMouseUp, 
-        handleMouseMove,
+        handleMouseMoveDraw,
+        handleMouseMoveErase,
         toggleDrawingMode
 
       }}

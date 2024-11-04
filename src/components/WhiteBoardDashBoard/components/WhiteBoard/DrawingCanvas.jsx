@@ -10,9 +10,9 @@ function DrawingCanvas({context}) {
       <Stage
         width={containerRef.current ? containerRef.current.clientWidth : 0} 
         height={window.innerHeight} 
-        onMouseDown={(e)=>context.handleMouseDown(e.target.getStage().getPointerPosition(),emitToSocket)}
+        onMouseDown={(e)=>context.handleMouseDown(e.target.getStage().getPointerPosition(), emitToSocket)}
         onMouseUp={()=>context.handleMouseUp(emitToSocket)}
-        onMouseMove={(e)=>context.handleMouseMove(e.target.getStage().getPointerPosition(),emitToSocket )}
+        onMouseMove={( context.drawingMode === 'draw' ) ? ((e)=>context.handleMouseMoveDraw(e.target.getStage().getPointerPosition(), emitToSocket )) : ((e)=>context.handleMouseMoveErase(e.target.getStage().getPointerPosition(), emitToSocket ))}
       >
         <Layer>
           {context.lines && context.lines.map((line, index) => (

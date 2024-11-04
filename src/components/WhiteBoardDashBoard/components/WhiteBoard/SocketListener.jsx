@@ -5,7 +5,8 @@ function SocketListener({context, socket}) {
     if(socket) {
         socket.on('changeColor', (newColor)=>{context.changeColor(newColor)})
         socket.on('mouseDown', (position)=>{ context.handleMouseDown(position)})
-        socket.on('mouseMove',(position) =>context.handleMouseMove(position))
+        socket.on('mouseMoveDraw',(position) =>context.handleMouseMoveDraw(position))
+        socket.on('mouseMoveErase', (position) =>context.mouseMoveErase(position))
         socket.on('toggleDrawingMode',context.toggleDrawingMode)
         socket.on('mouseUp', context.handleMouseUp)
     }
