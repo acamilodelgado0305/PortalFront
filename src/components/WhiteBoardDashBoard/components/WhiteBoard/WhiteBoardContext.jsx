@@ -12,7 +12,6 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
   const [drawingMode, setDrawingMode] = useState('draw');
   const [currentColor, setCurrentColor] = useState('red');
   
-// Hook personalizado para usar el contexto de la pizarra FALTA IMPLEMENTAR!!
  const useWhiteBoard = () => {
   return useContext(WhiteBoardContext);
 };
@@ -69,10 +68,14 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
     setLines(updatedLines);
   
     if (emitToSocket && socket) {
-      socket.emit('mouseMoveErase', position);
+      socket.emit('mouseMoveErase', updatedLines);
     }
   };
   
+  const erase = (updatedLines) =>{
+    setLines([])
+    setLines(updatedLines);
+  }
   
   
   
@@ -128,6 +131,7 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
         handleMouseUp, 
         handleMouseMoveDraw,
         handleMouseMoveErase,
+        erase,
         toggleDrawingMode
 
       }}
