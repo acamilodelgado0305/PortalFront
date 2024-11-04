@@ -3,6 +3,8 @@ export const events = {
     DISCONNECT: 'disconnect',
     JOIN_ROOM: 'joinRoom',
     AUDIOFILE_OPENED: 'audioFileOpened',
+    IMAGE_BOARD:'imageBoard',
+    MOVE_IMAGE:'moveImage'
   };
   
   

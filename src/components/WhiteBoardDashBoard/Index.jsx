@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
@@ -22,6 +22,10 @@ function WhiteBoardDashBoard() {
   const [imageUrl, setImageUrl ] = useState('');
   const { room } = useParams();
   const whiteBoardSocket = useWhiteBoardSocket();
+
+
+  useEffect(()=>{
+  },[whiteBoardSocket])
 
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null); 
@@ -89,6 +93,7 @@ function WhiteBoardDashBoard() {
       <WhiteBoardListener
         socket={whiteBoardSocket}
         listenerAudioFileOpened={listenerAudioFileOpened}
+        setImageUrl={setImageUrl}
         room={room}
       />
       <Header />
@@ -130,7 +135,7 @@ function WhiteBoardDashBoard() {
             file={audioFile}
             handleCloseAudioPlayer={handleCloseAudioPlayer}
           />
-          <BoardImage url={imageUrl} onClose={handleCloseImage} />
+          <BoardImage url={imageUrl} onClose={handleCloseImage} socket={whiteBoardSocket}/>
         </div>
       </div>
     </WhiteBoardProvider>
