@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaPen, FaEraser, FaCircle } from "react-icons/fa";
 import { FloatButton } from "antd";
-import { HighlightOutlined } from "@ant-design/icons";
+import { HighlightOutlined, FileImageOutlined } from "@ant-design/icons";
 
 function DrawingControls({ context }) {
   const emitToSocket = true;
@@ -18,8 +18,10 @@ function DrawingControls({ context }) {
         }}
         type={context.drawingMode === "draw" ? "primary" : "danger"}
         icon={context.drawingMode === "draw" ? <FaPen /> : <FaEraser />}
-        style={{ bottom: 100 }}
+        style={{ bottom: 150 }}
       />
+ 
+        
     </>
   );
 }
@@ -39,7 +41,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
             <FloatButton
               key={color}
               onClick={() => changeColor(color, emitToSocket)}
-              style={{ bottom: 150, right: 220 - index * 50 }}
+              style={{ bottom: 200, right: 220 - index * 50 }}
               icon={<FaCircle color={color} />}
             />
           ))}
@@ -48,7 +50,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
       <FloatButton
         onClick={() => setPaletColorOpened(!paletColorOpened)}
         type={"danger"}
-        style={{ bottom: 150 }}
+        style={{ bottom: 200 }}
         icon={<FaCircle color={currentColor} />}
       />
     </>
@@ -69,7 +71,7 @@ const LineWidthPicker = ({ context }) => {
         onChange={(e) => context.changeLineWidth(Number(e.target.value))} 
         style={{
           position: 'absolute', 
-          bottom: 205,
+          bottom: 255,
           right:0,
           zIndex:9, 
           cursor:'pointer'          
@@ -78,10 +80,11 @@ const LineWidthPicker = ({ context }) => {
       /> }
       <FloatButton
         type={"danger"}
-        style={{ bottom: 200 }}
+        style={{ bottom: 250 }}
         icon={<HighlightOutlined />}
         onClick={()=> setShow(!show)}
       />
     </div>
   );
 };
+
