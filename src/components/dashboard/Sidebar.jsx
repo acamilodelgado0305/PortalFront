@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { FaChalkboardTeacher, FaCalendarAlt, FaUserFriends, FaWallet, FaLink, FaLifeRing, FaGift, FaChevronLeft, FaChevronRight, FaGraduationCap } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaChartBar, FaCalendarAlt, FaUserFriends, FaWallet, FaLink, FaLifeRing, FaGift, FaChevronLeft, FaChevronRight, FaGraduationCap } from 'react-icons/fa';
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const menuItems = [
+        { icon: FaChartBar, text: "Dashbord", id: "dashboard" },
         { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
         { icon: FaUserFriends, text: "My Students", id: "students" },
         { icon: FaCalendarAlt, text: "Calendar", id: "calendar" },
@@ -15,7 +16,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
     ];
 
     return (
-        <div 
+        <div
             className={`${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300 ease-in-out 
             bg-white border-r border-gray-200 min-h-screen relative shadow-sm`}
         >
@@ -54,17 +55,17 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
                             <li
                                 key={item.id}
                                 className={`cursor-pointer p-2 rounded flex items-center
-                                ${activeSection === item.id ? 
-                                    'bg-gray-100 text-gray-800' : 
-                                    'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
+                                ${activeSection === item.id ?
+                                        'bg-gray-100 text-gray-800' :
+                                        'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
                                 ${isCollapsed ? 'justify-center' : 'justify-start'}
                                 transition-colors duration-200`}
                                 onClick={() => setActiveSection(item.id)}
                             >
-                                <Icon 
+                                <Icon
                                     className={`${activeSection === item.id ? 'text-gray-800' : 'text-gray-600'} 
-                                    ${!isCollapsed && 'mr-3'}`} 
-                                    size={20} 
+                                    ${!isCollapsed && 'mr-3'}`}
+                                    size={20}
                                 />
                                 {!isCollapsed && (
                                     <span className="whitespace-nowrap overflow-hidden text-ellipsis">

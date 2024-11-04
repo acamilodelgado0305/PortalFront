@@ -59,7 +59,7 @@ const TeachersSection = () => {
 
             {loading && <p>Cargando profesores...</p>}
             {error && <p className="text-red-500">{error}</p>}
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filteredTeachers.map(teacher => (
                     <div className="bg-white p-6 shadow-sm rounded-lg hover:shadow-md transition-shadow" key={teacher.id}>
@@ -72,7 +72,7 @@ const TeachersSection = () => {
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.currentTarget.src = '/api/placeholder/64/64';
+                                            /* e.currentTarget.src = '/api/placeholder/64/64'; */
                                         }}
                                     />
                                 ) : (
@@ -88,7 +88,7 @@ const TeachersSection = () => {
                                 <p className="text-sm text-gray-500 line-clamp-1">{teacher.email}</p>
                             </div>
                         </div>
-                        
+
                         <div className="flex justify-between items-center mt-4">
                             <p className="text-sm font-medium text-gray-700">
                                 ${teacher.hourlyRate}/hora

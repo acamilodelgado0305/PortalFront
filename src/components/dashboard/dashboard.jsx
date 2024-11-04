@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { MessageCircle, HeadphonesIcon, LogOut } from 'lucide-react';
 import Sidebar from './Sidebar';
+import Index from "./index";
 import StudentsSection from './StudentsSection';
 import TeachersSection from './TeacherSection';
+import Calendar from "./Calendar"
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 
 const Dashboard = () => {
-    const [activeSection, setActiveSection] = useState('students');
+    const [activeSection, setActiveSection] = useState('dashboard');
     const { logout } = useAuth();
     const navigate = useNavigate();
 
@@ -43,8 +45,11 @@ const Dashboard = () => {
 
                 {/* Contenido principal */}
                 <div className="flex-1 p-8">
+                    {activeSection === 'dashboard' && <Index />}
                     {activeSection === 'students' && <StudentsSection />}
                     {activeSection === 'teachers' && <TeachersSection />}
+                    {activeSection === 'calendar' && <Calendar />}
+
                     {/* Agregar más secciones según sea necesario */}
                 </div>
             </div>
