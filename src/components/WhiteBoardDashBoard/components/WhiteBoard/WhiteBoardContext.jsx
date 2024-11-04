@@ -11,7 +11,16 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
   const [currentLine, setCurrentLine] = useState([]);
   const [drawingMode, setDrawingMode] = useState('draw');
   const [currentColor, setCurrentColor] = useState('red');
+  const [lineWidth, setLineWidth] = useState(2);
   
+
+
+
+const changeLineWidth = (value) => {
+  setLineWidth(value)
+}
+
+
  const useWhiteBoard = () => {
   return useContext(WhiteBoardContext);
 };
@@ -93,7 +102,7 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
     setIsDrawing(false);
     if (drawingMode === 'draw') {
       if (drawingMode === 'draw') {
-        setLines([...lines, { points: currentLine, color: currentColor }]);
+        setLines([...lines, { points: currentLine, color: currentColor, width: lineWidth  }]);
       }
     }
     setCurrentLine([]);
@@ -132,7 +141,9 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
         handleMouseMoveDraw,
         handleMouseMoveErase,
         erase,
-        toggleDrawingMode
+        toggleDrawingMode,
+        lineWidth,
+        changeLineWidth
 
       }}
     >
