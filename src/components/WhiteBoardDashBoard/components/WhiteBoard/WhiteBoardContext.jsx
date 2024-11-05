@@ -48,7 +48,7 @@ const WhiteBoardProvider = ({ children }) => {
     }
   };
 
-  const handleMouseMoveDraw = (position) => {
+  const handleMouseMoveDraw = (position, emitToSocket) => {
     if (drawingMode === "draw") {
       if (currentDrawTool === "rectangle") {
         setCurrentLine([
