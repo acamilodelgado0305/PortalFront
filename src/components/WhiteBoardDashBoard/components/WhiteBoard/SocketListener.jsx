@@ -1,18 +1,19 @@
 import { useEffect } from 'react'
+import { events } from '../../../../enums/whiteboardEvents';
 
 function SocketListener({context, socket}) {
   useEffect(()=>{
     if(socket) {
-        socket.on('changeColor', (newColor)=>{context.changeColor(newColor)})
-        socket.on('mouseDown', (position)=>{ context.handleMouseDown(position)})
-        socket.on('mouseMoveDraw',(position) =>context.handleMouseMoveDraw(position))
-        socket.on('mouseMoveErase', (position) =>context.erase(position))
-        socket.on('toggleDrawingMode',context.toggleDrawingMode)
-        socket.on('mouseUp', context.handleMouseUp)
-        socket.on('changeLineWidth', (value)=>context.changeLineWidth(value))
+        socket.on(events.CHANGE_COLOR, (payload)=>{context.changeColor(payload)})
+        socket.on(events.MOUSE_DOWN, (payload)=>{ context.handleMouseDown(payload)})
+        socket.on(events.MOUSE_MOVE_DRAW,(payload) =>context.handleMouseMoveDraw(payload))
+        socket.on(events.MOUSE_MOVE_ERASE, (payload) =>context.erase(payload))
+        socket.on(events.TOGGLE_DRAWING_MODE,context.toggleDrawingMode)
+        socket.on(events.MOUSE_UP,() =>  context.handleMouseUp)
+        socket.on(events.CHANGE_LINE_WIDTH, (payload)=>context.changeLineWidth(payload))
     }
 
-
+// falta cerrar los linsteners
 
   },[context,socket])
   

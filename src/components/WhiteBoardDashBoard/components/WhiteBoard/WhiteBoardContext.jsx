@@ -1,5 +1,6 @@
 import { createContext, useState, useContext } from "react";
 import { useWhiteBoardSocket } from "../../WhiteBoardSocketProvider.jsx";
+import { events } from "../../../../enums/whiteboardEvents.js";
 
 // Crear el contexto
 export const WhiteBoardContext = createContext();
@@ -11,7 +12,7 @@ const WhiteBoardProvider = ({ children }) => {
   const [currentLine, setCurrentLine] = useState([]);
   const [drawingMode, setDrawingMode] = useState("draw");
   const [currentColor, setCurrentColor] = useState("red");
-  const [currentDrawTool, setCurrentDrawTool] = useState("rectangle"); // line rectangle
+  const [currentDrawTool, setCurrentDrawTool] = useState("line");
   const [lineWidth, setLineWidth] = useState(2);
 
   const useWhiteBoard = () => {
@@ -28,24 +29,22 @@ const WhiteBoardProvider = ({ children }) => {
   const changeLineWidth = (value, emitToSocket) => {
     setLineWidth(value);
     if (emitToSocket && socket) {
-      socket.emit("changeLineWidth", value);
+      socket.emit(events.CHANGE_LINE_WIDTH, value);
     }
   };
 
-  const changeColor = (newColor, emitToSocket) => {
-    setCurrentColor(newColor);
-
+  const changeColor = (color, emitToSocket) => {
+    setCurrentColor(color);
     if (emitToSocket && socket) {
-      socket.emit("changeColor", newColor);
+      socket.emit(events.CHANGE_COLOR, color);
     }
   };
 
   const handleMouseDown = (position, emitToSocket) => {
     setIsDrawing(true);
     setCurrentLine([position.x, position.y]);
-
     if (emitToSocket && socket) {
-      socket.emit("mouseDown", position);
+      socket.emit(events.MOUSE_DOWN, position);
     }
   };
 
@@ -63,9 +62,8 @@ const WhiteBoardProvider = ({ children }) => {
           Math.pow(position.x - currentLine[0], 2) +
             Math.pow(position.y - currentLine[1], 2),
         );
-        setCurrentLine([currentLine[0], currentLine[1], radius]); // Guardar centro y radio
+        setCurrentLine([currentLine[0], currentLine[1], radius]); 
       } else if (currentDrawTool === "straightLine") {
-        // Mantener la línea recta perfecta como un rectángulo
         setCurrentLine([
           currentLine[0],
           currentLine[1],
@@ -76,16 +74,13 @@ const WhiteBoardProvider = ({ children }) => {
         setCurrentLine([...currentLine, position.x, position.y]);
       }
     }
-
-    // Emitir el evento al socket (si aplica)
     if (emitToSocket && socket) {
-      socket.emit("mouseMoveDraw", position);
+      socket.emit(events.MOUSE_MOVE_DRAW, position);
     }
   };
 
   const handleMouseMoveErase = (position, emitToSocket) => {
     if(drawingMode != 'erase')return
-
     const updatedLines = lines.filter((line) => {
       const { points, tool } = line;
       let shouldDeleteLine = false;
@@ -130,7 +125,7 @@ const WhiteBoardProvider = ({ children }) => {
     setLines(updatedLines);
 
     if (emitToSocket && socket) {
-      socket.emit("mouseMoveErase", updatedLines);
+      socket.emit(events.MOUSE_MOVE_ERASE, updatedLines);
     }
   };
 
@@ -142,7 +137,7 @@ const WhiteBoardProvider = ({ children }) => {
 const toogleTextMode = (emitToSocket) =>{
     setDrawingMode(drawingMode === "text" ? "draw" : "text");
   if (emitToSocket && socket) {
-    socket.emit("toogleTextMode"); //falta hacer SOCKET
+    socket.emit("toogleTextMode"); 
   }
 }
 
@@ -154,22 +149,19 @@ const toogleTextMode = (emitToSocket) =>{
       setDrawingMode(drawingMode === "draw" ? "erase" : "draw");
     }
     if (emitToSocket && socket) {
-      socket.emit("toggleDrawingMode");
+      socket.emit(events.TOGGLE_DRAWING_MODE);
     }
   };
 
   const handleMouseUp = (emitToSocket) => {
     if (!isDrawing) return;
-
     setIsDrawing(false);
-
     if (drawingMode === "draw") {
-      // Almacenar la línea o forma actual
       const newLine = {
         points: currentLine,
         color: currentColor,
         width: lineWidth,
-        tool: currentDrawTool, // Aquí guardamos la forma actual
+        tool: currentDrawTool, 
       };
       setLines([...lines, newLine]);
     }
@@ -177,7 +169,7 @@ const toogleTextMode = (emitToSocket) =>{
     setCurrentLine([]);
 
     if (emitToSocket && socket) {
-      socket.emit("mouseUp");
+      socket.emit(events.MOUSE_UP);
     }
   };
 
