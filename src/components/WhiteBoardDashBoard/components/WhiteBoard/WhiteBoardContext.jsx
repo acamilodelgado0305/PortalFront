@@ -154,8 +154,7 @@ const toogleTextMode = (emitToSocket) =>{
   };
 
   const handleMouseUp = (emitToSocket) => {
-    if (!isDrawing) return;
-    setIsDrawing(false);
+       setIsDrawing(false);
     if (drawingMode === "draw") {
       const newLine = {
         points: currentLine,

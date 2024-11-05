@@ -17,7 +17,6 @@ import {
 
 function DrawingControls({ context }) {
   const emitToSocket = true;
-  console.log(context.drawingMode)
   return (
     <>
       <TextBotton  context={context} />
