@@ -111,8 +111,6 @@ const CurrentDrawToolPicker = ({ context }) => {
     { name: "straightLine ", icon: <LineOutlined /> },
      {name:'arrow', icon:<FaLongArrowAltRight/>},
     { name: "line", icon: <SignatureOutlined /> },
-
-    // Aquí puedes agregar más herramientas en el futuro
   ];
   const emitToSocket = true;
   const currentTool = tools.find(

@@ -172,9 +172,45 @@ const toogleTextMode = (emitToSocket) =>{
     }
   };
 
+// context
+const [isWriting, setIsWriting] = useState(false)  
+const [currentText, setCurrentText] =useState('');
+const [currentTextPosition, setCurrentTextPosition] = useState({x:0,y:0});
+const [texts, setTexts] = useState([{ text: 'hola como andan?', position: { x: 162.375, y: 163 } }]);
+
+
+// cuando hago click en algun lugar de la pizarra se ejecuta
+const handleSetCurrentTextPosition =(position)=>{
+  setIsWriting(true)
+  setCurrentTextPosition({ x: position.x, y: position.y }) // funciona , ej. x: 162.375 y: 163
+}
+
+const handleSetCurrentText = (text) =>{
+  setCurrentText(text)
+}
+
+const handleSetTextInListOfTexts = () => {
+  setTexts([...texts, { text: currentText, position: currentTextPosition }]);
+  setCurrentText('');
+  setCurrentTextPosition({x:0,y:0})
+  setIsWriting(false)
+};
+
+
+
   return (
     <WhiteBoardContext.Provider
       value={{
+        isWriting,
+        handleSetTextInListOfTexts,
+        texts,
+        setTexts,
+        setCurrentTextPosition,
+        handleSetCurrentText,
+        currentTextPosition,
+        setCurrentText,
+        currentText,
+        handleSetCurrentTextPosition,
         useWhiteBoard,
         lines,
         setLines,

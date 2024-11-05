@@ -6,8 +6,7 @@ import { WhiteBoardContext } from './WhiteBoardContext.jsx';
 import SocketListener  from "./SocketListener.jsx"
 import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
 
-
-function WhiteBoard({}) {
+function WhiteBoard() {
   const context = useContext(WhiteBoardContext); 
   const socket = useWhiteBoardSocket();
   
@@ -32,6 +31,7 @@ function WhiteBoard({}) {
       <DrawingCanvas
       context={context}
       />
+  
     </div>
   );
 }
