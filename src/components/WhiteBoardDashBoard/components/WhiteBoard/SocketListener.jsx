@@ -9,6 +9,7 @@ function SocketListener({context, socket}) {
         socket.on('mouseMoveErase', (position) =>context.erase(position))
         socket.on('toggleDrawingMode',context.toggleDrawingMode)
         socket.on('mouseUp', context.handleMouseUp)
+        socket.on('changeLineWidth', (value)=>context.changeLineWidth(value))
     }
 
 
