@@ -10,18 +10,15 @@ import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
 function WhiteBoard({}) {
   const context = useContext(WhiteBoardContext); 
   const socket = useWhiteBoardSocket();
-
-  // si el  context.drawingMode === 'draw' && pencilCursor
-  // si es  context.drawingMode === 'erase ' && eraserCursor
-  // si es  context.drawingMode === 'text && textCursor
+  
   return (
 <div
   style={{
     cursor:
       context.drawingMode === 'draw' ? pencilCursor :
       context.drawingMode === 'erase' ? eraserCursor :
-      context.drawingMode === 'text' ? textCursor :
-      'default', // Default cursor if none of the modes match
+      context.drawingMode === 'text' && textCursor 
+      
   }}
 >
 
