@@ -11,9 +11,10 @@ function SocketListener({context, socket}) {
         socket.on(events.TOGGLE_DRAWING_MODE,context.toggleDrawingMode)
         socket.on(events.MOUSE_UP,context.handleMouseUp)
         socket.on(events.CHANGE_LINE_WIDTH, (payload)=>context.changeLineWidth(payload))
-    }
+        socket.on(events.CHANGE_CURRENT_DRAW_TOOL, (payload)=> context.changeCurrentDrawTool(payload));
+        socket.on(events.TOOGLE_TEXT_MODE, context.toogleTextMode)
+      }
 
-// falta cerrar los linsteners
 
   },[context,socket])
   

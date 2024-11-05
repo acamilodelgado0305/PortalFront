@@ -11,7 +11,9 @@ export const events = {
     MOUSE_MOVE_ERASE: 'mouseMoveErase',
     TOGGLE_DRAWING_MODE: 'toggleDrawingMode',
     MOUSE_UP: 'mouseUp',
-    CHANGE_LINE_WIDTH:'changeLineWidth'
+    CHANGE_LINE_WIDTH:'changeLineWidth',
+    CHANGE_CURRENT_DRAW_TOOL:'changeCurrentDrawTool',
+    TOOGLE_TEXT_MODE:'toogleTextMode'
   };
   
   

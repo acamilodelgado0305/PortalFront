@@ -22,7 +22,7 @@ const WhiteBoardProvider = ({ children }) => {
   const changeCurrentDrawTool = (value, emitToSocket) => {
     setCurrentDrawTool(value);
     if (emitToSocket && socket) {
-      socket.emit("changeCurrentDrawTool", value);
+      socket.emit(events.CHANGE_CURRENT_DRAW_TOOL, value);
     }
   };
 
@@ -137,7 +137,7 @@ const WhiteBoardProvider = ({ children }) => {
 const toogleTextMode = (emitToSocket) =>{
     setDrawingMode(drawingMode === "text" ? "draw" : "text");
   if (emitToSocket && socket) {
-    socket.emit("toogleTextMode"); 
+    socket.emit(events.TOOGLE_TEXT_MODE); 
   }
 }
 
