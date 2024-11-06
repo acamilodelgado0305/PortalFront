@@ -25,7 +25,7 @@ const LeftPosition = 100;
 function DrawingControls({ context }) {
 
   return (
-    <>
+    <div className="flex gap-1 flex-col py-2 pl-2 absolute">
         <DruggerButton context={context} /> 
       <TextBotton  context={context} />
     
@@ -36,32 +36,33 @@ function DrawingControls({ context }) {
         changeColor={context.changeColor}
         currentColor={context.currentColor}
       />
+
       <FloatButton
         onClick={() => {
           context.toggleDrawingMode(emitToSocket);
         }}
         type={context.drawingMode != "erase" ? "primary" : "danger"}
         icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
-        style={{ top: 470, left:LeftPosition }}
+        style={{ position: 'static' }}
       />
+
       <FloatButton
       icon={<RiDeleteBin6Line/>}
-      style={{top: 512, left:LeftPosition}}
+      style={{ position: 'static' }}
       />
         <FloatButton
       icon={true ? <BsZoomIn/> :<BsZoomOut /> }
-      style={{top: 554, left:LeftPosition}}
+      style={{ position: 'static' }}
       />
-  {/** IoReturnUpForward */}
       <FloatButton
       icon={<IoReturnUpBack/>  }
-      style={{ top: 596,left: LeftPosition}}
+      style={{ position: 'static' }}
       />
        <FloatButton
       icon={<IoReturnUpForward/>  }
-      style={{  top:638, left: LeftPosition}}
-      />
-    </>
+      style={{ position: 'static' }}
+      /> 
+    </div>
   );
 }
 // 470  554 596 596+42= 638
@@ -80,7 +81,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
             <FloatButton
               key={color}
               onClick={() => changeColor(color, emitToSocket)}
-              style={{ top: 428, left: 300 - index * 50 }}
+              style={{ position: 'absolute',top:360,left:50 + index * 50 }}
               icon={<FaCircle color={color} />}
             />
           ))}
@@ -89,7 +90,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
       <FloatButton
         onClick={() => setShow(!show)}
         type={"danger"}
-        style={{ top: 428, left:LeftPosition }}
+        style={{ position: 'static' }}
         icon={<IoColorPaletteOutline />}
       />
     </>
@@ -101,7 +102,7 @@ const LineWidthPicker = ({ context }) => {
   const [show, setShow] = useState(false);
   
   return (
-    <div>
+    <>
       {show && (
         <input
           type="range"
@@ -114,20 +115,19 @@ const LineWidthPicker = ({ context }) => {
           }
           style={{
             position: "absolute",
-            top: 386,
+            top: 330,
             left: 55,
-            zIndex: 9,
             cursor: "pointer",
           }}
         />
-      )}
+      ) }
       <FloatButton
         type={"danger"}
-        style={{ top: 386, left:LeftPosition }}
+        style={{ position: 'static' }}
         icon={<HighlightOutlined />}
         onClick={() => setShow(!show)}
       />
-    </div>
+    </>
   );
 };
 
@@ -141,8 +141,8 @@ const CurrentDrawToolPicker = ({ context }) => {
   ];
  
    return (
-    <div>
-        <>
+    <div className="flex gap-1 flex-col ">
+       
           {tools.map((tool, index) => (
             <FloatButton
               type={context.currentDrawTool === tool.name? "primary":"danger"}
@@ -150,11 +150,11 @@ const CurrentDrawToolPicker = ({ context }) => {
               onClick={() =>
                 context.changeCurrentDrawTool(tool.name, emitToSocket)
               }
-              style={{ top: 184 + index * 42, left:LeftPosition }}
+              style={{ position: 'static' }}
               icon={tool.icon}
             />
           ))}
-        </>
+  
     </div>
   );
 };
@@ -169,7 +169,7 @@ const TextBotton = ({context}) =>{
         }}
         type={context.drawingMode === "text" ? "primary" : "danger"}
         icon={<FontColorsOutlined />}
-        style={{ top: 142, left:LeftPosition }}
+        style={{ position: 'static' }}
       />
     </div>
   )
@@ -185,7 +185,7 @@ const DruggerButton = ({context})=>{
         }}
         type={context.drawingMode === "hand" ? "primary" : "danger"}
         icon={context.drawingMode === "hand"? <FaRegHandRock />:<FaRegHandPaper />}
-        style={{ top: 100, left:LeftPosition }}
+        style={{ position: 'static' }}
       />
     </div>
   )

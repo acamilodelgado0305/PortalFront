@@ -97,33 +97,33 @@ function WhiteBoardDashBoard() {
         room={room}
       />
       <Header />
-      <div className="fixed flex h-full w-full justify-center bg-[#7066e0]">
+      <div className="fixed flex h-full w-full justify-center">
          <FloatButton
           className="floatButtonImage iconImageFloat"
-          style={{ left: 100, bottom: 25 }}
+          style={{ left: 100, bottom: 12 }}
           icon={<BsTriangle className="iconImageFloat" style={{ transform: "rotate(-90deg)" }} />}
         /> 
         <FloatButton
           icon={<PlayCircleOutlined className="iconAudioFloat" />}
-          style={{ left: "48%", bottom: 25 }}
+          style={{ left: "48%", bottom: 12 }}
           onClick={handleFloatButtonClick}
           className="floatButtonAudio iconAudioFloat"
         />
 
         <FloatButton
           className="floatButtonImage iconImageFloat"
-          style={{ left: "51%", bottom: 25 }}
+          style={{ left: "51%", bottom: 12 }}
           icon={<FileImageOutlined className="iconImageFloat" />}
           onClick={handleImageButtonClick}
         />
         <FloatButton
           className="floatButtonImage iconImageFloat"
-          style={{ left: "54%", bottom: 25 }}
+          style={{ left: "54%", bottom: 12 }}
           icon={<TbMessage className="iconImageFloat" />}
         />
        <FloatButton
           className="floatButtonImage iconImageFloat"
-          style={{ right: 100, bottom: 25 }}
+          style={{ right: 100, bottom: 12 }}
           icon={<BsTriangle className="iconImageFloat" style={{ transform: "rotate(90deg)" }} />}
         /> 
          
@@ -143,7 +143,7 @@ function WhiteBoardDashBoard() {
           style={{ display: "none" }}
         />
 
-        <div className="relative top-[0.5rem] h-[91%] w-[90%] bg-white">
+        <div className="relative top-[0.5rem] h-[91%] w-[98%] bg-white">
           <WhiteBoard socket={whiteBoardSocket} context={context} />
           <AudioPlayer
             audioContent={audioContent}
