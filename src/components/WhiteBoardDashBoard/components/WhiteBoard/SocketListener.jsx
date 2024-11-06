@@ -13,9 +13,9 @@ function SocketListener({context, socket}) {
         socket.on(events.CHANGE_LINE_WIDTH, (payload)=>context.changeLineWidth(payload))
         socket.on(events.CHANGE_CURRENT_DRAW_TOOL, (payload)=> context.changeCurrentDrawTool(payload));
         socket.on(events.TOOGLE_TEXT_MODE, context.toogleTextMode);
-        socket.on('textPositionInitialized',(payload)=> context.initializeTextPosition(payload))
-        socket.on('currentTextUpdated', (payload)=>context.updateCurrentText(payload))
-        socket.on('textAdded', context.addTextToList)
+        socket.on(events.TEXT_POSITION_INITIALIZED,(payload)=> context.initializeTextPosition(payload))
+        socket.on(events.CURRENT_TEXT_UPDATED, (payload)=>context.updateCurrentText(payload))
+        socket.on(events.TEXT_ADDED, context.addTextToList)
       }
 
 

@@ -184,7 +184,7 @@ const [texts, setTexts] = useState([]);
 const initializeTextPosition = (position, emitToSocket) => {
    if (emitToSocket && socket) { 
     setIsWriting(true);
-    socket.emit('textPositionInitialized', position); 
+    socket.emit(events.TEXT_POSITION_INITIALIZED, position); 
   }
   setCurrentTextPosition({ x: position.x, y: position.y });
 };
@@ -193,7 +193,7 @@ const initializeTextPosition = (position, emitToSocket) => {
 const updateCurrentText = (text, emitToSocket) => {
   setCurrentText(text);
   if (emitToSocket && socket) {
-    socket.emit('currentTextUpdated', text); 
+    socket.emit(events.CURRENT_TEXT_UPDATED, text); 
   }
 };
 
@@ -204,7 +204,7 @@ const addTextToList = (emitToSocket) => {
   setCurrentTextPosition({x: 0, y: 0});
   setIsWriting(false);
   if (emitToSocket && socket) {
-    socket.emit('textAdded');
+    socket.emit(events.TEXT_ADDED);
   }
 };
 

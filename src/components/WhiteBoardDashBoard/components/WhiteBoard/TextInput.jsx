@@ -1,4 +1,5 @@
 function TextInput({ context }) {
+if(context.drawingMode != 'text') return null 
 const emitToSocket = true;
   return (
     context?.isWriting && (

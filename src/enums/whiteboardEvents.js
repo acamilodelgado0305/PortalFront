@@ -13,7 +13,10 @@ export const events = {
     MOUSE_UP: 'mouseUp',
     CHANGE_LINE_WIDTH:'changeLineWidth',
     CHANGE_CURRENT_DRAW_TOOL:'changeCurrentDrawTool',
-    TOOGLE_TEXT_MODE:'toogleTextMode'
+    TOOGLE_TEXT_MODE:'toogleTextMode',
+    TEXT_POSITION_INITIALIZED: 'textPositionInitialized',
+    CURRENT_TEXT_UPDATED: 'currentTextUpdated',
+    TEXT_ADDED: 'textAdded'
   };
   
   
