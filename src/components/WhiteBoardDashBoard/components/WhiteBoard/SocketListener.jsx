@@ -12,7 +12,10 @@ function SocketListener({context, socket}) {
         socket.on(events.MOUSE_UP,context.handleMouseUp)
         socket.on(events.CHANGE_LINE_WIDTH, (payload)=>context.changeLineWidth(payload))
         socket.on(events.CHANGE_CURRENT_DRAW_TOOL, (payload)=> context.changeCurrentDrawTool(payload));
-        socket.on(events.TOOGLE_TEXT_MODE, context.toogleTextMode)
+        socket.on(events.TOOGLE_TEXT_MODE, context.toogleTextMode);
+        socket.on('textPositionInitialized',(payload)=> context.initializeTextPosition(payload))
+        socket.on('currentTextUpdated', (payload)=>context.updateCurrentText(payload))
+        socket.on('textAdded', context.addTextToList)
       }
 
 

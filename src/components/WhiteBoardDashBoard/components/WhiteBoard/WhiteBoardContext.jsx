@@ -84,7 +84,6 @@ const WhiteBoardProvider = ({ children }) => {
     const updatedLines = lines.filter((line) => {
       const { points, tool } = line;
       let shouldDeleteLine = false;
-
       if (tool === "rectangle") {
         const [x1, y1, x2, y2] = points;
 
@@ -117,12 +116,14 @@ const WhiteBoardProvider = ({ children }) => {
             break;
           }
         }
+      
       }
 
       return !shouldDeleteLine;
     });
 
     setLines(updatedLines);
+    handleRemoveText(position);
 
     if (emitToSocket && socket) {
       socket.emit(events.MOUSE_MOVE_ERASE, updatedLines);
@@ -172,45 +173,67 @@ const toogleTextMode = (emitToSocket) =>{
     }
   };
 
-// context
+// WITHEBOARD TEXT
 const [isWriting, setIsWriting] = useState(false)  
 const [currentText, setCurrentText] =useState('');
 const [currentTextPosition, setCurrentTextPosition] = useState({x:0,y:0});
-const [texts, setTexts] = useState([{ text: 'hola como andan?', position: { x: 162.375, y: 163 } }]);
+const [texts, setTexts] = useState([]);
 
 
-// cuando hago click en algun lugar de la pizarra se ejecuta
-const handleSetCurrentTextPosition =(position)=>{
-  setIsWriting(true)
-  setCurrentTextPosition({ x: position.x, y: position.y }) // funciona , ej. x: 162.375 y: 163
-}
 
-const handleSetCurrentText = (text) =>{
-  setCurrentText(text)
-}
+const initializeTextPosition = (position, emitToSocket) => {
+   if (emitToSocket && socket) { 
+    setIsWriting(true);
+    socket.emit('textPositionInitialized', position); 
+  }
+  setCurrentTextPosition({ x: position.x, y: position.y });
+};
 
-const handleSetTextInListOfTexts = () => {
+
+const updateCurrentText = (text, emitToSocket) => {
+  setCurrentText(text);
+  if (emitToSocket && socket) {
+    socket.emit('currentTextUpdated', text); 
+  }
+};
+
+
+const addTextToList = (emitToSocket) => {
   setTexts([...texts, { text: currentText, position: currentTextPosition, color: currentColor }]);
   setCurrentText('');
   setCurrentTextPosition({x: 0, y: 0});
   setIsWriting(false);
+  if (emitToSocket && socket) {
+    socket.emit('textAdded');
+  }
 };
 
+const handleRemoveText = (position) => {
+  const tolerance = 10; 
+  setTexts((prevTexts) =>
+    prevTexts.filter((item) => {
+      const distanceX = Math.abs(item.position.x - position.x);
+      const distanceY = Math.abs(item.position.y - position.y);
+      
+      return !(distanceX <= tolerance && distanceY <= tolerance);
+    })
+  );
+};
 
 
   return (
     <WhiteBoardContext.Provider
       value={{
         isWriting,
-        handleSetTextInListOfTexts,
+        addTextToList,
         texts,
         setTexts,
         setCurrentTextPosition,
-        handleSetCurrentText,
+        updateCurrentText, 
         currentTextPosition,
         setCurrentText,
         currentText,
-        handleSetCurrentTextPosition,
+        initializeTextPosition,
         useWhiteBoard,
         lines,
         setLines,

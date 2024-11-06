@@ -1,5 +1,5 @@
 function TextInput({ context }) {
-
+const emitToSocket = true;
   return (
     context?.isWriting && (
       <div 
@@ -13,13 +13,13 @@ function TextInput({ context }) {
         <input
           type="text"
           value={context.currentText}
-          onChange={(e) => context.handleSetCurrentText(e.target.value)}
+          onChange={(e) => context.updateCurrentText(e.target.value, emitToSocket)}
           placeholder="Enter text"
           style={{ padding: '5px', fontSize: '16px', color:context.currentColor }}
           autoFocus  
         />
         <button 
-          onClick={context.handleSetTextInListOfTexts} 
+          onClick={()=>context.addTextToList(emitToSocket)} 
           style={{ padding: '5px 10px', marginLeft: '5px' }}
         >
           Add Text

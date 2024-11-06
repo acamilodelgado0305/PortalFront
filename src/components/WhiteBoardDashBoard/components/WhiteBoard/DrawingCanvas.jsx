@@ -31,7 +31,7 @@ function DrawingCanvas({ context }) {
   const handleMouseDown = (e) => {
     const position = e.target.getStage().getPointerPosition();
     if (context.drawingMode === "text") {
-      context.handleSetCurrentTextPosition(position);
+      context.initializeTextPosition(position, emitToSocket);
       return;
     }
     context.handleMouseDown(position, emitToSocket);
