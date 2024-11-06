@@ -1,7 +1,5 @@
 import { useState } from "react";
 import {
-  FaPen,
-  FaEraser,
   FaCircle,
   FaRegSquare,
   FaRegCircle,
@@ -9,6 +7,9 @@ import {
   FaRegHandPaper, 
   FaRegHandRock
 } from "react-icons/fa";
+import { IoColorPaletteOutline, IoReturnUpBack, IoReturnUpForward } from "react-icons/io5";
+
+import { BsPencil, BsEraser, BsZoomIn, BsZoomOut } from "react-icons/bs";
 import { FloatButton } from "antd";
 import {
   HighlightOutlined,
@@ -17,6 +18,7 @@ import {
   FontColorsOutlined 
 } from "@ant-design/icons";
 
+import { RiDeleteBin6Line } from "react-icons/ri";
 const emitToSocket = true;
 const LeftPosition = 100;
 
@@ -39,13 +41,30 @@ function DrawingControls({ context }) {
           context.toggleDrawingMode(emitToSocket);
         }}
         type={context.drawingMode != "erase" ? "primary" : "danger"}
-        icon={context.drawingMode != "erase" ? <FaPen /> : <FaEraser />}
-        style={{ bottom: 150, left:LeftPosition }}
+        icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
+        style={{ top: 470, left:LeftPosition }}
+      />
+      <FloatButton
+      icon={<RiDeleteBin6Line/>}
+      style={{top: 512, left:LeftPosition}}
+      />
+        <FloatButton
+      icon={true ? <BsZoomIn/> :<BsZoomOut /> }
+      style={{top: 554, left:LeftPosition}}
+      />
+  {/** IoReturnUpForward */}
+      <FloatButton
+      icon={<IoReturnUpBack/>  }
+      style={{ top: 596,left: LeftPosition}}
+      />
+       <FloatButton
+      icon={<IoReturnUpForward/>  }
+      style={{  top:638, left: LeftPosition}}
       />
     </>
   );
 }
-
+// 470  554 596 596+42= 638
 export default DrawingControls;
 
 const ColorOption = ({ changeColor, currentColor }) => {
@@ -61,7 +80,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
             <FloatButton
               key={color}
               onClick={() => changeColor(color, emitToSocket)}
-              style={{ bottom: 200, left: 300 - index * 50 }}
+              style={{ top: 428, left: 300 - index * 50 }}
               icon={<FaCircle color={color} />}
             />
           ))}
@@ -70,12 +89,13 @@ const ColorOption = ({ changeColor, currentColor }) => {
       <FloatButton
         onClick={() => setShow(!show)}
         type={"danger"}
-        style={{ bottom: 200, left:LeftPosition }}
-        icon={<FaCircle color={currentColor} />}
+        style={{ top: 428, left:LeftPosition }}
+        icon={<IoColorPaletteOutline />}
       />
     </>
   );
 };
+// 386 + 42 428 
 
 const LineWidthPicker = ({ context }) => {
   const [show, setShow] = useState(false);
@@ -94,8 +114,8 @@ const LineWidthPicker = ({ context }) => {
           }
           style={{
             position: "absolute",
-            bottom: 255,
-            left: 0,
+            top: 386,
+            left: 55,
             zIndex: 9,
             cursor: "pointer",
           }}
@@ -103,7 +123,7 @@ const LineWidthPicker = ({ context }) => {
       )}
       <FloatButton
         type={"danger"}
-        style={{ bottom: 250, left:LeftPosition }}
+        style={{ top: 386, left:LeftPosition }}
         icon={<HighlightOutlined />}
         onClick={() => setShow(!show)}
       />
@@ -113,11 +133,11 @@ const LineWidthPicker = ({ context }) => {
 
 const CurrentDrawToolPicker = ({ context }) => {
   const tools = [
-    { name: "rectangle", icon: <FaRegSquare /> },
-    { name: "circle", icon: <FaRegCircle /> },
-    { name: "straightLine ", icon: <LineOutlined /> },
-     {name:'arrow', icon:<FaLongArrowAltRight/>},
-    { name: "line", icon: <SignatureOutlined /> },
+    { name: "rectangle", icon: <FaRegSquare /> }, //184
+    { name: "circle", icon: <FaRegCircle /> }, // 226
+    { name: "straightLine ", icon: <LineOutlined /> }, // 268
+     {name:'arrow', icon:<FaLongArrowAltRight/>}, // 302
+    { name: "line", icon: <SignatureOutlined /> }, // 344
   ];
  
    return (
@@ -130,7 +150,7 @@ const CurrentDrawToolPicker = ({ context }) => {
               onClick={() =>
                 context.changeCurrentDrawTool(tool.name, emitToSocket)
               }
-              style={{ bottom: 300 + index * 50, left:LeftPosition }}
+              style={{ top: 184 + index * 42, left:LeftPosition }}
               icon={tool.icon}
             />
           ))}
@@ -149,7 +169,7 @@ const TextBotton = ({context}) =>{
         }}
         type={context.drawingMode === "text" ? "primary" : "danger"}
         icon={<FontColorsOutlined />}
-        style={{ bottom: 550, left:LeftPosition }}
+        style={{ top: 142, left:LeftPosition }}
       />
     </div>
   )
@@ -165,7 +185,7 @@ const DruggerButton = ({context})=>{
         }}
         type={context.drawingMode === "hand" ? "primary" : "danger"}
         icon={context.drawingMode === "hand"? <FaRegHandRock />:<FaRegHandPaper />}
-        style={{ bottom: 600, left:LeftPosition }}
+        style={{ top: 100, left:LeftPosition }}
       />
     </div>
   )

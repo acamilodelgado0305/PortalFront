@@ -1,8 +1,6 @@
-import { useContext } from 'react';
 import DrawingControls from './DrawingControls';
 import DrawingCanvas from './DrawingCanvas';
 import { pencilCursor, eraserCursor, textCursor } from './utils/cursorIcons.js';
-import { WhiteBoardContext } from './WhiteBoardContext.jsx';
 import SocketListener  from "./SocketListener.jsx"
 
 function WhiteBoard({socket, context}) {

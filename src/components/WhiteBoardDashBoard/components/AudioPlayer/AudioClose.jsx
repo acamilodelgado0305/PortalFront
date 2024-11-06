@@ -4,7 +4,7 @@ import {
 } from "@ant-design/icons";
 function AudioClose({ name, audioBar, setAudioBar, onClose }) {
   return (
-    <div className="absolute left-[10px]  md:left-[50px] top-[50px] z-[1] w-[210px] overflow-hidden">
+    <div className="absolute left-[10px]  md:left-[70px] top-[50px] z-[1] w-[210px] overflow-hidden">
       <div className="animate-audioClose border-gray z-[-1] flex cursor-pointer items-center rounded-[10px] border bg-[#7066E0] p-[5px] text-white backdrop-blur-[10px]">
         <PlayCircleOutlined className="pl-1 text-[18px] " />
         <span

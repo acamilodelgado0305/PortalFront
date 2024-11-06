@@ -8,35 +8,35 @@ import { events } from "../../enums/whiteboardEvents.js";
 import Header from "../Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
 import WhiteBoard from "./components/WhiteBoard/Index.jsx";
-import  { WhiteBoardContext } from "./components/WhiteBoard/WhiteBoardContext.jsx";
+import { WhiteBoardContext } from "./components/WhiteBoard/WhiteBoardContext.jsx";
 
 import { useWhiteBoardSocket } from "./WhiteBoardSocketProvider";
 import "./animations.css";
 import WhiteBoardListener from "./components/Socket/WhiteBoardListener.jsx";
 import { uploadFile } from "../../services/utils.js";
 import BoardImage from "./components/BoardImage/index.jsx";
+import { TbMessage } from "react-icons/tb";
+import { BsTriangle } from "react-icons/bs";
 
 function WhiteBoardDashBoard() {
   const [audioFile, setAudioFile] = useState(null);
   const [audioContent, setAudioContent] = useState(false);
-  const [imageUrl, setImageUrl ] = useState('');
+  const [imageUrl, setImageUrl] = useState("");
   const { room } = useParams();
   const whiteBoardSocket = useWhiteBoardSocket();
-  const context = useContext(WhiteBoardContext); 
+  const context = useContext(WhiteBoardContext);
 
-
-  useEffect(()=>{
-  },[whiteBoardSocket])
+  useEffect(() => {}, [whiteBoardSocket]);
 
   const fileInputRef = useRef(null);
-  const imageInputRef = useRef(null); 
+  const imageInputRef = useRef(null);
 
   const handleFloatButtonClick = () => {
     fileInputRef.current.click();
   };
-  
+
   const handleImageButtonClick = () => {
-    imageInputRef.current.click(); 
+    imageInputRef.current.click();
   };
 
   const handleFileChange = async (event) => {
@@ -49,10 +49,9 @@ function WhiteBoardDashBoard() {
           name: file.name,
           url: data.url,
           room: room,
-          page: '1'
+          page: "1",
         });
       }
-    
     }
   };
 
@@ -60,16 +59,16 @@ function WhiteBoardDashBoard() {
     const file = event.target.files[0];
     if (file) {
       event.target.value = null;
-      const data = await uploadFile(file, file.type); 
+      const data = await uploadFile(file, file.type);
       if (whiteBoardSocket) {
-        whiteBoardSocket.emit(events.IMAGE_BOARD, {  
+        whiteBoardSocket.emit(events.IMAGE_BOARD, {
           name: file.name,
           url: data.url,
           room: room,
-          page:  '1'
+          page: "1",
         });
       }
-      setImageUrl(data.url)
+      setImageUrl(data.url);
     }
   };
 
@@ -79,9 +78,9 @@ function WhiteBoardDashBoard() {
   };
 
   const handleCloseImage = () => {
-    setImageUrl(null)
-  }
-  
+    setImageUrl(null);
+  };
+
   const listenerAudioFileOpened = (file) => {
     if (file) {
       setAudioFile(file);
@@ -90,7 +89,7 @@ function WhiteBoardDashBoard() {
   };
 
   return (
- <>
+    <>
       <WhiteBoardListener
         socket={whiteBoardSocket}
         listenerAudioFileOpened={listenerAudioFileOpened}
@@ -99,19 +98,35 @@ function WhiteBoardDashBoard() {
       />
       <Header />
       <div className="fixed flex h-full w-full justify-center bg-[#7066e0]">
+         <FloatButton
+          className="floatButtonImage iconImageFloat"
+          style={{ left: 100, bottom: 25 }}
+          icon={<BsTriangle className="iconImageFloat" style={{ transform: "rotate(-90deg)" }} />}
+        /> 
         <FloatButton
           icon={<PlayCircleOutlined className="iconAudioFloat" />}
+          style={{ left: "48%", bottom: 25 }}
           onClick={handleFloatButtonClick}
           className="floatButtonAudio iconAudioFloat"
         />
 
         <FloatButton
           className="floatButtonImage iconImageFloat"
-          style={{ bottom: 100 }}
+          style={{ left: "51%", bottom: 25 }}
           icon={<FileImageOutlined className="iconImageFloat" />}
-          onClick={handleImageButtonClick} 
+          onClick={handleImageButtonClick}
         />
-
+        <FloatButton
+          className="floatButtonImage iconImageFloat"
+          style={{ left: "54%", bottom: 25 }}
+          icon={<TbMessage className="iconImageFloat" />}
+        />
+       <FloatButton
+          className="floatButtonImage iconImageFloat"
+          style={{ right: 100, bottom: 25 }}
+          icon={<BsTriangle className="iconImageFloat" style={{ transform: "rotate(90deg)" }} />}
+        /> 
+         
         <input
           type="file"
           accept="audio/*"
@@ -122,24 +137,29 @@ function WhiteBoardDashBoard() {
 
         <input
           type="file"
-          accept="image/*"  
-          ref={imageInputRef}  
-          onChange={handleImageChange}  
+          accept="image/*"
+          ref={imageInputRef}
+          onChange={handleImageChange}
           style={{ display: "none" }}
         />
 
         <div className="relative top-[0.5rem] h-[91%] w-[90%] bg-white">
-          <WhiteBoard socket={whiteBoardSocket} context={context}/>
+          <WhiteBoard socket={whiteBoardSocket} context={context} />
           <AudioPlayer
             audioContent={audioContent}
             setAudioContent={setAudioContent}
             file={audioFile}
             handleCloseAudioPlayer={handleCloseAudioPlayer}
           />
-          <BoardImage url={imageUrl} onClose={handleCloseImage} socket={whiteBoardSocket} context={context}/>
+          <BoardImage
+            url={imageUrl}
+            onClose={handleCloseImage}
+            socket={whiteBoardSocket}
+            context={context}
+          />
         </div>
       </div>
-</>
+    </>
   );
 }
 
