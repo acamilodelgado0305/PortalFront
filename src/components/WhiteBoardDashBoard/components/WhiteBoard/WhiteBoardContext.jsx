@@ -15,7 +15,7 @@ const WhiteBoardProvider = ({ children }) => {
   const [currentDrawTool, setCurrentDrawTool] = useState("line");
   const [lineWidth, setLineWidth] = useState(2);
 
-  const useWhiteBoard = () => {
+   const useWhiteBoard = () => {
     return useContext(WhiteBoardContext);
   };
 
@@ -142,6 +142,13 @@ const toogleTextMode = (emitToSocket) =>{
   }
 }
 
+const toogleDrugMode = (emitToSocket)=>{
+  setDrawingMode(drawingMode === "hand" ? "draw" : "hand");
+    if (emitToSocket && socket) {
+    socket.emit(events.TOOGLE_DRUG_MODE); 
+  }
+}
+
 
   const toggleDrawingMode = (emitToSocket) => {
     if (drawingMode === "text") {
@@ -224,6 +231,7 @@ const handleRemoveText = (position) => {
   return (
     <WhiteBoardContext.Provider
       value={{
+        toogleDrugMode,
         isWriting,
         addTextToList,
         texts,

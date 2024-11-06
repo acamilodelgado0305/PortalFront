@@ -16,6 +16,7 @@ import WhiteBoardDashBoard from "./components/WhiteBoardDashBoard/Index.jsx";
 
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
+import WhiteBoardProvider from "./components/WhiteBoardDashBoard/components/WhiteBoard/WhiteBoardContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -66,9 +67,11 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <WhiteBoardSocketProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+      <WhiteBoardProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </WhiteBoardProvider>
     </WhiteBoardSocketProvider>
   </React.StrictMode>,
 );

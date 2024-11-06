@@ -4,11 +4,9 @@ import DrawingCanvas from './DrawingCanvas';
 import { pencilCursor, eraserCursor, textCursor } from './utils/cursorIcons.js';
 import { WhiteBoardContext } from './WhiteBoardContext.jsx';
 import SocketListener  from "./SocketListener.jsx"
-import { useWhiteBoardSocket } from '../../WhiteBoardSocketProvider.jsx';
 
-function WhiteBoard() {
-  const context = useContext(WhiteBoardContext); 
-  const socket = useWhiteBoardSocket();
+function WhiteBoard({socket, context}) {
+  
   
   return (
 <div

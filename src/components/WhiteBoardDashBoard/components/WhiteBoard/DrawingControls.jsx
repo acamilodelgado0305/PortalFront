@@ -6,6 +6,7 @@ import {
   FaRegSquare,
   FaRegCircle,
   FaLongArrowAltRight,
+  FaRegHandPaper 
 } from "react-icons/fa";
 import { FloatButton } from "antd";
 import {
@@ -15,10 +16,13 @@ import {
   FontColorsOutlined 
 } from "@ant-design/icons";
 
+const emitToSocket = true;
+
 function DrawingControls({ context }) {
-  const emitToSocket = true;
+
   return (
     <>
+      <DruggerButton context={context} />
       <TextBotton  context={context} />
       <CurrentDrawToolPicker context={context} />
       <LineWidthPicker context={context} />
@@ -43,7 +47,7 @@ export default DrawingControls;
 const ColorOption = ({ changeColor, currentColor }) => {
   const [show, setShow] = useState(false);
   const colors = ["red", "blue", "green", "yellow"];
-  const emitToSocket = true;
+ 
 
   return (
     <>
@@ -71,7 +75,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
 
 const LineWidthPicker = ({ context }) => {
   const [show, setShow] = useState(false);
-  const emitToSocket = true;
+  
   return (
     <div>
       {show && (
@@ -112,7 +116,7 @@ const CurrentDrawToolPicker = ({ context }) => {
      {name:'arrow', icon:<FaLongArrowAltRight/>},
     { name: "line", icon: <SignatureOutlined /> },
   ];
-  const emitToSocket = true;
+ 
   const currentTool = tools.find(
     (tool) => tool.name === context.currentDrawTool,
   );
@@ -144,7 +148,7 @@ const CurrentDrawToolPicker = ({ context }) => {
 };
 
 const TextBotton = ({context}) =>{
-const emitToSocket=true;
+
   return (
     <div>
       <FloatButton
@@ -158,3 +162,20 @@ const emitToSocket=true;
     </div>
   )
 }
+
+const DruggerButton = ({context})=>{
+
+  return(
+    <div>
+      <FloatButton
+        onClick={() => {
+          context.toogleDrugMode(emitToSocket);
+        }}
+        type={context.drawingMode === "hand" ? "primary" : "danger"}
+        icon={<FaRegHandPaper />}
+        style={{ bottom: 400 }}
+      />
+    </div>
+  )
+}
+

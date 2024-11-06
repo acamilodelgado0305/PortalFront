@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
@@ -8,7 +8,7 @@ import { events } from "../../enums/whiteboardEvents.js";
 import Header from "../Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
 import WhiteBoard from "./components/WhiteBoard/Index.jsx";
-import WhiteBoardProvider from "./components/WhiteBoard/WhiteBoardContext.jsx";
+import  { WhiteBoardContext } from "./components/WhiteBoard/WhiteBoardContext.jsx";
 
 import { useWhiteBoardSocket } from "./WhiteBoardSocketProvider";
 import "./animations.css";
@@ -22,6 +22,7 @@ function WhiteBoardDashBoard() {
   const [imageUrl, setImageUrl ] = useState('');
   const { room } = useParams();
   const whiteBoardSocket = useWhiteBoardSocket();
+  const context = useContext(WhiteBoardContext); 
 
 
   useEffect(()=>{
@@ -89,7 +90,7 @@ function WhiteBoardDashBoard() {
   };
 
   return (
-    <WhiteBoardProvider>
+ <>
       <WhiteBoardListener
         socket={whiteBoardSocket}
         listenerAudioFileOpened={listenerAudioFileOpened}
@@ -128,17 +129,17 @@ function WhiteBoardDashBoard() {
         />
 
         <div className="relative top-[0.5rem] h-[91%] w-[90%] bg-white">
-          <WhiteBoard socket={whiteBoardSocket} />
+          <WhiteBoard socket={whiteBoardSocket} context={context}/>
           <AudioPlayer
             audioContent={audioContent}
             setAudioContent={setAudioContent}
             file={audioFile}
             handleCloseAudioPlayer={handleCloseAudioPlayer}
           />
-          <BoardImage url={imageUrl} onClose={handleCloseImage} socket={whiteBoardSocket}/>
+          <BoardImage url={imageUrl} onClose={handleCloseImage} socket={whiteBoardSocket} context={context}/>
         </div>
       </div>
-    </WhiteBoardProvider>
+</>
   );
 }
 

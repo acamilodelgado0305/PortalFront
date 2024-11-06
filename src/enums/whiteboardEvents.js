@@ -16,7 +16,8 @@ export const events = {
     TOOGLE_TEXT_MODE:'toogleTextMode',
     TEXT_POSITION_INITIALIZED: 'textPositionInitialized',
     CURRENT_TEXT_UPDATED: 'currentTextUpdated',
-    TEXT_ADDED: 'textAdded'
+    TEXT_ADDED: 'textAdded',
+    TOOGLE_DRUG_MODE:'toogleDrugMode' 
   };
   
   

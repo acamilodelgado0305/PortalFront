@@ -3,9 +3,8 @@ import { Rnd } from "react-rnd";
 import { FullscreenOutlined, CloseOutlined } from "@ant-design/icons";
 import { events } from "../../../../enums/whiteboardEvents";
 
-function BoardImage({ url, room, onClose, socket }) {
+function BoardImage({ url, room, onClose, socket, context }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-
   useEffect(()=>{},[socket])
   useEffect(() => {
     if(!socket){  
@@ -13,7 +12,6 @@ function BoardImage({ url, room, onClose, socket }) {
       return } else{
         console.log('hay socket')
       }
-// no se mueve, desaparece la imagen en el receptor del socket. No sale ni el 'No hay socket' los concole.log de aqui
     socket.on(events.MOVE_IMAGE, (data) => {
       console.log(JSON.stringify(data))
       console.log('Data position '+data.position)
@@ -30,6 +28,8 @@ function BoardImage({ url, room, onClose, socket }) {
   };
 
   return (
+    <>
+    {context?.drawingMode === 'hand' &&
     <Rnd
       position={position}
       onDragStop={handleDragStop}
@@ -61,6 +61,36 @@ function BoardImage({ url, room, onClose, socket }) {
         </div>
       )}
     </Rnd>
+}
+{/* Por que la parte de arriba se ve, pero en esta condicion no se ve la imagen */}
+{context?.drawingMode != 'hand' &&  <div>
+ {url && (
+        <div style={{ width: "auto", height: "auto", position: "relative", top:0, left:0 }}>
+          <CloseOutlined
+            style={{
+              position: "absolute",
+              right: "0",
+              top: "0",
+              color: "white",
+            }}
+            onClick={onClose}
+          />
+          <img
+            className="drag-image-handle"
+            src={url}
+            alt="Whiteboard"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              borderRadius: 5,
+            }}
+          />
+        </div>
+      )}
+
+    </div> }
+    </>
   );
 }
 
