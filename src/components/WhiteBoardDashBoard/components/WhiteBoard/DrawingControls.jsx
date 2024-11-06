@@ -18,13 +18,16 @@ import {
 } from "@ant-design/icons";
 
 const emitToSocket = true;
+const LeftPosition = 100;
 
 function DrawingControls({ context }) {
 
   return (
     <>
-      <DruggerButton context={context} />
+        <DruggerButton context={context} /> 
       <TextBotton  context={context} />
+    
+     
       <CurrentDrawToolPicker context={context} />
       <LineWidthPicker context={context} />
       <ColorOption
@@ -37,7 +40,7 @@ function DrawingControls({ context }) {
         }}
         type={context.drawingMode != "erase" ? "primary" : "danger"}
         icon={context.drawingMode != "erase" ? <FaPen /> : <FaEraser />}
-        style={{ bottom: 150 }}
+        style={{ bottom: 150, left:LeftPosition }}
       />
     </>
   );
@@ -58,7 +61,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
             <FloatButton
               key={color}
               onClick={() => changeColor(color, emitToSocket)}
-              style={{ bottom: 200, right: 220 - index * 50 }}
+              style={{ bottom: 200, left: 300 - index * 50 }}
               icon={<FaCircle color={color} />}
             />
           ))}
@@ -67,7 +70,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
       <FloatButton
         onClick={() => setShow(!show)}
         type={"danger"}
-        style={{ bottom: 200 }}
+        style={{ bottom: 200, left:LeftPosition }}
         icon={<FaCircle color={currentColor} />}
       />
     </>
@@ -92,7 +95,7 @@ const LineWidthPicker = ({ context }) => {
           style={{
             position: "absolute",
             bottom: 255,
-            right: 0,
+            left: 0,
             zIndex: 9,
             cursor: "pointer",
           }}
@@ -100,7 +103,7 @@ const LineWidthPicker = ({ context }) => {
       )}
       <FloatButton
         type={"danger"}
-        style={{ bottom: 250 }}
+        style={{ bottom: 250, left:LeftPosition }}
         icon={<HighlightOutlined />}
         onClick={() => setShow(!show)}
       />
@@ -109,7 +112,6 @@ const LineWidthPicker = ({ context }) => {
 };
 
 const CurrentDrawToolPicker = ({ context }) => {
-  const [show, setShow] = useState(false);
   const tools = [
     { name: "rectangle", icon: <FaRegSquare /> },
     { name: "circle", icon: <FaRegCircle /> },
@@ -118,32 +120,21 @@ const CurrentDrawToolPicker = ({ context }) => {
     { name: "line", icon: <SignatureOutlined /> },
   ];
  
-  const currentTool = tools.find(
-    (tool) => tool.name === context.currentDrawTool,
-  );
-
-  return (
+   return (
     <div>
-      {show && (
         <>
           {tools.map((tool, index) => (
             <FloatButton
+              type={context.currentDrawTool === tool.name? "primary":"danger"}
               key={tool.name}
               onClick={() =>
                 context.changeCurrentDrawTool(tool.name, emitToSocket)
               }
-              style={{ bottom: 300, right: 270 - index * 50 }}
+              style={{ bottom: 300 + index * 50, left:LeftPosition }}
               icon={tool.icon}
             />
           ))}
         </>
-      )}
-      <FloatButton
-        type="danger"
-        style={{ bottom: 300 }}
-        icon={currentTool && currentTool.icon}
-        onClick={() => setShow(!show)}
-      />
     </div>
   );
 };
@@ -158,7 +149,7 @@ const TextBotton = ({context}) =>{
         }}
         type={context.drawingMode === "text" ? "primary" : "danger"}
         icon={<FontColorsOutlined />}
-        style={{ bottom: 350 }}
+        style={{ bottom: 550, left:LeftPosition }}
       />
     </div>
   )
@@ -174,7 +165,7 @@ const DruggerButton = ({context})=>{
         }}
         type={context.drawingMode === "hand" ? "primary" : "danger"}
         icon={context.drawingMode === "hand"? <FaRegHandRock />:<FaRegHandPaper />}
-        style={{ bottom: 400 }}
+        style={{ bottom: 600, left:LeftPosition }}
       />
     </div>
   )
