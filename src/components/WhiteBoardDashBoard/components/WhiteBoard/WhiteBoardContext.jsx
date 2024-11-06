@@ -190,10 +190,10 @@ const handleSetCurrentText = (text) =>{
 }
 
 const handleSetTextInListOfTexts = () => {
-  setTexts([...texts, { text: currentText, position: currentTextPosition }]);
+  setTexts([...texts, { text: currentText, position: currentTextPosition, color: currentColor }]);
   setCurrentText('');
-  setCurrentTextPosition({x:0,y:0})
-  setIsWriting(false)
+  setCurrentTextPosition({x: 0, y: 0});
+  setIsWriting(false);
 };
 
 

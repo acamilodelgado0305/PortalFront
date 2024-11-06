@@ -1,14 +1,21 @@
 import { useRef, useState, useEffect } from "react";
 import { Stage, Layer, Line, Rect, Circle, Group, Text } from "react-konva";
+import TextInput from "./TextInput";
 
 function DrawingCanvas({ context }) {
   const containerRef = useRef(null);
-  const [stageSize, setStageSize] = useState({ width: 0, height: window.innerHeight });
+  const [stageSize, setStageSize] = useState({
+    width: 0,
+    height: window.innerHeight,
+  });
   const emitToSocket = true;
 
   useEffect(() => {
     if (containerRef.current) {
-      setStageSize({ width: containerRef.current.clientWidth, height: window.innerHeight });
+      setStageSize({
+        width: containerRef.current.clientWidth,
+        height: window.innerHeight,
+      });
     }
   }, [containerRef.current]);
 
@@ -53,43 +60,15 @@ function DrawingCanvas({ context }) {
               y={item.position.y}
               text={item.text}
               fontSize={20}
-              fill="black"
+              fill={item.color || "black"} 
             />
           ))}
         </Layer>
       </Stage>
-
-      {/* Maneja el input de texto HTML */}
-      {context.isWriting && (
-        <div 
-          style={{ 
-            position: 'absolute', 
-            zIndex: 9999, 
-            top: context.currentTextPosition.y,  
-            left: context.currentTextPosition.x, 
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <input
-            type="text"
-            value={context.currentText}
-            onChange={(e) => context.handleSetCurrentText(e.target.value)}
-            placeholder="Enter text"
-            style={{ padding: '5px', fontSize: '16px', color: 'red' }}
-            autoFocus  
-          />
-          <button 
-            onClick={context.handleSetTextInListOfTexts} 
-            style={{ padding: '5px 10px', marginLeft: '5px' }}
-          >
-            Add Text
-          </button>
-        </div>
-      )}
+      <TextInput context={context} />
     </div>
   );
 }
-
 
 const ShapesLayer = ({ context }) => {
   return (
@@ -137,7 +116,6 @@ const ShapesLayer = ({ context }) => {
             );
           }
         })}
-  
     </>
   );
 };
@@ -190,7 +168,6 @@ const CurrentShape = ({ context }) => {
           lineJoin="round"
         />
       )}
-     
     </>
   );
 };
