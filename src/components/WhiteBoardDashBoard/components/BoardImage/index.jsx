@@ -5,6 +5,7 @@ import { events } from "../../../../enums/whiteboardEvents";
 
 function BoardImage({ url, room, onClose, socket, context }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  console.log(context.drawingMode != 'hand')
   useEffect(()=>{},[socket])
   useEffect(() => {
     if(!socket){  
@@ -29,7 +30,6 @@ function BoardImage({ url, room, onClose, socket, context }) {
 
   return (
     <>
-    {context?.drawingMode === 'hand' &&
     <Rnd
       position={position}
       onDragStop={handleDragStop}
@@ -48,7 +48,7 @@ function BoardImage({ url, room, onClose, socket, context }) {
             onClick={onClose}
           />
           <img
-            className="drag-image-handle"
+            className={(context?.drawingMode === 'hand') && "drag-image-handle"}
             src={url}
             alt="Whiteboard"
             style={{
@@ -61,35 +61,6 @@ function BoardImage({ url, room, onClose, socket, context }) {
         </div>
       )}
     </Rnd>
-}
-{/* Por que la parte de arriba se ve, pero en esta condicion no se ve la imagen */}
-{context?.drawingMode != 'hand' &&  <div>
- {url && (
-        <div style={{ width: "auto", height: "auto", position: "relative", top:0, left:0 }}>
-          <CloseOutlined
-            style={{
-              position: "absolute",
-              right: "0",
-              top: "0",
-              color: "white",
-            }}
-            onClick={onClose}
-          />
-          <img
-            className="drag-image-handle"
-            src={url}
-            alt="Whiteboard"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              borderRadius: 5,
-            }}
-          />
-        </div>
-      )}
-
-    </div> }
     </>
   );
 }

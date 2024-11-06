@@ -6,7 +6,8 @@ import {
   FaRegSquare,
   FaRegCircle,
   FaLongArrowAltRight,
-  FaRegHandPaper 
+  FaRegHandPaper, 
+  FaRegHandRock
 } from "react-icons/fa";
 import { FloatButton } from "antd";
 import {
@@ -172,7 +173,7 @@ const DruggerButton = ({context})=>{
           context.toogleDrugMode(emitToSocket);
         }}
         type={context.drawingMode === "hand" ? "primary" : "danger"}
-        icon={<FaRegHandPaper />}
+        icon={context.drawingMode === "hand"? <FaRegHandRock />:<FaRegHandPaper />}
         style={{ bottom: 400 }}
       />
     </div>
