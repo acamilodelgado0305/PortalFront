@@ -2,6 +2,7 @@ import LeftControlsBar from './LeftControlsBar';
 import DrawingCanvas from './DrawingCanvas';
 import { pencilCursor, eraserCursor, textCursor } from './utils/cursorIcons.js';
 import SocketListener  from "./SocketListener.jsx"
+import { Button } from 'antd';
 
 function WhiteBoard({socket, context}) {
   
@@ -17,7 +18,10 @@ function WhiteBoard({socket, context}) {
       
   }}
 >
-
+      <BoardHeader
+        context={context}
+        socket={socket}
+      />
       <SocketListener
        context={context}
        socket={socket}
@@ -34,3 +38,17 @@ function WhiteBoard({socket, context}) {
 }
 
 export default WhiteBoard;
+
+
+
+;
+function BoardHeader({ context, socket }) {
+  return (
+    <div className="absolute w-full pl-[59px]">    <Button className="z-[99]" color="default" variant="filled">
+ Página {context.currentPage}
+  </Button></div>
+  );
+}
+
+
+

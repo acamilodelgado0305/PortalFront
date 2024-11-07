@@ -272,10 +272,23 @@ const redo = (emitToSocket) => {
   } 
 };
 
+const [currentPage, setCurrentPage] = useState(1);
+
+const goToNextPage = () => {
+  setCurrentPage(currentPage + 1);
+}
+
+const goToPreviousPage = () => {
+  setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage);
+}
+
 
   return (
     <WhiteBoardContext.Provider
       value={{
+        currentPage,
+        goToPreviousPage,
+        goToNextPage,
         redo,
         undo, 
         toogleDrugMode,

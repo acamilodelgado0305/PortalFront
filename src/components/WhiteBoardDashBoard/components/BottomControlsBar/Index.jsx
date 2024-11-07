@@ -3,7 +3,7 @@ import { uploadFile } from "../../../../services/utils.js";
 import { events } from "../../../../enums/whiteboardEvents.js";
 import BottomButtonsBar from "./BottomButtonsBar.jsx";
 
-function BottomControlsBar({ whiteBoardSocket, setImageUrl }) {
+function BottomControlsBar({ whiteBoardSocket, setImageUrl, context }) {
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
@@ -51,6 +51,8 @@ function BottomControlsBar({ whiteBoardSocket, setImageUrl }) {
       <BottomButtonsBar
         handleFloatButtonClick={handleFloatButtonClick}
         handleImageButtonClick={handleImageButtonClick}
+        goToNextPage={context.goToNextPage}
+        goToPreviousPage={context.goToPreviousPage}
       />
       <input
         type="file"

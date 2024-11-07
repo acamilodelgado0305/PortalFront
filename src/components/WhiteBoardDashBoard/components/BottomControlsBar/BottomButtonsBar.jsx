@@ -3,7 +3,7 @@ import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { TbMessage } from "react-icons/tb";
 import { BsTriangle } from "react-icons/bs";
 
-function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick}) {
+function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToNextPage, goToPreviousPage}) {
   const shapeForm =  "square"||"circle"; 
   return (
     <div className="flex justify-between items-center absolute w-full px-[5vw] bottom-[10vh]">
@@ -16,6 +16,7 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick}) {
             style={{ transform: "rotate(-90deg)" }}
           />
         }
+        onClick={goToPreviousPage}
       />
       <div className="flex gap-1">
       <FloatButton
@@ -45,7 +46,9 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick}) {
             className="iconImageFloat"
             style={{ transform: "rotate(90deg)"  }}
           />
+
         }
+        onClick={goToNextPage}
       />
     </div>
   );

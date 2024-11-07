@@ -66,9 +66,11 @@ useEffect(()=>{
       />
       <Header />
       <div className="fixed flex h-full w-full justify-center">
+     
      <BottomControlsBar
           whiteBoardSocket={whiteBoardSocket}
           setImageUrl={setImageUrl}
+          context={context}
         />
       <div className="relative top-[0.5rem] h-[91%] w-[98%] bg-white">
           <WhiteBoard socket={whiteBoardSocket} context={context} />
