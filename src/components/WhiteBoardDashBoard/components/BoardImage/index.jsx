@@ -31,7 +31,7 @@ function BoardImage({ url, room, onClose, socket, context }) {
       enableResizing={true}
     >
       {url && (
-        <div style={{ width: "auto", height: "auto", position: "relative" }}>
+        <div style={{ width: "auto", height: "auto", position: "relative", marginLeft:52 }}>
           <CloseOutlined
             style={{
               position: "absolute",

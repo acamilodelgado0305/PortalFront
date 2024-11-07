@@ -224,7 +224,7 @@ const handleRemoveText = (position) => {
 const clearWhiteBoard = (emitToSocket) => {
   setLines([]);
   setTexts([]);
-
+  window.dispatchEvent(new CustomEvent('clearWhiteBoardImages'));
   if (emitToSocket && socket) {
     socket.emit(events.CLEAR_WHITEBOARD);
   } 

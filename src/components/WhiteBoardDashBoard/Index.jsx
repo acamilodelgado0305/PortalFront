@@ -24,6 +24,16 @@ function WhiteBoardDashBoard() {
   const { room } = useParams();
   const whiteBoardSocket = useWhiteBoardSocket();
   const context = useContext(WhiteBoardContext);
+useEffect(()=>{ 
+  const handleClearImages = ()=>{
+    setImageUrl("")
+  }
+  window.addEventListener('clearWhiteBoardImages', handleClearImages);
+  return () => {
+    window.removeEventListener('clearWhiteBoardImages', handleClearImages);
+  };},[])
+ 
+
 
   useEffect(() => {}, [whiteBoardSocket]);
 
