@@ -25,7 +25,7 @@ function LeftControlsBar({ context }) {
 
 
   return (
-    <div className="flex gap-1 flex-col py-2 pl-2 absolute h-full bg-[#FFFFFF] z-[999999]">
+    <div className="flex gap-1 flex-col py-2 pl-2 absolute h-full bg-[#FFFFFF] z-[99]">
       <DruggerButton context={context} /> 
       <TextBotton  context={context} />
       <CurrentDrawToolPickerButtons context={context} />
@@ -50,6 +50,7 @@ const TrashBinClearerButton = ({context}) => {
       <FloatButton
        className="static"
        shape={shapeForm}
+       onClick={()=>context.clearWhiteBoard(emitToSocket)}
        icon={<RiDeleteBin6Line/>}
       />
   </>)

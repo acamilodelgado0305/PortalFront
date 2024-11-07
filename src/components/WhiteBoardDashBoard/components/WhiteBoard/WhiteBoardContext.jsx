@@ -221,6 +221,15 @@ const handleRemoveText = (position) => {
   );
 };
 
+const clearWhiteBoard = (emitToSocket) => {
+  setLines([]);
+  setTexts([]);
+
+  if (emitToSocket && socket) {
+    socket.emit(events.CLEAR_WHITEBOARD);
+  } 
+};
+
 
   return (
     <WhiteBoardContext.Provider
@@ -258,6 +267,7 @@ const handleRemoveText = (position) => {
         toggleDrawingMode,
         lineWidth,
         updateLineWidth,
+        clearWhiteBoard
       }}
     >
       {children}
