@@ -8,7 +8,6 @@ import {
   FaRegHandRock
 } from "react-icons/fa";
 import { IoColorPaletteOutline, IoReturnUpBack, IoReturnUpForward } from "react-icons/io5";
-
 import { BsPencil, BsEraser, BsZoomIn, BsZoomOut } from "react-icons/bs";
 import { FloatButton } from "antd";
 import {
@@ -17,10 +16,11 @@ import {
   LineOutlined,
   FontColorsOutlined 
 } from "@ant-design/icons";
-
 import { RiDeleteBin6Line } from "react-icons/ri";
+// GLOBAL
 const emitToSocket = true;
 const shapeForm =  "square"||"circle"; 
+
 function LeftControlsBar({ context }) {
 
 
@@ -28,47 +28,61 @@ function LeftControlsBar({ context }) {
     <div className="flex gap-1 flex-col py-2 pl-2 absolute h-full bg-[#FFFFFF] z-[999999]">
       <DruggerButton context={context} /> 
       <TextBotton  context={context} />
-      <CurrentDrawToolPicker context={context} />
-      <LineWidthPicker context={context} />
-      <ColorOption context={context} />
+      <CurrentDrawToolPickerButtons context={context} />
+      <LineWidthPickerButton context={context} />
+      <ColorOptionButton context={context} />
       <PencilEraserToggleButton  context={context} />
-     
-    {/*  // boton de eliminar */}
+      <TrashBinClearerButton context={context}/>
+      <ZoomButton context={context}/>
+      <UndoRedoButtons context={context} />
+    </div>
+  );
+}
+export default LeftControlsBar;
+
+
+
+
+
+
+const TrashBinClearerButton = ({context}) => {
+  return (<>
       <FloatButton
        className="static"
        shape={shapeForm}
        icon={<RiDeleteBin6Line/>}
       />
-    {/*  // zoom de eliminar */}
+  </>)
+}
+const UndoRedoButtons = ({ context }) => (
+  <>
+    {/* Botón para deshacer */}
+    <FloatButton
+      className="static"
+      shape={shapeForm}
+      icon={<IoReturnUpBack />}
+    />
+    {/* Botón para rehacer */}
+    <FloatButton
+      className="static"
+      shape={shapeForm}
+      icon={<IoReturnUpForward />}
+    />
+  </>
+);
+
+
+const ZoomButton = ({context}) =>{
+  return(
+    <>
       <FloatButton
        className="static"
        shape={shapeForm}
        icon={true ? <BsZoomIn/> :<BsZoomOut /> }
        />
-
-
-       {/* boton volver atras */}
-      <FloatButton
-      className="static"
-      shape={shapeForm}
-      icon={<IoReturnUpBack/>  }
-      />
-      {/* boton adelante */}
-       <FloatButton
-       className="static"
-       shape={shapeForm}
-       icon={<IoReturnUpForward/>  }
-       /> 
-    </div>
-  );
+    </>
+  )
 }
-// 470  554 596 596+42= 638
-export default LeftControlsBar;
-
-const TrashBinClearer = ({context}) => {
-  return null
-}
-
 
 
 const PencilEraserToggleButton = ({context}) =>{
@@ -78,18 +92,16 @@ const PencilEraserToggleButton = ({context}) =>{
        shape={shapeForm}
        onClick={() => { context.toggleDrawingMode(emitToSocket); 
         }}
-        type={context.drawingMode != "erase" ? "primary" : "danger"}
+        type={"primary"}
         icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
         />
   
   </>)
 }
 
-const ColorOption = ({ context }) => {
+const ColorOptionButton = ({ context }) => {
   const [show, setShow] = useState(false);
   const colors = ["red", "blue", "green", "yellow"];
- 
-
   return (
     <>
       {show && (
@@ -116,9 +128,8 @@ const ColorOption = ({ context }) => {
   );
 };
 
-const LineWidthPicker = ({ context }) => {
+const LineWidthPickerButton = ({ context }) => {
   const [show, setShow] = useState(false);
-  
   return (
     <>
       {show && (
@@ -150,7 +161,7 @@ const LineWidthPicker = ({ context }) => {
   );
 };
 
-const CurrentDrawToolPicker = ({ context }) => {
+const CurrentDrawToolPickerButtons = ({ context }) => {
   const tools = [
     { name: "rectangle", icon: <FaRegSquare /> }, 
     { name: "circle", icon: <FaRegCircle /> },
@@ -158,7 +169,6 @@ const CurrentDrawToolPicker = ({ context }) => {
      {name:'arrow', icon:<FaLongArrowAltRight/>}, 
     { name: "line", icon: <SignatureOutlined /> },
   ];
- 
    return (
     <div className="flex gap-1 flex-col ">
        
@@ -180,7 +190,6 @@ const CurrentDrawToolPicker = ({ context }) => {
 };
 
 const TextBotton = ({context}) =>{
-
   return (
     <>
       <FloatButton
