@@ -1,4 +1,4 @@
-import DrawingControls from './DrawingControls';
+import LeftControlsBar from './LeftControlsBar';
 import DrawingCanvas from './DrawingCanvas';
 import { pencilCursor, eraserCursor, textCursor } from './utils/cursorIcons.js';
 import SocketListener  from "./SocketListener.jsx"
@@ -21,7 +21,7 @@ function WhiteBoard({socket, context}) {
        context={context}
        socket={socket}
       />
-      <DrawingControls
+      <LeftControlsBar
        context={context}
       />
       <DrawingCanvas

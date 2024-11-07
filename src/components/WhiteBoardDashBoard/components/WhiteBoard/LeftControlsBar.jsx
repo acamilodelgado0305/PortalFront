@@ -22,7 +22,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 const emitToSocket = true;
 const LeftPosition = 100;
 
-function DrawingControls({ context }) {
+function LeftControlsBar({ context }) {
 
   return (
     <div className="flex gap-1 flex-col py-2 pl-2 absolute">
@@ -66,7 +66,7 @@ function DrawingControls({ context }) {
   );
 }
 // 470  554 596 596+42= 638
-export default DrawingControls;
+export default LeftControlsBar;
 
 const ColorOption = ({ changeColor, currentColor }) => {
   const [show, setShow] = useState(false);

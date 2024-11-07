@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
-import { FloatButton } from "antd";
+
 import { events } from "../../enums/whiteboardEvents.js";
 
 // components
@@ -15,8 +14,8 @@ import "./animations.css";
 import WhiteBoardListener from "./components/Socket/WhiteBoardListener.jsx";
 import { uploadFile } from "../../services/utils.js";
 import BoardImage from "./components/BoardImage/index.jsx";
-import { TbMessage } from "react-icons/tb";
-import { BsTriangle } from "react-icons/bs";
+import BottomControlsBar from "./components/WhiteBoard/BottomControlsBar.jsx";
+
 
 function WhiteBoardDashBoard() {
   const [audioFile, setAudioFile] = useState(null);
@@ -98,35 +97,7 @@ function WhiteBoardDashBoard() {
       />
       <Header />
       <div className="fixed flex h-full w-full justify-center">
-         <FloatButton
-          className="floatButtonImage iconImageFloat"
-          style={{ left: 100, bottom: 12 }}
-          icon={<BsTriangle className="iconImageFloat" style={{ transform: "rotate(-90deg)" }} />}
-        /> 
-        <FloatButton
-          icon={<PlayCircleOutlined className="iconAudioFloat" />}
-          style={{ left: "48%", bottom: 12 }}
-          onClick={handleFloatButtonClick}
-          className="floatButtonAudio iconAudioFloat"
-        />
-
-        <FloatButton
-          className="floatButtonImage iconImageFloat"
-          style={{ left: "51%", bottom: 12 }}
-          icon={<FileImageOutlined className="iconImageFloat" />}
-          onClick={handleImageButtonClick}
-        />
-        <FloatButton
-          className="floatButtonImage iconImageFloat"
-          style={{ left: "54%", bottom: 12 }}
-          icon={<TbMessage className="iconImageFloat" />}
-        />
-       <FloatButton
-          className="floatButtonImage iconImageFloat"
-          style={{ right: 100, bottom: 12 }}
-          icon={<BsTriangle className="iconImageFloat" style={{ transform: "rotate(90deg)" }} />}
-        /> 
-         
+         <BottomControlsBar handleFloatButtonClick={handleFloatButtonClick}  handleImageButtonClick={handleImageButtonClick} />
         <input
           type="file"
           accept="audio/*"
