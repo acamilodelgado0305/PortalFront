@@ -3,7 +3,7 @@ import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { TbMessage } from "react-icons/tb";
 import { BsTriangle } from "react-icons/bs";
 
-function BottomControlsBar({handleFloatButtonClick, handleImageButtonClick}) {
+function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick}) {
   const shapeForm =  "square"||"circle"; 
   return (
     <div className="flex justify-between items-center absolute w-full px-[5vw] bottom-[10vh]">
@@ -51,4 +51,4 @@ function BottomControlsBar({handleFloatButtonClick, handleImageButtonClick}) {
   );
 }
 
-export default BottomControlsBar;
+export default BottomButtonsBar;

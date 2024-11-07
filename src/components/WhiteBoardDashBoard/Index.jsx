@@ -14,7 +14,7 @@ import "./animations.css";
 import WhiteBoardListener from "./components/Socket/WhiteBoardListener.jsx";
 import { uploadFile } from "../../services/utils.js";
 import BoardImage from "./components/BoardImage/index.jsx";
-import BottomControlsBar from "./components/WhiteBoard/BottomControlsBar.jsx";
+import BottomControlsBar from "./components/BottomControlsBar/Index.jsx";
 
 
 function WhiteBoardDashBoard() {
@@ -24,6 +24,7 @@ function WhiteBoardDashBoard() {
   const { room } = useParams();
   const whiteBoardSocket = useWhiteBoardSocket();
   const context = useContext(WhiteBoardContext);
+
 useEffect(()=>{ 
   const handleClearImages = ()=>{
     setImageUrl("")
@@ -37,49 +38,7 @@ useEffect(()=>{
 
   useEffect(() => {}, [whiteBoardSocket]);
 
-  const fileInputRef = useRef(null);
-  const imageInputRef = useRef(null);
 
-  const handleFloatButtonClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleImageButtonClick = () => {
-    imageInputRef.current.click();
-  };
-
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      event.target.value = null;
-      const data = await uploadFile(file, file.type);
-      if (whiteBoardSocket) {
-        whiteBoardSocket.emit(events.AUDIOFILE_OPENED, {
-          name: file.name,
-          url: data.url,
-          room: room,
-          page: "1",
-        });
-      }
-    }
-  };
-
-  const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      event.target.value = null;
-      const data = await uploadFile(file, file.type);
-      if (whiteBoardSocket) {
-        whiteBoardSocket.emit(events.IMAGE_BOARD, {
-          name: file.name,
-          url: data.url,
-          room: room,
-          page: "1",
-        });
-      }
-      setImageUrl(data.url);
-    }
-  };
 
   const handleCloseAudioPlayer = () => {
     setAudioContent(false);
@@ -107,24 +66,11 @@ useEffect(()=>{
       />
       <Header />
       <div className="fixed flex h-full w-full justify-center">
-         <BottomControlsBar handleFloatButtonClick={handleFloatButtonClick}  handleImageButtonClick={handleImageButtonClick} />
-        <input
-          type="file"
-          accept="audio/*"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          style={{ display: "none" }}
+     <BottomControlsBar
+          whiteBoardSocket={whiteBoardSocket}
+          setImageUrl={setImageUrl}
         />
-
-        <input
-          type="file"
-          accept="image/*"
-          ref={imageInputRef}
-          onChange={handleImageChange}
-          style={{ display: "none" }}
-        />
-
-        <div className="relative top-[0.5rem] h-[91%] w-[98%] bg-white">
+      <div className="relative top-[0.5rem] h-[91%] w-[98%] bg-white">
           <WhiteBoard socket={whiteBoardSocket} context={context} />
           <AudioPlayer
             audioContent={audioContent}
