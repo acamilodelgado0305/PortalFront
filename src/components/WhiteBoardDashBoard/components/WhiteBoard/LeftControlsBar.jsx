@@ -20,11 +20,12 @@ import {
 
 import { RiDeleteBin6Line } from "react-icons/ri";
 const emitToSocket = true;
-
+const shapeForm =  "square"||"circle"; 
 function LeftControlsBar({ context }) {
 
+
   return (
-    <div className="flex gap-1 flex-col py-2 pl-2 absolute">
+    <div className="flex gap-1 flex-col py-2 pl-2 absolute h-full bg-[#FFFFFF] z-[999999]">
       <DruggerButton context={context} /> 
       <TextBotton  context={context} />
       <CurrentDrawToolPicker context={context} />
@@ -34,24 +35,28 @@ function LeftControlsBar({ context }) {
      
     {/*  // boton de eliminar */}
       <FloatButton
-      className="static"
+       className="static"
+       shape={shapeForm}
        icon={<RiDeleteBin6Line/>}
       />
     {/*  // zoom de eliminar */}
       <FloatButton
        className="static"
+       shape={shapeForm}
        icon={true ? <BsZoomIn/> :<BsZoomOut /> }
        />
 
-       
+
        {/* boton volver atras */}
       <FloatButton
       className="static"
+      shape={shapeForm}
       icon={<IoReturnUpBack/>  }
       />
       {/* boton adelante */}
        <FloatButton
        className="static"
+       shape={shapeForm}
        icon={<IoReturnUpForward/>  }
        /> 
     </div>
@@ -60,10 +65,18 @@ function LeftControlsBar({ context }) {
 // 470  554 596 596+42= 638
 export default LeftControlsBar;
 
+const TrashBinClearer = ({context}) => {
+  return null
+}
+
+
+
 const PencilEraserToggleButton = ({context}) =>{
   return (<>
    <FloatButton
-       className="static"  onClick={() => { context.toggleDrawingMode(emitToSocket); 
+       className="static"
+       shape={shapeForm}
+       onClick={() => { context.toggleDrawingMode(emitToSocket); 
         }}
         type={context.drawingMode != "erase" ? "primary" : "danger"}
         icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
@@ -71,9 +84,6 @@ const PencilEraserToggleButton = ({context}) =>{
   
   </>)
 }
-
-
-
 
 const ColorOption = ({ context }) => {
   const [show, setShow] = useState(false);
@@ -86,9 +96,10 @@ const ColorOption = ({ context }) => {
         <>
           {colors.map((color, index) => (
             <FloatButton
+              shape={shapeForm}
               key={color}
               onClick={() => context.changeColor(color, emitToSocket)}
-              style={{ position: 'absolute',top:360,left:50 + index * 50 }}
+              style={{ position: 'absolute',height:'43px',width:'43px',top:360,left:50 + index * 50 }}
               icon={<FaCircle color={color} />}
             />
           ))}
@@ -96,6 +107,7 @@ const ColorOption = ({ context }) => {
       )}
       <FloatButton
         className="static"
+        shape={shapeForm}
         onClick={() => setShow(!show)}
         type={"danger"}
         icon={<IoColorPaletteOutline />}
@@ -129,6 +141,7 @@ const LineWidthPicker = ({ context }) => {
       ) }
       <FloatButton
         className="static"
+        shape={shapeForm}
         type={"danger"}
         icon={<HighlightOutlined />}
         onClick={() => setShow(!show)}
@@ -151,12 +164,13 @@ const CurrentDrawToolPicker = ({ context }) => {
        
           {tools.map((tool, index) => (
             <FloatButton
+              className="static"
+              shape={shapeForm}
               type={context.currentDrawTool === tool.name? "primary":"danger"}
               key={tool.name}
               onClick={() =>
                 context.changeCurrentDrawTool(tool.name, emitToSocket)
               }
-              style={{ position: 'static' }}
               icon={tool.icon}
             />
           ))}
@@ -170,7 +184,8 @@ const TextBotton = ({context}) =>{
   return (
     <>
       <FloatButton
-      className="static"
+        className="static"
+        shape={shapeForm}
         onClick={() => {
           context.toogleTextMode(emitToSocket);
         }}
@@ -187,6 +202,7 @@ const DruggerButton = ({context})=>{
     <>
       <FloatButton
         className="static"
+        shape={shapeForm}
         onClick={() => {
           context.toogleDrugMode(emitToSocket);
         }}

@@ -5,14 +5,8 @@ import { events } from "../../../../enums/whiteboardEvents";
 
 function BoardImage({ url, room, onClose, socket, context }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  console.log(context.drawingMode != 'hand')
-  useEffect(()=>{},[socket])
   useEffect(() => {
-    if(!socket){  
-      console.log('No hay socket')
-      return } else{
-        console.log('hay socket')
-      }
+    if(!socket)return 
     socket.on(events.MOVE_IMAGE, (data) => {
       console.log(JSON.stringify(data))
       console.log('Data position '+data.position)
