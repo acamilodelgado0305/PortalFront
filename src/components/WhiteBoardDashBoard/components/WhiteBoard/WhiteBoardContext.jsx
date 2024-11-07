@@ -239,37 +239,45 @@ const clearWhiteBoard = (emitToSocket) => {
   } 
 };
 
-
+// save undo buttons
 const saveBoardState = (lines, texts) => {
   const newHistoryIndex = boardHistory.length;
   setBoardHistory([...boardHistory, { lines, texts }]);
   setCurrentHistoryIndex(newHistoryIndex);
 };
 
-const undo = () => {
+const undo = (emitToSocket) => {
   if (currentHistoryIndex > 0) {
     const previousState = boardHistory[currentHistoryIndex - 1];
     setCurrentHistoryIndex(currentHistoryIndex - 1);
     setLines(previousState.lines);
     setTexts(previousState.texts);
   }
+  if (emitToSocket && socket) {
+    console.log('emitiendo? UNDO'+ events.UNDO_BOARD_STATE)
+    socket.emit(events.UNDO_BOARD_STATE);
+  } 
 };
 
-const redo = () => {
+const redo = (emitToSocket) => {
   if (currentHistoryIndex < boardHistory.length - 1) {
     const nextState = boardHistory[currentHistoryIndex + 1];
     setCurrentHistoryIndex(currentHistoryIndex + 1);
     setLines(nextState.lines);
     setTexts(nextState.texts);
   }
+  if (emitToSocket && socket) {
+    socket.emit(events.REDO_BOARD_STATE);
+     console.log('emitiendo? REDO '+ events.REDO_BOARD_STATE)
+  } 
 };
 
 
   return (
     <WhiteBoardContext.Provider
       value={{
-        redo, // modificar nombre
-        undo, // modificar nombre
+        redo,
+        undo, 
         toogleDrugMode,
         isWriting,
         addTextToList,

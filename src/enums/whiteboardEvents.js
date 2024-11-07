@@ -18,7 +18,10 @@ export const events = {
     CURRENT_TEXT_UPDATED: 'currentTextUpdated',
     TEXT_ADDED: 'textAdded',
     TOOGLE_DRUG_MODE:'toogleDrugMode',
-    CLEAR_WHITEBOARD: 'clearWhiteBoard'
+    CLEAR_WHITEBOARD: 'clearWhiteBoard',
+    UNDO_BOARD_STATE:'undoBoardState',
+    REDO_BOARD_STATE:'redoBoardState'
+
   };
   
   

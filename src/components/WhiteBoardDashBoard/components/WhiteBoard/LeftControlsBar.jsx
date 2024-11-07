@@ -61,14 +61,14 @@ const UndoRedoButtons = ({ context }) => (
     <FloatButton
       className="static"
       shape={shapeForm}
-      onClick={() => context.undo()} 
+      onClick={() => context.undo(emitToSocket)} 
       icon={<IoReturnUpBack />}
     />
     {/* Botón para rehacer */}
     <FloatButton
       className="static"
       shape={shapeForm}
-      onClick={() => context.redo()} 
+      onClick={() => context.redo(emitToSocket)} 
       icon={<IoReturnUpForward />}
     />
   </>

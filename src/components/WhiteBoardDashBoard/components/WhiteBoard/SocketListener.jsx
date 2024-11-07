@@ -18,6 +18,8 @@ function SocketListener({context, socket}) {
         socket.on(events.TEXT_ADDED, context.addTextToList);
         socket.on(events.TOOGLE_DRUG_MODE, context.toogleDrugMode);
         socket.on(events.CLEAR_WHITEBOARD,context.clearWhiteBoard);
+        socket.on(events.UNDO_BOARD_STATE, context.undo);
+        socket.on(events.REDO_BOARD_STATE, context.redo);
       }
 
 
