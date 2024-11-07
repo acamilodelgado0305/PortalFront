@@ -14,7 +14,7 @@ const emitToSocket = true;
         <input
           type="text"
           value={context.currentText}
-          onChange={(e) => context.updateCurrentText(e.target.value, emitToSocket)}
+          onChange={(e) => context.updateTextContent(e.target.value, emitToSocket)}
           placeholder="Enter text"
           style={{ padding: '5px', fontSize: '16px', color:context.currentColor }}
           autoFocus  

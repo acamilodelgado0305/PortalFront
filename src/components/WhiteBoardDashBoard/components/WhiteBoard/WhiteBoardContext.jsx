@@ -19,14 +19,14 @@ const WhiteBoardProvider = ({ children }) => {
     return useContext(WhiteBoardContext);
   };
 
-  const changeCurrentDrawTool = (value, emitToSocket) => {
+  const updateDrawTool = (value, emitToSocket) => {
     setCurrentDrawTool(value);
     if (emitToSocket && socket) {
       socket.emit(events.CHANGE_CURRENT_DRAW_TOOL, value);
     }
   };
 
-  const changeLineWidth = (value, emitToSocket) => {
+  const updateLineWidth = (value, emitToSocket) => {
     setLineWidth(value);
     if (emitToSocket && socket) {
       socket.emit(events.CHANGE_LINE_WIDTH, value);
@@ -86,7 +86,6 @@ const WhiteBoardProvider = ({ children }) => {
       let shouldDeleteLine = false;
       if (tool === "rectangle") {
         const [x1, y1, x2, y2] = points;
-
         if (
           position.x >= Math.min(x1, x2) &&
           position.x <= Math.max(x1, x2) &&
@@ -129,12 +128,26 @@ const WhiteBoardProvider = ({ children }) => {
       socket.emit(events.MOUSE_MOVE_ERASE, updatedLines);
     }
   };
+  const handleMouseUp = (emitToSocket) => {
+       setIsDrawing(false);
+    if (drawingMode === "draw") {
+      const newLine = {
+        points: currentLine,
+        color: currentColor,
+        width: lineWidth,
+        tool: currentDrawTool, 
+      };
+      setLines([...lines, newLine]);
+    }
 
-  const erase = (updatedLines) => {
-    setLines([]);
-    setLines(updatedLines);
+    setCurrentLine([]);
+
+    if (emitToSocket && socket) {
+      socket.emit(events.MOUSE_UP);
+    }
   };
 
+  
 const toogleTextMode = (emitToSocket) =>{
     setDrawingMode(drawingMode === "text" ? "draw" : "text");
   if (emitToSocket && socket) {
@@ -161,24 +174,7 @@ const toogleDrugMode = (emitToSocket)=>{
     }
   };
 
-  const handleMouseUp = (emitToSocket) => {
-       setIsDrawing(false);
-    if (drawingMode === "draw") {
-      const newLine = {
-        points: currentLine,
-        color: currentColor,
-        width: lineWidth,
-        tool: currentDrawTool, 
-      };
-      setLines([...lines, newLine]);
-    }
 
-    setCurrentLine([]);
-
-    if (emitToSocket && socket) {
-      socket.emit(events.MOUSE_UP);
-    }
-  };
 
 // WITHEBOARD TEXT
 const [isWriting, setIsWriting] = useState(false)  
@@ -187,8 +183,7 @@ const [currentTextPosition, setCurrentTextPosition] = useState({x:0,y:0});
 const [texts, setTexts] = useState([]);
 
 
-
-const initializeTextPosition = (position, emitToSocket) => {
+const setTextPosition = (position, emitToSocket) => {
    if (emitToSocket && socket) { 
     setIsWriting(true);
     socket.emit(events.TEXT_POSITION_INITIALIZED, position); 
@@ -196,8 +191,7 @@ const initializeTextPosition = (position, emitToSocket) => {
   setCurrentTextPosition({ x: position.x, y: position.y });
 };
 
-
-const updateCurrentText = (text, emitToSocket) => {
+const updateTextContent = (text, emitToSocket) => {
   setCurrentText(text);
   if (emitToSocket && socket) {
     socket.emit(events.CURRENT_TEXT_UPDATED, text); 
@@ -237,11 +231,11 @@ const handleRemoveText = (position) => {
         texts,
         setTexts,
         setCurrentTextPosition,
-        updateCurrentText, 
+        updateTextContent, 
         currentTextPosition,
         setCurrentText,
         currentText,
-        initializeTextPosition,
+        setTextPosition,
         useWhiteBoard,
         lines,
         setLines,
@@ -256,15 +250,14 @@ const handleRemoveText = (position) => {
         toogleTextMode,
         currentColor,
         changeColor,
-        changeCurrentDrawTool,
+        updateDrawTool,
         handleMouseDown,
         handleMouseUp,
         handleMouseMoveDraw,
         handleMouseMoveErase,
-        erase,
         toggleDrawingMode,
         lineWidth,
-        changeLineWidth,
+        updateLineWidth,
       }}
     >
       {children}

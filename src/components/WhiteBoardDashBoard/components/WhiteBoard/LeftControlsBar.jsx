@@ -140,7 +140,7 @@ const LineWidthPickerButton = ({ context }) => {
           max="20"
           value={context?.lineWidth || 2}
           onChange={(e) =>
-            context.changeLineWidth(Number(e.target.value), emitToSocket)
+            context.updateLineWidth(Number(e.target.value), emitToSocket)
           }
           style={{
             position: "absolute",
@@ -179,7 +179,7 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
               type={context.currentDrawTool === tool.name? "primary":"danger"}
               key={tool.name}
               onClick={() =>
-                context.changeCurrentDrawTool(tool.name, emitToSocket)
+                context.updateDrawTool(tool.name, emitToSocket)
               }
               icon={tool.icon}
             />
