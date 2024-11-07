@@ -61,16 +61,19 @@ const UndoRedoButtons = ({ context }) => (
     <FloatButton
       className="static"
       shape={shapeForm}
+      onClick={() => context.returnToPrevious()} 
       icon={<IoReturnUpBack />}
     />
     {/* Botón para rehacer */}
     <FloatButton
       className="static"
       shape={shapeForm}
+      onClick={() => context.next()} 
       icon={<IoReturnUpForward />}
     />
   </>
 );
+
 
 
 const ZoomButton = ({context}) =>{

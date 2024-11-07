@@ -120,7 +120,7 @@ const WhiteBoardProvider = ({ children }) => {
 
       return !shouldDeleteLine;
     });
-
+    saveCurrentShapes(lines,texts);
     setLines(updatedLines);
     handleRemoveText(position);
 
@@ -129,6 +129,7 @@ const WhiteBoardProvider = ({ children }) => {
     }
   };
   const handleMouseUp = (emitToSocket) => {
+       saveCurrentShapes(lines,texts);
        setIsDrawing(false);
     if (drawingMode === "draw") {
       const newLine = {
@@ -200,6 +201,7 @@ const updateTextContent = (text, emitToSocket) => {
 
 
 const addTextToList = (emitToSocket) => {
+  saveCurrentShapes(lines,texts);
   setTexts([...texts, { text: currentText, position: currentTextPosition, color: currentColor }]);
   setCurrentText('');
   setCurrentTextPosition({x: 0, y: 0});
@@ -210,6 +212,7 @@ const addTextToList = (emitToSocket) => {
 };
 
 const handleRemoveText = (position) => {
+  saveCurrentShapes(lines,texts);
   const tolerance = 10; 
   setTexts((prevTexts) =>
     prevTexts.filter((item) => {
@@ -222,6 +225,7 @@ const handleRemoveText = (position) => {
 };
 
 const clearWhiteBoard = (emitToSocket) => {
+  saveCurrentShapes(lines,texts);
   setLines([]);
   setTexts([]);
   window.dispatchEvent(new CustomEvent('clearWhiteBoardImages'));
@@ -230,10 +234,48 @@ const clearWhiteBoard = (emitToSocket) => {
   } 
 };
 
+// Lista para guardar la información actual de la pizarra.
+const [historyShapes, setHistoryShapes] = useState([]);
+const [currentPosition, setCurrentPosition] = useState(0);
+
+// Guardar las formas actuales en el historial
+const saveCurrentShapes = (lines, texts) => {
+  const newPosition = historyShapes.length +1;
+  setHistoryShapes([...historyShapes, { lines, texts }]);
+  setCurrentPosition(newPosition)
+}
+
+// Función para regresar al historial anterior
+const returnToPrevious = () => {
+  console.error('')
+  console.log('currentPosition '+currentPosition)
+  console.log('historyShapes.length'+historyShapes.length )
+  if (currentPosition > 0) {
+    const previousState = historyShapes[currentPosition - 1];
+    setCurrentPosition(currentPosition - 1);
+
+    setLines(previousState.lines);
+    setTexts(previousState.texts);
+  }
+}
+
+// Función para avanzar al siguiente estado del historial
+const next = () => {
+  console.log('currentPosition '+currentPosition)
+  if (currentPosition < historyShapes.length - 1) {
+    const nextState = historyShapes[currentPosition + 1];
+    setCurrentPosition(currentPosition + 1);
+    setLines(nextState.lines);
+    setTexts(nextState.texts);
+  }
+}
+
 
   return (
     <WhiteBoardContext.Provider
       value={{
+        next, // modificar nombre
+        returnToPrevious, // modificar nombre
         toogleDrugMode,
         isWriting,
         addTextToList,
