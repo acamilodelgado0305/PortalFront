@@ -20,55 +20,62 @@ import {
 
 import { RiDeleteBin6Line } from "react-icons/ri";
 const emitToSocket = true;
-const LeftPosition = 100;
 
 function LeftControlsBar({ context }) {
 
   return (
     <div className="flex gap-1 flex-col py-2 pl-2 absolute">
-        <DruggerButton context={context} /> 
+      <DruggerButton context={context} /> 
       <TextBotton  context={context} />
-    
-     
       <CurrentDrawToolPicker context={context} />
       <LineWidthPicker context={context} />
-      <ColorOption
-        changeColor={context.changeColor}
-        currentColor={context.currentColor}
+      <ColorOption context={context} />
+      <PencilEraserToggleButton  context={context} />
+     
+    {/*  // boton de eliminar */}
+      <FloatButton
+      className="static"
+       icon={<RiDeleteBin6Line/>}
       />
+    {/*  // zoom de eliminar */}
+      <FloatButton
+       className="static"
+       icon={true ? <BsZoomIn/> :<BsZoomOut /> }
+       />
 
+       
+       {/* boton volver atras */}
       <FloatButton
-        onClick={() => {
-          context.toggleDrawingMode(emitToSocket);
-        }}
-        type={context.drawingMode != "erase" ? "primary" : "danger"}
-        icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
-        style={{ position: 'static' }}
-      />
-
-      <FloatButton
-      icon={<RiDeleteBin6Line/>}
-      style={{ position: 'static' }}
-      />
-        <FloatButton
-      icon={true ? <BsZoomIn/> :<BsZoomOut /> }
-      style={{ position: 'static' }}
-      />
-      <FloatButton
+      className="static"
       icon={<IoReturnUpBack/>  }
-      style={{ position: 'static' }}
       />
+      {/* boton adelante */}
        <FloatButton
-      icon={<IoReturnUpForward/>  }
-      style={{ position: 'static' }}
-      /> 
+       className="static"
+       icon={<IoReturnUpForward/>  }
+       /> 
     </div>
   );
 }
 // 470  554 596 596+42= 638
 export default LeftControlsBar;
 
-const ColorOption = ({ changeColor, currentColor }) => {
+const PencilEraserToggleButton = ({context}) =>{
+  return (<>
+   <FloatButton
+       className="static"  onClick={() => { context.toggleDrawingMode(emitToSocket); 
+        }}
+        type={context.drawingMode != "erase" ? "primary" : "danger"}
+        icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
+        />
+  
+  </>)
+}
+
+
+
+
+const ColorOption = ({ context }) => {
   const [show, setShow] = useState(false);
   const colors = ["red", "blue", "green", "yellow"];
  
@@ -80,7 +87,7 @@ const ColorOption = ({ changeColor, currentColor }) => {
           {colors.map((color, index) => (
             <FloatButton
               key={color}
-              onClick={() => changeColor(color, emitToSocket)}
+              onClick={() => context.changeColor(color, emitToSocket)}
               style={{ position: 'absolute',top:360,left:50 + index * 50 }}
               icon={<FaCircle color={color} />}
             />
@@ -88,15 +95,14 @@ const ColorOption = ({ changeColor, currentColor }) => {
         </>
       )}
       <FloatButton
+        className="static"
         onClick={() => setShow(!show)}
         type={"danger"}
-        style={{ position: 'static' }}
         icon={<IoColorPaletteOutline />}
       />
     </>
   );
 };
-// 386 + 42 428 
 
 const LineWidthPicker = ({ context }) => {
   const [show, setShow] = useState(false);
@@ -122,8 +128,8 @@ const LineWidthPicker = ({ context }) => {
         />
       ) }
       <FloatButton
+        className="static"
         type={"danger"}
-        style={{ position: 'static' }}
         icon={<HighlightOutlined />}
         onClick={() => setShow(!show)}
       />
@@ -133,11 +139,11 @@ const LineWidthPicker = ({ context }) => {
 
 const CurrentDrawToolPicker = ({ context }) => {
   const tools = [
-    { name: "rectangle", icon: <FaRegSquare /> }, //184
-    { name: "circle", icon: <FaRegCircle /> }, // 226
-    { name: "straightLine ", icon: <LineOutlined /> }, // 268
-     {name:'arrow', icon:<FaLongArrowAltRight/>}, // 302
-    { name: "line", icon: <SignatureOutlined /> }, // 344
+    { name: "rectangle", icon: <FaRegSquare /> }, 
+    { name: "circle", icon: <FaRegCircle /> },
+    { name: "straightLine ", icon: <LineOutlined /> },
+     {name:'arrow', icon:<FaLongArrowAltRight/>}, 
+    { name: "line", icon: <SignatureOutlined /> },
   ];
  
    return (
@@ -162,32 +168,32 @@ const CurrentDrawToolPicker = ({ context }) => {
 const TextBotton = ({context}) =>{
 
   return (
-    <div>
+    <>
       <FloatButton
+      className="static"
         onClick={() => {
           context.toogleTextMode(emitToSocket);
         }}
         type={context.drawingMode === "text" ? "primary" : "danger"}
         icon={<FontColorsOutlined />}
-        style={{ position: 'static' }}
       />
-    </div>
+    </>
   )
 }
 
 const DruggerButton = ({context})=>{
 
   return(
-    <div>
+    <>
       <FloatButton
+        className="static"
         onClick={() => {
           context.toogleDrugMode(emitToSocket);
         }}
         type={context.drawingMode === "hand" ? "primary" : "danger"}
         icon={context.drawingMode === "hand"? <FaRegHandRock />:<FaRegHandPaper />}
-        style={{ position: 'static' }}
       />
-    </div>
+    </>
   )
 }
 
