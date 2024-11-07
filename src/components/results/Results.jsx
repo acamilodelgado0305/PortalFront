@@ -24,7 +24,7 @@ const Results = () => {
   });
 
   const [showFilterModal, setShowFilterModal] = useState({
-    price: false,
+    priceRange: false,
     country: false,
     availability: false,
     specialty: false,
@@ -33,7 +33,7 @@ const Results = () => {
   });
 
   const filterOptions = {
-    priceRange: ['$10 - $25', '$25 - $50', '$50 - $75', '$75 - $100+'],
+    priceRange: [0, 100],
     country: [
       { code: 'us', name: 'Estados Unidos' },
       { code: 'es', name: 'España' },
@@ -90,7 +90,7 @@ const Results = () => {
 
   const clearFilters = () => {
     setActiveFilters({
-      priceRange: '',
+      priceRange: [0, 100],
       country: '',
       availability: '',
       specialty: '',
@@ -112,11 +112,11 @@ const Results = () => {
       );
     }
 
-    if (activeFilters.priceRange) {
-      const [min, max] = activeFilters.priceRange.replace(/[^0-9.-]+/g, '').split('-').map(Number);
+    if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
+      const [min, max] = activeFilters.priceRange;
       filtered = filtered.filter(teacher => {
-        const rate = teacher.hourlyRate;
-        return rate >= min && (max ? rate <= max : true);
+        const rate = parseFloat(teacher.hourlyRate);
+        return rate >= min && rate <= max;
       });
     }
 
