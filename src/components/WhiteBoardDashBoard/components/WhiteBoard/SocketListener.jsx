@@ -20,6 +20,8 @@ function SocketListener({context, socket}) {
         socket.on(events.CLEAR_WHITEBOARD,context.clearWhiteBoard);
         socket.on(events.UNDO_BOARD_STATE, context.undo);
         socket.on(events.REDO_BOARD_STATE, context.redo);
+        socket.on(events.GO_TO_NEXT_PAGE, context.goToNextPage);
+        socket.on(events.GO_TO_PREVIOUS_PAGE, context.goToPreviousPage);
       }
 
 

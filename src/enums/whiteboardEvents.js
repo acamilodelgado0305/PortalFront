@@ -20,7 +20,9 @@ export const events = {
     TOOGLE_DRUG_MODE:'toogleDrugMode',
     CLEAR_WHITEBOARD: 'clearWhiteBoard',
     UNDO_BOARD_STATE:'undoBoardState',
-    REDO_BOARD_STATE:'redoBoardState'
+    REDO_BOARD_STATE:'redoBoardState',
+    GO_TO_NEXT_PAGE:'goToNextPage',
+    GO_TO_PREVIOUS_PAGE:'goToPreviousPage'
 
   };
   

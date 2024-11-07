@@ -5,6 +5,7 @@ import { BsTriangle } from "react-icons/bs";
 
 function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToNextPage, goToPreviousPage}) {
   const shapeForm =  "square"||"circle"; 
+  const emitToSocket = true;
   return (
     <div className="flex justify-between items-center absolute w-full px-[5vw] bottom-[10vh]">
       <FloatButton
@@ -16,7 +17,7 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToN
             style={{ transform: "rotate(-90deg)" }}
           />
         }
-        onClick={goToPreviousPage}
+        onClick={()=>goToPreviousPage(emitToSocket)}
       />
       <div className="flex gap-1">
       <FloatButton
@@ -48,7 +49,7 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToN
           />
 
         }
-        onClick={goToNextPage}
+        onClick={()=>goToNextPage(emitToSocket)}
       />
     </div>
   );

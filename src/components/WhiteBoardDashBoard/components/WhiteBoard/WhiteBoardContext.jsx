@@ -29,15 +29,19 @@ const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
  const [currentPage, setCurrentPage] = useState(1);
 
-const goToNextPage = () => {
-  setCurrentPage(currentPage + 1); // Falta socket
-}
+ const goToNextPage = (emitToSocket) => {
+  setCurrentPage(currentPage + 1); 
+  if (emitToSocket && socket) {
+    socket.emit(events.GO_TO_NEXT_PAGE); 
+  }
+};
 
-const goToPreviousPage = () => {
+const goToPreviousPage = (emitToSocket) => {
   setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage); 
-}
-
-
+  if (emitToSocket && socket) {
+    socket.emit(events.GO_TO_PREVIOUS_PAGE); 
+  }
+};
 
 
   const updateDrawTool = (value, emitToSocket) => {
