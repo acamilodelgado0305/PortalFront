@@ -27,6 +27,19 @@ const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
     return useContext(WhiteBoardContext);
   };
 
+ const [currentPage, setCurrentPage] = useState(1);
+
+const goToNextPage = () => {
+  setCurrentPage(currentPage + 1); // Falta socket
+}
+
+const goToPreviousPage = () => {
+  setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage); 
+}
+
+
+
+
   const updateDrawTool = (value, emitToSocket) => {
     setCurrentDrawTool(value);
     if (emitToSocket && socket) {
@@ -145,7 +158,8 @@ const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
         points: currentLine,
         color: currentColor,
         width: lineWidth,
-        tool: currentDrawTool, 
+        tool: currentDrawTool,
+        page: currentPage 
       };
       setLines([...lines, newLine]);
     }
@@ -207,7 +221,7 @@ const updateTextContent = (text, emitToSocket) => {
 
 const addTextToList = (emitToSocket) => {
   saveBoardState(lines,texts);
-  setTexts([...texts, { text: currentText, position: currentTextPosition, color: currentColor }]);
+  setTexts([...texts, { text: currentText, position: currentTextPosition, color: currentColor, page:currentPage }]);
   setCurrentText('');
   setCurrentTextPosition({x: 0, y: 0});
   setIsWriting(false);
@@ -230,16 +244,20 @@ const handleRemoveText = (position) => {
 };
 
 const clearWhiteBoard = (emitToSocket) => {
-  saveBoardState(lines,texts);
-  setLines([]);
-  setTexts([]);
+  saveBoardState(lines, texts);
+
+  const newLines = lines.filter(line => line.page !== currentPage);
+  const newTexts = texts.filter(text => text.page !== currentPage);
+  setLines(newLines);
+  setTexts(newTexts);
+
   window.dispatchEvent(new CustomEvent('clearWhiteBoardImages'));
+
   if (emitToSocket && socket) {
     socket.emit(events.CLEAR_WHITEBOARD);
-  } 
+  }
 };
 
-// save undo buttons
 const saveBoardState = (lines, texts) => {
   const newHistoryIndex = boardHistory.length;
   setBoardHistory([...boardHistory, { lines, texts }]);
@@ -254,7 +272,6 @@ const undo = (emitToSocket) => {
     setTexts(previousState.texts);
   }
   if (emitToSocket && socket) {
-    console.log('emitiendo? UNDO'+ events.UNDO_BOARD_STATE)
     socket.emit(events.UNDO_BOARD_STATE);
   } 
 };
@@ -268,19 +285,9 @@ const redo = (emitToSocket) => {
   }
   if (emitToSocket && socket) {
     socket.emit(events.REDO_BOARD_STATE);
-     console.log('emitiendo? REDO '+ events.REDO_BOARD_STATE)
   } 
 };
 
-const [currentPage, setCurrentPage] = useState(1);
-
-const goToNextPage = () => {
-  setCurrentPage(currentPage + 1);
-}
-
-const goToPreviousPage = () => {
-  setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage);
-}
 
 
   return (
