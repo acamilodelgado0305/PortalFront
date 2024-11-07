@@ -4,20 +4,27 @@ import TextInput from "./TextInput";
 
 function DrawingCanvas({ context }) {
   const containerRef = useRef(null);
-  const [stageSize, setStageSize] = useState({
-    width: 0,
+  const [canvasSize, setCanvasSize] = useState({
+    width: window.innerWidth,
     height: window.innerHeight,
   });
+
   const emitToSocket = true;
 
   useEffect(() => {
-    if (containerRef.current) {
-      setStageSize({
-        width: containerRef.current.clientWidth,
+    const updateCanvasSize = () => {
+      setCanvasSize({
+        width: window.innerWidth,
         height: window.innerHeight,
       });
-    }
-  }, [containerRef.current]);
+    };
+
+    window.addEventListener("resize", updateCanvasSize);
+
+    return () => {
+      window.removeEventListener("resize", updateCanvasSize);
+    };
+  }, []);
 
   const handleMove = (e) => {
     const position = e.target.getStage().getPointerPosition();
@@ -40,8 +47,8 @@ function DrawingCanvas({ context }) {
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
       <Stage
-        width={stageSize.width}
-        height={stageSize.height}
+        width={canvasSize.width} 
+        height={canvasSize.height} 
         onMouseDown={handleMouseDown}
         onMouseUp={() => context.handleMouseUp(emitToSocket)}
         onMouseMove={handleMove}
@@ -52,7 +59,6 @@ function DrawingCanvas({ context }) {
             <CurrentShape context={context} />
           </Group>
 
-          {/* Renderiza los textos en el canvas */}
           {context.texts.map((item, index) => (
             <Text
               key={index}
@@ -60,7 +66,7 @@ function DrawingCanvas({ context }) {
               y={item.position.y}
               text={item.text}
               fontSize={20}
-              fill={item.color || "black"} 
+              fill={item.color || "black"}
             />
           ))}
         </Layer>

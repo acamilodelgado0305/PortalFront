@@ -26,15 +26,15 @@ function LeftControlsBar({ context }) {
 
   return (
     <div className="flex gap-1 flex-col py-2 pl-2 absolute h-full bg-[#FFFFFF] z-[99]">
-      <DruggerButton context={context} /> 
+      <PencilEraserToggleButton  context={context} />
       <TextBotton  context={context} />
-      <CurrentDrawToolPickerButtons context={context} />
       <LineWidthPickerButton context={context} />
       <ColorOptionButton context={context} />
-      <PencilEraserToggleButton  context={context} />
+      <UndoRedoButtons context={context} />
+      <CurrentDrawToolPickerButtons context={context} />
       <TrashBinClearerButton context={context}/>
       <ZoomButton context={context}/>
-      <UndoRedoButtons context={context} />
+       <DruggerButton context={context} />
     </div>
   );
 }
@@ -108,6 +108,7 @@ const ColorOptionButton = ({ context }) => {
   const colors = ["red", "blue", "green", "yellow"];
   return (
     <>
+
       {show && (
         <>
           {colors.map((color, index) => (
@@ -115,7 +116,7 @@ const ColorOptionButton = ({ context }) => {
               shape={shapeForm}
               key={color}
               onClick={() => context.changeColor(color, emitToSocket)}
-              style={{ position: 'absolute',height:'43px',width:'43px',top:360,left:50 + index * 50 }}
+              style={{ position: 'absolute', height:'43px',width:'43px',left:50 + index * 50, top:139 }}
               icon={<FaCircle color={color} />}
             />
           ))}
@@ -148,7 +149,7 @@ const LineWidthPickerButton = ({ context }) => {
           }
           style={{
             position: "absolute",
-            top: 330,
+            top: 110,
             left: 55,
             cursor: "pointer",
           }}

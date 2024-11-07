@@ -11,6 +11,7 @@ function WhiteBoard({socket, context}) {
   style={{
     cursor:
       context.drawingMode === 'draw' ? pencilCursor :
+      context.drawingMode === 'hand' ? 'grab' :
       context.drawingMode === 'erase' ? eraserCursor :
       context.drawingMode === 'text' && textCursor 
       
