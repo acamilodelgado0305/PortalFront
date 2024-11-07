@@ -19,7 +19,8 @@ import {
 import { RiDeleteBin6Line } from "react-icons/ri";
 // GLOBAL
 const emitToSocket = true;
-const shapeForm =  "square"||"circle"; 
+const shapeForm =  "square"||"circle";
+import sizeIcon from  './utils/size-icon.svg' 
 
 function LeftControlsBar({ context }) {
 
@@ -159,7 +160,7 @@ const LineWidthPickerButton = ({ context }) => {
         className="static"
         shape={shapeForm}
         type={"danger"}
-        icon={<HighlightOutlined />}
+        icon={<img src={sizeIcon} alt="Size Icon" style={{ width: "20px", height: "20px" }} />}
         onClick={() => setShow(!show)}
       />
     </>
