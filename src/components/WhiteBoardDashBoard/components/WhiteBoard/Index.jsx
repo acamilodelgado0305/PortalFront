@@ -1,6 +1,6 @@
 import LeftControlsBar from './LeftControlsBar';
 import DrawingCanvas from './DrawingCanvas';
-import { pencilCursor, eraserCursor, textCursor } from './utils/cursorIcons.js';
+import { pencilCursor, eraserCursor, textCursor, zoomInCursor, zoomOutCursor } from './utils/cursorIcons.js';
 import SocketListener  from "./SocketListener.jsx"
 import { Button } from 'antd';
 
@@ -14,6 +14,7 @@ function WhiteBoard({socket, context}) {
       context.drawingMode === 'draw' ? pencilCursor :
       context.drawingMode === 'hand' ? 'grab' :
       context.drawingMode === 'erase' ? eraserCursor :
+      context.drawingMode === 'zoom' ? (context.zoomType == 'in' ? zoomInCursor : zoomOutCursor):
       context.drawingMode === 'text' && textCursor 
       
   , width:'100%',
