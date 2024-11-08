@@ -33,7 +33,7 @@ const Results = () => {
   });
 
   const filterOptions = {
-    priceRange: [0, 100],
+    priceRange: [10, 35],
     country: [
       { code: 'us', name: 'Estados Unidos' },
       { code: 'es', name: 'España' },
@@ -101,17 +101,18 @@ const Results = () => {
   };
 
   const applyFilters = () => {
-
     let filtered = [...teachers];
 
-
-    // Filtro por nombre
-    if (activeFilters.lastName) {
-      filtered = filtered.filter((teacher) =>
-        teacher.lastName?.toLowerCase().includes(activeFilters.lastName.toLowerCase())
-      );
+    // Filtro por nombre completo
+    if (activeFilters.fullName) {
+      const searchTerm = activeFilters.fullName.toLowerCase();
+      filtered = filtered.filter((teacher) => {
+        const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
+        return fullName.includes(searchTerm);
+      });
     }
 
+    // Filtro por rango de precio
     if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
       const [min, max] = activeFilters.priceRange;
       filtered = filtered.filter(teacher => {
@@ -120,6 +121,7 @@ const Results = () => {
       });
     }
 
+    // Filtro por país
     if (activeFilters.country) {
       const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
       if (selectedCountry) {
@@ -129,13 +131,33 @@ const Results = () => {
       }
     }
 
+    // Filtro por hablante nativo
     if (activeFilters.isNative) {
-      filtered = filtered.filter(teacher => teacher.languageLevel === 'native');
+      filtered = filtered.filter(teacher =>
+        teacher.languageLevel?.toLowerCase() === 'native'
+      );
     }
 
+    // Filtro por especialidad
     if (activeFilters.specialty) {
       filtered = filtered.filter(teacher =>
         teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+      );
+    }
+
+    // Filtro por idioma
+    if (activeFilters.language) {
+      filtered = filtered.filter(teacher =>
+        teacher.languages?.some(lang =>
+          lang.toLowerCase() === activeFilters.language.toLowerCase()
+        )
+      );
+    }
+
+    // Filtro por disponibilidad
+    if (activeFilters.availability) {
+      filtered = filtered.filter(teacher =>
+        teacher.availability?.includes(activeFilters.availability)
       );
     }
 

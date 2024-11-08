@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const Filters = ({
@@ -10,12 +10,22 @@ const Filters = ({
     setShowFilterModal
 }) => {
     const [priceRange, setPriceRange] = useState({
-        min: activeFilters.priceRange?.[0] || 0,
-        max: activeFilters.priceRange?.[1] || 100
+        min: activeFilters.priceRange?.[0] || 10,
+        max: activeFilters.priceRange?.[1] || 35
     });
 
-    const handleLastNameChange = (e) => {
-        setActiveFilters((prev) => ({ ...prev, lastName: e.target.value }));
+    useEffect(() => {
+        setPriceRange({
+            min: activeFilters.priceRange?.[0] || 10,
+            max: activeFilters.priceRange?.[1] || 35
+        });
+    }, [activeFilters.priceRange]);
+
+    const handleNameChange = (e) => {
+        setActiveFilters((prev) => ({ 
+            ...prev, 
+            fullName: e.target.value 
+        }));
     };
 
     const FilterModal = ({ title, options, onSelect, onClose, isOpen }) => {
@@ -75,79 +85,99 @@ const Filters = ({
         </div>
     );
 
-    const handleMinPriceChange = (e) => {
-        const newMin = Math.min(Number(e.target.value), priceRange.max);
+    const handleMinChange = (e) => {
+        const newMin = Math.min(Number(e.target.value), priceRange.max - 1);
         setPriceRange(prev => ({ ...prev, min: newMin }));
-        setActiveFilters(prev => ({ ...prev, priceRange: [newMin, priceRange.max] }));
+        setActiveFilters(prev => ({
+            ...prev,
+            priceRange: [newMin, prev.priceRange?.[1] || priceRange.max]
+        }));
     };
 
-    const handleMaxPriceChange = (e) => {
-        const newMax = Math.max(Number(e.target.value), priceRange.min);
+    const handleMaxChange = (e) => {
+        const newMax = Math.max(Number(e.target.value), priceRange.min + 1);
         setPriceRange(prev => ({ ...prev, max: newMax }));
-        setActiveFilters(prev => ({ ...prev, priceRange: [priceRange.min, newMax] }));
-    };
-
-    const calculateProgress = (value, min, max) => {
-        return ((value - min) / (max - min)) * 100;
+        setActiveFilters(prev => ({
+            ...prev,
+            priceRange: [prev.priceRange?.[0] || priceRange.min, newMax]
+        }));
     };
 
     return (
         <>
             <style>
                 {`
-                    .range-slider {
+                    .slider-container {
+                        position: relative;
+                        width: 100%;
+                        height: 40px;
+                    }
+
+                    .slider {
+                        position: absolute;
+                        pointer-events: none;
                         -webkit-appearance: none;
                         appearance: none;
                         width: 100%;
-                        height: 16px;
-                        border-radius: 4px;
-                        background: #e5e7eb;
-                        outline: none;
-                        margin: 10px 0;
+                        height: 2px;
+                        background: none;
+                        z-index: 3;
                     }
 
-                    .range-slider::-webkit-slider-thumb {
+                    .slider-track {
+                        position: absolute;
+                        width: 100%;
+                        height: 2px;
+                        background: #e5e7eb;
+                        z-index: 1;
+                    }
+
+                    .slider-range {
+                        position: absolute;
+                        height: 2px;
+                        background: #8b5cf6;
+                        z-index: 2;
+                    }
+
+                    .slider::-webkit-slider-thumb {
+                        pointer-events: auto;
                         -webkit-appearance: none;
                         appearance: none;
-                        margin-top: -0.18em;
-                        width: 12px;
-                        height: 12px;
+                        width: 24px;
+                        height: 24px;
+                        background: white;
+                        border: 2px solid #8b5cf6;
                         border-radius: 50%;
-                        background: #8b5cf6;
                         cursor: pointer;
-                        border: 1px solid white;
-                        box-shadow: 0 0 2px rgba(0,0,0,0.2);
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
 
-                    .range-slider::-moz-range-thumb {
-                        width: 16px;
-                        height: 18px;
-                        border-radius: 70%;
-                        background: #8b5cf6;
+                    .slider::-moz-range-thumb {
+                        pointer-events: auto;
+                        width: 24px;
+                        height: 24px;
+                        background: white;
+                        border: 2px solid #8b5cf6;
+                        border-radius: 50%;
                         cursor: pointer;
-                        border: 2px solid white;
-                        box-shadow: 0 0 2px rgba(0,0,0,0.2);
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
 
-                    .range-slider::-webkit-slider-runnable-track {
-                        height: 4px;
-                        background: linear-gradient(to right, #8b5cf6 var(--progress), #e5e7eb var(--progress));
-                        border-radius: 4px;
+                    .slider::-webkit-slider-thumb:hover {
+                        transform: scale(1.1);
                     }
 
-                    .range-slider::-moz-range-track {
-                        height: 4px;
-                        background: linear-gradient(to right, #8b5cf6 var(--progress), #e5e7eb var(--progress));
-                        border-radius: 4px;
+                    .slider::-moz-range-thumb:hover {
+                        transform: scale(1.1);
                     }
                 `}
             </style>
             <div className="flex flex-wrap items-center gap-4">
                 <input
                     type="text"
-                    placeholder="Buscar por nombre"
-                    value={activeFilters.lastName || ''}
-                    onChange={handleLastNameChange}
+                    placeholder="Buscar por nombre o apellido"
+                    value={activeFilters.fullName || ''}
+                    onChange={handleNameChange}
                     className="border border-gray-300 rounded-lg px-4 py-2"
                 />
                 
@@ -157,37 +187,46 @@ const Filters = ({
                         onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
                     >
                         <span>Precio por hora</span>
-                        <span className="text-gray-400">${priceRange.min} - ${priceRange.max}</span>
+                        <span className="text-gray-400">
+                            USD ${priceRange.min} - ${priceRange.max}
+                        </span>
                     </button>
 
                     {showFilterModal.priceRange && (
-                        <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20 p-6 w-64">
-                            <h3 className="font-semibold mb-4">Rango de Precio por Hora</h3>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm mb-1">Precio mínimo: ${priceRange.min}</label>
+                        <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20 p-6 w-80">
+                            <h3 className="font-semibold mb-6">Rango de Precio por Hora</h3>
+                            <div className="px-2">
+                                <div className="slider-container">
+                                    <div className="slider-track"></div>
+                                    <div 
+                                        className="slider-range"
+                                        style={{
+                                            left: `${((priceRange.min - 10) / 25) * 100}%`,
+                                            right: `${100 - ((priceRange.max - 10) / 25) * 100}%`
+                                        }}
+                                    ></div>
                                     <input
                                         type="range"
-                                        min="0"
-                                        max="100"
+                                        min="10"
+                                        max="35"
+                                        step="1"
                                         value={priceRange.min}
-                                        onChange={handleMinPriceChange}
-                                        className="range-slider"
-                                        style={{ '--progress': `${calculateProgress(priceRange.min, 0, 100)}%` }}
+                                        onChange={handleMinChange}
+                                        className="slider"
+                                    />
+                                    <input
+                                        type="range"
+                                        min="10"
+                                        max="35"
+                                        step="1"
+                                        value={priceRange.max}
+                                        onChange={handleMaxChange}
+                                        className="slider"
                                     />
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-sm mb-1">Precio máximo: ${priceRange.max}</label>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="100"
-                                        value={priceRange.max}
-                                        onChange={handleMaxPriceChange}
-                                        className="range-slider"
-                                        style={{ '--progress': `${calculateProgress(priceRange.max, 0, 100)}%` }}
-                                    />
+                                <div className="flex justify-between mt-6 text-sm text-gray-600">
+                                    <span>USD ${priceRange.min}</span>
+                                    <span>USD ${priceRange.max}</span>
                                 </div>
                             </div>
                         </div>
