@@ -1,24 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line } from 'recharts';
-import { Card, CardContent, CardHeader, Typography, CircularProgress, Grid, Box } from '@mui/material';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { Card, CardContent, Typography, CircularProgress, Grid, Box } from '@mui/material';
 
 const Dashboard = () => {
     const [teachers, setTeachers] = useState([]);
+    const [students, setStudents] = useState([]);
     const [teacherNationality, setTeacherNationality] = useState([]);
     const [teacherSubjects, setTeacherSubjects] = useState([]);
+    const [languageData, setLanguageData] = useState([]);
+    const [modalityData, setModalityData] = useState([]);
+    const [cityData, setCityData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('https://back.app.esturio.com/api/teachers');
-                if (!response.ok) throw new Error('Error al obtener los datos de profesores');
+                // Realizar ambas solicitudes en paralelo
+                const [teacherResponse, studentResponse] = await Promise.all([
+                    fetch('https://back.app.esturio.com/api/teachers'),
+                    fetch('https://back.app.esturio.com/api/students')
+                ]);
 
-                const data = await response.json();
-                setTeachers(data.data || []);
+                if (!teacherResponse.ok) throw new Error('Error al obtener los datos de profesores');
+                if (!studentResponse.ok) throw new Error('Error al obtener los datos de estudiantes');
 
-                setTeacherNationality(calculateNationalityData(data.data));
-                setTeacherSubjects(calculateSubjectData(data.data));
+                const teacherData = await teacherResponse.json();
+                const studentData = await studentResponse.json();
+
+                setTeachers(teacherData.data || []);
+                setStudents(studentData.data || []);
+
+                // Calcular datos para gráficos
+                setTeacherNationality(calculateDataByField(teacherData.data, 'countryOfBirth'));
+                setTeacherSubjects(calculateDataByField(teacherData.data, 'subjectYouTeach'));
+                setLanguageData(calculateDataByField(studentData.data, 'idioma'));
+                setModalityData(calculateDataByField(studentData.data, 'modalidad'));
+                setCityData(calculateDataByField(studentData.data, 'ciudad'));
             } catch (error) {
                 console.error('Error al cargar los datos:', error);
             } finally {
@@ -29,36 +46,15 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
-    const calculateNationalityData = (teachers) => {
-        const nationalityCount = teachers.reduce((acc, { countryOfBirth }) => {
-            acc[countryOfBirth] = (acc[countryOfBirth] || 0) + 1;
+    // Función para calcular datos para gráficos
+    const calculateDataByField = (data, field) => {
+        const countData = data.reduce((acc, item) => {
+            const key = item[field];
+            acc[key] = (acc[key] || 0) + 1;
             return acc;
         }, {});
-        return Object.keys(nationalityCount).map(nationality => ({ name: nationality, value: nationalityCount[nationality] }));
+        return Object.keys(countData).map(key => ({ name: key, value: countData[key] }));
     };
-
-    const calculateSubjectData = (teachers) => {
-        const subjectCount = teachers.reduce((acc, { subjectYouTeach = "Unknown" }) => {
-            acc[subjectYouTeach] = (acc[subjectYouTeach] || 0) + 1;
-            return acc;
-        }, {});
-        return Object.keys(subjectCount).map(subject => ({ name: subject, value: subjectCount[subject] }));
-    };
-
-    const sampleStudents = 150;
-    const sampleCourses = 10;
-    const samplePayments = [
-        { month: "Agosto", amount: 1200 },
-        { month: "Septiembre", amount: 2100 },
-        { month: "Octubre", amount: 1800 },
-        { month: "Noviembre", amount: 2300 }
-    ];
-    const studentGrowthData = [
-        { month: "Agosto", students: 120 },
-        { month: "Septiembre", students: 140 },
-        { month: "Octubre", students: 150 },
-        { month: "Noviembre", students: 160 }
-    ];
 
     return (
         <Box sx={{ padding: 3 }}>
@@ -68,19 +64,22 @@ const Dashboard = () => {
                 </Box>
             ) : (
                 <Grid container spacing={3}>
-                    <Grid item xs={12} sm={4}>
+                    {/* Total de Estudiantes */}
+                    <Grid item xs={12} sm={6}>
                         <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
                             <CardContent>
                                 <Typography variant="h6" color="text.secondary" gutterBottom>
                                     Total de Estudiantes
                                 </Typography>
                                 <Typography variant="h4" color="primary">
-                                    {sampleStudents}
+                                    {students.length}
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+
+                    {/* Total de Profesores */}
+                    <Grid item xs={12} sm={6}>
                         <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
                             <CardContent>
                                 <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -92,26 +91,17 @@ const Dashboard = () => {
                             </CardContent>
                         </Card>
                     </Grid>
+
+                    {/* Estudiantes por Idioma */}
                     <Grid item xs={12} sm={4}>
                         <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
                             <CardContent>
                                 <Typography variant="h6" color="text.secondary" gutterBottom>
-                                    Total de Cursos
+                                    Estudiantes por Idioma
                                 </Typography>
-                                <Typography variant="h4" color="primary">
-                                    {sampleCourses}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-                            <CardHeader title="Profesores por Nacionalidad" />
-                            <CardContent>
-                                <PieChart width={300} height={200}>
+                                <PieChart width={250} height={250}>
                                     <Pie
-                                        data={teacherNationality}
+                                        data={languageData}
                                         dataKey="value"
                                         nameKey="name"
                                         cx="50%"
@@ -119,8 +109,70 @@ const Dashboard = () => {
                                         outerRadius={80}
                                         fill="#82ca9d"
                                         label
-                                        isAnimationActive={true}
-                                        animationDuration={1000} // Duración de la animación en milisegundos
+                                    >
+                                        {languageData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Estudiantes por Modalidad */}
+                    <Grid item xs={12} sm={6}>
+                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                            <CardContent>
+                                <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    Estudiantes por Modalidad
+                                </Typography>
+                                <BarChart width={300} height={200} data={modalityData}>
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="value" fill="#8884d8" />
+                                </BarChart>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Estudiantes por Ciudad */}
+                    <Grid item xs={12} sm={6}>
+                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                            <CardContent>
+                                <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    Estudiantes por Ciudad
+                                </Typography>
+                                <BarChart width={300} height={200} data={cityData}>
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="value" fill="#82ca9d" />
+                                </BarChart>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Profesores por Nacionalidad */}
+                    <Grid item xs={12} sm={6}>
+                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                            <CardContent>
+                                <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    Profesores por Nacionalidad
+                                </Typography>
+                                <PieChart width={250} height={250}>
+                                    <Pie
+                                        data={teacherNationality}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={80}
+                                        fill="#8884d8"
+                                        label
                                     >
                                         {teacherNationality.map((entry, index) => (
                                             <Cell key={`cell-${index}`} />
@@ -132,64 +184,20 @@ const Dashboard = () => {
                         </Card>
                     </Grid>
 
+                    {/* Profesores por Materia */}
                     <Grid item xs={12} sm={6}>
                         <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-                            <CardHeader title="Pagos de Contabilidad" />
                             <CardContent>
-                                <BarChart width={300} height={200} data={samplePayments}>
-                                    <XAxis dataKey="month" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar
-                                        dataKey="amount"
-                                        fill="#8884d8"
-                                        isAnimationActive={true}
-                                        animationDuration={3000} // Duración de la animación
-                                    />
-                                </BarChart>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-                            <CardHeader title="Profesores por Materia" />
-                            <CardContent>
+                                <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    Profesores por Materia
+                                </Typography>
                                 <BarChart width={300} height={200} data={teacherSubjects}>
                                     <XAxis dataKey="name" />
                                     <YAxis />
                                     <Tooltip />
                                     <Legend />
-                                    <Bar
-                                        dataKey="value"
-                                        fill="#8884d8"
-                                        isAnimationActive={true}
-                                        animationDuration={1000}
-                                    />
+                                    <Bar dataKey="value" fill="#8884d8" />
                                 </BarChart>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-                            <CardHeader title="Crecimiento de Estudiantes Mensual" />
-                            <CardContent>
-                                <LineChart width={300} height={200} data={studentGrowthData}>
-                                    <XAxis dataKey="month" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="students"
-                                        stroke="#8884d8"
-                                        strokeWidth={2}
-                                        isAnimationActive={true}
-                                        animationDuration={1000}
-                                    />
-                                </LineChart>
                             </CardContent>
                         </Card>
                     </Grid>

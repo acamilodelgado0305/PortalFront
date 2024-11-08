@@ -1,31 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'antd';
 
-// Datos simulados para estudiantes
-const sampleStudents = [
-    { id: 1, name: "Adriana Patricia Benítez Sánchez", subjects: ["Informática"], nextLesson: "2024-10-25", img: null },
-    { id: 2, name: "Efraín Gonzalez", subjects: ["Programación", "Informática"], nextLesson: "2024-10-26", img: null },
-    { id: 3, name: "Juan Camilo", subjects: ["Programación"], nextLesson: "2024-10-27", img: null },
-    { id: 4, name: "Sarah García", subjects: ["Programación", "TIC"], nextLesson: "2024-10-28", img: null },
-    { id: 5, name: "Pedro Turriago", subjects: ["Programación"], nextLesson: "2024-10-29", img: null }
-];
-
 const StudentsSection = () => {
-    const [students, setStudents] = useState(sampleStudents);
+    const [students, setStudents] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
 
-    // Esta función simula la llamada a la API para obtener estudiantes
-    // En el futuro, puedes conectar esto a una API
+    // Función para obtener los estudiantes desde la API
     useEffect(() => {
         const fetchStudents = async () => {
-            // Simulación de API usando los datos ficticios
-            // En el futuro, puedes reemplazar esto con una llamada a una API
-            // Ejemplo:
-            // const response = await fetch('https://api.tu-sitio.com/students');
-            // const data = await response.json();
-            // setStudents(data);
-            setStudents(sampleStudents); // Usamos datos ficticios por ahora
+            try {
+                const response = await fetch('https://back.app.esturio.com/api/students');
+                if (!response.ok) throw new Error('Error al obtener los datos de estudiantes');
+
+                const data = await response.json();
+                setStudents(data.data || []); // Asignar los datos obtenidos de la API
+            } catch (error) {
+                console.error('Error al cargar los datos de estudiantes:', error);
+            }
         };
 
         fetchStudents();
@@ -50,15 +42,15 @@ const StudentsSection = () => {
             <div className="flex items-center mb-4">
                 <div className="w-16 h-16 bg-gray-300 rounded-full flex-shrink-0"></div>
                 <div className="ml-4">
-                    <h4 className="text-lg font-bold">{student.name}</h4>
-                    <p className="text-sm text-gray-500">{student.subjects.join(", ")}</p>
+                    <h4 className="text-lg font-bold">{student.nombre}</h4>
+                    <p className="text-sm text-gray-500">Materias: {student.subjects?.join(", ") || "No especificado"}</p>
                 </div>
             </div>
             <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">Next lesson: {student.nextLesson}</p>
+                <p className="text-sm text-gray-600">Próxima clase: {student.nextLesson || "No programada"}</p>
                 <Button
                     type="primary"
-                    style={{ backgroundColor: '#6B46C1', borderColor: '#6B46C1' }} // '#6B46C1' es el valor HEX de `bg-purple-500`
+                    style={{ backgroundColor: '#6B46C1', borderColor: '#6B46C1' }}
                     onClick={() => showModal(student)}
                 >
                     Ver detalles
@@ -89,9 +81,12 @@ const StudentsSection = () => {
             >
                 {selectedStudent && (
                     <div>
-                        <p><strong>Nombre:</strong> {selectedStudent.name}</p>
-                        <p><strong>Materias:</strong> {selectedStudent.subjects.join(", ")}</p>
-                        <p><strong>Próxima Lección:</strong> {selectedStudent.nextLesson}</p>
+                        <p><strong>Nombre:</strong> {selectedStudent.nombre}</p>
+                        <p><strong>Materias:</strong> {selectedStudent.subjects?.join(", ") || "No especificado"}</p>
+                        <p><strong>Próxima Lección:</strong> {selectedStudent.nextLesson || "No programada"}</p>
+                        <p><strong>Idioma:</strong> {selectedStudent.idioma || "No especificado"}</p>
+                        <p><strong>Modalidad:</strong> {selectedStudent.modalidad || "No especificado"}</p>
+                        <p><strong>Ciudad:</strong> {selectedStudent.ciudad || "No especificado"}</p>
                     </div>
                 )}
             </Modal>
