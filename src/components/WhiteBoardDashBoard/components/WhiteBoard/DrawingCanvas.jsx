@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Stage, Layer, Line, Rect, Circle, Group, Text, Arrow, RegularPolygon  } from "react-konva";
+import { Stage, Layer, Line, Rect, Circle, Group, Text, Arrow  } from "react-konva";
 import TextInput from "./TextInput";
 
 function DrawingCanvas({ context }) {
@@ -44,6 +44,12 @@ function DrawingCanvas({ context }) {
   const handleMouseDown = (e) => {
     const stage = e.target.getStage();
     const position = e.target.getStage().getPointerPosition();
+
+    if (context.drawingMode === 'hand') {
+      context.setIsGrabbing(true); 
+    }
+
+
     if (context.drawingMode === "text") {
       context.setTextPosition(position, emitToSocket);
       return;
@@ -53,9 +59,9 @@ function DrawingCanvas({ context }) {
 
     context.handleMouseDown(position, emitToSocket);
   };
-
+// quiero que cuando context.drawingMode === 'hand' y se aga
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
+    <div ref={containerRef} style={{ width: "100%", height: "100%" }} className={(context?.drawingMode === 'hand') && "drag-whiteboard-handle"} >
       <Stage
         width={canvasSize.width}
         height={canvasSize.height}
@@ -64,7 +70,9 @@ function DrawingCanvas({ context }) {
         x={context.stagePosition.x}
         y={context.stagePosition.y}
         onMouseDown={handleMouseDown}
-        onMouseUp={() => context.handleMouseUp(emitToSocket)}
+        onMouseUp={() => {
+          context.setIsGrabbing(false); 
+          context.handleMouseUp(emitToSocket);}}
         onMouseMove={handleMove}
       >
         <Layer>

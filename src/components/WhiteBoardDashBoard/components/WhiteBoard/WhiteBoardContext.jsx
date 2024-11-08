@@ -216,6 +216,8 @@ const toogleDrugMode = (emitToSocket)=>{
   }
 }
 
+const [isgrabbing, setIsGrabbing] = useState(false);
+
 
   const toggleDrawingMode = (emitToSocket) => {
     if (drawingMode === "text") {
@@ -350,6 +352,8 @@ const zoomListener = (newZoom, stage) =>{
   return (
     <WhiteBoardContext.Provider
       value={{
+        isgrabbing, 
+        setIsGrabbing,
         zoom, 
         stagePosition,
         zoomOnPosition,

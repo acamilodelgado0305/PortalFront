@@ -3,21 +3,14 @@ import DrawingCanvas from './DrawingCanvas';
 import { pencilCursor, eraserCursor, textCursor, zoomInCursor, zoomOutCursor } from './utils/cursorIcons.js';
 import SocketListener  from "./SocketListener.jsx"
 import { Button } from 'antd';
-
+import { Rnd } from "react-rnd";
 function WhiteBoard({socket, context}) {
   
   
   return (
 <div
   style={{
-    cursor:
-      context.drawingMode === 'draw' ? pencilCursor :
-      context.drawingMode === 'hand' ? 'grab' :
-      context.drawingMode === 'erase' ? eraserCursor :
-      context.drawingMode === 'zoom' ? (context.zoomType == 'in' ? zoomInCursor : zoomOutCursor):
-      context.drawingMode === 'text' && textCursor 
-      
-  , width:'100%',
+   width:'100%',
   height:'100%'
 }}
   
@@ -33,10 +26,25 @@ function WhiteBoard({socket, context}) {
       <LeftControlsBar
        context={context}
       />
-      <DrawingCanvas
-      context={context}
-      />
-  
+     
+      <Rnd
+        default={{
+          x: 0,
+          y: 0
+        }}
+        dragHandleClassName={"drag-whiteboard-handle"}
+        style={{  cursor:
+          context.drawingMode === 'draw' ? pencilCursor :
+          context.drawingMode === 'hand' ? (context.isgrabbing ? 'grabbing' :'grab') :
+          context.drawingMode === 'erase' ? eraserCursor :
+          context.drawingMode === 'zoom' ? (context.zoomType == 'in' ? zoomInCursor : zoomOutCursor):
+          context.drawingMode === 'text' && textCursor 
+          
+        }}
+      >
+        <DrawingCanvas context={context} />
+      </Rnd>
+     {/** */}
     </div>
   );
 }

@@ -50,7 +50,6 @@ function BoardImage({ url, room, onClose, socket, context }) {
               height: "100%",
               objectFit: "contain",
               borderRadius: 5,
-              cursor:(context?.drawingMode === 'hand' && 'grabbing') 
             }}
           />
         </div>
