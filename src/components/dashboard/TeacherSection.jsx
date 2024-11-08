@@ -15,7 +15,7 @@ const TeachersSection = ({ onViewTeacher }) => {
     const [approvalModalVisible, setApprovalModalVisible] = useState(false);
 
     const [activeFilters, setActiveFilters] = useState({
-        priceRange: [10, 100],
+        priceRange: [10, 35],
         fullName: '',
         country: '',
         availability: '',
@@ -132,7 +132,7 @@ const TeachersSection = ({ onViewTeacher }) => {
 
     const clearFilters = () => {
         setActiveFilters({
-            priceRange: [10, 100],
+            priceRange: [10, 35],
             fullName: '',
             country: '',
             availability: '',
