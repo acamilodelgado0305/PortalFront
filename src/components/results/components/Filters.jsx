@@ -208,7 +208,7 @@ const Filters = ({
                                     <input
                                         type="range"
                                         min="10"
-                                        max="35"
+                                        max="100"
                                         step="1"
                                         value={priceRange.min}
                                         onChange={handleMinChange}
