@@ -74,8 +74,11 @@ const TeachersSection = ({ onViewTeacher }) => {
 
     const applyFilters = () => {
         let filtered = [...teachers];
+
+        // Filtro por estado (activo/inactivo)
         filtered = filtered.filter(teacher => teacher.status === !showInactive);
 
+        // Filtro por nombre completo
         if (activeFilters.fullName) {
             const searchTerm = activeFilters.fullName.toLowerCase();
             filtered = filtered.filter((teacher) => {
@@ -84,6 +87,7 @@ const TeachersSection = ({ onViewTeacher }) => {
             });
         }
 
+        // Filtro por rango de precio en USD
         if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
             const [min, max] = activeFilters.priceRange;
             filtered = filtered.filter(teacher => {
@@ -92,6 +96,7 @@ const TeachersSection = ({ onViewTeacher }) => {
             });
         }
 
+        // Filtro por país
         if (activeFilters.country) {
             const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
             if (selectedCountry) {
@@ -101,26 +106,30 @@ const TeachersSection = ({ onViewTeacher }) => {
             }
         }
 
+        // Filtro por hablante nativo
         if (activeFilters.isNative) {
-            filtered = filtered.filter(teacher => 
+            filtered = filtered.filter(teacher =>
                 teacher.languageLevel?.toLowerCase() === 'native'
             );
         }
 
+        // Filtro por especialidad
         if (activeFilters.specialty) {
             filtered = filtered.filter(teacher =>
                 teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
             );
         }
 
+        // Filtro por idioma
         if (activeFilters.language) {
             filtered = filtered.filter(teacher =>
-                teacher.languages?.some(lang => 
+                teacher.languages?.some(lang =>
                     lang.toLowerCase() === activeFilters.language.toLowerCase()
                 )
             );
         }
 
+        // Filtro por disponibilidad
         if (activeFilters.availability) {
             filtered = filtered.filter(teacher =>
                 teacher.availability?.includes(activeFilters.availability)
@@ -150,7 +159,7 @@ const TeachersSection = ({ onViewTeacher }) => {
 
     const handleOk = () => setIsModalVisible(false);
     const handleCancel = () => setIsModalVisible(false);
-    
+
     const approveTeacher = (teacher) => {
         console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
         setApprovalModalVisible(true);
@@ -229,28 +238,43 @@ const TeachersSection = ({ onViewTeacher }) => {
                                 </button>
                                 <button
                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                    onClick={() => approveTeacher(teacher)}
+                                    onClick={() => onViewTeacher(teacher.id)}
                                 >
-                                    <FaCheckCircle className="text-green-500" size={20} />
+                                    <FaUserCircle className="text-blue-500" size={20} />
                                 </button>
+
+                                {showInactive && (
+                                    <button
+                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                        onClick={() => approveTeacher(teacher)}
+                                    >
+                                        <FaCheckCircle className="text-green-500" size={20} />
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <Modal title="Detalles del Profesor" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-                {selectedTeacher && (
-                    <div>
-                        <p><strong>Nombre:</strong> {selectedTeacher.firstName} {selectedTeacher.lastName}</p>
-                        <p><strong>Email:</strong> {selectedTeacher.email}</p>
-                        <p><strong>País:</strong> {selectedTeacher.countryOfBirth}</p>
-                    </div>
-                )}
+            <Modal
+                title="Aprobar Profesor"
+                visible={approvalModalVisible}
+                onOk={() => setApprovalModalVisible(false)}
+                onCancel={() => setApprovalModalVisible(false)}
+                okText="Aceptar"
+                cancelText="Cancelar"
+            >
+                <p>¿Estás seguro de que deseas aprobar al profesor?</p>
             </Modal>
 
-            <Modal title="Aprobación Exitosa" visible={approvalModalVisible} onOk={() => setApprovalModalVisible(false)} onCancel={() => setApprovalModalVisible(false)}>
-                <p>El profesor ha sido aprobado con éxito.</p>
+            <Modal
+                title={`${selectedTeacher?.firstName} ${selectedTeacher?.lastName}`}
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
+                <p>{selectedTeacher?.bio}</p>
             </Modal>
         </div>
     );
