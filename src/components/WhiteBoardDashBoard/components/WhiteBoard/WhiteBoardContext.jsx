@@ -8,6 +8,7 @@ export const WhiteBoardContext = createContext();
 
 const WhiteBoardProvider = ({ children }) => {
   const socket = useWhiteBoardSocket();
+  
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentLine, setCurrentLine] = useState([]);
