@@ -77,17 +77,18 @@ const UndoRedoButtons = ({ context }) => (
 
 
 
-const ZoomButton = ({context}) =>{
-  return(
-    <>
-      <FloatButton
-       className="static"
-       shape={shapeForm}
-       icon={true ? <BsZoomIn/> :<BsZoomOut /> }
-       />
-    </>
-  )
-}
+const ZoomButton = ({ context }) => {
+
+  return (
+    <FloatButton
+      className="static"
+      type={context.drawingMode === 'zoom' ? 'primary' : 'default'}
+      shape={shapeForm}
+      icon={context.zoomType == 'in' ? <BsZoomIn /> : <BsZoomOut />}
+      onClick={context.toggleZoomMode}
+    />
+  );
+};
 
 
 const PencilEraserToggleButton = ({context}) =>{

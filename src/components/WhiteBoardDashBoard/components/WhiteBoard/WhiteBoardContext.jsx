@@ -26,6 +26,7 @@ const [boardHistory, setBoardHistory] = useState([]);
 const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 //flag history
 const [isSavingPreviousState, setIsSavingPreviousState] = useState(false);
+const [zoom, setZoom] = useState(1)
 
 
    const useWhiteBoard = () => {
@@ -192,6 +193,20 @@ const toogleTextMode = (emitToSocket) =>{
     socket.emit(events.TOOGLE_TEXT_MODE); 
   }
 }
+const [zoomType, setZoomType] = useState('in');
+const toggleZoomMode = (emitToSocket) => {
+  const isZoomIn = zoomType === 'in';
+  if (isZoomIn) {
+    if (drawingMode !== 'zoom') setDrawingMode('zoom');
+    else setZoomType('out');
+  } else {
+    setDrawingMode('draw');
+    setZoomType('in');
+  }
+  if (emitToSocket && socket) {
+    socket.emit(events.TOGGLE_ZOOM_MODE);
+  }
+};
 
 const toogleDrugMode = (emitToSocket)=>{
   setDrawingMode(drawingMode === "hand" ? "draw" : "hand");
@@ -309,11 +324,37 @@ const redo = (emitToSocket) => {
   } 
 };
 
+const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
+
+const zoomOnPosition  = (position, stage, emitToSocket)  =>{
+  if (emitToSocket && socket) {
+    const zoomFactor = zoomType == 'in' ? 1.1 : 0.9; 
+    const newZoom = zoom * zoomFactor;
+
+    const newX = position.x - (position.x - stage.x()) * (newZoom / zoom);
+    const newY = position.y - (position.y - stage.y()) * (newZoom / zoom);
+
+    setZoom(newZoom);
+    setStagePosition({ x: newX, y: newY });
+    socket.emit(events.ZOOM_ON_POSITION, {newZoom, stage:{ x: newX, y: newY }});
+  } 
+}
+
+const zoomListener = (newZoom, stage) =>{
+  setZoom(newZoom);
+  setStagePosition(stage);
+}
 
 
   return (
     <WhiteBoardContext.Provider
       value={{
+        zoom, 
+        stagePosition,
+        zoomOnPosition,
+        zoomListener,
+        zoomType,
+        toggleZoomMode,
         currentPage,
         goToPreviousPage,
         goToNextPage,

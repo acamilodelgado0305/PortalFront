@@ -22,6 +22,9 @@ function SocketListener({context, socket}) {
         socket.on(events.REDO_BOARD_STATE, context.redo);
         socket.on(events.GO_TO_NEXT_PAGE, context.goToNextPage);
         socket.on(events.GO_TO_PREVIOUS_PAGE, context.goToPreviousPage);
+        socket.on(events.TOGGLE_ZOOM_MODE, context.toggleZoomMode);
+        socket.on(events.ZOOM_ON_POSITION, (payload)=> {context.zoomListener(payload.newZoom, payload.stage)} )
+
       }
 
 

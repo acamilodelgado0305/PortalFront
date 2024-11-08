@@ -37,11 +37,15 @@ function DrawingCanvas({ context }) {
   };
 
   const handleMouseDown = (e) => {
+    const stage = e.target.getStage();
     const position = e.target.getStage().getPointerPosition();
     if (context.drawingMode === "text") {
       context.setTextPosition(position, emitToSocket);
       return;
+    } else if(context.drawingMode === "zoom"){
+      context.zoomOnPosition(position, stage, emitToSocket)
     }
+
     context.handleMouseDown(position, emitToSocket);
   };
 
@@ -50,6 +54,10 @@ function DrawingCanvas({ context }) {
       <Stage
         width={canvasSize.width}
         height={canvasSize.height}
+        scaleX={context.zoom}
+        scaleY={context.zoom}
+        x={context.stagePosition.x}
+        y={context.stagePosition.y}
         onMouseDown={handleMouseDown}
         onMouseUp={() => context.handleMouseUp(emitToSocket)}
         onMouseMove={handleMove}
