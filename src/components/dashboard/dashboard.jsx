@@ -28,7 +28,7 @@ const Dashboard = () => {
     return (
         <div className="flex min-h-screen">
             <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-            <div className="sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
+            <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
                 <div className="flex items-center justify-between px-8 py-4">
                     <div className="flex items-center space-x-6">
                         <div className="flex items-center space-x-2 cursor-pointer hover:text-gray-700">
