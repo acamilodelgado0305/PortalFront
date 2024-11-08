@@ -146,7 +146,6 @@ const ShapesLayer = ({ context }) => {
 
 const CurrentShape = ({ context }) => {
   if (!context.isDrawing) return null;
-
   return (
     <>
       {context.currentDrawTool === "rectangle" ? (
