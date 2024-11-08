@@ -4,7 +4,6 @@ export const events = {
     JOIN_ROOM: 'joinRoom',
     AUDIOFILE_OPENED: 'audioFileOpened',
     IMAGE_BOARD:'imageBoard',
-    MOVE_IMAGE:'moveImage',
     CHANGE_COLOR:'changeColor',
     MOUSE_DOWN: 'mouseDown',
     MOUSE_MOVE_DRAW: 'mouseMoveDraw',
