@@ -1,6 +1,7 @@
 import { createContext, useState, useContext } from "react";
 import { useWhiteBoardSocket } from "../../WhiteBoardSocketProvider.jsx";
 import { events } from "../../../../enums/whiteboardEvents.js";
+import { list } from "postcss";
 
 // Crear el contexto
 export const WhiteBoardContext = createContext();
@@ -19,7 +20,7 @@ const [isWriting, setIsWriting] = useState(false)
 const [currentText, setCurrentText] =useState('');
 const [currentTextPosition, setCurrentTextPosition] = useState({x:0,y:0});
 const [texts, setTexts] = useState([]);
-// borton des hacer
+// borton deshacer
 const [boardHistory, setBoardHistory] = useState([]);
 const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
 
@@ -104,8 +105,9 @@ const goToPreviousPage = (emitToSocket) => {
     }
   };
 
+  const [saveLinesState, isSaveLinesState] = useState(false)
+
   const handleMouseMoveErase = (position, emitToSocket) => {    
-    saveBoardState(lines,texts);
     if(drawingMode != 'erase')return
     const updatedLines = lines.filter((line) => {
       const { points, tool } = line;
@@ -146,7 +148,10 @@ const goToPreviousPage = (emitToSocket) => {
 
       return !shouldDeleteLine;
     });
-
+    if(lines.length !== updatedLines.length){
+      isSaveLinesState(true)
+      saveBoardState(list,texts);
+  }
     setLines(updatedLines);
     handleRemoveText(position);
 
@@ -204,9 +209,7 @@ const toogleDrugMode = (emitToSocket)=>{
 
 
 
-// WITHEBOARD TEXT
-
-
+//  TEXT
 const setTextPosition = (position, emitToSocket) => {
    if (emitToSocket && socket) { 
     setIsWriting(true);
@@ -223,6 +226,8 @@ const updateTextContent = (text, emitToSocket) => {
 };
 
 
+
+
 const addTextToList = (emitToSocket) => {
   saveBoardState(lines,texts);
   setTexts([...texts, { text: currentText, position: currentTextPosition, color: currentColor, page:currentPage }]);
@@ -235,20 +240,25 @@ const addTextToList = (emitToSocket) => {
 };
 
 const handleRemoveText = (position) => {
-  saveBoardState(lines,texts);
   const tolerance = 10; 
-  setTexts((prevTexts) =>
-    prevTexts.filter((item) => {
-      const distanceX = Math.abs(item.position.x - position.x);
-      const distanceY = Math.abs(item.position.y - position.y);
-      
-      return !(distanceX <= tolerance && distanceY <= tolerance);
-    })
-  );
+
+  const filteredTexts = texts.filter((item) => {
+    const distanceX = Math.abs(item.position.x - position.x);
+    const distanceY = Math.abs(item.position.y - position.y);
+    
+    return !(distanceX <= tolerance && distanceY <= tolerance);
+  });
+  
+  if(texts.length != filteredTexts.length){
+    saveBoardState(lines, texts);
+    isSaveLinesState(true);
+  }
+  
+  setTexts(filteredTexts);
 };
 
 const clearWhiteBoard = (emitToSocket) => {
-  saveBoardState(lines, texts);
+   saveBoardState(lines, texts);
 
   const newLines = lines.filter(line => line.page !== currentPage);
   const newTexts = texts.filter(text => text.page !== currentPage);
@@ -263,6 +273,12 @@ const clearWhiteBoard = (emitToSocket) => {
 };
 
 const saveBoardState = (lines, texts) => {
+  if(drawingMode === 'erase' && !saveLinesState)  return;
+  if(drawingMode === 'erase' && saveLinesState)  isSaveLinesState(false)
+
+
+
+  console.log('entre')
   const newHistoryIndex = boardHistory.length;
   setBoardHistory([...boardHistory, { lines, texts }]);
   setCurrentHistoryIndex(newHistoryIndex);

@@ -3,6 +3,7 @@ import { Stage, Layer, Line, Rect, Circle, Group, Text } from "react-konva";
 import TextInput from "./TextInput";
 
 function DrawingCanvas({ context }) {
+  if(!context) return
   const containerRef = useRef(null);
   const [canvasSize, setCanvasSize] = useState({
     width: window.innerWidth,
