@@ -23,6 +23,9 @@ const [texts, setTexts] = useState([]);
 // borton deshacer
 const [boardHistory, setBoardHistory] = useState([]);
 const [currentHistoryIndex, setCurrentHistoryIndex] = useState(0);
+//flag history
+const [isSavingPreviousState, setIsSavingPreviousState] = useState(false);
+
 
    const useWhiteBoard = () => {
     return useContext(WhiteBoardContext);
@@ -105,7 +108,8 @@ const goToPreviousPage = (emitToSocket) => {
     }
   };
 
-  const [saveLinesState, isSaveLinesState] = useState(false)
+
+
 
   const handleMouseMoveErase = (position, emitToSocket) => {    
     if(drawingMode != 'erase')return
@@ -149,7 +153,7 @@ const goToPreviousPage = (emitToSocket) => {
       return !shouldDeleteLine;
     });
     if(lines.length !== updatedLines.length){
-      isSaveLinesState(true)
+      setIsSavingPreviousState(true)
       saveBoardState(list,texts);
   }
     setLines(updatedLines);
@@ -251,7 +255,7 @@ const handleRemoveText = (position) => {
   
   if(texts.length != filteredTexts.length){
     saveBoardState(lines, texts);
-    isSaveLinesState(true);
+    setIsSavingPreviousState(true);
   }
   
   setTexts(filteredTexts);
@@ -273,12 +277,8 @@ const clearWhiteBoard = (emitToSocket) => {
 };
 
 const saveBoardState = (lines, texts) => {
-  if(drawingMode === 'erase' && !saveLinesState)  return;
-  if(drawingMode === 'erase' && saveLinesState)  isSaveLinesState(false)
-
-
-
-  console.log('entre')
+  if(drawingMode === 'erase' && !isSavingPreviousState)  return;
+  if(drawingMode === 'erase' && isSavingPreviousState)  setIsSavingPreviousState(false)
   const newHistoryIndex = boardHistory.length;
   setBoardHistory([...boardHistory, { lines, texts }]);
   setCurrentHistoryIndex(newHistoryIndex);
