@@ -33,6 +33,7 @@ function DrawingCanvas({ context }) {
       x: (position.x - context.stagePosition.x) / context.zoom,
       y: (position.y - context.stagePosition.y) / context.zoom,
     };
+
     if (context.drawingMode === "draw") {
       context.handleMouseMoveDraw(adjustedPos, emitToSocket);
     } else {

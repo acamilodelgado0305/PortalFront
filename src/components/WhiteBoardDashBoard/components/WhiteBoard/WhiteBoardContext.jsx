@@ -51,6 +51,7 @@ const goToPreviousPage = (emitToSocket) => {
 
 
   const updateDrawTool = (value, emitToSocket) => {
+    console.log('value '+value)
     setCurrentDrawTool(value);
     if (emitToSocket && socket) {
       socket.emit(events.CHANGE_CURRENT_DRAW_TOOL, value);

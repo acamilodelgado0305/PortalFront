@@ -172,7 +172,7 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
   const tools = [
     { name: "rectangle", icon: <FaRegSquare /> }, 
     { name: "circle", icon: <FaRegCircle /> },
-    { name: "straightLine ", icon: <LineOutlined /> },
+    { name: "straightLine", icon: <LineOutlined /> },
      {name:'arrow', icon:<FaLongArrowAltRight/>}, 
     { name: "line", icon: <SignatureOutlined /> },
   ];
