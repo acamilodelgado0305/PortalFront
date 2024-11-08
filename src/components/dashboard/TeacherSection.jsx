@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'antd';
 import { FaEye, FaUserCircle, FaCheckCircle } from 'react-icons/fa';
 import Filters from '../results/components/Filters';
 
-const TeachersSection = () => {
+const TeachersSection = ({ onViewTeacher }) => {
     const [teachers, setTeachers] = useState([]);
     const [filteredTeachers, setFilteredTeachers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,7 +13,6 @@ const TeachersSection = () => {
     const [showInactive, setShowInactive] = useState(true);
     const [approvalModalVisible, setApprovalModalVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const navigate = useNavigate();
 
     const [activeFilters, setActiveFilters] = useState({
         priceRange: '',
@@ -25,6 +23,7 @@ const TeachersSection = () => {
         isNative: false,
         category: ''
     });
+
 
     const [showFilterModal, setShowFilterModal] = useState({
         price: false,
@@ -102,14 +101,13 @@ const TeachersSection = () => {
 
     const handleOk = () => setIsModalVisible(false);
     const handleCancel = () => setIsModalVisible(false);
-
     const approveTeacher = (teacher) => {
         console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
         setApprovalModalVisible(true);
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 p-8 ">
+        <div className="min-h-screen bg-gray-100 p-8">
             <h1 className="text-3xl font-bold mb-6">
                 {showInactive ? 'Profesores Inactivos' : 'Profesores Activos'}
             </h1>
@@ -150,7 +148,7 @@ const TeachersSection = () => {
                     ],
                     availability: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
                     specialty: ['Matemáticas', 'Inglés', 'Ciencias', 'Historia', 'Literatura', 'Física', 'Química'],
-                    language: ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano']
+                    language: ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano'] // Asegurarse de que este campo esté definido y no vacío
                 }}
                 showFilterModal={showFilterModal}
                 setShowFilterModal={setShowFilterModal}
@@ -198,10 +196,11 @@ const TeachersSection = () => {
                                 </button>
                                 <button
                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                    onClick={() => navigate(`/teacher-details/${teacher.id}`)}
+                                    onClick={() => onViewTeacher(teacher.id)}
                                 >
                                     <FaUserCircle className="text-blue-500" size={20} />
                                 </button>
+
                                 {showInactive && (
                                     <button
                                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -230,6 +229,7 @@ const TeachersSection = () => {
                     </div>
                 )}
             </Modal>
+
 
             <Modal
                 title="Aprobación Exitosa"

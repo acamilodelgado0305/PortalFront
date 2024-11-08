@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Spin } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
-const TeacherDetail = () => {
-    const { id } = useParams(); // Obtener el ID del profesor desde la URL
-    const navigate = useNavigate();
+const TeacherDetail = ({ teacherId, onBack }) => {
     const [teacher, setTeacher] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,7 +10,7 @@ const TeacherDetail = () => {
     useEffect(() => {
         const fetchTeacherDetails = async () => {
             try {
-                const response = await fetch(`https://back.app.esturio.com/api/teachers/${id}`);
+                const response = await fetch(`https://back.app.esturio.com/api/teachers/${teacherId}`);
                 const data = await response.json();
                 setTeacher(data.data);
                 setLoading(false);
@@ -23,21 +20,16 @@ const TeacherDetail = () => {
             }
         };
         fetchTeacherDetails();
-    }, [id]);
+    }, [teacherId]);
 
     if (loading) return <Spin tip="Cargando detalles..." className="flex justify-center items-center min-h-screen" />;
     if (error) return <p className="text-red-500 text-center">{error}</p>;
 
     return (
-        <div className="p-8 bg-gray-100 min-h-screen">
-            <div className="bg-white shadow-md rounded-lg p-6 relative">
+        <div className="bg-gray-100 min-h-screen flex justify-center items-center p-8">
+            <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-5xl relative">
                 <div className="absolute top-4 left-4">
-                    <Button
-                        icon={<ArrowLeftOutlined />}
-                        type="primary"
-                        onClick={() => navigate(-1)}
-                        className="bg-blue-500 border-blue-500 hover:bg-blue-600"
-                    >
+                    <Button icon={<ArrowLeftOutlined />} type="primary" onClick={onBack} className="bg-blue-500 border-blue-500 hover:bg-blue-600">
                         Regresar
                     </Button>
                 </div>
