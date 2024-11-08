@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Stage, Layer, Line, Rect, Circle, Group, Text } from "react-konva";
+import { Stage, Layer, Line, Rect, Circle, Group, Text, Arrow, RegularPolygon  } from "react-konva";
 import TextInput from "./TextInput";
 
 function DrawingCanvas({ context }) {
@@ -126,6 +126,21 @@ const ShapesLayer = ({ context }) => {
                   strokeWidth={line.width}
                 />
               );
+            } else if (line.tool === "arrow") {
+              const [x1, y1, x2, y2] = line.points;
+
+              return (
+                <Arrow
+                  key={index}
+                  points={[x1, y1, x2, y2]}  // Definir los puntos de la flecha (origen y destino)
+                  fill={line.color}             // Color de la flecha
+                  stroke={line.color}           // Color del borde de la flecha
+                  strokeWidth={line.width || 2} // Ancho del borde de la flecha
+                  tension={0}
+                  pointerLength={10}            // Longitud de la cabeza de la flecha
+                  pointerWidth={10}             // Ancho de la cabeza de la flecha
+                />
+              );
             } else {
               return (
                 <Line
@@ -144,55 +159,80 @@ const ShapesLayer = ({ context }) => {
   );
 };
 
+
+
 const CurrentShape = ({ context }) => {
   if (!context.isDrawing) return null;
+
+  if (context.currentDrawTool === "rectangle") {
+    return (
+      <Rect
+        x={Math.min(context.currentLine[0], context.currentLine[2])}
+        y={Math.min(context.currentLine[1], context.currentLine[3])}
+        width={Math.abs(context.currentLine[2] - context.currentLine[0])}
+        height={Math.abs(context.currentLine[3] - context.currentLine[1])}
+        fill={null}
+        stroke={context.currentColor}
+        strokeWidth={context.lineWidth}
+      />
+    );
+  }
+
+  if (context.currentDrawTool === "circle") {
+    return (
+      <Circle
+        x={context.currentLine[0]}
+        y={context.currentLine[1]}
+        radius={context.currentLine[2]}
+        fill={null}
+        stroke={context.currentColor}
+        strokeWidth={context.lineWidth}
+      />
+    );
+  }
+
+  if (context.currentDrawTool === "straightLine") {
+    return (
+      <Line
+        points={[context.currentLine[0], context.currentLine[1], context.currentLine[2], context.currentLine[3]]}
+        stroke={context.currentColor}
+        strokeWidth={context.lineWidth}
+        tension={0}
+        lineCap="round"
+        lineJoin="round"
+      />
+    );
+  }
+
+  if (context.currentDrawTool === "arrow") {
+    return (
+      <Arrow
+        points={[
+          context.currentLine[0], 
+          context.currentLine[1], 
+          context.currentLine[2], 
+          context.currentLine[3], 
+        ]}
+        stroke={context.currentColor}
+        strokeWidth={context.lineWidth}
+        fill={context.currentColor}
+        pointerLength={15} 
+        pointerWidth={10}  
+      />
+    );
+  }
+
   return (
-    <>
-      {context.currentDrawTool === "rectangle" ? (
-        <Rect
-          x={Math.min(context.currentLine[0], context.currentLine[2])}
-          y={Math.min(context.currentLine[1], context.currentLine[3])}
-          width={Math.abs(context.currentLine[2] - context.currentLine[0])}
-          height={Math.abs(context.currentLine[3] - context.currentLine[1])}
-          fill={null}
-          stroke={context.currentColor}
-          strokeWidth={context.lineWidth}
-        />
-      ) : context.currentDrawTool === "circle" ? (
-        <Circle
-          x={context.currentLine[0]}
-          y={context.currentLine[1]}
-          radius={context.currentLine[2]}
-          fill={null}
-          stroke={context.currentColor}
-          strokeWidth={context.lineWidth}
-        />
-      ) : context.currentDrawTool === "straightLine" ? (
-        <Line
-          points={[
-            context.currentLine[0],
-            context.currentLine[1],
-            context.currentLine[2],
-            context.currentLine[3],
-          ]}
-          stroke={context.currentColor}
-          strokeWidth={context.lineWidth}
-          tension={0}
-          lineCap="round"
-          lineJoin="round"
-        />
-      ) : (
-        <Line
-          points={context.currentLine}
-          stroke={context.currentColor}
-          strokeWidth={context.lineWidth}
-          tension={0.5}
-          lineCap="round"
-          lineJoin="round"
-        />
-      )}
-    </>
+    <Line
+      points={context.currentLine}
+      stroke={context.currentColor}
+      strokeWidth={context.lineWidth}
+      tension={0.5}
+      lineCap="round"
+      lineJoin="round"
+    />
   );
 };
+
 
 export default DrawingCanvas;

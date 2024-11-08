@@ -95,7 +95,7 @@ const goToPreviousPage = (emitToSocket) => {
             Math.pow(position.y - currentLine[1], 2),
         );
         setCurrentLine([currentLine[0], currentLine[1], radius]); 
-      } else if (currentDrawTool === "straightLine") {
+      } else if (currentDrawTool === "straightLine" || currentDrawTool === "arrow") {
         setCurrentLine([
           currentLine[0],
           currentLine[1],
