@@ -14,6 +14,7 @@ import Login from "./components/auth/Login";
 import RegisterPage from "./components/auth/RegisterPage";
 import Results from "./components/results/Results";
 import WhiteBoard from "./components/Whiteboard/index";
+import TeacherDetail from "./components/dashboard/TeacherDetail";
 
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
   {
     path: "/whiteboard/:room",
     element: <WhiteBoard />,
+  },
+  {
+    path: "/teacher-details/:id", // Nueva ruta para los detalles del profesor
+    element: <TeacherDetail />,
   },
 ]);
 
