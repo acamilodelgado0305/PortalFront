@@ -29,10 +29,14 @@ function DrawingCanvas({ context }) {
 
   const handleMove = (e) => {
     const position = e.target.getStage().getPointerPosition();
+    const adjustedPos = {
+      x: (position.x - context.stagePosition.x) / context.zoom,
+      y: (position.y - context.stagePosition.y) / context.zoom,
+    };
     if (context.drawingMode === "draw") {
-      context.handleMouseMoveDraw(position, emitToSocket);
+      context.handleMouseMoveDraw(adjustedPos, emitToSocket);
     } else {
-      context.handleMouseMoveErase(position, emitToSocket);
+      context.handleMouseMoveErase(adjustedPos, emitToSocket);
     }
   };
 

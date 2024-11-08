@@ -16,7 +16,10 @@ function WhiteBoard({socket, context}) {
       context.drawingMode === 'erase' ? eraserCursor :
       context.drawingMode === 'text' && textCursor 
       
-  }}
+  , width:'100%',
+  height:'100%'
+}}
+  
 >
       <BoardHeader
         context={context}
