@@ -1,32 +1,98 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'antd';
-import { FaEye, FaUserCircle } from 'react-icons/fa';
+import { FaEye, FaUserCircle, FaCheckCircle } from 'react-icons/fa';
+import Filters from '../results/components/Filters';
 
-const TeachersSection = () => {
+const TeachersSection = ({ onViewTeacher }) => {
     const [teachers, setTeachers] = useState([]);
+    const [filteredTeachers, setFilteredTeachers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showInactive, setShowInactive] = useState(true);
     const [approvalModalVisible, setApprovalModalVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const [activeFilters, setActiveFilters] = useState({
+        priceRange: '',
+        country: '',
+        availability: '',
+        specialty: '',
+        language: '',
+        isNative: false,
+        category: ''
+    });
+
+
+    const [showFilterModal, setShowFilterModal] = useState({
+        price: false,
+        country: false,
+        availability: false,
+        specialty: false,
+        language: false,
+        category: false
+    });
 
     useEffect(() => {
         const fetchTeachers = async () => {
             try {
                 const response = await fetch('https://back.app.esturio.com/api/teachers');
-                console.log(JSON.stringify(response))
                 const data = await response.json();
                 setTeachers(data.data);
+                setFilteredTeachers(data.data);
                 setLoading(false);
             } catch (err) {
                 setError('Error al cargar los profesores');
                 setLoading(false);
             }
         };
-
         fetchTeachers();
     }, []);
+
+    useEffect(() => {
+        const applyFilters = () => {
+            let filtered = teachers.filter(teacher => teacher.status === !showInactive);
+
+            if (searchTerm) {
+                filtered = filtered.filter(teacher =>
+                    teacher.lastName && teacher.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            if (activeFilters.priceRange) {
+                const [min, max] = activeFilters.priceRange.replace(/[^0-9.-]+/g, '').split('-').map(Number);
+                filtered = filtered.filter(teacher =>
+                    teacher.hourlyRate >= min && (max ? teacher.hourlyRate <= max : true)
+                );
+            }
+
+            if (activeFilters.country) {
+                filtered = filtered.filter(teacher =>
+                    teacher.countryOfBirth?.toLowerCase() === activeFilters.country.toLowerCase()
+                );
+            }
+
+            if (activeFilters.isNative) {
+                filtered = filtered.filter(teacher => teacher.languageLevel === 'native');
+            }
+
+            if (activeFilters.specialty) {
+                filtered = filtered.filter(teacher =>
+                    teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+                );
+            }
+
+            if (activeFilters.language) {
+                filtered = filtered.filter(teacher =>
+                    teacher.language && teacher.language.toLowerCase().includes(activeFilters.language.toLowerCase())
+                );
+            }
+
+            setFilteredTeachers(filtered);
+        };
+        applyFilters();
+    }, [teachers, showInactive, searchTerm, activeFilters]);
 
     const showModal = (teacher) => {
         setSelectedTeacher(teacher);
@@ -35,13 +101,10 @@ const TeachersSection = () => {
 
     const handleOk = () => setIsModalVisible(false);
     const handleCancel = () => setIsModalVisible(false);
-
     const approveTeacher = (teacher) => {
         console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
         setApprovalModalVisible(true);
     };
-
-    const filteredTeachers = teachers.filter(teacher => teacher.status === !showInactive);
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
@@ -57,10 +120,46 @@ const TeachersSection = () => {
                 {showInactive ? 'Mostrar Profesores Activos' : 'Mostrar Profesores Inactivos'}
             </Button>
 
+            <Filters
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+                clearFilters={() => setActiveFilters({
+                    priceRange: '',
+                    country: '',
+                    availability: '',
+                    specialty: '',
+                    language: '',
+                    isNative: false,
+                    category: ''
+                })}
+                filterOptions={{
+                    priceRange: ['$10 - $25', '$25 - $50', '$50 - $75', '$75 - $100+'],
+                    country: [
+                        { code: 'us', name: 'Estados Unidos' },
+                        { code: 'es', name: 'España' },
+                        { code: 'mx', name: 'México' },
+                        { code: 'ar', name: 'Argentina' },
+                        { code: 'co', name: 'Colombia' },
+                        { code: 'cl', name: 'Chile' },
+                        { code: 'pe', name: 'Perú' },
+                        { code: 've', name: 'Venezuela' },
+                        { code: 'gb', name: 'Reino Unido' },
+                        { code: 'ca', name: 'Canadá' }
+                    ],
+                    availability: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                    specialty: ['Matemáticas', 'Inglés', 'Ciencias', 'Historia', 'Literatura', 'Física', 'Química'],
+                    language: ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano'] // Asegurarse de que este campo esté definido y no vacío
+                }}
+                showFilterModal={showFilterModal}
+                setShowFilterModal={setShowFilterModal}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+            />
+
             {loading && <p>Cargando profesores...</p>}
             {error && <p className="text-red-500">{error}</p>}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
                 {filteredTeachers.map(teacher => (
                     <div className="bg-white p-6 shadow-sm rounded-lg hover:shadow-md transition-shadow" key={teacher.id}>
                         <div className="flex items-center mb-4">
@@ -70,10 +169,6 @@ const TeachersSection = () => {
                                         src={teacher.profileImageUrl}
                                         alt={`${teacher.firstName} ${teacher.lastName}`}
                                         className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.currentTarget.src = '/api/placeholder/64/64';
-                                        }}
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -88,7 +183,6 @@ const TeachersSection = () => {
                                 <p className="text-sm text-gray-500 line-clamp-1">{teacher.email}</p>
                             </div>
                         </div>
-                        
                         <div className="flex justify-between items-center mt-4">
                             <p className="text-sm font-medium text-gray-700">
                                 ${teacher.hourlyRate}/hora
@@ -100,14 +194,20 @@ const TeachersSection = () => {
                                 >
                                     <FaEye className="text-purple-500" size={20} />
                                 </button>
+                                <button
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                    onClick={() => onViewTeacher(teacher.id)}
+                                >
+                                    <FaUserCircle className="text-blue-500" size={20} />
+                                </button>
+
                                 {showInactive && (
-                                    <Button
-                                        type="default"
-                                        className="bg-purple-500 hover:bg-purple-600 text-white border-purple-500"
+                                    <button
+                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                                         onClick={() => approveTeacher(teacher)}
                                     >
-                                        Aprobar
-                                    </Button>
+                                        <FaCheckCircle className="text-green-500" size={20} />
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -120,43 +220,16 @@ const TeachersSection = () => {
                 visible={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                footer={[
-                    <Button key="back" onClick={handleCancel}>Cancelar</Button>,
-                    <Button key="submit" type="primary" onClick={handleOk}>OK</Button>,
-                ]}
             >
                 {selectedTeacher && (
-                    <div className="space-y-3">
-                        <div className="flex items-center mb-4">
-                            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 mr-4">
-                                {selectedTeacher.profileImageUrl ? (
-                                    <img
-                                        src={selectedTeacher.profileImageUrl}
-                                        alt={`${selectedTeacher.firstName} ${selectedTeacher.lastName}`}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.currentTarget.src = '/api/placeholder/80/80';
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                                        <FaUserCircle className="w-16 h-16 text-gray-400" />
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold">{selectedTeacher.firstName} {selectedTeacher.lastName}</h3>
-                                <p className="text-gray-500">{selectedTeacher.email}</p>
-                            </div>
-                        </div>
-                        <p className="text-gray-700"><strong>Tarifa por Hora:</strong> ${selectedTeacher.hourlyRate}</p>
-                        <p className="text-gray-700"><strong>Comisión:</strong> ${selectedTeacher.commissionAmount} ({selectedTeacher.commissionRate * 100}%)</p>
-                        <p className="text-gray-700"><strong>Última Actualización:</strong> {new Date(selectedTeacher.updatedAt).toLocaleDateString()}</p>
-                        <p className="text-gray-700"><strong>Estado:</strong> {selectedTeacher.status ? "Activo" : "Inactivo"}</p>
+                    <div>
+                        <p><strong>Nombre:</strong> {selectedTeacher.firstName} {selectedTeacher.lastName}</p>
+                        <p><strong>Email:</strong> {selectedTeacher.email}</p>
+                        <p><strong>Tarifa por hora:</strong> ${selectedTeacher.hourlyRate}</p>
                     </div>
                 )}
             </Modal>
+
 
             <Modal
                 title="Aprobación Exitosa"

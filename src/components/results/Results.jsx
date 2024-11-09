@@ -3,6 +3,7 @@ import { X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
+import Filters from './components/Filters'; // Importa el componente de filtros
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -31,14 +32,8 @@ const Results = () => {
     category: false
   });
 
-  // Opciones de filtro predefinidas con precios en dólares
   const filterOptions = {
-    priceRange: [
-      '$10 - $25',
-      '$25 - $50',
-      '$50 - $75',
-      '$75 - $100+'
-    ],
+    priceRange: ['$10 - $25', '$25 - $50', '$50 - $75', '$75 - $100+'],
     country: [
       { code: 'us', name: 'Estados Unidos' },
       { code: 'es', name: 'España' },
@@ -59,6 +54,7 @@ const Results = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
+
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
@@ -74,7 +70,6 @@ const Results = () => {
         console.error("Error al cargar profesores:", err);
       }
     };
-
     fetchTeachers();
   }, []);
 
@@ -106,13 +101,19 @@ const Results = () => {
   };
 
   const applyFilters = () => {
+
     let filtered = [...teachers];
 
+
+    // Filtro por nombre
+    if (activeFilters.lastName) {
+      filtered = filtered.filter((teacher) =>
+        teacher.lastName?.toLowerCase().includes(activeFilters.lastName.toLowerCase())
+      );
+    }
+
     if (activeFilters.priceRange) {
-      const [min, max] = activeFilters.priceRange
-        .replace(/[^0-9.-]+/g, '')
-        .split('-')
-        .map(Number);
+      const [min, max] = activeFilters.priceRange.replace(/[^0-9.-]+/g, '').split('-').map(Number);
       filtered = filtered.filter(teacher => {
         const rate = teacher.hourlyRate;
         return rate >= min && (max ? rate <= max : true);
@@ -129,9 +130,7 @@ const Results = () => {
     }
 
     if (activeFilters.isNative) {
-      filtered = filtered.filter(teacher =>
-        teacher.languageLevel === 'native'
-      );
+      filtered = filtered.filter(teacher => teacher.languageLevel === 'native');
     }
 
     if (activeFilters.specialty) {
@@ -167,56 +166,6 @@ const Results = () => {
     </div>
   );
 
-  const FilterModal = ({ title, options, onSelect, onClose, isOpen }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-        <div className="p-4">
-          <h3 className="font-semibold mb-3">{title}</h3>
-          <div className="space-y-2">
-            {options.map((option) => (
-              <button
-                key={option}
-                onClick={() => {
-                  onSelect(option);
-                  onClose();
-                }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const FilterButton = ({ label, value, filterKey }) => (
-    <div className="relative inline-block">
-      <button
-        className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border border-black"
-        onClick={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: !prev[filterKey] }))}
-      >
-        <span>{label}</span>
-        {value && <span className="text-gray-400">{value}</span>}
-        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      <FilterModal
-        title={label}
-        options={filterKey === 'country' ? filterOptions[filterKey].map(item => item.name) : filterOptions[filterKey] || []}
-        onSelect={(selected) => {
-          setActiveFilters(prev => ({ ...prev, [filterKey]: selected }));
-        }}
-        onClose={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: false }))}
-        isOpen={showFilterModal[filterKey]}
-      />
-    </div>
-  );
   const openModal = (teacher) => {
     setSelectedTeacher(teacher);
     setIsModalOpen(true);
@@ -226,19 +175,15 @@ const Results = () => {
     setSelectedTeacher(null);
     setIsModalOpen(false);
   };
-  
-  
+
   const closeRegisterModal = (teacher) => {
     setSelectedTeacher(teacher);
     setRegisterModal(!registerModal);
     if (teacher == null) {
-      setSelectedTeacher(null)
+      setSelectedTeacher(null);
       return;
     }
   };
-  
-  
-  
 
   if (loading) {
     return (
@@ -269,56 +214,15 @@ const Results = () => {
             </h1>
           </div>
 
-  <div className="flex flex-col lg:flex-row items-center gap-4">
-    <div className="UNO flex flex-wrap items-center gap-4">
-      <FilterButton
-        label="Precio por hora"
-        value={activeFilters.priceRange}
-        filterKey="priceRange"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="País de nacimiento"
-        value={activeFilters.country}
-        filterKey="country"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="Disponibilidad"
-        value={activeFilters.availability}
-        filterKey="availability"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="Especialidades"
-        value={activeFilters.specialty}
-        filterKey="specialty"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <FilterButton
-        label="Idiomas"
-        value={activeFilters.language}
-        filterKey="language"
-        className="border border-black rounded-lg px-4 py-2"
-      />
-      <button
-        className={`bg-white rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-700 hover:bg-gray-50 border border-gray ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
-        onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
-      >
-        Hablante nativo
-      </button>
-      <button
-        onClick={clearFilters}
-        className="bg-gray-100 rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-600 hover:bg-gray-200 border border-gray flex items-center gap-2"
-      >
-        <X size={16} />
-        Limpiar filtros
-      </button>
-    </div>
-  </div>
-
-
-
+          {/* Incluir el componente Filters */}
+          <Filters
+            activeFilters={activeFilters}
+            setActiveFilters={setActiveFilters}
+            clearFilters={clearFilters}
+            filterOptions={filterOptions}
+            showFilterModal={showFilterModal}
+            setShowFilterModal={setShowFilterModal}
+          />
         </div>
       </div>
 
@@ -328,24 +232,21 @@ const Results = () => {
         </h2>
 
         <div className="space-y-6 w-[70em]">
-  {filteredTeachers.map((teacher) => (
-    <TeacherCard
-      key={teacher.id}
-      teacher={teacher}
-      onVideoClick={handleVideoClick}
-      closeRegisterModal={closeRegisterModal}
-    />
-  ))}
+          {filteredTeachers.map((teacher) => (
+            <TeacherCard
+              key={teacher.id}
+              teacher={teacher}
+              onVideoClick={handleVideoClick}
+              closeRegisterModal={closeRegisterModal}
+            />
+          ))}
 
-  {filteredTeachers.length === 0 && (
-    <p className="text-center text-gray-600">
-      No se encontraron profesores con los filtros seleccionados.
-    </p> 
-  )}
-
- 
-</div>
-
+          {filteredTeachers.length === 0 && (
+            <p className="text-center text-gray-600">
+              No se encontraron profesores con los filtros seleccionados.
+            </p>
+          )}
+        </div>
       </div>
 
       {showVideoModal && selectedVideo && (
@@ -357,13 +258,10 @@ const Results = () => {
           }}
         />
       )}
-  
-       {
-        // modal de registro
-        registerModal?
-        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal}/>
-        :null
-       }
+
+      {registerModal && (
+        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+      )}
     </div>
   );
 };

@@ -2,12 +2,11 @@ import  { useState } from "react";
 import { Rnd } from "react-rnd";
 import {  CloseOutlined } from "@ant-design/icons";
 
-function BoardImage({ url, room, onClose, socket, context }) {
+function BoardImage({ url, room, onClose, context }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
 
   const handleDragStop = (e, d) => {
-    console.log('moviendo pero no soy socket   y:'+d.y + 'x:'+d.x);
     setPosition({ x: d.x, y: d.y });
     
   };

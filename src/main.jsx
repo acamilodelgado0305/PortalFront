@@ -11,8 +11,11 @@ import Landing from "./landing";
 import FormStudent from "./components/Form/Student";
 import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
+import RegisterPage from "./components/auth/RegisterPage";
 import Results from "./components/results/Results";
 import WhiteBoardDashBoard from "./components/WhiteBoardDashBoard/Index.jsx";
+import TeacherDetail from "./components/dashboard/TeacherDetail";
+
 
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
@@ -33,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
   {
     path: "/sigup",
@@ -61,6 +68,10 @@ const router = createBrowserRouter([
   {
     path: "/whiteboard/:room",
     element: <WhiteBoardDashBoard />,
+  },
+  {
+    path: "/teacher-details/:id", // Nueva ruta para los detalles del profesor
+    element: <TeacherDetail />,
   },
 ]);
 

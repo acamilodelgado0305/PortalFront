@@ -17,7 +17,6 @@ function WhiteBoard({socket, context}) {
 >
       <BoardHeader
         context={context}
-        socket={socket}
       />
       <SocketListener
        context={context}
