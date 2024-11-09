@@ -22,9 +22,9 @@ const Filters = ({
     }, [activeFilters.priceRange]);
 
     const handleNameChange = (e) => {
-        setActiveFilters((prev) => ({ 
-            ...prev, 
-            fullName: e.target.value 
+        setActiveFilters((prev) => ({
+            ...prev,
+            fullName: e.target.value
         }));
     };
 
@@ -110,7 +110,7 @@ const Filters = ({
                     .slider-container {
                         position: relative;
                         width: 100%;
-                        height: 40px;
+                        height: 30px;
                     }
 
                     .slider {
@@ -143,26 +143,25 @@ const Filters = ({
                         pointer-events: auto;
                         -webkit-appearance: none;
                         appearance: none;
-                        width: 24px;
-                        height: 24px;
+                        width: 12px;
+                        height: 20px;
                         background: white;
                         border: 2px solid #8b5cf6;
-                        border-radius: 50%;
+                        border-radius: 2px;
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
 
                     .slider::-moz-range-thumb {
                         pointer-events: auto;
-                        width: 24px;
-                        height: 24px;
+                        width: 12px;
+                        height: 20px;
                         background: white;
                         border: 2px solid #8b5cf6;
-                        border-radius: 50%;
+                        border-radius: 2px;
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
-
                     .slider::-webkit-slider-thumb:hover {
                         transform: scale(1.1);
                     }
@@ -180,7 +179,7 @@ const Filters = ({
                     onChange={handleNameChange}
                     className="border border-gray-300 rounded-lg px-4 py-2"
                 />
-                
+
                 <div className="relative inline-block">
                     <button
                         className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border border-black"
@@ -193,15 +192,18 @@ const Filters = ({
                     </button>
 
                     {showFilterModal.priceRange && (
-                        <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20 p-6 w-80">
-                            <h3 className="font-semibold mb-6">Rango de Precio por Hora</h3>
+                        <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20 p-2 w-80">
+                           
+                            <div className="flex justify-center mt-2 text-lg font-bold text-gray-800 mb-6">
+                                    <span>{`US $${priceRange.min} - US $${priceRange.max}`}</span>
+                                </div>
                             <div className="px-2">
                                 <div className="slider-container">
                                     <div className="slider-track"></div>
-                                    <div 
+                                    <div
                                         className="slider-range"
                                         style={{
-                                            left: `${((priceRange.min - 10) / 25) * 100}%`,
+                                            left: `${((priceRange.min - 10) / 25) * 35}%`,
                                             right: `${100 - ((priceRange.max - 10) / 25) * 100}%`
                                         }}
                                     ></div>
@@ -224,10 +226,8 @@ const Filters = ({
                                         className="slider"
                                     />
                                 </div>
-                                <div className="flex justify-between mt-6 text-sm text-gray-600">
-                                    <span>USD ${priceRange.min}</span>
-                                    <span>USD ${priceRange.max}</span>
-                                </div>
+                              
+
                             </div>
                         </div>
                     )}
