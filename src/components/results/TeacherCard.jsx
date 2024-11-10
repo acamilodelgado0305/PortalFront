@@ -28,7 +28,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             <img
               src={teacher.profileImageUrl}
               alt={`${teacher.firstName} ${teacher.lastName}`}
-              className="h-20 w-20 rounded-lg object-cover lg:h-32 lg:w-32"
+              className="h-30 w-30 rounded-lg object-cover lg:h-32 lg:w-40 lg:h-40"
               onError={(e) => {
                 e.target.src = "https://via.placeholder.com/128x128";
               }}
@@ -80,7 +80,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
               </div>
 
               <div className="lg:text-right">
-                <p className="text-xl font-semibold text-gray-900">
+              <p className="font-bold text-2xl text-[#1500F4]">
                   {formatPrice(teacher.hourlyRate)}
                 </p>
                 <p className="text-sm text-gray-500">Lección de 50 minutos</p>

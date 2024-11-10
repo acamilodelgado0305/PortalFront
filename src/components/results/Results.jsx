@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
 import Filters from './components/Filters'; // Importa el componente de filtros
+import Header from './Header';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -220,70 +221,83 @@ const Results = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center mb-6">
-            <button
-              onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
-              aria-label="Regresar"
-            >
-              <ArrowLeft size={24} className="text-gray-600" />
-            </button>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Profesores particulares online: reserva ya tus clases
-            </h1>
-          </div>
+    <div className='w-full'>
 
-          {/* Incluir el componente Filters */}
-          <Filters
-            activeFilters={activeFilters}
-            setActiveFilters={setActiveFilters}
-            clearFilters={clearFilters}
-            filterOptions={filterOptions}
-            showFilterModal={showFilterModal}
-            setShowFilterModal={setShowFilterModal}
-          />
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
-        </h2>
-
-        <div className="space-y-6 w-[70em]">
-          {filteredTeachers.map((teacher) => (
-            <TeacherCard
-              key={teacher.id}
-              teacher={teacher}
-              onVideoClick={handleVideoClick}
-              closeRegisterModal={closeRegisterModal}
-            />
-          ))}
-
-          {filteredTeachers.length === 0 && (
-            <p className="text-center text-gray-600">
-              No se encontraron profesores con los filtros seleccionados.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {showVideoModal && selectedVideo && (
-        <VideoModal
-          videoUrl={selectedVideo}
-          onClose={() => {
-            setShowVideoModal(false);
-            setSelectedVideo(null);
-          }}
+      <div>
+        <Header
+          title="Profesores particulares online: Prueba una clase"
         />
-      )}
+      </div >
 
-      {registerModal && (
-        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
-      )}
+
+
+      <div className="min-h-screen bg-gray-50">
+
+
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={handleBack}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
+                aria-label="Regresar"
+              >
+                <ArrowLeft size={24} className="text-gray-600" />
+              </button>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Profesores particulares online: reserva ya tus clases
+              </h1>
+            </div>
+
+            {/* Incluir el componente Filters */}
+            <Filters
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              clearFilters={clearFilters}
+              filterOptions={filterOptions}
+              showFilterModal={showFilterModal}
+              setShowFilterModal={setShowFilterModal}
+            />
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
+          </h2>
+
+          <div className="space-y-6 w-[70em]">
+            {filteredTeachers.map((teacher) => (
+              <TeacherCard
+                key={teacher.id}
+                teacher={teacher}
+                onVideoClick={handleVideoClick}
+                closeRegisterModal={closeRegisterModal}
+              />
+            ))}
+
+            {filteredTeachers.length === 0 && (
+              <p className="text-center text-gray-600">
+                No se encontraron profesores con los filtros seleccionados.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {showVideoModal && selectedVideo && (
+          <VideoModal
+            videoUrl={selectedVideo}
+            onClose={() => {
+              setShowVideoModal(false);
+              setSelectedVideo(null);
+            }}
+          />
+        )}
+
+        {registerModal && (
+          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+        )}
+      </div>
     </div>
   );
 };
