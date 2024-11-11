@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { getFlagUrl } from "../../services/allcountries.js";
-import { Play } from "lucide-react";
+import { Play, Send } from "lucide-react";
 import { ScheduleModal } from "./components/ScheduleModal.jsx";
 import ModalRegister from "./modalRegister.jsx";
 
 const TeacherCard = ({ teacher, onVideoClick }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false); Send
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CO", {
@@ -28,7 +28,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             <img
               src={teacher.profileImageUrl}
               alt={`${teacher.firstName} ${teacher.lastName}`}
-              className="h-20 w-20 rounded-lg object-cover lg:h-32 lg:w-32"
+              className="h-30 w-30 rounded-lg object-cover lg:h-32 lg:w-40 lg:h-40"
               onError={(e) => {
                 e.target.src = "https://via.placeholder.com/128x128";
               }}
@@ -80,7 +80,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
               </div>
 
               <div className="lg:text-right">
-                <p className="text-xl font-semibold text-gray-900">
+                <p className="font-bold text-2xl text-[#1500F4]">
                   {formatPrice(teacher.hourlyRate)}
                 </p>
                 <p className="text-sm text-gray-500">Lección de 50 minutos</p>
@@ -92,15 +92,16 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end">
               <button
                 onClick={() => setShowRegisterModal(true)}
-                className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
+                className="w-[12em] bg-purple-500 text-white py-3 px-6 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium flex items-center justify-center gap-3 text-lg shadow-md hover:shadow-lg"
               >
                 Clase de prueba gratuita
               </button>
 
               <button
                 onClick={() => setShowRegisterModal(true)}
-                className="w-[12em] border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
+                className="w-[12em] bg-purple-500 text-white py-3 px-6 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium flex items-center justify-center gap-3 text-lg shadow-md hover:shadow-lg"
               >
+                <Send className="w-5 h-5" strokeWidth={2.5} />
                 Enviar mensaje
               </button>
             </div>

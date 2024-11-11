@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
 import Filters from './components/Filters'; // Importa el componente de filtros
+import Header from './Header';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -24,7 +25,7 @@ const Results = () => {
   });
 
   const [showFilterModal, setShowFilterModal] = useState({
-    price: false,
+    priceRange: false,
     country: false,
     availability: false,
     specialty: false,
@@ -33,7 +34,7 @@ const Results = () => {
   });
 
   const filterOptions = {
-    priceRange: ['$10 - $25', '$25 - $50', '$50 - $75', '$75 - $100+'],
+    priceRange: [10, 35],
     country: [
       { code: 'us', name: 'Estados Unidos' },
       { code: 'es', name: 'España' },
@@ -90,7 +91,7 @@ const Results = () => {
 
   const clearFilters = () => {
     setActiveFilters({
-      priceRange: '',
+      priceRange: [0, 100],
       country: '',
       availability: '',
       specialty: '',
@@ -101,25 +102,27 @@ const Results = () => {
   };
 
   const applyFilters = () => {
-
     let filtered = [...teachers];
 
-
-    // Filtro por nombre
-    if (activeFilters.lastName) {
-      filtered = filtered.filter((teacher) =>
-        teacher.lastName?.toLowerCase().includes(activeFilters.lastName.toLowerCase())
-      );
-    }
-
-    if (activeFilters.priceRange) {
-      const [min, max] = activeFilters.priceRange.replace(/[^0-9.-]+/g, '').split('-').map(Number);
-      filtered = filtered.filter(teacher => {
-        const rate = teacher.hourlyRate;
-        return rate >= min && (max ? rate <= max : true);
+    // Filtro por nombre completo
+    if (activeFilters.fullName) {
+      const searchTerm = activeFilters.fullName.toLowerCase();
+      filtered = filtered.filter((teacher) => {
+        const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
+        return fullName.includes(searchTerm);
       });
     }
 
+    // Filtro por rango de precio
+    if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
+      const [min, max] = activeFilters.priceRange;
+      filtered = filtered.filter(teacher => {
+        const rate = parseFloat(teacher.hourlyRate);
+        return rate >= min && rate <= max;
+      });
+    }
+
+    // Filtro por país
     if (activeFilters.country) {
       const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
       if (selectedCountry) {
@@ -129,13 +132,33 @@ const Results = () => {
       }
     }
 
+    // Filtro por hablante nativo
     if (activeFilters.isNative) {
-      filtered = filtered.filter(teacher => teacher.languageLevel === 'native');
+      filtered = filtered.filter(teacher =>
+        teacher.languageLevel?.toLowerCase() === 'native'
+      );
     }
 
+    // Filtro por especialidad
     if (activeFilters.specialty) {
       filtered = filtered.filter(teacher =>
         teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+      );
+    }
+
+    // Filtro por idioma
+    if (activeFilters.language) {
+      filtered = filtered.filter(teacher =>
+        teacher.languages?.some(lang =>
+          lang.toLowerCase() === activeFilters.language.toLowerCase()
+        )
+      );
+    }
+
+    // Filtro por disponibilidad
+    if (activeFilters.availability) {
+      filtered = filtered.filter(teacher =>
+        teacher.availability?.includes(activeFilters.availability)
       );
     }
 
@@ -198,70 +221,80 @@ const Results = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center mb-6">
-            <button
-              onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
-              aria-label="Regresar"
-            >
-              <ArrowLeft size={24} className="text-gray-600" />
-            </button>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Profesores particulares online: reserva ya tus clases
-            </h1>
-          </div>
+    <div className='w-full'>
 
-          {/* Incluir el componente Filters */}
-          <Filters
-            activeFilters={activeFilters}
-            setActiveFilters={setActiveFilters}
-            clearFilters={clearFilters}
-            filterOptions={filterOptions}
-            showFilterModal={showFilterModal}
-            setShowFilterModal={setShowFilterModal}
-          />
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
-        </h2>
-
-        <div className="space-y-6 w-[70em]">
-          {filteredTeachers.map((teacher) => (
-            <TeacherCard
-              key={teacher.id}
-              teacher={teacher}
-              onVideoClick={handleVideoClick}
-              closeRegisterModal={closeRegisterModal}
-            />
-          ))}
-
-          {filteredTeachers.length === 0 && (
-            <p className="text-center text-gray-600">
-              No se encontraron profesores con los filtros seleccionados.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {showVideoModal && selectedVideo && (
-        <VideoModal
-          videoUrl={selectedVideo}
-          onClose={() => {
-            setShowVideoModal(false);
-            setSelectedVideo(null);
-          }}
+      <div>
+        <Header
+          title="Profesores particulares online: Prueba una clase"
         />
-      )}
+      </div >
 
-      {registerModal && (
-        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
-      )}
+
+
+      <div className="min-h-screen bg-gray-50">
+
+
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={handleBack}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
+                aria-label="Regresar"
+              >
+                <ArrowLeft size={24} className="text-gray-600" />
+              </button>
+            </div>
+
+            {/* Incluir el componente Filters */}
+            <Filters
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              clearFilters={clearFilters}
+              filterOptions={filterOptions}
+              showFilterModal={showFilterModal}
+              setShowFilterModal={setShowFilterModal}
+            />
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
+          </h2>
+
+          <div className="space-y-6 w-[70em]">
+            {filteredTeachers.map((teacher) => (
+              <TeacherCard
+                key={teacher.id}
+                teacher={teacher}
+                onVideoClick={handleVideoClick}
+                closeRegisterModal={closeRegisterModal}
+              />
+            ))}
+
+            {filteredTeachers.length === 0 && (
+              <p className="text-center text-gray-600">
+                No se encontraron profesores con los filtros seleccionados.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {showVideoModal && selectedVideo && (
+          <VideoModal
+            videoUrl={selectedVideo}
+            onClose={() => {
+              setShowVideoModal(false);
+              setSelectedVideo(null);
+            }}
+          />
+        )}
+
+        {registerModal && (
+          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+        )}
+      </div>
     </div>
   );
 };
