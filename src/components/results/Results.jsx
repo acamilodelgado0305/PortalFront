@@ -3,6 +3,7 @@ import { X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
+import CalendarModal from './components/calendar';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -10,6 +11,7 @@ const Results = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const navigate = useNavigate();
   const [activeFilters, setActiveFilters] = useState({
@@ -334,6 +336,8 @@ const Results = () => {
               teacher={teacher}
               onVideoClick={handleVideoClick}
               closeRegisterModal={closeRegisterModal}
+              setShowCalendarModal={setShowCalendarModal}
+              setSelectedTeacher={setSelectedTeacher}
             />
           ))}
 
@@ -363,6 +367,12 @@ const Results = () => {
         registerModal ?
           <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
           : null
+      }
+      {
+        showCalendarModal
+        &&
+        <CalendarModal teacher={selectedTeacher} setShowCalendarModal={setShowCalendarModal} showCalendarModal={showCalendarModal} />
+
       }
     </div>
   );

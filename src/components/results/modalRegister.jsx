@@ -4,11 +4,86 @@ import { message, Spin, Progress, Checkbox, Modal } from "antd";
 import { LoadingOutlined, CloseOutlined } from "@ant-design/icons";
 import { Eye, EyeOff } from 'lucide-react';
 import { verifyEmail } from "../../services/validations";
-import { codeStudentCognito, createStudentCognito, resendCodeCognito } from "../../services/studendent.services";
+import { codeStudentCognito, createStudentCognito, loginCognito, resendCodeCognito } from "../../services/studendent.services";
 
 import GoogleLogo from '../../assets/icons/icons8-logo-de-google.svg';
+import Login from "../auth/Login";
+import LoginModal from "./ModalLogin";
+import { useAuth } from "../../Context/AuthContext";
 
-const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
+
+const PasswordInput = ({passwordVisible, password, setPassword, calculatePasswordStrength, isFocused, setIsFocused, setPasswordVisible, passwordStrength}) => { 
+ return (
+  <div className="mb-4 space-y-2">
+  <div className="relative">
+    <input
+      type={passwordVisible ? "text" : "password"}
+      value={password}
+      onChange={(e) => {
+        setPassword(e.target.value);
+        calculatePasswordStrength(e.target.value);
+      }}
+      className={`w-full px-4 py-2 pr-12 rounded-lg border-2 transition-all duration-200 text-center
+        placeholder:text-gray-400 focus:outline-none bg-white
+        ${isFocused
+          ? "border-purple-500 ring-2 ring-purple-100"
+          : "border-black"}`
+      }
+      placeholder="Introduce tu contraseña"
+      required
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      aria-label="Contraseña"
+    />
+
+    <button
+      type="button"
+      onClick={() => setPasswordVisible(!passwordVisible)}
+      className="absolute right-3 top-1/2 -translate-y-1/2
+        p-1 rounded-full transition-all duration-200
+        hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-400
+        text-gray-500 hover:text-gray-700"
+      aria-label={passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+    >
+      {passwordVisible ? (
+        <EyeOff className="w-5 h-5 transition-transform duration-200 ease-in-out" />
+      ) : (
+        <Eye className="w-5 h-5 transition-transform duration-200 ease-in-out" />
+      )}
+    </button>
+  </div>
+
+  <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+    <div
+      className={`h-full transition-all duration-300 ease-out
+        ${passwordStrength < 33
+          ? "bg-red-500"
+          : passwordStrength < 66
+            ? "bg-yellow-500"
+            : "bg-green-500"}`
+      }
+      style={{ width: `${passwordStrength}%` }}
+      role="progressbar"
+      aria-valuenow={passwordStrength}
+      aria-valuemin="0"
+      aria-valuemax="100"
+    />
+  </div>
+
+  <p className="text-xs text-gray-600">
+    La contraseña debe tener al menos:
+    <span className="block mt-1 ml-2">
+      • 8 caracteres<br />
+      • Un número<br />
+      • Un carácter especial
+    </span>
+  </p>
+</div>
+ )
+};
+
+
+const ModalRegister = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -20,6 +95,8 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
   const [loadingNewCode, setLoadingNewCode] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [inicioSesion, setInicioSesion] = useState(false);
+  const {login} = useAuth();
 
   const success = (msg, type) => {
     message.open({ type, content: msg, style: { marginTop: "20vh" } });
@@ -78,8 +155,13 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
       const response = await codeStudentCognito({ email, code });
       if (response.success) {
         success("Registro confirmado", "success");
-        onClose();
         setInicioSesion(true);
+        const response=  await loginCognito(email, password);
+        const data = response;
+        if (response.success) {
+          login(data.user, data.accessToken, data.idToken, data.refreshToken);
+        onClose();
+        }
       } else {
         success(response.message, "warning");
       }
@@ -110,74 +192,7 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
     </div>
   );
 
-  const PasswordInput = () => (
-    <div className="mb-4 space-y-2">
-      <div className="relative">
-        <input
-          type={passwordVisible ? "text" : "password"}
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            calculatePasswordStrength(e.target.value);
-          }}
-          className={`w-full px-4 py-2 pr-12 rounded-lg border-2 transition-all duration-200 text-center
-            placeholder:text-gray-400 focus:outline-none bg-white
-            ${isFocused
-              ? "border-purple-500 ring-2 ring-purple-100"
-              : "border-black"}`
-          }
-          placeholder="Introduce tu contraseña"
-          required
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          aria-label="Contraseña"
-        />
-
-        <button
-          type="button"
-          onClick={() => setPasswordVisible(!passwordVisible)}
-          className="absolute right-3 top-1/2 -translate-y-1/2
-            p-1 rounded-full transition-all duration-200
-            hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-400
-            text-gray-500 hover:text-gray-700"
-          aria-label={passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
-        >
-          {passwordVisible ? (
-            <EyeOff className="w-5 h-5 transition-transform duration-200 ease-in-out" />
-          ) : (
-            <Eye className="w-5 h-5 transition-transform duration-200 ease-in-out" />
-          )}
-        </button>
-      </div>
-
-      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className={`h-full transition-all duration-300 ease-out
-            ${passwordStrength < 33
-              ? "bg-red-500"
-              : passwordStrength < 66
-                ? "bg-yellow-500"
-                : "bg-green-500"}`
-          }
-          style={{ width: `${passwordStrength}%` }}
-          role="progressbar"
-          aria-valuenow={passwordStrength}
-          aria-valuemin="0"
-          aria-valuemax="100"
-        />
-      </div>
-
-      <p className="text-xs text-gray-600">
-        La contraseña debe tener al menos:
-        <span className="block mt-1 ml-2">
-          • 8 caracteres<br />
-          • Un número<br />
-          • Un carácter especial
-        </span>
-      </p>
-    </div>
-  );
-
+ 
 
   return (
     <Modal
@@ -189,7 +204,13 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
       closeIcon={<CloseOutlined className="text-black" />}
       centered
     >
-      <div className="mb-6">
+      
+     {
+      inicioSesion?
+      <LoginModal setInicioSesion={setInicioSesion} inicioSesion={inicioSesion} onClose={onClose} isOpen={isOpen}/>
+      :
+      <>
+       <div className="mb-6">
         <button className="w-full p-2 mb-3 border-2 border-black rounded-lg flex items-center justify-center text-red-600 font-semibold transition duration-200 hover:bg-red-200">
           <img src={GoogleLogo} alt="Google Logo" className="w-6 h-6 mr-2" />
           Continuar con Google
@@ -219,7 +240,17 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
             />
           </div>
 
-          <PasswordInput />
+          <PasswordInput 
+          setIsFocused={setIsFocused} 
+          setPassword={setPassword} 
+          setPasswordVisible={setPasswordVisible}
+          password={password}
+          passwordStrength={passwordStrength}
+          isFocused={isFocused}
+          calculatePasswordStrength={calculatePasswordStrength}
+          passwordVisible={passwordVisible}
+          
+          />
 
           <div className="mb-4">
             <Checkbox checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)}>
@@ -265,7 +296,6 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
         <p>¿Ya tienes cuenta?</p>
         <button
           onClick={() => {
-            onClose();
             setInicioSesion(true);
           }}
           className="text-blue-500 underline ml-1"
@@ -273,6 +303,8 @@ const ModalRegister = ({ isOpen, onClose, setInicioSesion }) => {
           Inicia sesión
         </button>
       </div>
+      </>
+     }
     </Modal>
   );
 };

@@ -3,10 +3,12 @@ import { getFlagUrl } from "../../services/allcountries.js";
 import { Play } from "lucide-react";
 import { ScheduleModal } from "./components/ScheduleModal.jsx";
 import ModalRegister from "./modalRegister.jsx";
+import { useAuth } from "../../Context/AuthContext.jsx";
 
-const TeacherCard = ({ teacher, onVideoClick }) => {
+const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher}) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const {idToken, user} = useAuth();
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CO", {
@@ -21,8 +23,8 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
   };
 
   return (
-    <div className="group relative">
-      <div className="h-[auto] w-[50%] rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-black hover:shadow-md lg:h-[37vh] lg:w-[100%]">
+    <div className="group relative md:w-9/12">
+      <div className="min-h-[320px] w-[50%] rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-black hover:shadow-md lg:h-[37vh] lg:w-[100%]">
         <div className="flex gap-6">
           <div>
             <img
@@ -91,14 +93,14 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
             </div>
             <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end">
               <button
-                onClick={() => setShowRegisterModal(true)}
+                onClick={() => {!idToken?setShowRegisterModal(true): setShowCalendarModal(true), setSelectedTeacher(teacher) }}
                 className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
               >
                 Clase de prueba gratuita
               </button>
 
               <button
-                onClick={() => setShowRegisterModal(true)}
+                onClick={() => {!idToken?setShowRegisterModal(true): setShowCalendarModal(true), setSelectedTeacher(teacher) }}
                 className="w-[12em] border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
                 Enviar mensaje
