@@ -62,12 +62,12 @@
 }
 
 /* Styles */
-.floatButtonAudio {
+.floatButtonAudio, .floatButtonImage {
     animation: floatButtonKeys 3s infinite;
     color: white !important;
 }
 
-.iconAudioFloat:hover {
+.iconAudioFloat:hover, .iconImageFloat:hover {
     color: white !important;
 }
 
