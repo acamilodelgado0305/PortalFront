@@ -30,7 +30,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
 
                     {/* Iconos de navegación */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center">
                         <button
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                             aria-label="Mensajes"

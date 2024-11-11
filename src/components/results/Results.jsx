@@ -244,9 +244,6 @@ const Results = () => {
               >
                 <ArrowLeft size={24} className="text-gray-600" />
               </button>
-              <h1 className="text-2xl font-bold text-gray-800">
-                Profesores particulares online: reserva ya tus clases
-              </h1>
             </div>
 
             {/* Incluir el componente Filters */}
