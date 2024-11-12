@@ -3,8 +3,10 @@ import { X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
+import CalendarModal from './components/calendar';
 import Filters from './components/Filters'; // Importa el componente de filtros
 import Header from './Header';
+import { readAllTeachers } from '../../services/teacher.services';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -12,6 +14,7 @@ const Results = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const navigate = useNavigate();
   const [activeFilters, setActiveFilters] = useState({
@@ -57,21 +60,21 @@ const Results = () => {
   const [registerModal, setRegisterModal] = useState(false);
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+
+    const getAllTeacher = async () => {
       try {
-        const response = await fetch('https://back.app.esturio.com/api/teachers');
-        const data = await response.json();
-        setTeachers(data.data);
-        setFilteredTeachers(data.data);
-        console.log(data.data)
+        const response = await readAllTeachers();
+        setTeachers(response.data);
+        setFilteredTeachers(response.data);
+        console.log(response.data)
         setLoading(false);
       } catch (err) {
         setError('Error al cargar los profesores');
         setLoading(false);
         console.error("Error al cargar profesores:", err);
       }
-    };
-    fetchTeachers();
+    }
+    getAllTeacher();
   }, []);
 
   const handleVideoClick = (videoUrl) => {
@@ -273,6 +276,8 @@ const Results = () => {
                 teacher={teacher}
                 onVideoClick={handleVideoClick}
                 closeRegisterModal={closeRegisterModal}
+                setSelectedTeacher={setSelectedTeacher}
+                setShowCalendarModal={setShowCalendarModal}
               />
             ))}
 
@@ -293,11 +298,17 @@ const Results = () => {
             }}
           />
         )}
-
-        {registerModal && (
-          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
-        )}
       </div>
+        {registerModal && 
+          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+          
+      }
+      {
+        showCalendarModal
+        &&
+        <CalendarModal teacher={selectedTeacher} setShowCalendarModal={setShowCalendarModal} showCalendarModal={showCalendarModal} />
+
+      }
     </div>
   );
 };
