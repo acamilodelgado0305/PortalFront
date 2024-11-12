@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "../src/Context/AuthContext";
-import { WhiteBoardSocketProvider } from "./components/Whiteboard/WhiteBoardSocketProvider.jsx";
+import { WhiteBoardSocketProvider } from "./components/WhiteBoardDashBoard/WhiteBoardSocketProvider.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 
 import ErrorPage from "./error-page";
@@ -13,10 +13,13 @@ import MultiStepForm from "./components/Form/Teacher/FormTeacher";
 import Login from "./components/auth/Login";
 import RegisterPage from "./components/auth/RegisterPage";
 import Results from "./components/results/Results";
-import WhiteBoard from "./components/Whiteboard/index";
+import WhiteBoardDashBoard from "./components/WhiteBoardDashBoard/Index.jsx";
+import TeacherDetail from "./components/dashboard/TeacherDetail";
+
 
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
+import WhiteBoardProvider from "./components/WhiteBoardDashBoard/components/WhiteBoard/WhiteBoardContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -64,16 +67,22 @@ const router = createBrowserRouter([
   },
   {
     path: "/whiteboard/:room",
-    element: <WhiteBoard />,
+    element: <WhiteBoardDashBoard />,
+  },
+  {
+    path: "/teacher-details/:id", // Nueva ruta para los detalles del profesor
+    element: <TeacherDetail />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <WhiteBoardSocketProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+      <WhiteBoardProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </WhiteBoardProvider>
     </WhiteBoardSocketProvider>
   </React.StrictMode>,
 );

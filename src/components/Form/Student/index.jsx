@@ -10,22 +10,11 @@ import {
 import './index.css'
 import { TimeOptionButton } from "./components/TimeOptionButton";
 
-function LoadingModal({ isOpen }) {
-  if (!isOpen) return null;
 
-  return (
-<div className="fixed inset-0 flex h-full w-full items-center justify-center overflow-y-auto bg-gray-600 bg-opacity-50 z-[9999]">
-  <div className="flex flex-col items-center rounded-lg bg-white p-5">
-    <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
-    <p className="mt-4 text-lg font-semibold text-purple-600">
-      Cargando...
-    </p>
-  </div>
-</div>
-  );
-}
+
 
 function FormStudent() {
+  const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [budget, setBudget] = useState(1);
@@ -35,7 +24,8 @@ function FormStudent() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedSuboption, setSelectedSuboption] = useState(null);
   const [handleOtherValue, setHandleOtherValue] = useState(null)
-  const navigate = useNavigate();
+
+
 
   const [currentQuestions, setCurrentQuestions] = useState(questions);
 
@@ -47,26 +37,36 @@ function FormStudent() {
   }, []);
 
   useEffect(() => {
+    if (isFormComplete) {
+      const timer = setTimeout(() => {
+        navigate('/results'); // Asumiendo que estás usando react-router-dom
+      }, 3000); // Redirecciona después de 2 segundos
+
+      return () => clearTimeout(timer);
+    }
+  }, [isFormComplete]);
+
+  useEffect(() => {
     localStorage.setItem("studentPreferences", JSON.stringify(answers));
   }, [answers]);
 
   const handleOptionSelected = (option) => {
-    if(handleOtherValue && currentQuestionIndex == 0 ) {
+    if (handleOtherValue && currentQuestionIndex == 0) {
       setSelectedOption(handleOtherValue);
       const newAnswers = [...answers];
       newAnswers[currentQuestionIndex] = `${handleOtherValue}`;
-      setAnswers(newAnswers); 
+      setAnswers(newAnswers);
       setCurrentQuestions(questionOther);
       return
-    }else{
-    setSelectedOption(option);
-    setShowSuboptions(option.suboptions);
-    if (!option.suboptions) {
-      const newAnswers = [...answers];
-      newAnswers[currentQuestionIndex] = `${option.text}`;
-      setAnswers(newAnswers);
+    } else {
+      setSelectedOption(option);
+      setShowSuboptions(option.suboptions);
+      if (!option.suboptions) {
+        const newAnswers = [...answers];
+        newAnswers[currentQuestionIndex] = `${option.text}`;
+        setAnswers(newAnswers);
+      }
     }
-       }
   };
 
   const handleOptionList = (optionName, suboptions) => {
@@ -77,7 +77,7 @@ function FormStudent() {
     } else {
       setCurrentQuestions(questionOther);
     }
-   
+
   };
 
   const handleSuboptionSelected = (suboption) => {
@@ -106,15 +106,15 @@ function FormStudent() {
   const OptionButton = ({ text, isSelected, onClick }) => {
     const [isInputVisible, setIsInputVisible] = useState(false);
     const [handleOtherValue, setHandleOtherValue] = useState("");
-  
+
     const handleInputSubmit = () => {
-      onClick(); 
-      setIsInputVisible(false); 
+      onClick();
+      setIsInputVisible(false);
     };
-  
-  
+
+
     const timeOptions = ["Mañanas", "Tardes", "Noches", "Fines de semana", "Horario flexible"];
-  
+
     return (
       <>
         {text === "Otro (especificar)" && isInputVisible ? (
@@ -138,11 +138,9 @@ function FormStudent() {
                 onClick();
               }
             }}
-            className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold ${
-              !isSelected ? "hover:bg-purple-100" : ""
-            }  ${
-              isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
-            }`}
+            className={`flex w-full items-center justify-between rounded-lg border p-4 text-left text-lg font-semibold ${!isSelected ? "hover:bg-purple-100" : ""
+              }  ${isSelected ? "border-purple-500 bg-purple-300" : "border-gray-300"
+              }`}
           >
             <span>{text}</span>
           </button>
@@ -151,22 +149,22 @@ function FormStudent() {
     );
   };
 
-  
-  
+
+
 
   const handleContinue = () => {
-    if(!selectedOption && !selectedSuboption && currentQuestionIndex < 2 ){
+    if (!selectedOption && !selectedSuboption && currentQuestionIndex < 2) {
       return
-    } 
-     
-    if(currentQuestionIndex == 1)
+    }
+
+    if (currentQuestionIndex == 1)
       setShowSuboptions(false)
-    if (currentQuestionIndex < currentQuestions.length - 1 ) {
+    if (currentQuestionIndex < currentQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       handleShowAllOptions();
     } else {
       finishForm();
-    }  
+    }
   };
 
   const finishForm = () => {
@@ -197,41 +195,41 @@ function FormStudent() {
   const renderProgressBar = () => {
     const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     return (
-      <div className="mb-4 h-[2px] w-full rounded-full bg-gray-200">
+      <div className="mb-4 h-[4px] w-full rounded-full bg-gray-200">
         <div
-          className="h-[2px] rounded-full bg-purple-600"
+          className="h-[4px] rounded-full bg-purple-600"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
     );
   };
 
-  const renderQuestionContent = ( ) => {
+  const renderQuestionContent = () => {
     const currentQuestion = currentQuestions[currentQuestionIndex];
 
     if (currentQuestion.type === "slider") {
       return (
         <div className="w-full py-6 my-6 relative">
-        <div className="h-4 w-full rounded-lg bg-gray-200">
-          <div
-            style={{ width: `${((budget - currentQuestion.min) / (currentQuestion.max - currentQuestion.min)) * 100}%` }}
-            className="h-4 rounded-lg bg-purple-600"
-          ></div>
+          <div className="h-4 w-full rounded-lg bg-gray-200">
+            <div
+              style={{ width: `${((budget - currentQuestion.min) / (currentQuestion.max - currentQuestion.min)) * 100}%` }}
+              className="h-4 rounded-lg bg-purple-600"
+            ></div>
+          </div>
+          <input
+            type="range"
+            min={currentQuestion.min}
+            max={currentQuestion.max}
+            step={currentQuestion.step}
+            value={budget}
+            onChange={handleBudgetChange}
+            className="absolute -top-2 h-[50px] mt-4 w-full cursor-pointer appearance-none rounded-lg bg-transparent custom-range"
+          />
+          <div className="mt-4 text-center text-xl font-semibold">
+            {budget} {currentQuestion.unit}
+          </div>
         </div>
-        <input
-          type="range"
-          min={currentQuestion.min}
-          max={currentQuestion.max}
-          step={currentQuestion.step}
-          value={budget}
-          onChange={handleBudgetChange}
-          className="absolute -top-2 h-[50px] mt-4 w-full cursor-pointer appearance-none rounded-lg bg-transparent custom-range"
-        />
-        <div className="mt-4 text-center text-xl font-semibold">
-          {budget} {currentQuestion.unit}
-        </div>
-      </div>
-      
+
       );
     }
 
@@ -280,7 +278,6 @@ function FormStudent() {
 
   return (
     <div className="bg-white-400 flex min-h-screen flex-col justify-center">
-      <LoadingModal isOpen={isLoading} />
       <button
         onClick={() => navigate(-1)}
         className="text-purple absolute left-20 top-20 bg-transparent text-5xl font-bold"
@@ -303,9 +300,8 @@ function FormStudent() {
             <button
               onClick={handleBack}
               disabled={currentQuestionIndex === 0}
-              className={`${
-                currentQuestionIndex === 0 ? "opacity-50" : ""
-              } rounded-lg bg-purple-500 px-4 py-2 text-white hover:bg-purple-700`}
+              className={`${currentQuestionIndex === 0 ? "opacity-50" : ""
+                } rounded-lg bg-purple-500 px-4 py-2 text-white hover:bg-purple-700`}
             >
               Atrás
             </button>
@@ -321,17 +317,12 @@ function FormStudent() {
 
       {isFormComplete && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-700 bg-opacity-75">
-          <div className="flex w-[20em] flex-col items-center rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="w-full text-center text-2xl font-semibold text-gray-800">
-              ¡Formulario completado!
-            </h2>
-            <Link
-              to="/results"
-              className="mt-4 inline-block rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-800"
-            >
-              Continuar
-            </Link>
-          </div>
+
+          <h2 className="w-full text-center text-2xl font-semibold text-white">
+            Estamos buscando tu profesor ideal...
+          </h2>
+          <div className="mt-4 animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+
         </div>
       )}
     </div>

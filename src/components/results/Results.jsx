@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
 import CalendarModal from './components/calendar';
+import Filters from './components/Filters'; // Importa el componente de filtros
+import Header from './Header';
+import { readAllTeachers } from '../../services/teacher.services';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -25,7 +28,7 @@ const Results = () => {
   });
 
   const [showFilterModal, setShowFilterModal] = useState({
-    price: false,
+    priceRange: false,
     country: false,
     availability: false,
     specialty: false,
@@ -33,14 +36,8 @@ const Results = () => {
     category: false
   });
 
-  // Opciones de filtro predefinidas con precios en dólares
   const filterOptions = {
-    priceRange: [
-      '$10 - $25',
-      '$25 - $50',
-      '$50 - $75',
-      '$75 - $100+'
-    ],
+    priceRange: [10, 35],
     country: [
       { code: 'us', name: 'Estados Unidos' },
       { code: 'es', name: 'España' },
@@ -61,23 +58,23 @@ const Results = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
+
   useEffect(() => {
-    const fetchTeachers = async () => {
+
+    const getAllTeacher = async () => {
       try {
-        const response = await fetch('https://back.app.esturio.com/api/teachers');
-        const data = await response.json();
-        setTeachers(data.data);
-        setFilteredTeachers(data.data);
-        console.log(data.data)
+        const response = await readAllTeachers();
+        setTeachers(response.data);
+        setFilteredTeachers(response.data);
+        console.log(response.data)
         setLoading(false);
       } catch (err) {
         setError('Error al cargar los profesores');
         setLoading(false);
         console.error("Error al cargar profesores:", err);
       }
-    };
-
-    fetchTeachers();
+    }
+    getAllTeacher();
   }, []);
 
   const handleVideoClick = (videoUrl) => {
@@ -97,7 +94,7 @@ const Results = () => {
 
   const clearFilters = () => {
     setActiveFilters({
-      priceRange: '',
+      priceRange: [0, 100],
       country: '',
       availability: '',
       specialty: '',
@@ -110,17 +107,25 @@ const Results = () => {
   const applyFilters = () => {
     let filtered = [...teachers];
 
-    if (activeFilters.priceRange) {
-      const [min, max] = activeFilters.priceRange
-        .replace(/[^0-9.-]+/g, '')
-        .split('-')
-        .map(Number);
-      filtered = filtered.filter(teacher => {
-        const rate = teacher.hourlyRate;
-        return rate >= min && (max ? rate <= max : true);
+    // Filtro por nombre completo
+    if (activeFilters.fullName) {
+      const searchTerm = activeFilters.fullName.toLowerCase();
+      filtered = filtered.filter((teacher) => {
+        const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
+        return fullName.includes(searchTerm);
       });
     }
 
+    // Filtro por rango de precio
+    if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
+      const [min, max] = activeFilters.priceRange;
+      filtered = filtered.filter(teacher => {
+        const rate = parseFloat(teacher.hourlyRate);
+        return rate >= min && rate <= max;
+      });
+    }
+
+    // Filtro por país
     if (activeFilters.country) {
       const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
       if (selectedCountry) {
@@ -130,15 +135,33 @@ const Results = () => {
       }
     }
 
+    // Filtro por hablante nativo
     if (activeFilters.isNative) {
       filtered = filtered.filter(teacher =>
-        teacher.languageLevel === 'native'
+        teacher.languageLevel?.toLowerCase() === 'native'
       );
     }
 
+    // Filtro por especialidad
     if (activeFilters.specialty) {
       filtered = filtered.filter(teacher =>
         teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+      );
+    }
+
+    // Filtro por idioma
+    if (activeFilters.language) {
+      filtered = filtered.filter(teacher =>
+        teacher.languages?.some(lang =>
+          lang.toLowerCase() === activeFilters.language.toLowerCase()
+        )
+      );
+    }
+
+    // Filtro por disponibilidad
+    if (activeFilters.availability) {
+      filtered = filtered.filter(teacher =>
+        teacher.availability?.includes(activeFilters.availability)
       );
     }
 
@@ -169,56 +192,6 @@ const Results = () => {
     </div>
   );
 
-  const FilterModal = ({ title, options, onSelect, onClose, isOpen }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-        <div className="p-4">
-          <h3 className="font-semibold mb-3">{title}</h3>
-          <div className="space-y-2">
-            {options.map((option) => (
-              <button
-                key={option}
-                onClick={() => {
-                  onSelect(option);
-                  onClose();
-                }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-50 rounded"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const FilterButton = ({ label, value, filterKey }) => (
-    <div className="relative inline-block">
-      <button
-        className="bg-white rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border border-black"
-        onClick={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: !prev[filterKey] }))}
-      >
-        <span>{label}</span>
-        {value && <span className="text-gray-400">{value}</span>}
-        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      <FilterModal
-        title={label}
-        options={filterKey === 'country' ? filterOptions[filterKey].map(item => item.name) : filterOptions[filterKey] || []}
-        onSelect={(selected) => {
-          setActiveFilters(prev => ({ ...prev, [filterKey]: selected }));
-        }}
-        onClose={() => setShowFilterModal(prev => ({ ...prev, [filterKey]: false }))}
-        isOpen={showFilterModal[filterKey]}
-      />
-    </div>
-  );
   const openModal = (teacher) => {
     setSelectedTeacher(teacher);
     setIsModalOpen(true);
@@ -229,18 +202,14 @@ const Results = () => {
     setIsModalOpen(false);
   };
 
-
   const closeRegisterModal = (teacher) => {
     setSelectedTeacher(teacher);
     setRegisterModal(!registerModal);
     if (teacher == null) {
-      setSelectedTeacher(null)
+      setSelectedTeacher(null);
       return;
     }
   };
-
-
-
 
   if (loading) {
     return (
@@ -255,118 +224,81 @@ const Results = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center mb-6">
-            <button
-              onClick={handleBack}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
-              aria-label="Regresar"
-            >
-              <ArrowLeft size={24} className="text-gray-600" />
-            </button>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Profesores particulares online: reserva ya tus clases
-            </h1>
-          </div>
+    <div className='w-full'>
 
-          <div className="flex flex-col lg:flex-row items-center gap-4">
-            <div className="UNO flex flex-wrap items-center gap-4">
-              <FilterButton
-                label="Precio por hora"
-                value={activeFilters.priceRange}
-                filterKey="priceRange"
-                className="border border-black rounded-lg px-4 py-2"
-              />
-              <FilterButton
-                label="País de nacimiento"
-                value={activeFilters.country}
-                filterKey="country"
-                className="border border-black rounded-lg px-4 py-2"
-              />
-              <FilterButton
-                label="Disponibilidad"
-                value={activeFilters.availability}
-                filterKey="availability"
-                className="border border-black rounded-lg px-4 py-2"
-              />
-              <FilterButton
-                label="Especialidades"
-                value={activeFilters.specialty}
-                filterKey="specialty"
-                className="border border-black rounded-lg px-4 py-2"
-              />
-              <FilterButton
-                label="Idiomas"
-                value={activeFilters.language}
-                filterKey="language"
-                className="border border-black rounded-lg px-4 py-2"
-              />
+      <div>
+        <Header
+          title="Profesores particulares online: Prueba una clase"
+        />
+      </div >
+
+
+
+      <div className="min-h-screen bg-gray-50">
+
+
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center mb-6">
               <button
-                className={`bg-white rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-700 hover:bg-gray-50 border border-gray ${activeFilters.isNative ? 'ring-2 ring-purple-500' : ''}`}
-                onClick={() => setActiveFilters(prev => ({ ...prev, isNative: !prev.isNative }))}
+                onClick={handleBack}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
+                aria-label="Regresar"
               >
-                Hablante nativo
-              </button>
-              <button
-                onClick={clearFilters}
-                className="bg-gray-100 rounded-lg px-2 py-1  lg:px-4 lg:py-2 text-gray-600 hover:bg-gray-200 border border-gray flex items-center gap-2"
-              >
-                <X size={16} />
-                Limpiar filtros
+                <ArrowLeft size={24} className="text-gray-600" />
               </button>
             </div>
-          </div>
 
-
-
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
-        </h2>
-
-        <div className="space-y-6 w-[70em]">
-          {filteredTeachers.map((teacher) => (
-            <TeacherCard
-              key={teacher.id}
-              teacher={teacher}
-              onVideoClick={handleVideoClick}
-              closeRegisterModal={closeRegisterModal}
-              setShowCalendarModal={setShowCalendarModal}
-              setSelectedTeacher={setSelectedTeacher}
+            {/* Incluir el componente Filters */}
+            <Filters
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              clearFilters={clearFilters}
+              filterOptions={filterOptions}
+              showFilterModal={showFilterModal}
+              setShowFilterModal={setShowFilterModal}
             />
-          ))}
-
-          {filteredTeachers.length === 0 && (
-            <p className="text-center text-gray-600">
-              No se encontraron profesores con los filtros seleccionados.
-            </p>
-          )}
-
-
+          </div>
         </div>
 
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
+          </h2>
+
+          <div className="space-y-6 w-[70em]">
+            {filteredTeachers.map((teacher) => (
+              <TeacherCard
+                key={teacher.id}
+                teacher={teacher}
+                onVideoClick={handleVideoClick}
+                closeRegisterModal={closeRegisterModal}
+                setSelectedTeacher={setSelectedTeacher}
+                setShowCalendarModal={setShowCalendarModal}
+              />
+            ))}
+
+            {filteredTeachers.length === 0 && (
+              <p className="text-center text-gray-600">
+                No se encontraron profesores con los filtros seleccionados.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {showVideoModal && selectedVideo && (
+          <VideoModal
+            videoUrl={selectedVideo}
+            onClose={() => {
+              setShowVideoModal(false);
+              setSelectedVideo(null);
+            }}
+          />
+        )}
       </div>
-
-      {showVideoModal && selectedVideo && (
-        <VideoModal
-          videoUrl={selectedVideo}
-          onClose={() => {
-            setShowVideoModal(false);
-            setSelectedVideo(null);
-          }}
-        />
-      )}
-
-      {
-        // modal de registro
-        registerModal ?
+        {registerModal && 
           <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
-          : null
+          
       }
       {
         showCalendarModal

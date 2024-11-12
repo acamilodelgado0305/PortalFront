@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import { getFlagUrl } from "../../services/allcountries.js";
-import { Play } from "lucide-react";
+import { Play, Send } from "lucide-react";
 import { ScheduleModal } from "./components/ScheduleModal.jsx";
 import ModalRegister from "./modalRegister.jsx";
 import { useAuth } from "../../Context/AuthContext.jsx";
+import { SendOutlined } from "@ant-design/icons";
 
 const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher}) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const {idToken, user} = useAuth();
 
+
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CO", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "COP",
-    }).format(price * 1000);
+      currency: "USD",
+    }).format(price);
   };
+  
 
   const getYouTubeThumbnail = (url) => {
     const videoId = url.split("/").pop();
@@ -30,7 +33,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
             <img
               src={teacher.profileImageUrl}
               alt={`${teacher.firstName} ${teacher.lastName}`}
-              className="h-20 w-20 rounded-lg object-cover lg:h-32 lg:w-32"
+              className="h-30 w-30 rounded-lg object-cover lg:h-32 lg:w-40 lg:h-40"
               onError={(e) => {
                 e.target.src = "https://via.placeholder.com/128x128";
               }}
@@ -41,13 +44,13 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
             <div className="flex items-start justify-between">
               <div>
                 <div className="mb-2 flex items-center gap-2">
-                  <h3 className="text-xl font-medium">
+                  <h3 className="text-3xl font-medium">
                     {teacher.firstName} {teacher.lastName}
                   </h3>
                   <div className="flex items-center">
                     <img
                       src={getFlagUrl(teacher.countryOfBirth)}
-                      style={{ width: "20px", height: "20px" }}
+                      style={{ width: "35px", height: "20px" }}
                       className="mx-2"
                     />
                     <span className="text-yellow-400">★</span>
@@ -58,51 +61,53 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                   </div>
                 </div>
 
-                <p className="mb-1 text-gray-600 pb-4 lg:pb-0">
-                  {teacher.subjectYouTeach}
+
+                <p className="mb-1 text-2xl text-black pb-4 lg:pb-0">
+                  Enseña: {teacher.subjectYouTeach}
+
                 </p>
 
-                <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
-                  <div className="flex items-center absolute lg:static">
-                    <span>
-                      {teacher.activeStudents || 3} estudiantes activos
+                <p className="mb-1 text-xl text-black pb-4 lg:pb-0">
+
+                  {teacher.description?.introduction}
+                </p>
+                {/*------------------------*/}
+
+
+                <div className="mb-3 flex items-start gap-2 text-sm text-gray-600">
+                  <div className="flex flex-col items-start">
+                    <span className="block">{teacher.activeStudents || 3} estudiantes activos</span>
+                    <span className="block">{teacher.lessonsGiven || 162} lecciones</span>
+                    <span className="block">
+                      Habla {teacher.language} ({teacher.languageLevel === "native" ? "Nativo" : "Avanzado"})
                     </span>
-                    <span className="mx-2">•</span>
-                    <span>{teacher.lessonsGiven || 162} lecciones</span>
                   </div>
                 </div>
 
-                <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-                  <span>
-                    Habla {teacher.language} (
-                    {teacher.languageLevel === "native" ? "Nativo" : "Avanzado"}
-                    )
-                  </span>
-                </div>
+
               </div>
 
               <div className="lg:text-right">
-                <p className="text-xl font-semibold text-gray-900">
-                  {formatPrice(teacher.hourlyRate)}
+                <p className="font-semibold text-3xl text-[#1500F4]">
+                  US {formatPrice(teacher.hourlyRate)}
                 </p>
-                <p className="text-sm text-gray-500">Lección de 50 minutos</p>
+
               </div>
             </div>
-            <div className="w-[50%] py-3 text-gray-700 lg:absolute lg:py-0">
-              {teacher.description?.introduction}
-            </div>
-            <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end">
+
+            <div className="flex w-[100%] flex-col gap-3 text-right lg:items-end lg:justify-end mt-[-6em]">
               <button
                 onClick={() => {!idToken?setShowRegisterModal(true): setShowCalendarModal(true), setSelectedTeacher(teacher) }}
                 className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
               >
-                Clase de prueba gratuita
+                Reservar una clase de prueba
               </button>
 
               <button
                 onClick={() => {!idToken?setShowRegisterModal(true): setShowCalendarModal(true), setSelectedTeacher(teacher) }}
-                className="w-[12em] border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
+                className="w-[12em] gap-2 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
+                <SendOutlined className="mr-3"/>
                 Enviar mensaje
               </button>
             </div>
@@ -111,7 +116,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
       </div>
 
       <div className="absolute left-[30%] top-0 z-10 ml-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:left-full">
-        <div className="h-[17em] h-[auto] w-[27em] rounded-lg border !border-black border-black bg-white p-3 shadow-lg lg:h-[auto]">
+        <div className="h-[21.8em] w-[27em]  border !border-black border-black bg-white p-3 shadow-lg ">
           <div
             className={`relative h-[15em] w-full rounded-lg bg-gray-100 ${teacher.video ? "cursor-pointer" : ""} overflow-hidden`}
             onClick={() => teacher.video && onVideoClick(teacher.video)}

@@ -1,7 +1,5 @@
 import { CloseOutlined, LeftOutlined, RightOutlined, SunOutlined } from "@ant-design/icons"
 import { Button, message, Modal, Popconfirm } from "antd"
-import Calendar from "react-calendar/dist/cjs/Calendar.js";
-import 'react-calendar/dist/Calendar.css';
 import { useEffect, useState } from "react";
 import './WeeklyCalendar.css';
 import { useAuth } from "../../../Context/AuthContext";
