@@ -313,6 +313,5 @@ const Filters = ({
     );
 };
 
-// Componente FilterButton (asumido como ya definido en tu código
 
 export default Filters;
