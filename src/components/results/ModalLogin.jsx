@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../Context/AuthContext';
 import { FaApple, FaEye, FaEyeSlash, FaFacebook } from 'react-icons/fa';
 import Cookies from "js-cookie"
+import { loginCognito } from '../../services/studendent.services';
 
 const LoginModal = ({ isOpen, onClose, inicioSesion, setInicioSesion }) => {
   const [email, setEmail] = useState("");
@@ -17,16 +18,8 @@ const LoginModal = ({ isOpen, onClose, inicioSesion, setInicioSesion }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4005/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
+        const response = await loginCognito(email, password)
+      const data = response
       if (data.success) {
         login(data.user, data.accessToken, data.idToken, data.refreshToken);
         onClose();
