@@ -302,7 +302,7 @@ const Filters = ({
 
                     <button
                         onClick={clearFilters}
-                        className="w-full bg-gray-100 rounded-xl px-6 py-3 text-xl text-gray-600 hover:bg-gray-200 border border-gray flex items-center justify-center gap-3 font-medium"
+                        className="w-full bg-gray-100 rounded-xl px-6 py-3 text-xl text-gray-600  border border-gray flex items-center justify-center gap-3 font-medium"
                     >
                         <X size={20} />
                         Limpiar filtros
