@@ -84,7 +84,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
               </div>
 
               <div className="lg:text-right">
-                <p className="font-semibold text-3xl text-[#1500F4]">
+                <p className="font-semibold text-3xl text-purple-600">
                   US {formatPrice(teacher.hourlyRate)}
                 </p>
 
