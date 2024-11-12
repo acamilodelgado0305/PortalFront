@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import backgroundImage from "../images/fondos.jpg";
+import backgroundImage from "../images/fondos.webp";
 import TeacherBanner from "./components/TeacherBanner";
 import Steps from "./components/Steps";
 import HowBranakWorks from "./components/HowBranakWorks";
