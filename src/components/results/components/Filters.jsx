@@ -80,7 +80,7 @@ const Filters = ({
     const FilterButton = ({ label, value, filterKey }) => (
         <div className="relative inline-block" ref={el => filterRefs.current[filterKey] = el}>
             <button
-                className="bg-white text-2xl p-6 font-medium px-6 py-3 text-[#1500F4] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-[#1500F4] rounded-xl"
+                className="bg-white text-2xl p-6 w-[10em] h-[2.5em] font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-purple-600 rounded-xl"
                 onClick={() =>
                     setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
                 }
@@ -159,7 +159,7 @@ const Filters = ({
                     .slider-range {
                         position: absolute;
                         height: 2px;
-                        background: #1500F4;
+                        background: #A855F7;
                         z-index: 2;
                     }
 
@@ -170,7 +170,7 @@ const Filters = ({
                         width: 12px;
                         height: 20px;
                         background: white;
-                        border: 2px solid #1500F4;
+                        border: 2px solid #A855F7;
                         border-radius: 2px;
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -181,7 +181,7 @@ const Filters = ({
                         width: 12px;
                         height: 20px;
                         background: white;
-                        border: 2px solid #8b5cf6;
+                        border: 2px solid #A855F7;
                         border-radius: 2px;
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -200,7 +200,7 @@ const Filters = ({
 
             <div className="grid grid-cols-3 gap-8">
                 {/* Primera columna (más ancha - 2 columnas de 3) */}
-                <div className="col-span-2 flex flex-wrap gap-4">
+                <div className="col-span-2 flex flex-wrap gap-4 w-[70em]">
                     <FilterButton
                         label="Idiomas"
                         value={activeFilters.language}
@@ -209,18 +209,21 @@ const Filters = ({
 
                     <div className="relative inline-block" ref={el => filterRefs.current.priceRange = el}>
                         <button
-                            className="bg-white text-2xl p-6 font-medium px-6 py-3 text-[#1500F4] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-[#1500F4] rounded-xl"
+                            className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
                             onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
                         >
-                            <span>Precio por hora</span>
-                            <span className="text-[#1500F4]">
+                            <div className="text-sm text-purple-600 mt-[-0.8em]">
+                                Precio
+                            </div>
+                            <span className="text-2xl text-purple-600">
                                 USD ${priceRange.min} - ${priceRange.max}
                             </span>
                         </button>
 
+
                         {showFilterModal.priceRange && (
-                            <div className="absolute mt-2 bg-white rounded-xl shadow-lg border-2 border-[#1500F4] text-2xl p-6 z-50">
-                                <div className="flex justify-center mt-2 text-3xl font-bold text-gray-800 mb-6">
+                            <div className="absolute mt-2 bg-white rounded-xl shadow-lg border-2 border-purple-600 text-2xl p-6 z-50">
+                                <div className="flex justify-center mt-2 text-2xl font-bold text-purple-600 mb-6">
                                     <span>{`US $${priceRange.min} - US $${priceRange.max}`}</span>
                                 </div>
                                 <div className="px-2">
@@ -258,7 +261,7 @@ const Filters = ({
                     </div>
 
                     <FilterButton
-                        label="País de nacimiento"
+                        label="País"
                         value={activeFilters.country}
                         filterKey="country"
                     />
@@ -276,7 +279,7 @@ const Filters = ({
                     />
 
                     <button
-                        className={`bg-white text-2xl p-6 font-medium px-6 py-3 text-[#1500F4] border-2 border-[#1500F4] rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''}`}
+                        className={`bg-white text-2xl w-[10em] h-[2.5em] p-6 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''}`}
                         onClick={() => setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))}
                     >
                         Hablante nativo
@@ -284,15 +287,15 @@ const Filters = ({
                 </div>
 
                 {/* Segunda columna (más estrecha - 1 columna de 3) */}
-                <div className="col-span-1 space-y-4">
+                <div className="col-span-1 space-y-4 pl-[7em]">
                     <div className="relative w-[11em]">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#1500F4]" />
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
                         <input
                             type="text"
                             placeholder="Buscar por nombre"
                             value={activeFilters.fullName || ''}
                             onChange={handleNameChange}
-                            className="w-[12em] border-2 border-[#1500F4] rounded-xl pl-10 pr-6 py-3 text-3xl placeholder:text-[#1500F4]"
+                            className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-3 text-2xl text-400 placeholder:text-purple-600"
                         />
                     </div>
 

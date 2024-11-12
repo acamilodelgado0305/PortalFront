@@ -17,7 +17,7 @@ const Header = ({ title, showBack = true }) => {
                     {/* Logo y título */}
                     <div className="flex items-center justify-between w-full">
                         <Link to="/" className="flex items-center">
-                            <h1 className="text-[#1500F4] text-3xl font-semibold">Esturio</h1>
+                            <h1 className="text-purple-600 text-4xl font-semibold">Esturio</h1>
                         </Link>
                         <div className='pt-8 w-full flex items-end justify-center'>
                             {title && (
@@ -38,7 +38,7 @@ const Header = ({ title, showBack = true }) => {
                         >
                             <div className="relative">
                                 <svg
-                                    className="h-6 w-6 text-[#1500F4]"
+                                    className="h-8 w-8 text-purple-600"
                                     viewBox="0 0 29.3 29.3"
                                     xmlns="http://www.w3.org/2000/svg"
                                 >
@@ -94,7 +94,7 @@ const Header = ({ title, showBack = true }) => {
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                             aria-label="Perfil"
                         >
-                            <User size={30} color='#1500F4' strokeWidth={1.5} />
+                            <User size={35} className='text-purple-600' strokeWidth={1.5} />
                         </button>
 
                     </div>

@@ -23,13 +23,13 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
 
   return (
     <div className="group relative">
-      <div className="h-[auto] w-[50%]  border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-black hover:shadow-md lg:h-[37vh] lg:w-[100%]">
+      <div className="h-[auto] w-[50%]  border border-gray-400 bg-white p-6 shadow-sm transition-all duration-200 hover:border-purple-600 border-2 hover:shadow-md lg:h-[37vh] lg:w-[100%]">
         <div className="flex gap-6">
           <div>
             <img
               src={teacher.profileImageUrl}
               alt={`${teacher.firstName} ${teacher.lastName}`}
-              className="h-30 w-30 rounded-lg object-cover lg:h-32 lg:w-40 lg:h-40"
+              className="h-30 w-30 rounded-lg object-cover lg:h-ful lg:w-[15em] lg:h-[15em]"
               onError={(e) => {
                 e.target.src = "https://via.placeholder.com/128x128";
               }}
@@ -112,7 +112,7 @@ const TeacherCard = ({ teacher, onVideoClick }) => {
       </div>
 
       <div className="absolute left-[30%] top-0 z-10 ml-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:left-full">
-        <div className="h-[21.8em] w-[27em]  border !border-black border-black bg-white p-3 shadow-lg ">
+        <div className="h-[21.8em] w-[27em]  border !border-purple-600 border-2 border-black bg-white p-3 shadow-lg ">
           <div
             className={`relative h-[15em] w-full rounded-lg bg-gray-100 ${teacher.video ? "cursor-pointer" : ""} overflow-hidden`}
             onClick={() => teacher.video && onVideoClick(teacher.video)}

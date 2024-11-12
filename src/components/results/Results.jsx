@@ -225,9 +225,12 @@ const Results = () => {
 
       <div>
         <Header
-          title="Profesores particulares online: Prueba una clase"
         />
       </div >
+
+      <span className="flex items-center justify-center  text-black text-5xl text-bold">
+        Profesores particulares online: Prueba una clase
+      </span>
 
 
 
