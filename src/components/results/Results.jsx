@@ -60,21 +60,38 @@ const Results = () => {
   const [registerModal, setRegisterModal] = useState(false);
 
   useEffect(() => {
-
-    const getAllTeacher = async () => {
+    const getAllTeachers = async () => {
       try {
-        const response = await readAllTeachers();
-        setTeachers(response.data);
-        setFilteredTeachers(response.data);
-        console.log(response.data)
-        setLoading(false);
+        const response = await fetch("https://back.app.esturio.com/api/teachers");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const rawData = await response.json();
+
+        // Verificar si la respuesta tiene la estructura esperada
+        if (!rawData.success || !rawData.data) {
+          throw new Error('Formato de respuesta inválido');
+        }
+
+        // Asumiendo que rawData.data contiene el array de profesores
+        const teachersArray = Array.isArray(rawData.data) ? rawData.data : [rawData.data];
+
+        setTeachers(teachersArray);
+        setFilteredTeachers(teachersArray);
+        console.log('Profesores cargados:', teachersArray);
       } catch (err) {
-        setError('Error al cargar los profesores');
-        setLoading(false);
+        setError('Error al cargar los profesores: ' + err.message);
+        setTeachers([]);
+        setFilteredTeachers([]);
         console.error("Error al cargar profesores:", err);
+      } finally {
+        setLoading(false);
       }
-    }
-    getAllTeacher();
+    };
+
+    getAllTeachers();
   }, []);
 
   const handleVideoClick = (videoUrl) => {
@@ -299,9 +316,9 @@ const Results = () => {
           />
         )}
       </div>
-        {registerModal && 
-          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
-          
+      {registerModal &&
+        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+
       }
       {
         showCalendarModal
