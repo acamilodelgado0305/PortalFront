@@ -81,6 +81,16 @@ const resendCodeCognito = async (data) => {
     throw error;
   }
 };
+const loginCognito = async (email, password) => {
+  try {
+    const response = await backApi.post('/api/users/login', {email, password});
+    console.log("user Login")
+    return response.data;
+  } catch (error) {
+    console.error("err:", error);
+    throw error;
+  }
+};
 
 export {
   createStudent,
@@ -90,7 +100,8 @@ export {
   deleteStudentById,
   createStudentCognito,
   codeStudentCognito,
-  resendCodeCognito
+  resendCodeCognito,
+  loginCognito
 };
 
 

@@ -3,8 +3,10 @@ import { X, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
+import CalendarModal from './components/calendar';
 import Filters from './components/Filters'; // Importa el componente de filtros
 import Header from './Header';
+import { readAllTeachers } from '../../services/teacher.services';
 
 const Results = () => {
   const [teachers, setTeachers] = useState([]);
@@ -12,6 +14,7 @@ const Results = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const navigate = useNavigate();
   const [activeFilters, setActiveFilters] = useState({
@@ -57,21 +60,38 @@ const Results = () => {
   const [registerModal, setRegisterModal] = useState(false);
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const getAllTeachers = async () => {
       try {
-        const response = await fetch('https://back.app.esturio.com/api/teachers');
-        const data = await response.json();
-        setTeachers(data.data);
-        setFilteredTeachers(data.data);
-        console.log(data.data)
-        setLoading(false);
+        const response = await fetch("https://back.app.esturio.com/api/teachers");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const rawData = await response.json();
+
+        // Verificar si la respuesta tiene la estructura esperada
+        if (!rawData.success || !rawData.data) {
+          throw new Error('Formato de respuesta inválido');
+        }
+
+        // Asumiendo que rawData.data contiene el array de profesores
+        const teachersArray = Array.isArray(rawData.data) ? rawData.data : [rawData.data];
+
+        setTeachers(teachersArray);
+        setFilteredTeachers(teachersArray);
+        console.log('Profesores cargados:', teachersArray);
       } catch (err) {
-        setError('Error al cargar los profesores');
-        setLoading(false);
+        setError('Error al cargar los profesores: ' + err.message);
+        setTeachers([]);
+        setFilteredTeachers([]);
         console.error("Error al cargar profesores:", err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchTeachers();
+
+    getAllTeachers();
   }, []);
 
   const handleVideoClick = (videoUrl) => {
@@ -91,7 +111,7 @@ const Results = () => {
 
   const clearFilters = () => {
     setActiveFilters({
-      priceRange: [0, 100],
+      priceRange: [0, 35],
       country: '',
       availability: '',
       specialty: '',
@@ -225,9 +245,12 @@ const Results = () => {
 
       <div>
         <Header
-          title="Profesores particulares online: Prueba una clase"
         />
       </div >
+
+      <span className="flex items-center justify-center  text-black text-5xl text-bold">
+        Profesores particulares online: Prueba una clase
+      </span>
 
 
 
@@ -270,6 +293,8 @@ const Results = () => {
                 teacher={teacher}
                 onVideoClick={handleVideoClick}
                 closeRegisterModal={closeRegisterModal}
+                setSelectedTeacher={setSelectedTeacher}
+                setShowCalendarModal={setShowCalendarModal}
               />
             ))}
 
@@ -290,11 +315,17 @@ const Results = () => {
             }}
           />
         )}
-
-        {registerModal && (
-          <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
-        )}
       </div>
+      {registerModal &&
+        <ModalRegister selectedTeacher={selectedTeacher} closeRegisterModal={closeRegisterModal} />
+
+      }
+      {
+        showCalendarModal
+        &&
+        <CalendarModal teacher={selectedTeacher} setShowCalendarModal={setShowCalendarModal} showCalendarModal={showCalendarModal} />
+
+      }
     </div>
   );
 };

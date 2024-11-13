@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Search } from 'lucide-react';
+import CalendarModal from '../components/calendar'; // Asegúrate de que la ruta sea correcta
 
 const Filters = ({
     activeFilters,
@@ -13,6 +14,48 @@ const Filters = ({
         min: activeFilters.priceRange?.[0] || 10,
         max: activeFilters.priceRange?.[1] || 35
     });
+    const [showCalendarModal, setShowCalendarModal] = useState(false); // Controlar visibilidad del calendario
+    const filterRefs = useRef({});
+
+    const defaultTeacher = {
+        Availability: {
+            Sunday: { enabled: false, timeSlots: [] },
+            Monday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 11, 9, 0), end: new Date(2024, 10, 11, 11, 0) },
+                    { start: new Date(2024, 10, 11, 13, 0), end: new Date(2024, 10, 11, 15, 0) }
+                ]
+            },
+            Tuesday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 12, 10, 0), end: new Date(2024, 10, 12, 12, 0) }
+                ]
+            },
+            Wednesday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 13, 9, 0), end: new Date(2024, 10, 13, 11, 0) },
+                    { start: new Date(2024, 10, 13, 14, 0), end: new Date(2024, 10, 13, 16, 0) }
+                ]
+            },
+            Thursday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 14, 13, 0), end: new Date(2024, 10, 14, 15, 0) }
+                ]
+            },
+            Friday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 15, 8, 0), end: new Date(2024, 10, 15, 10, 0) },
+                    { start: new Date(2024, 10, 15, 12, 0), end: new Date(2024, 10, 15, 14, 0) }
+                ]
+            },
+            Saturday: { enabled: false, timeSlots: [] }
+        }
+    };
 
     useEffect(() => {
         setPriceRange({
@@ -21,6 +64,23 @@ const Filters = ({
         });
     }, [activeFilters.priceRange]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            Object.keys(showFilterModal).forEach((filterKey) => {
+                if (showFilterModal[filterKey] && filterRefs.current[filterKey] &&
+                    !filterRefs.current[filterKey].contains(event.target)) {
+                    setShowFilterModal(prev => ({
+                        ...prev,
+                        [filterKey]: false
+                    }));
+                }
+            });
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showFilterModal, setShowFilterModal]);
+
     const handleNameChange = (e) => {
         setActiveFilters((prev) => ({
             ...prev,
@@ -28,11 +88,14 @@ const Filters = ({
         }));
     };
 
-    const FilterModal = ({ title, options, onSelect, onClose, isOpen }) => {
+    const FilterModal = ({ title, options, onSelect, onClose, isOpen, filterKey }) => {
         if (!isOpen) return null;
 
         return (
-            <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+            <div
+                ref={el => filterRefs.current[filterKey] = el}
+                className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20"
+            >
                 <div className="p-4">
                     <h3 className="font-semibold mb-3">{title}</h3>
                     <div className="space-y-2">
@@ -55,9 +118,9 @@ const Filters = ({
     };
 
     const FilterButton = ({ label, value, filterKey }) => (
-        <div className="relative inline-block">
+        <div className="relative inline-block" ref={el => filterRefs.current[filterKey] = el}>
             <button
-                className="bg-white rounded-lg px-4 py-2 text-[#1500F4] text-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border-2 border-[#1500F4] rounded-lg"
+                className="bg-white text-2xl p-6 w-[10em] h-[2.5em] font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-purple-600 rounded-xl"
                 onClick={() =>
                     setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
                 }
@@ -81,6 +144,7 @@ const Filters = ({
                 }}
                 onClose={() => setShowFilterModal((prev) => ({ ...prev, [filterKey]: false }))}
                 isOpen={showFilterModal[filterKey]}
+                filterKey={filterKey}
             />
         </div>
     );
@@ -109,11 +173,9 @@ const Filters = ({
                 {`
                     .slider-container {
                         position: relative;
-                        width: 300px;
-                        height: 40px;
-                        margin: 10px 0;
+                        width: 100%;
+                        height: 30px;
                     }
-
                     .slider {
                         position: absolute;
                         pointer-events: none;
@@ -124,135 +186,170 @@ const Filters = ({
                         background: none;
                         z-index: 3;
                     }
-
                     .slider-track {
                         position: absolute;
-                        top: 50%;
-                        transform: translateY(-50%);
                         width: 100%;
                         height: 2px;
                         background: #e5e7eb;
                         z-index: 1;
                     }
-
                     .slider-range {
                         position: absolute;
-                        top: 50%;
-                        transform: translateY(-50%);
                         height: 2px;
-                        background: #1500F4;
+                        background: #A855F7;
                         z-index: 2;
                     }
-
                     .slider::-webkit-slider-thumb {
                         pointer-events: auto;
                         -webkit-appearance: none;
                         appearance: none;
-                        width: 16px;
-                        height: 16px;
+                        width: 12px;
+                        height: 20px;
                         background: white;
-                        border: 2px solid #1500F4;
-                        border-radius: 50%;
+                        border: 2px solid #A855F7;
+                        border-radius: 2px;
                         cursor: pointer;
-                        margin-top: -7px;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
-
                     .slider::-moz-range-thumb {
                         pointer-events: auto;
-                        width: 16px;
-                        height: 16px;
+                        width: 12px;
+                        height: 20px;
                         background: white;
-                        border: 2px solid #1500F4;
-                        border-radius: 50%;
+                        border: 2px solid #A855F7;
+                        border-radius: 2px;
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                    }
+                    .slider::-webkit-slider-thumb:hover {
+                        transform: scale(1.1);
+                    }
+                    .slider::-moz-range-thumb:hover {
+                        transform: scale(1.1);
                     }
                 `}
             </style>
-            <div className="flex flex-col space-y-4 w-full">
-                {/* Primera fila */}
-                <div className="flex flex-wrap items-center gap-4">
-                    <FilterButton label="Idiomas" value={activeFilters.language} filterKey="language" />
-                    
-                    <div className="relative inline-block">
+
+            <div className="grid grid-cols-3 gap-8">
+                {/* Primera columna (más ancha - 2 columnas de 3) */}
+                <div className="col-span-2 flex flex-wrap gap-4 w-[70em]">
+                    <FilterButton
+                        label="Idiomas"
+                        value={activeFilters.language}
+                        filterKey="language"
+                    />
+
+                    <div className="relative inline-block" ref={el => filterRefs.current.priceRange = el}>
                         <button
-                            className="bg-white rounded-lg px-4 py-2 text-[#1500F4] text-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-2 border-2 border-[#1500F4] rounded-lg"
+                            className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
                             onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
                         >
-                            <span>Precio por hora</span>
-                            <span className="text-[#1500F4]">
+                            <div className="text-sm text-purple-600 mt-[-0.8em]">
+                                Precio
+                            </div>
+                            <span className="text-2xl text-purple-600">
                                 USD ${priceRange.min} - ${priceRange.max}
                             </span>
                         </button>
 
                         {showFilterModal.priceRange && (
-                            <div className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-20">
-                                <div className="flex justify-center text-lg font-bold text-gray-800 mb-4">
+                            <div className="absolute mt-2 bg-white rounded-xl shadow-lg border-2 border-purple-600 text-2xl p-6 z-50">
+                                <div className="flex justify-center mt-2 text-2xl font-bold text-purple-600 mb-6">
                                     <span>{`US $${priceRange.min} - US $${priceRange.max}`}</span>
                                 </div>
-                                <div className="slider-container">
-                                    <div className="slider-track"></div>
-                                    <div
-                                        className="slider-range"
-                                        style={{
-                                            left: `${((priceRange.min - 10) / 25) * 100}%`,
-                                            right: `${100 - ((priceRange.max - 10) / 25) * 100}%`,
-                                        }}
-                                    ></div>
-                                    <input
-                                        type="range"
-                                        min="10"
-                                        max="35"
-                                        value={priceRange.min}
-                                        onChange={handleMinChange}
-                                        className="slider"
-                                    />
-                                    <input
-                                        type="range"
-                                        min="10"
-                                        max="35"
-                                        value={priceRange.max}
-                                        onChange={handleMaxChange}
-                                        className="slider"
-                                    />
+                                <div className="px-2">
+                                    <div className="slider-container">
+                                        <div className="slider-track"></div>
+                                        <div
+                                            className="slider-range"
+                                            style={{
+                                                left: `${((priceRange.min - 10) / 25) * 100}%`,
+                                                right: `${100 - ((priceRange.max - 10) / 25) * 100}%`,
+                                            }}
+                                        ></div>
+                                        <input
+                                            type="range"
+                                            min="10"
+                                            max="35"
+                                            step="1"
+                                            value={priceRange.min}
+                                            onChange={handleMinChange}
+                                            className="slider"
+                                        />
+                                        <input
+                                            type="range"
+                                            min="10"
+                                            max="35"
+                                            step="1"
+                                            value={priceRange.max}
+                                            onChange={handleMaxChange}
+                                            className="slider"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
-                    
-                    <FilterButton label="País de nacimiento" value={activeFilters.country} filterKey="country" />
-                    <FilterButton label="Disponibilidad" value={activeFilters.availability} filterKey="availability" />
-                    
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre o apellido"
-                        value={activeFilters.fullName || ''}
-                        onChange={handleNameChange}
-                        className="border-2 border-[#1500F4] rounded-lg px-4 py-2 text-lg flex-grow"
-                    />
-                </div>
 
-                {/* Segunda fila */}
-                <div className="flex flex-wrap items-center gap-4">
-                    <FilterButton label="Especialidades" value={activeFilters.specialty} filterKey="specialty" />
-                    
+                    <FilterButton
+                        label="País"
+                        value={activeFilters.country}
+                        filterKey="country"
+                    />
+
+                    {/* Botón para mostrar el calendario */}
                     <button
-                        className={`bg-white rounded-lg px-4 py-2 text-[#1500F4] border-2 border-[#1500F4] text-lg ${activeFilters.isNative ? 'bg-[#1500F4] text-white' : ''}`}
+                        className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50"
+                        onClick={() => setShowCalendarModal(true)}
+                    >
+                        Disponibilidad
+                    </button>
+
+                    <FilterButton
+                        label="Especialidades"
+                        value={activeFilters.specialty}
+                        filterKey="specialty"
+                    />
+
+                    <button
+                        className={`bg-white text-2xl w-[10em] h-[2.5em] p-6 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''}`}
                         onClick={() => setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))}
                     >
                         Hablante nativo
                     </button>
+                </div>
+
+                {/* Segunda columna */}
+                <div className="col-span-1 space-y-4 pl-[7em]">
+                    <div className="relative w-[11em]">
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre"
+                            value={activeFilters.fullName || ''}
+                            onChange={handleNameChange}
+                            className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-3 text-2xl text-400 placeholder:text-purple-600"
+                        />
+                    </div>
 
                     <button
                         onClick={clearFilters}
-                        className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 hover:bg-gray-200 border border-gray flex items-center gap-2 text-lg ml-auto"
+                        className="w-full bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
                     >
-                        <X size={16} />
+                        <X size={20} />
                         Limpiar filtros
                     </button>
                 </div>
             </div>
+
+            {/* CalendarModal, visible según el estado `showCalendarModal` */}
+            {showCalendarModal && (
+                <CalendarModal
+                    showCalendarModal={showCalendarModal}
+                    setShowCalendarModal={setShowCalendarModal}
+                    teacher={defaultTeacher}
+                />
+            )}
         </>
     );
 };

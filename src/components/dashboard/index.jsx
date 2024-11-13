@@ -33,7 +33,7 @@ const Dashboard = () => {
 
                 setTeachers(teacherData.data || []);
                 setStudents(studentData.data || []);
-                
+
                 setTeacherNationality(calculateDataByField(teacherData.data, 'countryOfBirth'));
                 setTeacherSubjects(calculateDataByField(teacherData.data, 'subjectYouTeach'));
                 setTeacherCountries(calculateDataByField(teacherData.data, 'country'));
@@ -51,6 +51,7 @@ const Dashboard = () => {
     }, []);
 
     const calculateDataByField = (data, field) => {
+        if (!data || !Array.isArray(data)) return [];
         const countData = data.reduce((acc, item) => {
             const key = item[field];
             if (key) {
@@ -101,40 +102,88 @@ const Dashboard = () => {
             {/* Stats Overview */}
             <Row gutter={[16, 16]} className="mb-4">
                 <Col xs={24} sm={12} lg={6}>
-                    <StatCard 
-                        title="Total Estudiantes" 
-                        value={students.length} 
+                    <StatCard
+                        title="Total Estudiantes"
+                        value={students.length}
                         icon={GraduationCapIcon}
                     />
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
-                    <StatCard 
-                        title="Total Profesores" 
-                        value={teachers.length} 
+                    <StatCard
+                        title="Total Profesores"
+                        value={teachers.length}
                         icon={UsersIcon}
                     />
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
-                    <StatCard 
-                        title="Total Materias" 
-                        value={teacherSubjects.length} 
+                    <StatCard
+                        title="Total Materias"
+                        value={teacherSubjects.length}
                         icon={BookOpenIcon}
                     />
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
-                    <StatCard 
-                        title="Total Ciudades" 
-                        value={cityData.length} 
+                    <StatCard
+                        title="Total Ciudades"
+                        value={cityData.length}
                         icon={MapPinIcon}
                     />
                 </Col>
             </Row>
 
-            {/* Recent Users */}
-           
-
-            {/* Charts */}
             <Row gutter={[16, 16]}>
+                {/* Profesores por País - Top 5 y Otros */}
+                <Col xs={24} sm={12} lg={8}>
+                    <Card bordered title="Profesores por País (Top 5)" bodyStyle={{ height: '240px', padding: '8px' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={teacherNationality.slice(0, 5)}>
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="value" fill={COLORS[3]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </Card>
+                    {teacherNationality.length > 5 && (
+                        <Card bordered title="Profesores por País (Otros)" bodyStyle={{ height: '240px', padding: '8px', marginTop: '16px' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={teacherNationality.slice(5)}>
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Bar dataKey="value" fill={COLORS[2]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </Card>
+                    )}
+                </Col>
+
+                {/* Profesores por Materia - Top 5 y Otros */}
+                <Col xs={24} sm={12} lg={8}>
+                    <Card bordered title="Profesores por Materia (Top 5)" bodyStyle={{ height: '240px', padding: '8px' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={teacherSubjects.slice(0, 5)}>
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="value" fill={COLORS[2]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </Card>
+                    {teacherSubjects.length > 5 && (
+                        <Card bordered title="Profesores por Materia (Otros)" bodyStyle={{ height: '240px', padding: '8px', marginTop: '16px' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={teacherSubjects.slice(5)}>
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Bar dataKey="value" fill={COLORS[1]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </Card>
+                    )}
+                </Col>
+            </Row>    <Row gutter={[16, 16]}>
                 {/* Estudiantes por Idioma */}
                 <Col xs={24} sm={12} lg={8}>
                     <Card bordered title="Estudiantes por Idioma" bodyStyle={{ height: '240px', padding: '8px' }}>
@@ -150,8 +199,8 @@ const Dashboard = () => {
                                     label
                                 >
                                     {languageData.map((entry, index) => (
-                                        <Cell 
-                                            key={`cell-${index}`} 
+                                        <Cell
+                                            key={`cell-${index}`}
                                             fill={COLORS[index % COLORS.length]}
                                         />
                                     ))}
@@ -192,8 +241,8 @@ const Dashboard = () => {
                                     label
                                 >
                                     {teacherNationality.slice(0, 5).map((entry, index) => (
-                                        <Cell 
-                                            key={`cell-${index}`} 
+                                        <Cell
+                                            key={`cell-${index}`}
                                             fill={COLORS[index % COLORS.length]}
                                         />
                                     ))}
@@ -204,50 +253,7 @@ const Dashboard = () => {
                         </ResponsiveContainer>
                     </Card>
                 </Col>
-
-                {/* Profesores por País Actual */}
-                <Col xs={24} sm={12} lg={8}>
-                    <Card bordered title="Profesores por País Actual" bodyStyle={{ height: '240px', padding: '8px' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={teacherCountries.slice(0, 5)}>
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="value" fill={COLORS[3]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Card>
-                </Col>
-
-                {/* Estudiantes por Ciudad */}
-                <Col xs={24} sm={12} lg={8}>
-                    <Card bordered title="Estudiantes por Ciudad" bodyStyle={{ height: '240px', padding: '8px' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={cityData.slice(0, 5)}>
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="value" fill={COLORS[1]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Card>
-                </Col>
-
-                {/* Profesores por Materia */}
-                <Col xs={24} sm={12} lg={8}>
-                    <Card bordered title="Profesores por Materia" bodyStyle={{ height: '240px', padding: '8px' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={teacherSubjects.slice(0, 5)}>
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="value" fill={COLORS[2]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Card>
-                </Col>
             </Row>
-
 
             <Row gutter={[16, 16]} className="mb-4">
                 <Col xs={24} lg={12}>
@@ -259,8 +265,8 @@ const Dashboard = () => {
                                 <List.Item>
                                     <List.Item.Meta
                                         avatar={
-                                            <Avatar 
-                                                src={teacher.profileImageUrl || `/api/placeholder/32/32`} 
+                                            <Avatar
+                                                src={teacher.profileImageUrl || `/api/placeholder/32/32`}
                                                 size="large"
                                             />
                                         }
@@ -272,7 +278,6 @@ const Dashboard = () => {
                         />
                     </Card>
                 </Col>
-                
             </Row>
         </div>
     );
