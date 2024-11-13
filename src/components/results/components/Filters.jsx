@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Search } from 'lucide-react';
+import CalendarModal from '../components/calendar'; // Asegúrate de que la ruta sea correcta
 
 const Filters = ({
     activeFilters,
@@ -13,8 +14,48 @@ const Filters = ({
         min: activeFilters.priceRange?.[0] || 10,
         max: activeFilters.priceRange?.[1] || 35
     });
-
+    const [showCalendarModal, setShowCalendarModal] = useState(false); // Controlar visibilidad del calendario
     const filterRefs = useRef({});
+
+    const defaultTeacher = {
+        Availability: {
+            Sunday: { enabled: false, timeSlots: [] },
+            Monday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 11, 9, 0), end: new Date(2024, 10, 11, 11, 0) },
+                    { start: new Date(2024, 10, 11, 13, 0), end: new Date(2024, 10, 11, 15, 0) }
+                ]
+            },
+            Tuesday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 12, 10, 0), end: new Date(2024, 10, 12, 12, 0) }
+                ]
+            },
+            Wednesday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 13, 9, 0), end: new Date(2024, 10, 13, 11, 0) },
+                    { start: new Date(2024, 10, 13, 14, 0), end: new Date(2024, 10, 13, 16, 0) }
+                ]
+            },
+            Thursday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 14, 13, 0), end: new Date(2024, 10, 14, 15, 0) }
+                ]
+            },
+            Friday: {
+                enabled: true,
+                timeSlots: [
+                    { start: new Date(2024, 10, 15, 8, 0), end: new Date(2024, 10, 15, 10, 0) },
+                    { start: new Date(2024, 10, 15, 12, 0), end: new Date(2024, 10, 15, 14, 0) }
+                ]
+            },
+            Saturday: { enabled: false, timeSlots: [] }
+        }
+    };
 
     useEffect(() => {
         setPriceRange({
@@ -25,7 +66,6 @@ const Filters = ({
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            // Revisar cada filtro
             Object.keys(showFilterModal).forEach((filterKey) => {
                 if (showFilterModal[filterKey] && filterRefs.current[filterKey] &&
                     !filterRefs.current[filterKey].contains(event.target)) {
@@ -136,7 +176,6 @@ const Filters = ({
                         width: 100%;
                         height: 30px;
                     }
-
                     .slider {
                         position: absolute;
                         pointer-events: none;
@@ -147,7 +186,6 @@ const Filters = ({
                         background: none;
                         z-index: 3;
                     }
-
                     .slider-track {
                         position: absolute;
                         width: 100%;
@@ -155,14 +193,12 @@ const Filters = ({
                         background: #e5e7eb;
                         z-index: 1;
                     }
-
                     .slider-range {
                         position: absolute;
                         height: 2px;
                         background: #A855F7;
                         z-index: 2;
                     }
-
                     .slider::-webkit-slider-thumb {
                         pointer-events: auto;
                         -webkit-appearance: none;
@@ -175,7 +211,6 @@ const Filters = ({
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
-
                     .slider::-moz-range-thumb {
                         pointer-events: auto;
                         width: 12px;
@@ -189,14 +224,11 @@ const Filters = ({
                     .slider::-webkit-slider-thumb:hover {
                         transform: scale(1.1);
                     }
-
                     .slider::-moz-range-thumb:hover {
                         transform: scale(1.1);
                     }
                 `}
             </style>
-
-
 
             <div className="grid grid-cols-3 gap-8">
                 {/* Primera columna (más ancha - 2 columnas de 3) */}
@@ -219,7 +251,6 @@ const Filters = ({
                                 USD ${priceRange.min} - ${priceRange.max}
                             </span>
                         </button>
-
 
                         {showFilterModal.priceRange && (
                             <div className="absolute mt-2 bg-white rounded-xl shadow-lg border-2 border-purple-600 text-2xl p-6 z-50">
@@ -266,11 +297,13 @@ const Filters = ({
                         filterKey="country"
                     />
 
-                    <FilterButton
-                        label="Disponibilidad"
-                        value={activeFilters.availability}
-                        filterKey="availability"
-                    />
+                    {/* Botón para mostrar el calendario */}
+                    <button
+                        className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50"
+                        onClick={() => setShowCalendarModal(true)}
+                    >
+                        Disponibilidad
+                    </button>
 
                     <FilterButton
                         label="Especialidades"
@@ -286,7 +319,7 @@ const Filters = ({
                     </button>
                 </div>
 
-                {/* Segunda columna (más estrecha - 1 columna de 3) */}
+                {/* Segunda columna */}
                 <div className="col-span-1 space-y-4 pl-[7em]">
                     <div className="relative w-[11em]">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
@@ -299,7 +332,6 @@ const Filters = ({
                         />
                     </div>
 
-
                     <button
                         onClick={clearFilters}
                         className="w-full bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
@@ -307,12 +339,19 @@ const Filters = ({
                         <X size={20} />
                         Limpiar filtros
                     </button>
-
                 </div>
             </div>
+
+            {/* CalendarModal, visible según el estado `showCalendarModal` */}
+            {showCalendarModal && (
+                <CalendarModal
+                    showCalendarModal={showCalendarModal}
+                    setShowCalendarModal={setShowCalendarModal}
+                    teacher={defaultTeacher}
+                />
+            )}
         </>
     );
 };
-
 
 export default Filters;
