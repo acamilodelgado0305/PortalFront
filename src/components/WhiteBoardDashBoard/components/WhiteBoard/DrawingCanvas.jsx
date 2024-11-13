@@ -59,8 +59,22 @@ function DrawingCanvas({ context }) {
 
     context.handleMouseDown(position, emitToSocket);
   };
+
+  const handleWheelZoom = (event) => {
+    const stage = event.target.getStage();
+    const position = event.target.getStage().getPointerPosition();
+    console.log(JSON.stringify(event))
+    if (event.evt.deltaY < 0) {
+      // porque siempre entra aqui, sin importar si me alejo o me acerco
+      context.zoomIn(position, stage, emitToSocket);
+    } else {
+      // Zoom out
+      context.zoomOut(position, stage, emitToSocket);
+    }
+  };
+
   return (
-    <div ref={containerRef} style={{ width: "100%", height: "100%" }} className={(context?.drawingMode === 'hand') && "drag-whiteboard-handle"} >
+    <div ref={containerRef}        style={{ width: "100%", height: "100%" }} className={(context?.drawingMode === 'hand') && "drag-whiteboard-handle"} >
       <Stage
         width={canvasSize.width}
         height={canvasSize.height}
@@ -73,6 +87,9 @@ function DrawingCanvas({ context }) {
           context.setIsGrabbing(false); 
           context.handleMouseUp(emitToSocket);}}
         onMouseMove={handleMove}
+        onWheel={handleWheelZoom}
+   
+      
       >
         <Layer>
           <Group>

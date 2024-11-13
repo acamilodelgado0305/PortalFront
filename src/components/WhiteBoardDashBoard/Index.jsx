@@ -12,7 +12,6 @@ import { WhiteBoardContext } from "./components/WhiteBoard/WhiteBoardContext.jsx
 import { useWhiteBoardSocket } from "./WhiteBoardSocketProvider";
 import "./animations.css";
 import WhiteBoardListener from "./components/Socket/WhiteBoardListener.jsx";
-import { uploadFile } from "../../services/utils.js";
 import BoardImage from "./components/BoardImage/index.jsx";
 import BottomControlsBar from "./components/BottomControlsBar/Index.jsx";
 

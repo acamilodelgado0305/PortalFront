@@ -6,11 +6,16 @@ import { BsTriangle } from "react-icons/bs";
 function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToNextPage, goToPreviousPage}) {
   const shapeForm =  "square"||"circle"; 
   const emitToSocket = true;
+  const style =   {
+    width: '50px',
+    height: '50px',
+   }
   return (
-    <div className="flex justify-between items-center absolute w-full px-[5vw] bottom-[10vh]">
+    <div className="flex justify-between items-center absolute w-full px-[1.4vw] bottom-[10vh]">
       <FloatButton
-        className="floatButtonImage iconImageFloat static"
+        className="static"
         shape={shapeForm}
+        style={style}
         icon={
           <BsTriangle
             className="iconImageFloat"
@@ -21,27 +26,31 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToN
       />
       <div className="flex gap-1">
       <FloatButton
-        className="floatButtonAudio iconAudioFloat static"
+        className="  static"
         shape={shapeForm}
+        style={style}
         icon={<PlayCircleOutlined className="iconAudioFloat" />}
         onClick={handleFloatButtonClick}
        
       />
       <FloatButton
-        className="floatButtonImage iconImageFloat static"
+        className="  static"
         shape={shapeForm}
+        style={style}
         icon={<FileImageOutlined className="iconImageFloat" />}
         onClick={handleImageButtonClick}
       />
       <FloatButton
-        className="floatButtonImage iconImageFloat static"
+        className="  static"
         shape={shapeForm}
+        style={style}
         icon={<TbMessage className="iconImageFloat" />}
       />
       </div>
       <FloatButton
-        className="floatButtonImage iconImageFloat static"
+        className=" static"
         shape={shapeForm}
+        style={style}
         icon={
           <BsTriangle
             className="iconImageFloat"
