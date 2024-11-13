@@ -111,7 +111,7 @@ const Results = () => {
 
   const clearFilters = () => {
     setActiveFilters({
-      priceRange: [0, 100],
+      priceRange: [0, 35],
       country: '',
       availability: '',
       specialty: '',
