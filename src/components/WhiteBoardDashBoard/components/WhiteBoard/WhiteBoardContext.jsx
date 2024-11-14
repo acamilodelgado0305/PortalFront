@@ -15,7 +15,7 @@ const WhiteBoardProvider = ({ children }) => {
   const [drawingMode, setDrawingMode] = useState("draw");
   const [currentColor, setCurrentColor] = useState("red");
   const [currentDrawTool, setCurrentDrawTool] = useState("line");
-  const [lineWidth, setLineWidth] = useState(2);
+  const [lineWidth, setLineWidth] = useState(6);
   // WITHEBOARD TEXT
 const [isWriting, setIsWriting] = useState(false)  
 const [currentText, setCurrentText] =useState('');
@@ -51,7 +51,6 @@ const goToPreviousPage = (emitToSocket) => {
 
 
   const updateDrawTool = (value, emitToSocket) => {
-    console.log('value '+value)
     setCurrentDrawTool(value);
     if (emitToSocket && socket) {
       socket.emit(events.CHANGE_CURRENT_DRAW_TOOL, value);
