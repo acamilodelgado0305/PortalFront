@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Search } from 'lucide-react';
-import CalendarModal from '../components/calendar'; // Asegúrate de que la ruta sea correcta
+import SetHourt from './SetHourt'; // Asegúrate de que la ruta sea correcta
 
 const Filters = ({
     activeFilters,
@@ -81,6 +81,13 @@ const Filters = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showFilterModal, setShowFilterModal]);
 
+    const handleTimeFilterSelect = (timeBlockKey) => {
+        setActiveFilters((prev) => ({
+            ...prev,
+            timeBlock: timeBlockKey
+        }));
+        setShowCalendarModal(false); // Cierra el modal después de seleccionar el filtro
+    };
     const handleNameChange = (e) => {
         setActiveFilters((prev) => ({
             ...prev,
@@ -344,10 +351,11 @@ const Filters = ({
 
             {/* CalendarModal, visible según el estado `showCalendarModal` */}
             {showCalendarModal && (
-                <CalendarModal
+                <SetHourt
                     showCalendarModal={showCalendarModal}
                     setShowCalendarModal={setShowCalendarModal}
                     teacher={defaultTeacher}
+                    onFilterSelect={handleTimeFilterSelect} // Pasa la función de selección como prop
                 />
             )}
         </>
