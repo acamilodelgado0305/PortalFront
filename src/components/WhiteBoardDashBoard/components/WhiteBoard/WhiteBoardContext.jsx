@@ -15,7 +15,7 @@ const WhiteBoardProvider = ({ children }) => {
   const [drawingMode, setDrawingMode] = useState("draw");
   const [currentColor, setCurrentColor] = useState("red");
   const [currentDrawTool, setCurrentDrawTool] = useState("line");
-  const [lineWidth, setLineWidth] = useState(6);
+  const [lineWidth, setLineWidth] = useState(8);
   // WITHEBOARD TEXT
 const [isWriting, setIsWriting] = useState(false)  
 const [currentText, setCurrentText] =useState('');
