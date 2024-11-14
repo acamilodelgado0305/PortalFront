@@ -172,7 +172,7 @@ const eraseListener = (updatedLines)=>{
 }
 
   const handleMouseUp = (emitToSocket) => {
-    saveBoardState(lines,texts);
+ 
     setIsDrawing(false);
     if (drawingMode === "draw") {
       const newLine = {
@@ -182,9 +182,11 @@ const eraseListener = (updatedLines)=>{
         tool: currentDrawTool,
         page: currentPage 
       };
-      setLines([...lines, newLine]);
-    }
-
+      setLines([...lines, newLine]); 
+      saveBoardState([...lines, newLine],texts);
+      }
+   
+    
     setCurrentLine([]);
 
     if (emitToSocket && socket) {
@@ -310,12 +312,17 @@ const saveBoardState = (lines, texts) => {
 };
 
 const undo = (emitToSocket) => {
-  if (currentHistoryIndex > 0) {
+  if(currentHistoryIndex > 0){
     const previousState = boardHistory[currentHistoryIndex - 1];
     setCurrentHistoryIndex(currentHistoryIndex - 1);
     setLines(previousState.lines);
     setTexts(previousState.texts);
+  } else {
+    setCurrentHistoryIndex(currentHistoryIndex - 1);
+    setLines([]);
+    setTexts([]);
   }
+
   if (emitToSocket && socket) {
     socket.emit(events.UNDO_BOARD_STATE);
   } 
