@@ -17,46 +17,6 @@ const Filters = ({
     const [showCalendarModal, setShowCalendarModal] = useState(false); // Controlar visibilidad del calendario
     const filterRefs = useRef({});
 
-    const defaultTeacher = {
-        Availability: {
-            Sunday: { enabled: false, timeSlots: [] },
-            Monday: {
-                enabled: true,
-                timeSlots: [
-                    { start: new Date(2024, 10, 11, 9, 0), end: new Date(2024, 10, 11, 11, 0) },
-                    { start: new Date(2024, 10, 11, 13, 0), end: new Date(2024, 10, 11, 15, 0) }
-                ]
-            },
-            Tuesday: {
-                enabled: true,
-                timeSlots: [
-                    { start: new Date(2024, 10, 12, 10, 0), end: new Date(2024, 10, 12, 12, 0) }
-                ]
-            },
-            Wednesday: {
-                enabled: true,
-                timeSlots: [
-                    { start: new Date(2024, 10, 13, 9, 0), end: new Date(2024, 10, 13, 11, 0) },
-                    { start: new Date(2024, 10, 13, 14, 0), end: new Date(2024, 10, 13, 16, 0) }
-                ]
-            },
-            Thursday: {
-                enabled: true,
-                timeSlots: [
-                    { start: new Date(2024, 10, 14, 13, 0), end: new Date(2024, 10, 14, 15, 0) }
-                ]
-            },
-            Friday: {
-                enabled: true,
-                timeSlots: [
-                    { start: new Date(2024, 10, 15, 8, 0), end: new Date(2024, 10, 15, 10, 0) },
-                    { start: new Date(2024, 10, 15, 12, 0), end: new Date(2024, 10, 15, 14, 0) }
-                ]
-            },
-            Saturday: { enabled: false, timeSlots: [] }
-        }
-    };
-
     useEffect(() => {
         setPriceRange({
             min: activeFilters.priceRange?.[0] || 10,
@@ -64,30 +24,14 @@ const Filters = ({
         });
     }, [activeFilters.priceRange]);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            Object.keys(showFilterModal).forEach((filterKey) => {
-                if (showFilterModal[filterKey] && filterRefs.current[filterKey] &&
-                    !filterRefs.current[filterKey].contains(event.target)) {
-                    setShowFilterModal(prev => ({
-                        ...prev,
-                        [filterKey]: false
-                    }));
-                }
-            });
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showFilterModal, setShowFilterModal]);
-
-    const handleTimeFilterSelect = (timeBlockKey) => {
-        setActiveFilters((prev) => ({
+    const handleTimeFilterSelect = (day, timeBlock) => {
+        setActiveFilters(prev => ({
             ...prev,
-            timeBlock: timeBlockKey
+            availability: `${day} ${timeBlock}`
         }));
-        setShowCalendarModal(false); // Cierra el modal después de seleccionar el filtro
+        setShowCalendarModal(false);
     };
+
     const handleNameChange = (e) => {
         setActiveFilters((prev) => ({
             ...prev,
@@ -228,17 +172,10 @@ const Filters = ({
                         cursor: pointer;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
-                    .slider::-webkit-slider-thumb:hover {
-                        transform: scale(1.1);
-                    }
-                    .slider::-moz-range-thumb:hover {
-                        transform: scale(1.1);
-                    }
                 `}
             </style>
 
             <div className="grid grid-cols-3 gap-8">
-                {/* Primera columna (más ancha - 2 columnas de 3) */}
                 <div className="col-span-2 flex flex-wrap gap-4 w-[70em]">
                     <FilterButton
                         label="Idiomas"
@@ -304,7 +241,6 @@ const Filters = ({
                         filterKey="country"
                     />
 
-                    {/* Botón para mostrar el calendario */}
                     <button
                         className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50"
                         onClick={() => setShowCalendarModal(true)}
@@ -326,7 +262,6 @@ const Filters = ({
                     </button>
                 </div>
 
-                {/* Segunda columna */}
                 <div className="col-span-1 space-y-4 pl-[7em]">
                     <div className="relative w-[11em]">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
@@ -349,13 +284,11 @@ const Filters = ({
                 </div>
             </div>
 
-            {/* CalendarModal, visible según el estado `showCalendarModal` */}
             {showCalendarModal && (
                 <SetHourt
                     showCalendarModal={showCalendarModal}
                     setShowCalendarModal={setShowCalendarModal}
-                    teacher={defaultTeacher}
-                    onFilterSelect={handleTimeFilterSelect} // Pasa la función de selección como prop
+                    onFilterSelect={handleTimeFilterSelect}
                 />
             )}
         </>

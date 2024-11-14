@@ -34,14 +34,14 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
     const handleTimeBlockSelect = (block) => {
         setSelectedTimeBlock(block.key);
         if (selectedDay !== null) {
-            onFilterSelect(selectedDay, block.start, block.end);
-            setShowCalendarModal(false);
+            onFilterSelect(selectedDay, block.start, block.end); // Llama a la función de filtro en el componente padre
+            setShowCalendarModal(false); // Cierra el modal después de seleccionar el filtro
         }
     };
 
     return (
         <Modal
-            //title="Selecciona Día y Bloque Horario"
+            title="Selecciona Día y Bloque Horario"
             open={showCalendarModal}
             onCancel={() => setShowCalendarModal(false)}
             footer={null}
