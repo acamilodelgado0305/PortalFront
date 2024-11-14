@@ -3,6 +3,17 @@ import { Modal } from 'antd';
 import { SunOutlined, MoonOutlined } from "@ant-design/icons";
 import './WeeklyCalendar.css';
 
+// Mapa de días de español a inglés
+const dayMapping = {
+    "Dom": "Sunday",
+    "Lun": "Monday",
+    "Mar": "Tuesday",
+    "Mié": "Wednesday",
+    "Jue": "Thursday",
+    "Vie": "Friday",
+    "Sáb": "Saturday"
+};
+
 const daysOfWeek = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) => {
@@ -27,6 +38,7 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
         ]
     };
 
+    // Seleccionar el día
     const handleDaySelect = (day) => {
         setSelectedDay(day);
     };
@@ -34,8 +46,15 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
     const handleTimeBlockSelect = (block) => {
         setSelectedTimeBlock(block.key);
         if (selectedDay !== null) {
-            onFilterSelect(selectedDay, block.start, block.end); // Llama a la función de filtro en el componente padre
-            setShowCalendarModal(false); // Cierra el modal después de seleccionar el filtro
+            // Convierte el día seleccionado al inglés antes de enviarlo
+            const dayInEnglish = dayMapping[daysOfWeek[selectedDay]];
+
+            onFilterSelect({
+                day: dayInEnglish,
+                start: block.start ?? 0, // Asegura que se envíe un valor numérico
+                end: block.end ?? 0      // Asegura que se envíe un valor numérico
+            });
+            setShowCalendarModal(false); // Cierra el modal después de seleccionar
         }
     };
 

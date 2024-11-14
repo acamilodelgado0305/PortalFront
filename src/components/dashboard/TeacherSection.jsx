@@ -69,14 +69,17 @@ const TeachersSection = ({ onViewTeacher }) => {
     }, []);
 
     useEffect(() => {
+        console.log("Active Filters en TeachersSection:", activeFilters);  // Añade este console log
         applyFilters();
     }, [teachers, showInactive, activeFilters]);
 
     const applyFilters = () => {
+        console.log("Función applyFilters llamada.");
         let filtered = [...teachers];
 
         // Filtro por estado (activo/inactivo)
         filtered = filtered.filter(teacher => teacher.status === !showInactive);
+        console.log("Aplicando filtros", activeFilters);
 
         // Filtro por nombre completo
         if (activeFilters.fullName) {
@@ -129,13 +132,35 @@ const TeachersSection = ({ onViewTeacher }) => {
             );
         }
 
-        // Filtro por disponibilidad
-        if (activeFilters.availability) {
-            filtered = filtered.filter(teacher =>
-                teacher.availability?.includes(activeFilters.availability)
-            );
+        if (
+            activeFilters.availability &&
+            activeFilters.availability.day &&
+            typeof activeFilters.availability.start === 'number' &&
+            typeof activeFilters.availability.end === 'number'
+        ) {
+            const dayInEnglish = activeFilters.availability.day;  // Asume que está en inglés
+            const { start, end } = activeFilters.availability;
+
+            console.log("Filtrando por disponibilidad para el día:", dayInEnglish, "con horario", start, "-", end);
+
+            filtered = filtered.filter((teacher) => {
+                const availabilityForDay = teacher.Availability?.[dayInEnglish];
+                console.log("Availability for", teacher.firstName, "en", dayInEnglish, ":", availabilityForDay);
+
+                if (availabilityForDay?.enabled && availabilityForDay.timeSlots) {
+                    return availabilityForDay.timeSlots.some((slot) => {
+                        const slotStart = new Date(slot.start).getUTCHours();
+                        const slotEnd = new Date(slot.end).getUTCHours();
+
+                        console.log(`Comparando slot del profesor: ${slotStart}-${slotEnd} con filtro: ${start}-${end}`);
+                        return slotStart <= start && slotEnd >= end;
+                    });
+                }
+                return false;
+            });
         }
 
+        console.log("Profesores filtrados:", filtered);
         setFilteredTeachers(filtered);
     };
 
@@ -306,7 +331,7 @@ const TeachersSection = ({ onViewTeacher }) => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <h5 className="text-lg font-bold text-gray-700 mb-2">Información Personal</h5>
-                        
+
                                 <p className="text-gray-600">
                                     <span className="font-medium">País:</span> {selectedTeacher.countryOfBirth}
                                 </p>
@@ -325,15 +350,15 @@ const TeachersSection = ({ onViewTeacher }) => {
                                 <p className="text-gray-600">
                                     <span className="font-medium">Experiencia:</span> {selectedTeacher.yearsOfExperience} años
                                 </p>
-                                
+
                             </div>
                         </div>
 
-                    
+
                     </div>
                 )}
             </Modal>
-      
+
         </div>
     );
 };
