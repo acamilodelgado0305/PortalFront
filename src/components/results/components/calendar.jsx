@@ -212,12 +212,16 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
 
   return (
     <Modal
-      title={pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
-      open={showCalendarModal}
+      title={
+        <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
+          {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
+        </div>
+      } open={showCalendarModal}
       onCancel={() => setShowCalendarModal(false)}
       footer={null}
-      width={480}
-      closeIcon={<CloseOutlined className="text-black" />}
+      width={550}
+      height={800}
+      closeIcon={<CloseOutlined className="text-black text-xl" />}
       centered
 
     >
@@ -226,36 +230,36 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
           <Pay />
           :
           <>
-            <div className="flex pb-3 mb-2 border-b gap-4 font-mono">
+            <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">
               <div className="w-10 rounded">
-                <img className="rounded" src={teacher.profileImageUrl} alt="teacher" />
+                <img className="rounded w-14 h-14" src={teacher.profileImageUrl} alt="teacher" />
               </div>
               <div>
-                <p className="font-bold font-sans text-lg">Reserva una clase de prueba con {teacher.firstName}</p>
-                <p className="font-bold text-xs font-light">Para hablar de tus objetivos y plan de aprendizaje</p>
+                <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
+                <p className="font-bold text-md font-light">Para hablar de tus objetivos y plan de aprendizaje</p>
               </div>
 
             </div>
             <div className="text-center">
               <div className="flex w-full justify-around">
-                <div className="border-2 rounded text-lg  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
-                <p className="font-mono">{fecha}</p>
-                <div className="border-2 rounded text-lg  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
+                <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
+                <p className="font-mono text-xl">{fecha}</p>
+                <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
               </div>
-              <div className="week-days border-b p-3">
+              <div className="week-days border-b p-3 text-xl">
                 {weekDays.map((date, index) => {
                   return (
                     <div key={index} className="">
-                      <div className="day-name">{daysOfWeek[date.getDay()].slice(0, 3)}</div>
+                      <div className="day-name text-xl">{daysOfWeek[date.getDay()].slice(0, 3)}</div>
                       <div
                         onClick={() => { calendarTeacher[date.getDay()].enable && processDate(date.toLocaleDateString(), calendarTeacher[date.getDay()].timeSlots) }}
-                        className={`border border-white rounded w-10 h-8 p-1   border-3  ${calendarTeacher[date.getDay()].enable ? "cursor-pointer hover:border-pink-500 hover:bg-pink-100" : "bg-gray-200"} ${daySelected == date.toLocaleDateString() && "bg-pink-100 border-pink-500"}`}>{date.toLocaleDateString().split("/")[0]}</div>
+                        className={`border border-white rounded w-10 h-8 p-1   border-3  ${calendarTeacher[date.getDay()].enable ? "cursor-pointer hover:border-purple-800 hover:bg-purple-500" : "bg-gray-200"} ${daySelected == date.toLocaleDateString() && "bg-purple-400 border-purple-500"}`}>{date.toLocaleDateString().split("/")[0]}</div>
                     </div>
                   )
                 })}
               </div>
               <div className="font-mono">
-                <div className="w-full flex justify-start text-xs font-light p-2">
+                <div className="w-full flex justify-start text-md font-light p-2 ">
                   {
                     daySelected ?
                       <p>Horario disponible {getHour(timeSlots[0]?.start)} hasta {getHour(timeSlots[0]?.end)} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
@@ -265,14 +269,14 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                   }
                 </div>
 
-                <div className="border-b pb-2 overflow-y-scroll h-60">
+                <div className="border-b pb-2 overflow-y-scroll h-90">
 
                   <div>
                     <div className="flex gap-2 m-2 font-bold">
-                      <SunOutlined className="border-b-2 border-gray-400" />
-                      <p className="font-bold">Por la mañana</p>
+                      <SunOutlined className="border-b-2 border-gray-400 text-xl" />
+                      <p className="font-bold text-xl">Por la mañana</p>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-wrap text-xl">
 
                       {
                         mañana.length > 0 ?
@@ -281,28 +285,28 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                             return (
                               <div
                                 onClick={() => { hora[0]?.horaReserva == item.hora.split(" ")[0] && item.fecha == hora[0]?.diaReserva ? null : setHourSelected(item.hora) }}
-                                key={i} className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-pink-200" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-pink-200"}`}>
+                                key={i} className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}>
                                 {item.hora.split(" ")[0]}
                               </div>
                             )
                           })
                           :
-                          <p className="m-2 font-light">clases no disponibles</p>
+                          <p className="m-2 font-light text-lg">clases no disponibles</p>
                       }
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <div className="flex gap-2 m-2 font-bold">
+                    <div className="flex gap-2 m-2 font-bold text-xl">
                       <SunOutlined />
                       <p>Despues de medio dia</p>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-wrap text-xl">
                       {
                         tarde.length > 0 ?
                           tarde.map((tarde, i) => {
                             const hora = horaReservada.filter((hora) => hora.horaReserva == tarde.hora);
                             return (
-                              <div onClick={() => { hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? null : setHourSelected(tarde.hora) }} key={i} className={`w-[100px] border p-1 rounded select-none  ${hourSelected == tarde.hora ? "bg-pink-200" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "hover:bg-pink-200 cursor-pointer"}`}>
+                              <div onClick={() => { hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? null : setHourSelected(tarde.hora) }} key={i} className={`w-[100px] border p-1 rounded select-none  ${hourSelected == tarde.hora ? "bg-purple-400" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "hover:bg-purple-500 cursor-pointer"}`}>
                                 {tarde.hora.split(" ")[0]}
                               </div>
                             )
@@ -322,7 +326,15 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                   onConfirm={confirm}
                   onOpenChange={() => console.log('open change')}
                 >
-                  <Button className="m-2" type="primary">Continuar</Button>
+                  <Button
+                    className="m-2"
+                    style={{ backgroundColor: '#9D4EDD' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
+                    type="primary"
+                  >
+                    Continuar
+                  </Button>
                 </Popconfirm>
               </div>
             </div>
