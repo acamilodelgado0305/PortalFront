@@ -8,7 +8,7 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
     e.preventDefault();
     console.log(`Mensaje para ${teacher.firstname}: ${message}`);
     const data = {
-        userId:user.id,
+        userId:'1234',
         touserId: teacher.id,
         message,
     }
@@ -41,7 +41,7 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
         <img
           src={teacher.profileImageUrl}
           alt={`${teacher.firstName} ${teacher.lastName}`}
-          className="h-30 w-30 mx-auto rounded-full object-cover lg:h-[11em] lg:w-[11em]"
+          className="h-20 w-20 mx-auto rounded-full object-cover lg:h-[11em] lg:w-[11em]"
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/128x128";
           }}
