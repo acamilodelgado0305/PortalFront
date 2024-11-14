@@ -7,7 +7,6 @@ const BACK_URL = "https://back.app.esturio.com";
 
 
 
-
 // Instancia de axios personalizada
 export const backApi = axios.create({
   baseURL: BACK_URL,

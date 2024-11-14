@@ -1,13 +1,20 @@
 import { useState } from "react";
+import { createStandardMessage } from "../../../services/standardMessages.services";
 
-function StandardMessageModal({ isOpen, onClose, teacher }) {
+function StandardMessageModal({ isOpen, onClose, teacher, user }) {
   const [message, setMessage] = useState("");
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async(e) => {
     e.preventDefault();
-    console.log(`Mensaje para ${teacher.name}: ${message}`);
-    // Lógica para enviar el mensaje
-    onClose(); // Cerrar el modal después de enviar
+    console.log(`Mensaje para ${teacher.firstname}: ${message}`);
+    const data = {
+        userId:user.id,
+        touserId: teacher.id,
+        message,
+    }
+   const response =  await createStandardMessage(data)
+   console.log('REsponse de creación del chat y el mensaje '+ JSON.stringify)
+    onClose(); 
   };
 
   if (!isOpen) return null;
@@ -15,7 +22,6 @@ function StandardMessageModal({ isOpen, onClose, teacher }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
       <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-        {/* Icono de cruz para cerrar el modal */}
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 focus:outline-none"
