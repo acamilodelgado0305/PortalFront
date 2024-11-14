@@ -244,10 +244,10 @@ const Filters = ({
                             className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
                             onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
                         >
-                            <div className="text-sm text-purple-600 mt-[-0.8em]">
+                            <div className="text-sm text-purple-600 mr-44 mt-[-0.8em]">
                                 Precio
                             </div>
-                            <span className="text-2xl text-purple-600">
+                            <span className="text-2xl text-purple-600" style={{ marginTop: '-8px', textAlign: 'left' }}>
                                 USD ${priceRange.min} - ${priceRange.max}
                             </span>
                         </button>

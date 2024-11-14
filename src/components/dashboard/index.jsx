@@ -2,8 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, Row, Col, Spin, Avatar, List } from 'antd';
 import { GraduationCapIcon, UsersIcon, BookOpenIcon, MapPinIcon } from 'lucide-react';
+import Flag from 'react-world-flags';
 
 const COLORS = ['#1677ff', '#52c41a', '#722ed1', '#faad14', '#f5222d', '#13c2c2'];
+
+
+const CountryFlagXAxisTick = ({ x, y, payload }) => (
+    <g transform={`translate(${x},${y})`}>
+        <foreignObject x="-15" y="0" width="30" height="20">
+            <Flag code={payload.value} style={{ width: '30px', height: '20px' }} alt={payload.value} />
+        </foreignObject>
+    </g>
+);
 
 const Dashboard = () => {
     const [teachers, setTeachers] = useState([]);
@@ -137,10 +147,10 @@ const Dashboard = () => {
                     <Card bordered title="Profesores por País (Top 5)" bodyStyle={{ height: '240px', padding: '8px' }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={teacherNationality.slice(0, 5)}>
-                                <XAxis dataKey="name" />
+                                <XAxis dataKey="name" tick={<CountryFlagXAxisTick />} />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey="value" fill={COLORS[3]} />
+                                <Bar dataKey="value" fill="#8884d8" />
                             </BarChart>
                         </ResponsiveContainer>
                     </Card>
@@ -148,16 +158,15 @@ const Dashboard = () => {
                         <Card bordered title="Profesores por País (Otros)" bodyStyle={{ height: '240px', padding: '8px', marginTop: '16px' }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={teacherNationality.slice(5)}>
-                                    <XAxis dataKey="name" />
+                                    <XAxis dataKey="name" tick={<CountryFlagXAxisTick />} />
                                     <YAxis />
                                     <Tooltip />
-                                    <Bar dataKey="value" fill={COLORS[2]} />
+                                    <Bar dataKey="value" fill="#82ca9d" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </Card>
                     )}
                 </Col>
-
                 {/* Profesores por Materia - Top 5 y Otros */}
                 <Col xs={24} sm={12} lg={8}>
                     <Card bordered title="Profesores por Materia (Top 5)" bodyStyle={{ height: '240px', padding: '8px' }}>
