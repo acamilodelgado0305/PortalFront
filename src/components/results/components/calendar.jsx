@@ -276,7 +276,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                       <SunOutlined className="border-b-2 border-gray-400 text-xl" />
                       <p className="font-bold text-xl">Por la mañana</p>
                     </div>
-                    <div className="flex gap-2 flex-wrap text-xl">
+                    <div className="flex gap-2 flex-wrap text-xl ">
 
                       {
                         mañana.length > 0 ?
@@ -285,13 +285,14 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                             return (
                               <div
                                 onClick={() => { hora[0]?.horaReserva == item.hora.split(" ")[0] && item.fecha == hora[0]?.diaReserva ? null : setHourSelected(item.hora) }}
-                                key={i} className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}>
-                                {item.hora.split(" ")[0]}
+                                key={i}
+                                className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}>
+                                <span style={{ fontFamily: 'fontSize, sans-serif' }}>{item.hora.split(" ")[0]}</span>
                               </div>
                             )
                           })
                           :
-                          <p className="m-2 font-light text-lg">clases no disponibles</p>
+                          <p className="m-2 text-lg">clases no disponibles</p>
                       }
                     </div>
                   </div>
@@ -307,7 +308,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                             const hora = horaReservada.filter((hora) => hora.horaReserva == tarde.hora);
                             return (
                               <div onClick={() => { hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? null : setHourSelected(tarde.hora) }} key={i} className={`w-[100px] border p-1 rounded select-none  ${hourSelected == tarde.hora ? "bg-purple-400" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "hover:bg-purple-500 cursor-pointer"}`}>
-                                {tarde.hora.split(" ")[0]}
+                                <span style={{ fontFamily: 'fontSize, sans-serif' }}>{tarde.hora.split(" ")[0]}</span>
                               </div>
                             )
                           })
