@@ -166,6 +166,11 @@ const goToPreviousPage = (emitToSocket) => {
       socket.emit(events.MOUSE_MOVE_ERASE, updatedLines);
     }
   };
+
+const eraseListener = (updatedLines)=>{
+  setLines(updatedLines);
+}
+
   const handleMouseUp = (emitToSocket) => {
     saveBoardState(lines,texts);
     setIsDrawing(false);
@@ -219,14 +224,15 @@ const toogleDrugMode = (emitToSocket)=>{
 const [isgrabbing, setIsGrabbing] = useState(false);
 
 
-  const toggleDrawingMode = (emitToSocket) => {
+  const toggleDrawingMode = (emitToSocket, type) => {
     if (drawingMode === "text") {
       setDrawingMode("draw");
     } else {
-      setDrawingMode(drawingMode === "draw" ? "erase" : "draw");
+      if(!type)  setDrawingMode("draw");
+      setDrawingMode(type);
     }
     if (emitToSocket && socket) {
-      socket.emit(events.TOGGLE_DRAWING_MODE);
+      socket.emit(events.TOGGLE_DRAWING_MODE, type);
     }
   };
 
@@ -348,10 +354,24 @@ const zoomListener = (newZoom, stage) =>{
   setStagePosition(stage);
 }
 
+const zoomIn = (position, stage, emitToSocket) => {
+  setZoomType('in');
+  zoomOnPosition(position, stage, emitToSocket);
+};
+
+const zoomOut = (position, stage, emitToSocket) => {
+  setZoomType('out');
+  zoomOnPosition(position, stage, emitToSocket);
+};
+
+
 
   return (
     <WhiteBoardContext.Provider
       value={{
+        zoomOut,
+        zoomIn,
+        eraseListener,
         isgrabbing, 
         setIsGrabbing,
         zoom, 

@@ -273,9 +273,67 @@ const TeachersSection = ({ onViewTeacher }) => {
                 visible={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
+                width={800}
             >
-                <p>{selectedTeacher?.bio}</p>
+                {selectedTeacher && (
+                    <div>
+                        <div className="flex items-center mb-4">
+                            <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                                {selectedTeacher.profileImageUrl ? (
+                                    <img
+                                        src={selectedTeacher.profileImageUrl}
+                                        alt={`${selectedTeacher.firstName} ${selectedTeacher.lastName}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <FaUserCircle className="w-16 h-16 text-gray-400" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="ml-6 flex-1">
+                                <h4 className="text-xl font-bold text-gray-800">
+                                    <Flag code={selectedTeacher.countryOfBirth?.toUpperCase()} className="mr-2 w-8 h-6" />
+                                    {selectedTeacher.firstName} {selectedTeacher.lastName}
+                                </h4>
+                                <p className="text-sm text-gray-500">{selectedTeacher.email}</p>
+                                <p className="text-sm font-medium text-gray-700">
+                                    ${selectedTeacher.hourlyRate}/hora
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <h5 className="text-lg font-bold text-gray-700 mb-2">Información Personal</h5>
+                        
+                                <p className="text-gray-600">
+                                    <span className="font-medium">País:</span> {selectedTeacher.countryOfBirth}
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium">Idiomas:</span> {selectedTeacher.languages?.join(', ')}
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium">Nivel de Idioma:</span> {selectedTeacher.languageLevel}
+                                </p>
+                            </div>
+                            <div>
+                                <h5 className="text-lg font-bold text-gray-700 mb-2">Información Académica</h5>
+                                <p className="text-gray-600">
+                                    <span className="font-medium">Especialidad:</span> {selectedTeacher.subjectYouTeach}
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium">Experiencia:</span> {selectedTeacher.yearsOfExperience} años
+                                </p>
+                                
+                            </div>
+                        </div>
+
+                    
+                    </div>
+                )}
             </Modal>
+      
         </div>
     );
 };

@@ -22,11 +22,20 @@ const emitToSocket = true;
 const shapeForm =  "square"||"circle";
 import sizeIcon from  './utils/size-icon.svg' 
 
+const style =   {display: 'flex',
+alignItems: 'center',
+justifyContent: 'center',
+width: '50px',
+height: '50px',
+cursor: 'pointer',
+borderRadius:'15px'
+}
+
 function LeftControlsBar({ context }) {
 
 
   return (
-    <div className="flex gap-1 flex-col py-2 pl-2 absolute h-full bg-[#FFFFFF] z-[99]">
+    <div className="flex gap-1 flex-col py-2 pr-2 absolute h-full bg-[#FFFFFF] z-[99]">
       <PencilEraserToggleButton  context={context} />
       <TextBotton  context={context} />
       <LineWidthPickerButton context={context} />
@@ -46,32 +55,33 @@ export default LeftControlsBar;
 
 
 
-const TrashBinClearerButton = ({context}) => {
-  return (<>
-      <FloatButton
-       className="static"
-       shape={shapeForm}
-       onClick={()=>context.clearWhiteBoard(emitToSocket)}
-       icon={<RiDeleteBin6Line/>}
-      />
-  </>)
-}
+const TrashBinClearerButton = ({ context }) => {
+  return (
+    <div
+      className="trash-bin-button"
+      onClick={() => context.clearWhiteBoard(emitToSocket)}
+      style={style}
+    >
+      <RiDeleteBin6Line size={30} />
+    </div>
+  );
+};
 const UndoRedoButtons = ({ context }) => (
   <>
     {/* Botón para deshacer */}
-    <FloatButton
+    <div
       className="static"
+      style={style}
       shape={shapeForm}
       onClick={() => context.undo(emitToSocket)} 
-      icon={<IoReturnUpBack />}
-    />
+    > <IoReturnUpBack size={25} /></div>
     {/* Botón para rehacer */}
-    <FloatButton
+    <div
       className="static"
+      style={style}
       shape={shapeForm}
       onClick={() => context.redo(emitToSocket)} 
-      icon={<IoReturnUpForward />}
-    />
+    > <IoReturnUpForward  size={25}/></div>
   </>
 );
 
@@ -80,27 +90,49 @@ const UndoRedoButtons = ({ context }) => (
 const ZoomButton = ({ context }) => {
 
   return (
-    <FloatButton
+    <div
       className="static"
-      type={context.drawingMode === 'zoom' ? 'primary' : 'default'}
+      style={{
+        ...style, 
+        background: (context.drawingMode === "zoom") ? '#1677ff' : '',
+        color: (context.drawingMode === "zoom") ? 'white' : '',
+      }}
       shape={shapeForm}
-      icon={context.zoomType == 'in' ? <BsZoomIn /> : <BsZoomOut />}
       onClick={context.toggleZoomMode}
-    />
+    >
+{context.zoomType == 'in' ? <BsZoomIn size={30}/> : <BsZoomOut size={30}/>}
+    </div>
   );
 };
 
 
 const PencilEraserToggleButton = ({context}) =>{
   return (<>
-   <FloatButton
+   <div
        className="static"
        shape={shapeForm}
-       onClick={() => { context.toggleDrawingMode(emitToSocket); 
+       onClick={() => { context.toggleDrawingMode(emitToSocket, "draw"); 
+                        context.updateDrawTool("line", emitToSocket);
         }}
-        type={"primary"}
-        icon={context.drawingMode != "erase" ? <BsPencil /> : <BsEraser  />}
-        />
+        style={{
+          ...style, 
+          background: (context.drawingMode === "draw" && context.currentDrawTool === "line") ? '#1677ff' : '',
+          color: (context.drawingMode === "draw" && context.currentDrawTool === "line") ? 'white' : '',
+        }}
+        >
+        <BsPencil  size={30} />
+        </div>
+           <div
+       className="static"
+       shape={shapeForm}
+       onClick={() => { context.toggleDrawingMode(emitToSocket, "erase"); 
+        }}
+        style={{
+          ...style, 
+          background: (context.drawingMode === "erase" && context.currentDrawTool === "line") ? '#1677ff' : '',
+          color: (context.drawingMode === "erase" && context.currentDrawTool === "line") ? 'white' : '',
+        }}
+        > <BsEraser size={30}  /></div>
   
   </>)
 }
@@ -118,19 +150,20 @@ const ColorOptionButton = ({ context }) => {
               shape={shapeForm}
               key={color}
               onClick={() => context.changeColor(color, emitToSocket)}
-              style={{ position: 'absolute', height:'43px',width:'43px',left:50 + index * 50, top:139 }}
+              style={{ position: 'absolute', height:'43px',width:'43px',left:50 + index * 50, top:225 }}
               icon={<FaCircle color={color} />}
             />
           ))}
         </>
       )}
-      <FloatButton
+      <div
         className="static"
         shape={shapeForm}
         onClick={() => setShow(!show)}
-        type={"danger"}
-        icon={<IoColorPaletteOutline />}
-      />
+        style={style}
+      >
+        <IoColorPaletteOutline size={30} />
+      </div>
     </>
   );
 };
@@ -151,45 +184,48 @@ const LineWidthPickerButton = ({ context }) => {
           }
           style={{
             position: "absolute",
-            top: 110,
+            top: 189,
             left: 55,
             cursor: "pointer",
           }}
         />
       ) }
-      <FloatButton
+      <div
         className="static"
         shape={shapeForm}
         type={"danger"}
-        icon={<img src={sizeIcon} alt="Size Icon" style={{ width: "20px", height: "20px" }} />}
         onClick={() => setShow(!show)}
-      />
+        style={style}
+      ><img src={sizeIcon} alt="Size Icon" style={{ width: "30px", height: "30px" }} /></div>
     </>
   );
 };
 
 const CurrentDrawToolPickerButtons = ({ context }) => {
   const tools = [
-    { name: "rectangle", icon: <FaRegSquare /> }, 
-    { name: "circle", icon: <FaRegCircle /> },
-    { name: "straightLine", icon: <LineOutlined /> },
-     {name:'arrow', icon:<FaLongArrowAltRight/>}, 
-    { name: "line", icon: <SignatureOutlined /> },
+    { name: "rectangle", icon: <FaRegSquare  size={30} /> }, 
+    { name: "circle", icon: <FaRegCircle  size={30} /> },
+    { name: "straightLine", icon: <LineOutlined  size={30} /> },
+     {name:'arrow', icon:<FaLongArrowAltRight  size={30} />},
   ];
    return (
     <div className="flex gap-1 flex-col ">
        
           {tools.map((tool, index) => (
-            <FloatButton
+            <div
               className="static"
               shape={shapeForm}
-              type={context.currentDrawTool === tool.name? "primary":"danger"}
+              style={{
+                ...style, 
+                background: context.currentDrawTool === tool.name ? '#1677ff' : '',
+                color: context.currentDrawTool === tool.name? 'white' : '',
+              }}
               key={tool.name}
               onClick={() =>
                 context.updateDrawTool(tool.name, emitToSocket)
               }
               icon={tool.icon}
-            />
+            > {tool.icon}</div>
           ))}
   
     </div>
@@ -199,15 +235,20 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
 const TextBotton = ({context}) =>{
   return (
     <>
-      <FloatButton
+      <div
         className="static"
         shape={shapeForm}
         onClick={() => {
           context.toogleTextMode(emitToSocket);
         }}
-        type={context.drawingMode === "text" ? "primary" : "danger"}
-        icon={<FontColorsOutlined />}
-      />
+        style={{
+          ...style, 
+          background: (context.drawingMode === "text") ? '#1677ff' : '',
+          color: (context.drawingMode === "text") ? 'white' : '',
+        }}
+      >
+      <FontColorsOutlined style={{fontSize:'30px'}} />
+      </div>
     </>
   )
 }
@@ -216,15 +257,20 @@ const DruggerButton = ({context})=>{
 
   return(
     <>
-      <FloatButton
+      <div
         className="static"
         shape={shapeForm}
         onClick={() => {
           context.toogleDrugMode(emitToSocket);
         }}
-        type={context.drawingMode === "hand" ? "primary" : "danger"}
-        icon={context.drawingMode === "hand"? <FaRegHandRock />:<FaRegHandPaper />}
-      />
+        style={{
+          ...style, 
+          background: (context.drawingMode === "hand") ? '#1677ff' : '',
+          color: (context.drawingMode === "hand") ? 'white' : '',
+        }}
+      >
+        {context.drawingMode === "hand"? <FaRegHandRock  size={30}  />:<FaRegHandPaper  size={30}  />}
+      </div>
     </>
   )
 }
