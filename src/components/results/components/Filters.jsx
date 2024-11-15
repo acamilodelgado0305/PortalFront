@@ -242,13 +242,14 @@ const Filters = ({
                     />
 
                     <button
-                        className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50"
+                        className="bg-white w-[10em] h-[2.5em] text-2xl font-medium text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 flex items-center justify-center leading-5"
                         onClick={() => setShowCalendarModal(true)}
                     >
                         {activeFilters.availability && activeFilters.availability.day
-                            ? `Disponibilidad: ${activeFilters.availability.day} - ${activeFilters.availability.start}-${activeFilters.availability.end}`
+                            ? `Disponibilidad: ${activeFilters.availability.day} / ${activeFilters.availability.start}-${activeFilters.availability.end}`
                             : 'Disponibilidad'}
                     </button>
+
                     <FilterButton
                         label="Especialidades"
                         value={activeFilters.specialty}

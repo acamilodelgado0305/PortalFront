@@ -60,7 +60,7 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
 
     return (
         <Modal
-            title="Selecciona Día y Bloque Horario"
+            //title="Selecciona Día y Bloque Horario"
             open={showCalendarModal}
             onCancel={() => setShowCalendarModal(false)}
             footer={null}
