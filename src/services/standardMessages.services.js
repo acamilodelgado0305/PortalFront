@@ -19,6 +19,18 @@ const getStandardMessageById = async (id) => {
   }
 };
 
+const getStandarMessageChatsByUser = async (userId) =>{
+  try {
+    const response = await backApi.get(`/api/standardMessages/userId/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting StandardMessage:", error);
+    throw error;
+  }
+}
+
+
+
 const getStandarMessagesByChatId = async (chatId) => {
   try {
     const response = await backApi.get(`/api/standardMessages/chatId/${chatId}`);
@@ -63,6 +75,7 @@ export {
   createStandardMessage,
   getStandardMessageById,
   getStandarMessagesByChatId,
+  getStandarMessageChatsByUser,
   updateStandardMessage,
   deleteStandardMessageById,
   deleteStandarMessagesByChatId
