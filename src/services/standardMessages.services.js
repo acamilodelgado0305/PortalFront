@@ -49,10 +49,21 @@ const deleteStandardMessageById = async (id) => {
   }
 };
 
+const deleteStandarMessagesByChatId = async (chatId) => {
+  try {
+    const response = await backApi.delete(`/api/standardMessages/chatId/${chatId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting StandarMessages by chatId :", error);
+    throw error;
+  }
+};
+
 export {
   createStandardMessage,
   getStandardMessageById,
   getStandarMessagesByChatId,
   updateStandardMessage,
   deleteStandardMessageById,
+  deleteStandarMessagesByChatId
 };
