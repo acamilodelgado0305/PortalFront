@@ -6,11 +6,11 @@ function SendStandardMessage({ isOpen, onClose, teacher, user }) {
   const [message, setMessage] = useState("");
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    console.log(`Mensaje para ${teacher.firstName}: ${message}`);
-    
+    const teacherId = teacher.cognitoId ? teacher.cognitoId : teacher.id;
+
     const data = {
       userId: user.id,
-      touserId: teacher.id,
+      touserId: teacherId,
       message,
     };
 
