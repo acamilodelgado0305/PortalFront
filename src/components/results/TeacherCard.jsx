@@ -13,7 +13,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showSendMessageModal, setShowSendMessageModal] = useState(false);
-  const {idToken, user} = useAuth();
+  const { idToken, user } = useAuth();
 
 
 
@@ -112,7 +112,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                 Reservar una clase de prueba
               </button>
               <button
-                onClick={() => {!idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true)}}
+                onClick={() => { !idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true) }}
                 className="w-[12em] gap-2 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
                 <img src={IconoMensaje} alt="Enviar mensaje" className="h-10 w-10" />
@@ -181,11 +181,11 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
       )}
 
       {showSendMessageModal && (
-        <StandardMessageModal 
-        isOpen={showSendMessageModal}
-        onClose= {()=>{setShowSendMessageModal(false)}}
-        teacher={teacher}
-        user={user}
+        <StandardMessageModal
+          isOpen={showSendMessageModal}
+          onClose={() => { setShowSendMessageModal(false) }}
+          teacher={teacher}
+          user={user}
         />
       )}
     </div>
