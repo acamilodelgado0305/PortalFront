@@ -16,6 +16,7 @@ import {
   LineOutlined,
   FontColorsOutlined 
 } from "@ant-design/icons";
+import { BiMinus } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 // GLOBAL
 const emitToSocket = true;
@@ -205,8 +206,8 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
   const tools = [
     { name: "rectangle", icon: <FaRegSquare  size={30} /> }, 
     { name: "circle", icon: <FaRegCircle  size={30} /> },
-    { name: "straightLine", icon: <LineOutlined  size={30} /> },
-     {name:'arrow', icon:<FaLongArrowAltRight  size={30} />},
+    { name: "straightLine", icon: <BiMinus  size={30} /> },
+     {name:'arrow', icon:<FaLongArrowAltRight  size={30} style={{height:"40%", width:'120%'}} />},
   ];
    return (
     <div className="flex gap-1 flex-col ">
