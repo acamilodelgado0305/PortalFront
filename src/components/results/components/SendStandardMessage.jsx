@@ -2,15 +2,14 @@ import { useState } from "react";
 import { createStandardMessage } from "../../../services/standardMessages.services";
 import Swal from "sweetalert2";
 
-function StandardMessageModal({ isOpen, onClose, teacher, user }) {
+function SendStandardMessage({ isOpen, onClose, teacher, user }) {
   const [message, setMessage] = useState("");
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
     console.log(`Mensaje para ${teacher.firstName}: ${message}`);
     
     const data = {
-      userId: '123',
+      userId: user.id,
       touserId: teacher.id,
       message,
     };
@@ -25,8 +24,8 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
           text: "Tu mensaje fue enviado exitosamente.",
           confirmButtonColor: "#FF7AAC",
         });
-        setMessage(""); // Limpiar el input
-        onClose(); // Cerrar el modal
+        setMessage("");
+        onClose();
       } else {
         Swal.fire({
           icon: "error",
@@ -102,4 +101,4 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
   );
 }
 
-export default StandardMessageModal;
+export default SendStandardMessage;

@@ -14,22 +14,24 @@ const Login = ({ closeRegisterModal, setInicioSesion }) => {
     const navigate = useNavigate();
 
     const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
-
+// http://localhost:4005/api/users/login
+// https://back.app.esturio.com/api/users/login
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://back.app.esturio.com/api/users/login', {
+            const response = await fetch('http://localhost:4005/api/users/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email, password })
             });
-
+            
             const data = await response.json();
 
             if (data.success) {
                 login(data.user, data.accessToken, data.idToken, data.refreshToken);
+                console.log('Usuario Logueado: '+JSON.stringify(data))
                 navigate('/dashboard');
             } else {
                 message.error('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
