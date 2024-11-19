@@ -112,11 +112,17 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                 Reservar una clase de prueba
               </button>
               <button
-                onClick={() => { !idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true) }}
-                className="w-[12em] gap-2 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
+                onClick={() => {
+                  !idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true);
+                }}
+                className="w-[12em] flex items-center gap-2 border border-purple-600 text-gray-700 py-2 px-1 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
-                <img src={IconoMensaje} alt="Enviar mensaje" className="h-10 w-10" />
-                Enviar mensaje
+                <img
+                  src={IconoMensaje}
+                  alt="Enviar mensaje"
+                  className="h-10 w-10"
+                />
+                <span>Enviar mensaje</span>
               </button>
             </div>
           </div>
