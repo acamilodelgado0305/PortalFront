@@ -3,7 +3,7 @@ import { getStandarMessageChatsByUser } from "../../../services/standardMessages
 import { useAuth } from "../../../Context/AuthContext";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useChatStandardSocket } from "../ChatStandardSocketProvider";
-import ChatStandardSocketListener from "./ChatStandardSocketListener";
+import ChatSocketListener from "./ChatSocketListener";
 
 function BoxMessages({ isOpen, onClose }) {
   const { user } = useAuth();
@@ -102,7 +102,7 @@ console.log('hay chatId? '+chat.chatId )
 
   return (
     <>
-      <ChatStandardSocketListener socket={chatStandardSocket} />
+      <ChatSocketListener socket={chatStandardSocket} />
       {!isChatOpened && (
         <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
           <h2 className="mb-4 font-bold text-gray-500">Chats</h2>

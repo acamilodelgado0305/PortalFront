@@ -5,7 +5,7 @@ import { ScheduleModal } from "./components/ScheduleModal.jsx";
 import ModalRegister from "./modalRegister.jsx";
 import { useAuth } from "../../Context/AuthContext.jsx";
 import { SendOutlined } from "@ant-design/icons";
-import SendStandardMessage from "./components/SendStandardMessage.jsx";
+import SendTeacherMessage from "./components/SendTeacherMessage.jsx";
 import IconoMensaje from '../../assets/icons/send.svg';
 
 
@@ -182,7 +182,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
       )}
 
       {showSendMessageModal && (
-        <SendStandardMessage 
+        <SendTeacherMessage 
         isOpen={showSendMessageModal}
         onClose= {()=>{setShowSendMessageModal(false)}}
         teacher={teacher}

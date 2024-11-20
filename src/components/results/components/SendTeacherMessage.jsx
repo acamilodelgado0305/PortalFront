@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createStandardMessage } from "../../../services/standardMessages.services";
 import Swal from "sweetalert2";
 
-function SendStandardMessage({ isOpen, onClose, teacher, user }) {
+function SendTeacherMessage({ isOpen, onClose, teacher, user }) {
   const [message, setMessage] = useState("");
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -101,4 +101,5 @@ function SendStandardMessage({ isOpen, onClose, teacher, user }) {
   );
 }
 
-export default SendStandardMessage;
+export default SendTeacherMessage;
+// SendTeacherMessage
