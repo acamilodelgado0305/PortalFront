@@ -40,6 +40,15 @@ const getClassReservationCurrentById = async (id) => {
     throw error;
   }
 };
+const getClassReservationCurrentByIdStudent = async (id, teacherid) => {
+  try {
+    const response = await backApi.get(`/api/classreservation/student/${id}/${teacherid}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error getting class with id ${id}:`, error);
+    throw error;
+  }
+};
 
 
 
@@ -69,7 +78,8 @@ export {
   getClassReservationById,
   updateClassReservation,
   deleteClassReservationById,
-  getClassReservationCurrentById
+  getClassReservationCurrentById,
+  getClassReservationCurrentByIdStudent
 };
 
 
