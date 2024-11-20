@@ -4,8 +4,8 @@ import { useAuth } from "../../../Context/AuthContext";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useChatStandardSocket } from "../ChatStandardSocketProvider";
 import ChatSocketListener from "./ChatSocketListener";
-import { formatDate } from "../../../helpers/formateDate.js";
-import { formattedChatInfo } from "../../../helpers/formattedChatInfo.js";
+import { formatDate, formattedChatInfo } from "../../../helpers";
+
 
 function BoxMessages({ isOpen, onClose }) {
   const { user } = useAuth();
