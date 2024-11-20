@@ -236,14 +236,14 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
               </div>
               <div>
                 <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
-                <p className="font-bold text-md font-light">Para hablar de tus objetivos y plan de aprendizaje</p>
+                <p className="text-md font-sans">Para hablar de tus objetivos y plan de aprendizaje</p>
               </div>
 
             </div>
             <div className="text-center">
               <div className="flex w-full justify-around">
                 <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
-                <p className="font-mono text-xl">{fecha}</p>
+                <p className="font-sans text-xl">{fecha}</p>
                 <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
               </div>
               <div className="week-days border-b p-3 text-xl">
@@ -259,7 +259,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                 })}
               </div>
               <div className="font-mono">
-                <div className="w-full flex justify-start text-md font-light p-2 ">
+                <div className="w-full flex justify-start text-md font-sans p-2 ">
                   {
                     daySelected ?
                       <p>Horario disponible {getHour(timeSlots[0]?.start)} hasta {getHour(timeSlots[0]?.end)} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
@@ -272,9 +272,9 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                 <div className="border-b pb-2 overflow-y-scroll h-90">
 
                   <div>
-                    <div className="flex gap-2 m-2 font-bold">
+                    <div className="flex gap-2 m-2 font-sans font-bold">
                       <SunOutlined className="border-b-2 border-gray-400 text-xl" />
-                      <p className="font-bold text-xl">Por la mañana</p>
+                      <p className=" text-xl">Por la mañana</p>
                     </div>
                     <div className="flex gap-2 flex-wrap text-xl ">
 
@@ -292,12 +292,12 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                             )
                           })
                           :
-                          <p className="m-2 text-lg">clases no disponibles</p>
+                          <p className="m-2 text-lg font-sans">clases no disponibles</p>
                       }
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <div className="flex gap-2 m-2 font-bold text-xl">
+                    <div className="flex gap-2 m-2 font-sans font-bold  text-xl">
                       <SunOutlined />
                       <p>Despues de medio dia</p>
                     </div>
