@@ -14,7 +14,7 @@ function BoxMessages({ isOpen, onClose }) {
   const [message, setMessage] = useState("");
   const [isChatOpened, setIsChatOpened] = useState(false);
   const chatStandardSocket = useChatStandardSocket();
-  const messagesEndRef = useRef(null); // Referencia para el contenedor de mensajes
+  const messagesEndRef = useRef(null); 
 
   // Obtener chats
   useEffect(() => {
@@ -34,7 +34,6 @@ function BoxMessages({ isOpen, onClose }) {
   }, [user.id]);
 
 
-  // Función para abrir un chat
   const openChat = (chat) => {
     setChat(chat);
     setIsChatOpened(true);
@@ -91,20 +90,20 @@ function BoxMessages({ isOpen, onClose }) {
 export default BoxMessages;
 
 
-
 const ChatOpened = (props) => {
-  const { chat, setIsChatOpened, setChat, formatDate, messagesEndRef, chatStandardSocket, user, message, setMessage } = props;
-  // Cerrar chat
+  const { chat, setIsChatOpened, setChat, formatDate, chatStandardSocket, user, message, setMessage, messagesEndRef } = props;
+
+  useEffect(()=>{scrollToBottom()}, [])
+
   const closeChat = () => {
     setIsChatOpened(false);
     setChat(null);
   };
 
-  // Enviar mensaje
   const handleSendMessage = (e) => {
     e.preventDefault();
-
     if (message.trim() === "") return;
+
     const newMessage = {
       chatId: chat.chatId,
       recipientId: chat.otherUserID,
@@ -112,19 +111,31 @@ const ChatOpened = (props) => {
       messageContent: message,
       updatedAt: new Date().toISOString(),
     };
+
     chatStandardSocket.emit("SEND_MESSAGE", newMessage);
 
-    setChat((prevChat) => ({
-      ...prevChat,
-      messages: [...prevChat.messages, newMessage],
-    }));
-
+    setChat((prevChat) => {
+      const updatedMessages = [...prevChat.messages, newMessage];
+      return { ...prevChat, messages: updatedMessages };
+    });
+    scrollToBottom();
     setMessage("");
   };
 
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        const scrollHeight = messagesEndRef.current.scrollHeight;
+        const clientHeight = messagesEndRef.current.clientHeight;
+        messagesEndRef.current.scrollTop = scrollHeight - clientHeight;
+      }
+    }, 100); 
+  };
+  
+
   return (
     <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg">
-      <div className="mb-4 flex cursor-pointer flex-row gap-1 font-bold text-gray-600 transition-colors ">
+      <div className="mb-4 flex cursor-pointer flex-row gap-1 font-bold text-gray-600 transition-colors">
         <ArrowLeftOutlined className="hover:text-[#8a2be2]" onClick={closeChat} />
         <img
           src={chat.otherUserImage || "https://via.placeholder.com/50"}
@@ -136,7 +147,11 @@ const ChatOpened = (props) => {
         </div>
       </div>
 
-      <div className="flex h-[60%] flex-col gap-2 overflow-y-auto rounded-md bg-gray-50 px-3 py-2 shadow-inner">
+      <div
+        ref={messagesEndRef} 
+        className="flex flex-col gap-2 overflow-y-auto rounded-md bg-gray-50 px-3 py-2 shadow-inner"
+        style={{ maxHeight: '60%', overflowY: 'auto', scrollBehavior: 'smooth', }} 
+      >
         {chat.messages
           .sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
           .map((message, index) => (
@@ -152,7 +167,6 @@ const ChatOpened = (props) => {
               <small className="text-xs text-gray-400">{formatDate(message.updatedAt)}</small>
             </div>
           ))}
-        <div ref={messagesEndRef} />
       </div>
 
       <form className="mt-4" onSubmit={handleSendMessage}>
@@ -172,4 +186,8 @@ const ChatOpened = (props) => {
     </div>
   );
 };
+
+
+
+
 
