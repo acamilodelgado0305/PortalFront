@@ -16,6 +16,7 @@ import {
   LineOutlined,
   FontColorsOutlined 
 } from "@ant-design/icons";
+import { BiMinus } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 // GLOBAL
 const emitToSocket = true;
@@ -129,8 +130,8 @@ const PencilEraserToggleButton = ({context}) =>{
         }}
         style={{
           ...style, 
-          background: (context.drawingMode === "erase" && context.currentDrawTool === "line") ? '#1677ff' : '',
-          color: (context.drawingMode === "erase" && context.currentDrawTool === "line") ? 'white' : '',
+          background: (context.drawingMode === "erase") ? '#1677ff' : '',
+          color: (context.drawingMode === "erase" ) ? 'white' : '',
         }}
         > <BsEraser size={30}  /></div>
   
@@ -205,8 +206,8 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
   const tools = [
     { name: "rectangle", icon: <FaRegSquare  size={30} /> }, 
     { name: "circle", icon: <FaRegCircle  size={30} /> },
-    { name: "straightLine", icon: <LineOutlined  size={30} /> },
-     {name:'arrow', icon:<FaLongArrowAltRight  size={30} />},
+    { name: "straightLine", icon: <BiMinus  size={30} /> },
+     {name:'arrow', icon:<FaLongArrowAltRight  size={30} style={{height:"40%", width:'120%'}} />},
   ];
    return (
     <div className="flex gap-1 flex-col ">
@@ -217,8 +218,8 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
               shape={shapeForm}
               style={{
                 ...style, 
-                background: context.currentDrawTool === tool.name ? '#1677ff' : '',
-                color: context.currentDrawTool === tool.name? 'white' : '',
+                background: (context.currentDrawTool === tool.name  && context.drawingMode === "draw" )? '#1677ff' : '',
+                color: (context.currentDrawTool === tool.name  && context.drawingMode === "draw" ) ? 'white' : '',
               }}
               key={tool.name}
               onClick={() =>

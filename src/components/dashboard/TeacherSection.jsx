@@ -69,14 +69,17 @@ const TeachersSection = ({ onViewTeacher }) => {
     }, []);
 
     useEffect(() => {
+        console.log("Estado de activeFilters actualizado:", activeFilters);
         applyFilters();
     }, [teachers, showInactive, activeFilters]);
 
     const applyFilters = () => {
+        console.log("Función applyFilters llamada.");
         let filtered = [...teachers];
 
         // Filtro por estado (activo/inactivo)
-        filtered = filtered.filter(teacher => teacher.status === !showInactive);
+        filtered = filtered.filter((teacher) => teacher.status === !showInactive);
+        console.log("Aplicando filtros", activeFilters);
 
         // Filtro por nombre completo
         if (activeFilters.fullName) {
@@ -90,7 +93,7 @@ const TeachersSection = ({ onViewTeacher }) => {
         // Filtro por rango de precio en USD
         if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
             const [min, max] = activeFilters.priceRange;
-            filtered = filtered.filter(teacher => {
+            filtered = filtered.filter((teacher) => {
                 const rate = Number(teacher.hourlyRate);
                 return !isNaN(rate) && rate >= min && rate <= max;
             });
@@ -98,58 +101,81 @@ const TeachersSection = ({ onViewTeacher }) => {
 
         // Filtro por país
         if (activeFilters.country) {
-            const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
+            const selectedCountry = filterOptions.country.find(
+                (c) => c.name === activeFilters.country
+            );
             if (selectedCountry) {
-                filtered = filtered.filter(teacher =>
-                    teacher.countryOfBirth?.toLowerCase() === selectedCountry.code.toLowerCase()
+                filtered = filtered.filter(
+                    (teacher) =>
+                        teacher.countryOfBirth?.toLowerCase() === selectedCountry.code.toLowerCase()
                 );
             }
         }
 
         // Filtro por hablante nativo
         if (activeFilters.isNative) {
-            filtered = filtered.filter(teacher =>
-                teacher.languageLevel?.toLowerCase() === 'native'
+            filtered = filtered.filter(
+                (teacher) => teacher.languageLevel?.toLowerCase() === "native"
             );
         }
 
         // Filtro por especialidad
         if (activeFilters.specialty) {
-            filtered = filtered.filter(teacher =>
-                teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+            filtered = filtered.filter((teacher) =>
+                teacher.subjectYouTeach
+                    ?.toLowerCase()
+                    .includes(activeFilters.specialty.toLowerCase())
             );
         }
 
         // Filtro por idioma
         if (activeFilters.language) {
-            filtered = filtered.filter(teacher =>
-                teacher.languages?.some(lang =>
-                    lang.toLowerCase() === activeFilters.language.toLowerCase()
-                )
+            filtered = filtered.filter((teacher) =>
+                teacher.language?.toLowerCase() === activeFilters.language.toLowerCase()
             );
         }
 
         // Filtro por disponibilidad
-        if (activeFilters.availability) {
-            filtered = filtered.filter(teacher =>
-                teacher.availability?.includes(activeFilters.availability)
-            );
+        if (Array.isArray(activeFilters.availability) && activeFilters.availability.length > 0) {
+            console.log("Aplicando filtro de disponibilidad con:", activeFilters.availability);
+            filtered = filtered.filter((teacher) => {
+                const teacherAvailability = teacher.Availability || {};
+                return activeFilters.availability.some(({ day, start, end }) => {
+                    console.log(`Evaluando disponibilidad para el día ${day} con rango ${start}-${end}`);
+                    const dayAvailability = teacherAvailability[day];
+                    if (!dayAvailability?.enabled || !dayAvailability.timeSlots) {
+                        return false;
+                    }
+                    return dayAvailability.timeSlots.some((slot) => {
+                        const slotStart = new Date(slot.start).getUTCHours();
+                        const slotEnd = new Date(slot.end).getUTCHours();
+                        const filterStart = start;
+                        const filterEnd = end;
+
+                        console.log(`Slot: ${slotStart}-${slotEnd}, Filtro: ${filterStart}-${filterEnd}`);
+                        return slotStart <= filterStart && slotEnd >= filterEnd;
+                    });
+                });
+            });
         }
 
+        console.log("Profesores filtrados:", filtered);
         setFilteredTeachers(filtered);
     };
 
+    // Función para limpiar los filtros
     const clearFilters = () => {
         setActiveFilters({
             priceRange: [10, 35],
-            fullName: '',
-            country: '',
-            availability: '',
-            specialty: '',
-            language: '',
+            fullName: "",
+            country: "",
+            availability: [],
+            specialty: "",
+            language: "",
             isNative: false,
-            category: ''
+            category: "",
         });
+        setFilteredTeachers(teachers);
     };
 
     const showModal = (teacher) => {
@@ -306,7 +332,7 @@ const TeachersSection = ({ onViewTeacher }) => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <h5 className="text-lg font-bold text-gray-700 mb-2">Información Personal</h5>
-                        
+
                                 <p className="text-gray-600">
                                     <span className="font-medium">País:</span> {selectedTeacher.countryOfBirth}
                                 </p>
@@ -325,15 +351,15 @@ const TeachersSection = ({ onViewTeacher }) => {
                                 <p className="text-gray-600">
                                     <span className="font-medium">Experiencia:</span> {selectedTeacher.yearsOfExperience} años
                                 </p>
-                                
+
                             </div>
                         </div>
 
-                    
+
                     </div>
                 )}
             </Modal>
-      
+
         </div>
     );
 };

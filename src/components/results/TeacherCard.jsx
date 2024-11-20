@@ -5,12 +5,16 @@ import { ScheduleModal } from "./components/ScheduleModal.jsx";
 import ModalRegister from "./modalRegister.jsx";
 import { useAuth } from "../../Context/AuthContext.jsx";
 import { SendOutlined } from "@ant-design/icons";
+import StandardMessageModal from "./components/StandardMessageModal.jsx";
 import IconoMensaje from '../../assets/icons/send.svg';
+
 
 const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showSendMessageModal, setShowSendMessageModal] = useState(false);
   const { idToken, user } = useAuth();
+
 
 
   const formatPrice = (price) => {
@@ -107,13 +111,18 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
               >
                 Reservar una clase de prueba
               </button>
-
               <button
-                onClick={() => { !idToken ? setShowRegisterModal(true) : setShowCalendarModal(true), setSelectedTeacher(teacher) }}
-                className="w-[12em] gap-2 border border-purple-600 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium flex items-center"
+                onClick={() => {
+                  !idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true);
+                }}
+                className="w-[12em] flex items-center gap-2 border border-purple-600 text-gray-700 py-2 px-1 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
-                <img src={IconoMensaje} alt="Enviar mensaje" className="h-10 w-10" />
-                Enviar mensaje
+                <img
+                  src={IconoMensaje}
+                  alt="Enviar mensaje"
+                  className="h-10 w-10"
+                />
+                <span>Enviar mensaje</span>
               </button>
             </div>
           </div>
@@ -174,6 +183,15 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
         <ModalRegister
           isOpen={showRegisterModal}
           onClose={() => setShowRegisterModal(false)}
+        />
+      )}
+
+      {showSendMessageModal && (
+        <StandardMessageModal
+          isOpen={showSendMessageModal}
+          onClose={() => { setShowSendMessageModal(false) }}
+          teacher={teacher}
+          user={user}
         />
       )}
     </div>

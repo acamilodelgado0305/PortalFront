@@ -33,7 +33,7 @@ function WhiteBoard({socket, context}) {
         }}
         dragHandleClassName={"drag-whiteboard-handle"}
         style={{  cursor:
-          context.drawingMode === 'draw' ? pencilCursor :
+          (context.drawingMode === 'draw' && context.currentDrawTool === "line") ? pencilCursor :
           context.drawingMode === 'hand' ? (context.isgrabbing ? 'grabbing' :'grab') :
           context.drawingMode === 'erase' ? eraserCursor :
           context.drawingMode === 'zoom' ? (context.zoomType == 'in' ? zoomInCursor : zoomOutCursor):
