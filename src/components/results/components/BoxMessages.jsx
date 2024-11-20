@@ -23,12 +23,15 @@ function BoxMessages({ isOpen, onClose }) {
             const lastMessage = chat.messages[chat.messages.length - 1] || {};
             const otherUser = chat.otherUser?.data || {};
             return {
-              chatId: chat.chatIndex,
+              chatIndex: chat.chatIndex,
               lastMessage: lastMessage.messageContent,
               timestamp: new Date(lastMessage.updatedAt),
               otherUserName: `${otherUser.firstName || "Unknown"} ${otherUser.lastName || ""}`,
+              otherUserID:otherUser.id,
               otherUserImage: otherUser.profileImageUrl,
               messages: chat.messages,
+              chatId:chat.messages[0].chatId
+
             };
           })
           .sort((a, b) => b.timestamp - a.timestamp);
@@ -63,14 +66,15 @@ function BoxMessages({ isOpen, onClose }) {
     e.preventDefault();
 
     if (message.trim() === "") return;
-
+console.log('hay chatId? '+chat.chatId )
     const newMessage = {
-      chatId: chat.chatId,
+      chatId:chat.chatId,
+      recipientId:chat.otherUserID,
       senderUserId: user.id,
       messageContent: message,
       updatedAt: new Date().toISOString(),
     };
-    chatStandardSocket.emit("send_message", newMessage);
+    chatStandardSocket.emit("SEND_MESSAGE", newMessage);
 
     setChat((prevChat) => ({
       ...prevChat,
@@ -105,7 +109,7 @@ function BoxMessages({ isOpen, onClose }) {
           {chats.length > 0 ? (
             chats.map((chat) => (
               <div
-                key={chat.chatId}
+                key={chat.chatIndex}
                 className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
                 onClick={() => openChat(chat)}
               >
