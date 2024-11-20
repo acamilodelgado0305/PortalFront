@@ -130,8 +130,8 @@ const PencilEraserToggleButton = ({context}) =>{
         }}
         style={{
           ...style, 
-          background: (context.drawingMode === "erase" && context.currentDrawTool === "line") ? '#1677ff' : '',
-          color: (context.drawingMode === "erase" && context.currentDrawTool === "line") ? 'white' : '',
+          background: (context.drawingMode === "erase") ? '#1677ff' : '',
+          color: (context.drawingMode === "erase" ) ? 'white' : '',
         }}
         > <BsEraser size={30}  /></div>
   
@@ -218,8 +218,8 @@ const CurrentDrawToolPickerButtons = ({ context }) => {
               shape={shapeForm}
               style={{
                 ...style, 
-                background: context.currentDrawTool === tool.name ? '#1677ff' : '',
-                color: context.currentDrawTool === tool.name? 'white' : '',
+                background: (context.currentDrawTool === tool.name  && context.drawingMode === "draw" )? '#1677ff' : '',
+                color: (context.currentDrawTool === tool.name  && context.drawingMode === "draw" ) ? 'white' : '',
               }}
               key={tool.name}
               onClick={() =>
