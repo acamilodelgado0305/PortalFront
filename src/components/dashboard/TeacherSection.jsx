@@ -69,7 +69,7 @@ const TeachersSection = ({ onViewTeacher }) => {
     }, []);
 
     useEffect(() => {
-        console.log("Active Filters en TeachersSection:", activeFilters);  // Añade este console log
+        console.log("Estado de activeFilters actualizado:", activeFilters);
         applyFilters();
     }, [teachers, showInactive, activeFilters]);
 
@@ -78,7 +78,7 @@ const TeachersSection = ({ onViewTeacher }) => {
         let filtered = [...teachers];
 
         // Filtro por estado (activo/inactivo)
-        filtered = filtered.filter(teacher => teacher.status === !showInactive);
+        filtered = filtered.filter((teacher) => teacher.status === !showInactive);
         console.log("Aplicando filtros", activeFilters);
 
         // Filtro por nombre completo
@@ -93,7 +93,7 @@ const TeachersSection = ({ onViewTeacher }) => {
         // Filtro por rango de precio en USD
         if (activeFilters.priceRange && Array.isArray(activeFilters.priceRange)) {
             const [min, max] = activeFilters.priceRange;
-            filtered = filtered.filter(teacher => {
+            filtered = filtered.filter((teacher) => {
                 const rate = Number(teacher.hourlyRate);
                 return !isNaN(rate) && rate >= min && rate <= max;
             });
@@ -101,62 +101,61 @@ const TeachersSection = ({ onViewTeacher }) => {
 
         // Filtro por país
         if (activeFilters.country) {
-            const selectedCountry = filterOptions.country.find(c => c.name === activeFilters.country);
+            const selectedCountry = filterOptions.country.find(
+                (c) => c.name === activeFilters.country
+            );
             if (selectedCountry) {
-                filtered = filtered.filter(teacher =>
-                    teacher.countryOfBirth?.toLowerCase() === selectedCountry.code.toLowerCase()
+                filtered = filtered.filter(
+                    (teacher) =>
+                        teacher.countryOfBirth?.toLowerCase() === selectedCountry.code.toLowerCase()
                 );
             }
         }
 
         // Filtro por hablante nativo
         if (activeFilters.isNative) {
-            filtered = filtered.filter(teacher =>
-                teacher.languageLevel?.toLowerCase() === 'native'
+            filtered = filtered.filter(
+                (teacher) => teacher.languageLevel?.toLowerCase() === "native"
             );
         }
 
         // Filtro por especialidad
         if (activeFilters.specialty) {
-            filtered = filtered.filter(teacher =>
-                teacher.subjectYouTeach?.toLowerCase().includes(activeFilters.specialty.toLowerCase())
+            filtered = filtered.filter((teacher) =>
+                teacher.subjectYouTeach
+                    ?.toLowerCase()
+                    .includes(activeFilters.specialty.toLowerCase())
             );
         }
 
         // Filtro por idioma
         if (activeFilters.language) {
-            filtered = filtered.filter(teacher =>
-                teacher.languages?.some(lang =>
-                    lang.toLowerCase() === activeFilters.language.toLowerCase()
-                )
+            filtered = filtered.filter((teacher) =>
+                teacher.language?.toLowerCase() === activeFilters.language.toLowerCase()
             );
         }
 
-        if (
-            activeFilters.availability &&
-            activeFilters.availability.day &&
-            typeof activeFilters.availability.start === 'number' &&
-            typeof activeFilters.availability.end === 'number'
-        ) {
-            const dayInEnglish = activeFilters.availability.day;  // Asume que está en inglés
-            const { start, end } = activeFilters.availability;
-
-            console.log("Filtrando por disponibilidad para el día:", dayInEnglish, "con horario", start, "-", end);
-
+        // Filtro por disponibilidad
+        if (Array.isArray(activeFilters.availability) && activeFilters.availability.length > 0) {
+            console.log("Aplicando filtro de disponibilidad con:", activeFilters.availability);
             filtered = filtered.filter((teacher) => {
-                const availabilityForDay = teacher.Availability?.[dayInEnglish];
-                console.log("Availability for", teacher.firstName, "en", dayInEnglish, ":", availabilityForDay);
-
-                if (availabilityForDay?.enabled && availabilityForDay.timeSlots) {
-                    return availabilityForDay.timeSlots.some((slot) => {
+                const teacherAvailability = teacher.Availability || {};
+                return activeFilters.availability.some(({ day, start, end }) => {
+                    console.log(`Evaluando disponibilidad para el día ${day} con rango ${start}-${end}`);
+                    const dayAvailability = teacherAvailability[day];
+                    if (!dayAvailability?.enabled || !dayAvailability.timeSlots) {
+                        return false;
+                    }
+                    return dayAvailability.timeSlots.some((slot) => {
                         const slotStart = new Date(slot.start).getUTCHours();
                         const slotEnd = new Date(slot.end).getUTCHours();
+                        const filterStart = start;
+                        const filterEnd = end;
 
-                        console.log(`Comparando slot del profesor: ${slotStart}-${slotEnd} con filtro: ${start}-${end}`);
-                        return slotStart <= start && slotEnd >= end;
+                        console.log(`Slot: ${slotStart}-${slotEnd}, Filtro: ${filterStart}-${filterEnd}`);
+                        return slotStart <= filterStart && slotEnd >= filterEnd;
                     });
-                }
-                return false;
+                });
             });
         }
 
@@ -164,17 +163,19 @@ const TeachersSection = ({ onViewTeacher }) => {
         setFilteredTeachers(filtered);
     };
 
+    // Función para limpiar los filtros
     const clearFilters = () => {
         setActiveFilters({
             priceRange: [10, 35],
-            fullName: '',
-            country: '',
-            availability: '',
-            specialty: '',
-            language: '',
+            fullName: "",
+            country: "",
+            availability: [],
+            specialty: "",
+            language: "",
             isNative: false,
-            category: ''
+            category: "",
         });
+        setFilteredTeachers(teachers);
     };
 
     const showModal = (teacher) => {

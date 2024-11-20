@@ -8,35 +8,57 @@ const Filters = ({
     clearFilters,
     filterOptions,
     showFilterModal,
-    setShowFilterModal
+    setShowFilterModal,
 }) => {
     const [priceRange, setPriceRange] = useState({
         min: activeFilters.priceRange?.[0] || 10,
-        max: activeFilters.priceRange?.[1] || 35
+        max: activeFilters.priceRange?.[1] || 35,
     });
     const [showCalendarModal, setShowCalendarModal] = useState(false); // Controlar visibilidad del calendario
+    const [availabilityFilters, setAvailabilityFilters] = useState([]); // Acumular días y horarios seleccionados
     const filterRefs = useRef({});
 
     useEffect(() => {
         setPriceRange({
             min: activeFilters.priceRange?.[0] || 10,
-            max: activeFilters.priceRange?.[1] || 35
+            max: activeFilters.priceRange?.[1] || 35,
         });
     }, [activeFilters.priceRange]);
 
-    const handleTimeFilterSelect = ({ day, start, end }) => {
+    const handleTimeFilterSelect = (filters) => {
+        console.log("Filtros de tiempo seleccionados:", filters);
+        const updatedFilters = [...availabilityFilters, ...filters];
+        setAvailabilityFilters(updatedFilters);
+
         setActiveFilters((prev) => ({
             ...prev,
-            availability: { day, start, end }
+            availability: updatedFilters,
         }));
-        setShowCalendarModal(false);
+        console.log("Disponibilidad seleccionada:", updatedFilters);
     };
-    console.log("Current Availability Filter:", activeFilters.availability);
+
+    const renderAvailabilityText = () => {
+        return availabilityFilters.length > 0
+            ? availabilityFilters
+                .map((filter) => `${filter.day} (${filter.start}-${filter.end})`)
+                .join(', ')
+            : 'Disponibilidad';
+    };
+
     const handleNameChange = (e) => {
         setActiveFilters((prev) => ({
             ...prev,
-            fullName: e.target.value
+            fullName: e.target.value,
         }));
+    };
+
+    const handleClearFilters = () => {
+        setAvailabilityFilters([]); // Limpiar filtros de disponibilidad
+        setActiveFilters((prev) => ({
+            ...prev,
+            availability: [],
+        }));
+        clearFilters(); // Llamar la función de limpieza general
     };
 
     const FilterModal = ({ title, options, onSelect, onClose, isOpen, filterKey }) => {
@@ -44,7 +66,7 @@ const Filters = ({
 
         return (
             <div
-                ref={el => filterRefs.current[filterKey] = el}
+                ref={(el) => (filterRefs.current[filterKey] = el)}
                 className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20"
             >
                 <div className="p-4">
@@ -69,7 +91,7 @@ const Filters = ({
     };
 
     const FilterButton = ({ label, value, filterKey }) => (
-        <div className="relative inline-block" ref={el => filterRefs.current[filterKey] = el}>
+        <div className="relative inline-block" ref={(el) => (filterRefs.current[filterKey] = el)}>
             <button
                 className="bg-white text-2xl p-6 w-[10em] h-[2.5em] font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-purple-600 rounded-xl"
                 onClick={() =>
@@ -78,7 +100,12 @@ const Filters = ({
             >
                 <span>{label}</span>
                 {value && <span className="text-gray-400">{value}</span>}
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                    className="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
@@ -102,19 +129,19 @@ const Filters = ({
 
     const handleMinChange = (e) => {
         const newMin = Math.min(Number(e.target.value), priceRange.max - 1);
-        setPriceRange(prev => ({ ...prev, min: newMin }));
-        setActiveFilters(prev => ({
+        setPriceRange((prev) => ({ ...prev, min: newMin }));
+        setActiveFilters((prev) => ({
             ...prev,
-            priceRange: [newMin, prev.priceRange?.[1] || priceRange.max]
+            priceRange: [newMin, prev.priceRange?.[1] || priceRange.max],
         }));
     };
 
     const handleMaxChange = (e) => {
         const newMax = Math.max(Number(e.target.value), priceRange.min + 1);
-        setPriceRange(prev => ({ ...prev, max: newMax }));
-        setActiveFilters(prev => ({
+        setPriceRange((prev) => ({ ...prev, max: newMax }));
+        setActiveFilters((prev) => ({
             ...prev,
-            priceRange: [prev.priceRange?.[0] || priceRange.min, newMax]
+            priceRange: [prev.priceRange?.[0] || priceRange.min, newMax],
         }));
     };
 
@@ -122,68 +149,70 @@ const Filters = ({
         <>
             <style>
                 {`
-                    .slider-container {
-                        position: relative;
-                        width: 100%;
-                        height: 30px;
-                    }
-                    .slider {
-                        position: absolute;
-                        pointer-events: none;
-                        -webkit-appearance: none;
-                        appearance: none;
-                        width: 100%;
-                        height: 2px;
-                        background: none;
-                        z-index: 3;
-                    }
-                    .slider-track {
-                        position: absolute;
-                        width: 100%;
-                        height: 2px;
-                        background: #e5e7eb;
-                        z-index: 1;
-                    }
-                    .slider-range {
-                        position: absolute;
-                        height: 2px;
-                        background: #A855F7;
-                        z-index: 2;
-                    }
-                    .slider::-webkit-slider-thumb {
-                        pointer-events: auto;
-                        -webkit-appearance: none;
-                        appearance: none;
-                        width: 12px;
-                        height: 20px;
-                        background: white;
-                        border: 2px solid #A855F7;
-                        border-radius: 2px;
-                        cursor: pointer;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-                    }
-                    .slider::-moz-range-thumb {
-                        pointer-events: auto;
-                        width: 12px;
-                        height: 20px;
-                        background: white;
-                        border: 2px solid #A855F7;
-                        border-radius: 2px;
-                        cursor: pointer;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-                    }
+                .slider-container {
+                    position: relative;
+                    width: 100%;
+                    height: 30px;
+                }
+                .slider {
+                    position: absolute;
+                    pointer-events: none;
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 100%;
+                    height: 2px;
+                    background: none;
+                    z-index: 3;
+                }
+                .slider-track {
+                    position: absolute;
+                    width: 100%;
+                    height: 2px;
+                    background: #e5e7eb;
+                    z-index: 1;
+                }
+                .slider-range {
+                    position: absolute;
+                    height: 2px;
+                    background: #A855F7;
+                    z-index: 2;
+                }
+                .slider::-webkit-slider-thumb {
+                    pointer-events: auto;
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 12px;
+                    height: 20px;
+                    background: white;
+                    border: 2px solid #A855F7;
+                    border-radius: 2px;
+                    cursor: pointer;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                }
+                .slider::-moz-range-thumb {
+                    pointer-events: auto;
+                    width: 12px;
+                    height: 20px;
+                    background: white;
+                    border: 2px solid #A855F7;
+                    border-radius: 2px;
+                    cursor: pointer;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                }
                 `}
             </style>
 
             <div className="grid grid-cols-3 gap-8">
                 <div className="col-span-2 flex flex-wrap gap-4 w-[70em]">
+
+
                     <FilterButton
                         label="Idiomas"
                         value={activeFilters.language}
                         filterKey="language"
                     />
 
-                    <div className="relative inline-block" ref={el => filterRefs.current.priceRange = el}>
+                    <div className="relative inline-block" ref={(el) => (filterRefs.current.priceRange = el)}>
                         <button
                             className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
                             onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
@@ -199,7 +228,7 @@ const Filters = ({
                         {showFilterModal.priceRange && (
                             <div className="absolute mt-2 bg-white rounded-xl shadow-lg border-2 border-purple-600 text-2xl p-6 z-50">
                                 <div className="flex justify-center mt-2 text-2xl font-bold text-purple-600 mb-6">
-                                    <span>{`US $${priceRange.min} - US $${priceRange.max}`}</span>
+                                    <span>{`USD $${priceRange.min} - USD $${priceRange.max}`}</span>
                                 </div>
                                 <div className="px-2">
                                     <div className="slider-container">
@@ -240,16 +269,16 @@ const Filters = ({
                         value={activeFilters.country}
                         filterKey="country"
                     />
-
-                    <button
-                        className="bg-white w-[10em] h-[2.5em] text-2xl font-medium text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 flex items-center justify-center leading-5"
-                        onClick={() => setShowCalendarModal(true)}
-                    >
-                        {activeFilters.availability && activeFilters.availability.day
-                            ? `Disponibilidad: ${activeFilters.availability.day} / ${activeFilters.availability.start}-${activeFilters.availability.end}`
-                            : 'Disponibilidad'}
-                    </button>
-
+                    {/* Input interactivo de Disponibilidad */}
+                    <div className="relative inline-block w-[15em]">
+                        <input
+                            type="text"
+                            readOnly
+                            onClick={() => setShowCalendarModal(true)}
+                            value={renderAvailabilityText()}
+                            className="w-full border-2 text-2xl font-medium border-purple-600 rounded-xl px-4 py-3 text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                    </div>
                     <FilterButton
                         label="Especialidades"
                         value={activeFilters.specialty}
@@ -257,7 +286,8 @@ const Filters = ({
                     />
 
                     <button
-                        className={`bg-white text-2xl w-[10em] h-[2.5em] p-6 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''}`}
+                        className={`bg-white text-2xl w-[10em] h-[2.5em] p-6 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''
+                            }`}
                         onClick={() => setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))}
                     >
                         Hablante nativo
@@ -277,7 +307,7 @@ const Filters = ({
                     </div>
 
                     <button
-                        onClick={clearFilters}
+                        onClick={handleClearFilters}
                         className="w-full bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
                     >
                         <X size={20} />

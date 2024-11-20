@@ -3,7 +3,6 @@ import { Modal } from 'antd';
 import { SunOutlined, MoonOutlined } from "@ant-design/icons";
 import './WeeklyCalendar.css';
 
-// Mapa de días de español a inglés
 const dayMapping = {
     "Dom": "Sunday",
     "Lun": "Monday",
@@ -17,10 +16,9 @@ const dayMapping = {
 const daysOfWeek = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) => {
-    const [selectedDay, setSelectedDay] = useState(null);
-    const [selectedTimeBlock, setSelectedTimeBlock] = useState(null);
+    const [selectedDays, setSelectedDays] = useState([]); // Múltiples días
+    const [selectedTimeBlocks, setSelectedTimeBlocks] = useState([]); // Múltiples bloques
 
-    // Agrupación de bloques horarios
     const timeBlocks = {
         "Día": [
             { label: "9:00 Am -12", icon: <SunOutlined />, key: "morning", start: 9, end: 12 },
@@ -38,36 +36,94 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
         ]
     };
 
-    // Seleccionar el día
+    // Seleccionar/deseleccionar un día
     const handleDaySelect = (day) => {
-        setSelectedDay(day);
+        setSelectedDays((prev) =>
+            prev.includes(day)
+                ? prev.filter((d) => d !== day) // Deseleccionar si ya está seleccionado
+                : [...prev, day] // Seleccionar si no está seleccionado
+        );
     };
 
+    // Seleccionar/deseleccionar un bloque de tiempo
     const handleTimeBlockSelect = (block) => {
-        setSelectedTimeBlock(block.key);
-        if (selectedDay !== null) {
-            // Convierte el día seleccionado al inglés antes de enviarlo
-            const dayInEnglish = dayMapping[daysOfWeek[selectedDay]];
+        setSelectedTimeBlocks((prev) =>
+            prev.includes(block.key)
+                ? prev.filter((b) => b !== block.key) // Deseleccionar si ya está seleccionado
+                : [...prev, block.key] // Seleccionar si no está seleccionado
+        );
+    };
 
-            onFilterSelect({
-                day: dayInEnglish,
-                start: block.start ?? 0, // Asegura que se envíe un valor numérico
-                end: block.end ?? 0      // Asegura que se envíe un valor numérico
+    // Confirmar selección
+    const handleConfirm = () => {
+        const selectedFilters = selectedDays.map((dayIndex) => {
+            const dayInEnglish = dayMapping[daysOfWeek[dayIndex]];
+            return selectedTimeBlocks.map((blockKey) => {
+                const block = Object.values(timeBlocks)
+                    .flat()
+                    .find((b) => b.key === blockKey);
+                return {
+                    day: dayInEnglish,
+                    start: block.start,
+                    end: block.end
+                };
             });
-            setShowCalendarModal(false); // Cierra el modal después de seleccionar
-        }
+        }).flat();
+
+        onFilterSelect(selectedFilters); // Pasar la selección al padre
+        setShowCalendarModal(false); // Cerrar el modal
+    };
+
+    // Mostrar selecciones en la parte superior
+    const renderSelections = () => {
+        const selectedDescriptions = selectedDays.flatMap((dayIndex) => {
+            const dayName = daysOfWeek[dayIndex];
+            return selectedTimeBlocks.map((blockKey) => {
+                const block = Object.values(timeBlocks)
+                    .flat()
+                    .find((b) => b.key === blockKey);
+                return `${dayName} (${block.label})`;
+            });
+        });
+
+        return selectedDescriptions.length > 0
+            ? selectedDescriptions.map((desc, index) => (
+                <span
+                    key={index}
+                    className="bg-purple-100 text-purple-600 text-sm rounded-full px-3 py-1 mr-2 mb-2 inline-flex items-center"
+                >
+                    {desc}
+                </span>
+            ))
+            : <p className="text-gray-500 text-sm">No se ha seleccionado nada aún.</p>;
     };
 
     return (
         <Modal
-            //title="Selecciona Día y Bloque Horario"
             open={showCalendarModal}
             onCancel={() => setShowCalendarModal(false)}
-            footer={null}
+            footer={
+                <div className="flex justify-end">
+                    <button
+                        onClick={handleConfirm}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                    >
+                        Confirmar
+                    </button>
+                </div>
+            }
             width={500}
             centered
         >
             <div className="filter-section">
+                {/* Mostrar selecciones actuales */}
+                <div className="mb-4">
+                    <h3 className="text-lg font-bold">Selección actual:</h3>
+                    <div className="flex flex-wrap mt-2">
+                        {renderSelections()}
+                    </div>
+                </div>
+
                 {/* Selección del Día */}
                 <h3 className="text-lg font-bold mb-2">Días</h3>
                 <div className="grid grid-cols-7 gap-2 mb-4">
@@ -75,14 +131,15 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
                         <div
                             key={index}
                             onClick={() => handleDaySelect(index)}
-                            className={`day-card ${selectedDay === index ? "selected" : ""}`}
+                            className={`day-card cursor-pointer text-center py-2 rounded-lg ${selectedDays.includes(index) ? "bg-purple-600 text-white" : "bg-gray-200 text-black"
+                                }`}
                         >
                             {day}
                         </div>
                     ))}
                 </div>
 
-                {/* Selección del Bloque Horario con Categorías */}
+                {/* Selección del Bloque Horario */}
                 <h3 className="text-lg font-bold mb-2">Horas</h3>
                 {Object.keys(timeBlocks).map((category) => (
                     <div key={category} className="time-category">
@@ -92,9 +149,10 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
                                 <div
                                     key={block.key}
                                     onClick={() => handleTimeBlockSelect(block)}
-                                    className={`time-card ${selectedTimeBlock === block.key ? "selected" : ""}`}
+                                    className={`time-card cursor-pointer p-2 rounded-lg flex flex-col items-center ${selectedTimeBlocks.includes(block.key) ? "bg-purple-600 text-white" : "bg-gray-200 text-black"
+                                        }`}
                                 >
-                                    <div className="icon">{block.icon}</div>
+                                    <div className="icon text-2xl mb-1">{block.icon}</div>
                                     <div className="time-label">{block.label}</div>
                                 </div>
                             ))}
