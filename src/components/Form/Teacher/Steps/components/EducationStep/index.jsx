@@ -8,7 +8,7 @@ import StudyPeriod from './StudyPeriod';
 const { Option } = Select;
 
 const EducationForm = (props) => {
-  const { index, onRemove, list, setList, onChange } = props;
+  const { index, onRemove, list, setList, onChange, setIsVerified } = props;
   const [currentValue, setCurrentValue] = useState(null);
   const [fileName, setFileName] = useState('');
   const [loadingPDF, setLoadingPDF ] = useState(false)
@@ -45,8 +45,24 @@ const EducationForm = (props) => {
   };
 
   useEffect(() => {
-    if (list.length > 0) 
+    if (list.length > 0) {
         updateChange(list);
+        const allItemsValid = list.every(item => {
+          return (
+            item.university &&
+            item.degree &&
+            item.degreeType &&
+            item.specialization &&
+            item.studyStart &&
+            item.studyEnd &&
+            item.diplomaFile
+          );
+        });
+    
+        // Update the verification state based on the validation result
+        setIsVerified(allItemsValid);
+      }
+    
   }, [list, currentValue]);
 
   return (

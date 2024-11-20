@@ -2,7 +2,10 @@
 
 import axios from "axios";
 
-const BACK_URL = import.meta.env.VITE_API_BACKEND || "http://localhost:4005";
+
+const BACK_URL = "https://back.app.esturio.com";
+
+
 
 // Instancia de axios personalizada
 export const backApi = axios.create({
@@ -13,7 +16,7 @@ export const backApi = axios.create({
 });
 
 
-export const uploadImage = async (file, contentType) => {
+export const uploadFile = async (file, contentType) => {
   try {
     const response = await backApi.post('/api/upload', file, {
       headers: { 'Content-Type': contentType },

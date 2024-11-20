@@ -1,0 +1,27 @@
+.custom-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgb(168, 85, 247); 
+    cursor: pointer;
+  }
+  
+  .custom-range::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgb(168, 85, 247); 
+    cursor: pointer;
+  }
+  
+  .custom-range::-ms-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: rgb(168, 85, 247); 
+    cursor: pointer;
+  }
+  
+
+  

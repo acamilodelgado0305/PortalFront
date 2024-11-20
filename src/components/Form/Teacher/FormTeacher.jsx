@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Form, Button, Steps as AntSteps, Card, Modal, message } from "antd";
 import { CheckCircle, Circle } from 'lucide-react';
 import Header from "../../Header";
@@ -12,6 +12,8 @@ import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 import { createTeacher } from '../../../services/teacher.services'
 
+import { uploadImageToS3 } from "../../../helpers/processImageUpload";
+
 
 
 const { Step } = AntSteps;
@@ -22,15 +24,22 @@ const MultiStepForm = () => {
   const [formData, setFormData] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // 
+  const [isVerified, setIsVerified] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
 
 
 
   const handleFormChange = (changedValues) => {
+    console.log(changedValues)
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
   };
 
-  useEffect(() => {
-  }, [formData])
+useEffect(() => {
+}, [formData]);
+  
+
 
 
 
@@ -47,20 +56,24 @@ const MultiStepForm = () => {
 
 
 
+
+
   const onFinish = async () => {
     if (currentStep != '7') {
       return
     }
     setIsSubmitting(true);
+
     try {
       await createTeacher(formData);
       setIsModalVisible(true);
     } catch (error) {
+      console.log(formData)
       console.error("Registration failed:", error);
       message.error("Registration failed. Please try again.");
     } finally {
       setIsSubmitting(false);
-    }
+    } 
   };
 
   const handleModalOk = () => {
@@ -71,38 +84,48 @@ const MultiStepForm = () => {
     setFormData({});
   };
 
-  const next = () => {
+const next = async() => {
+if(isVerified) {
     form
       .validateFields()
       .then(() => {
         setCurrentStep(currentStep + 1);
+        setIsVerified(false);
+        setErrorMessage("");
       })
       .catch((error) => {
         console.error("Validation failed:", error);
       });
+      if(currentStep == '2'){
+       await uploadImageToS3(formData, setFormData)
+      }
+    } else{
+      setErrorMessage("Please ensure all required fields are complete.")
+    }
+  
   };
 
   const prev = () => {
     setCurrentStep(currentStep - 1);
+    setIsVerified(false)
   };
 
   const getCurrentStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <AboutStep  onChange={handleFormChange} />;
+        return <AboutStep  onChange={handleFormChange} setIsVerified={setIsVerified}/>;
       case 1:
-        return <PhotoStep onChange={handleFormChange} />;
+        return <PhotoStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 2:
-        return <CertificationStep onChange={handleFormChange} />;
-
+        return <CertificationStep onChange={handleFormChange} setIsVerified={setIsVerified}  />;
       case 3:
-        return <EducationStep onChange={handleFormChange} />;
+        return <EducationStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 4:
-        return <DescriptionSet onChange={handleFormChange} />;
+        return <DescriptionSet onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 5:
-        return <VideoStep onChange={handleFormChange} />;
+        return <VideoStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 6:
-        return <ScheduleStep onChange={handleFormChange} />;
+        return <ScheduleStep onChange={handleFormChange} setIsVerified={setIsVerified} />;
       case 7:
         return <PricingStep onChange={handleFormChange} />;
       default:
@@ -158,6 +181,7 @@ const MultiStepForm = () => {
                 Previous
               </Button>
             )}
+          {(currentStep != 0 && errorMessage) && errorMessage}
             {currentStep < stepTitles.length - 1 && (
               <Button
                 onClick={next}
@@ -165,7 +189,7 @@ const MultiStepForm = () => {
               >
                 Next
               </Button>
-            )}
+            )}  {(currentStep == 0 && errorMessage) && errorMessage}
             {currentStep === stepTitles.length - 1 && (
               <Button
                 type="primary"
