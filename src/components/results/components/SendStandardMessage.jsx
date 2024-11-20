@@ -91,7 +91,7 @@ function SendStandardMessage({ isOpen, onClose, teacher, user }) {
           />
           <button
             type="submit"
-            className="w-full rounded-md border-[3.5px] border-black bg-[#FF7AAC] px-4 py-2 font-semibold text-black hover:bg-[#D4658F]"
+            className="w-full rounded-md border-[3.5px] border-black bg-[#a855f7] px-4 py-2 font-semibold text-black hover:bg-[#6A369C]"
           >
             Enviar
           </button>
