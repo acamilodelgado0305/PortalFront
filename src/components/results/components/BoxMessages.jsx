@@ -5,20 +5,23 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useChatStandardSocket } from "../ChatStandardSocketProvider";
 import ChatSocketListener from "./ChatSocketListener";
 import { formatDate, formattedChatInfo } from "../../../helpers";
+import { events } from "../../../enums/standardChatsEvents";
 
 
-function BoxMessages({ isOpen, onClose }) {
+function BoxMessages({ isOpen }) {
   const { user } = useAuth();
   const [chats, setChats] = useState([]);
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState("");
   const [isChatOpened, setIsChatOpened] = useState(false);
   const chatStandardSocket = useChatStandardSocket();
-  const messagesEndRef = useRef(null); 
+  const messagesEndRef = useRef(null);
 
-  // Obtener chats
-  useEffect(() => {
-    const fetchGetChats = async () => {
+useEffect(() => {
+    fetchGetChats();
+  }, [user.id]);
+
+  const fetchGetChats = async () => {
       try {
         const response = await getStandarMessageChatsByUser(user.id);
         if (response?.success) {
@@ -29,9 +32,7 @@ function BoxMessages({ isOpen, onClose }) {
         console.error("Error fetching chats:", error);
       }
     };
-
-    fetchGetChats();
-  }, [user.id]);
+  
 
 
   const openChat = (chat) => {
@@ -91,9 +92,51 @@ export default BoxMessages;
 
 
 const ChatOpened = (props) => {
-  const { chat, setIsChatOpened, setChat, formatDate, chatStandardSocket, user, message, setMessage, messagesEndRef } = props;
+  const {
+    chat,
+    setIsChatOpened,
+    setChat,
+    formatDate,
+    chatStandardSocket,
+    user,
+    message,
+    setMessage,
+    messagesEndRef,
+  } = props;
 
-  useEffect(()=>{scrollToBottom()}, [])
+  useEffect(() => {
+    // Al abrir el chat, emitimos un evento para que el servidor asocie este socket con este chat
+    if (chat.chatId) {
+      chatStandardSocket.emit(events.JOIN_CHAT, chat.chatId);  // Suponiendo que el servidor asocie este chatId con el socket
+    }
+
+    // Escuchar mensajes solo de este chat
+    chatStandardSocket.on(events.RECEIVE_MESSAGE, (newMessage) => {
+      if (newMessage.chatId === chat.chatId) {
+        setChat((prevChat) => {
+          const updatedMessages = [...prevChat.messages, newMessage];
+          return { ...prevChat, messages: updatedMessages };
+        });
+        scrollToBottom(); 
+      }
+    });
+
+    // Cleanup: al salir del chat, dejar de escuchar eventos
+    return () => {
+      chatStandardSocket.off(events.RECEIVE_MESSAGE);
+      chatStandardSocket.emit(events.LEAVE_CHAT, chat.chatId);  
+    };
+  }, [chat, chatStandardSocket, setChat]);
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        const scrollHeight = messagesEndRef.current.scrollHeight;
+        const clientHeight = messagesEndRef.current.clientHeight;
+        messagesEndRef.current.scrollTop = scrollHeight - clientHeight;
+      }
+    }, 100);
+  };
 
   const closeChat = () => {
     setIsChatOpened(false);
@@ -106,32 +149,22 @@ const ChatOpened = (props) => {
 
     const newMessage = {
       chatId: chat.chatId,
-      recipientId: chat.otherUserID,
+      recipientId:  chat.otherUserID,
       senderUserId: user.id,
       messageContent: message,
       updatedAt: new Date().toISOString(),
     };
 
-    chatStandardSocket.emit("SEND_MESSAGE", newMessage);
+    chatStandardSocket.emit(events.SEND_MESSAGE, newMessage);
 
     setChat((prevChat) => {
       const updatedMessages = [...prevChat.messages, newMessage];
       return { ...prevChat, messages: updatedMessages };
     });
-    scrollToBottom();
-    setMessage("");
-  };
 
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      if (messagesEndRef.current) {
-        const scrollHeight = messagesEndRef.current.scrollHeight;
-        const clientHeight = messagesEndRef.current.clientHeight;
-        messagesEndRef.current.scrollTop = scrollHeight - clientHeight;
-      }
-    }, 100); 
+    scrollToBottom(); 
+    setMessage("");  // Limpiar el campo de mensaje
   };
-  
 
   return (
     <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg">
@@ -150,7 +183,7 @@ const ChatOpened = (props) => {
       <div
         ref={messagesEndRef} 
         className="flex flex-col gap-2 overflow-y-auto rounded-md bg-gray-50 px-3 py-2 shadow-inner"
-        style={{ maxHeight: '60%', overflowY: 'auto', scrollBehavior: 'smooth', }} 
+        style={{ height: '60%', overflowY: 'auto', scrollBehavior: 'smooth', }} 
       >
         {chat.messages
           .sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
@@ -160,11 +193,15 @@ const ChatOpened = (props) => {
               className={`rounded-lg p-3 text-sm ${
                 message.senderUserId === user.id
                   ? "self-end bg-[#a855f7] bg-gradient-to-r text-white"
-                  : "self-start bg-gray-200 text-gray-800"
+                  : "self-start bg-gray-200 text-[#8a2be2]"
               }`}
             >
               <p className="mb-1">{message.messageContent}</p>
-              <small className="text-xs text-gray-400">{formatDate(message.updatedAt)}</small>
+              <small className={`text-xs ${
+                message.senderUserId === user.id
+                  ? "text-[#fff] "
+                  : "text-[#8a2be2]"
+              }`}>{formatDate(message.updatedAt)}</small>
             </div>
           ))}
       </div>
@@ -186,6 +223,7 @@ const ChatOpened = (props) => {
     </div>
   );
 };
+
 
 
 
