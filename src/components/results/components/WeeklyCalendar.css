@@ -25,3 +25,74 @@
   border: 1px solid #ccc;
   width: 100%;
 }
+.time-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  text-align: center;
+}
+
+.time-card .icon {
+  font-size: 24px;
+  color: black;
+}
+
+.time-card .time-label {
+  margin-top: 8px;
+  font-size: 16px;
+  color: black;
+  font-weight: 500;
+}
+
+.time-card.selected {
+  background-color: #9D4EDD;
+  border-color: #9D4EDD;
+  color: white;
+}
+
+.time-card.selected .icon, 
+.time-card.selected .time-label {
+  color: white;
+}
+.day-card, .time-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  text-align: center;
+}
+
+.day-card.selected, .time-card.selected {
+  background-color: #9D4EDD;
+  border-color: #9D4EDD;
+  color: white;
+}
+
+.time-category {
+  margin-top: 16px;
+}
+
+.time-category p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.time-card .icon {
+  font-size: 24px;
+}
+
+.time-card .time-label {
+  margin-top: 4px;
+  font-size: 14px;
+}
