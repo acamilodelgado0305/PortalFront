@@ -20,7 +20,10 @@ function BoxMessages({ isOpen }) {
 
   useEffect(() => {
     fetchGetChats();
-  }, [user.id, chat]);
+
+  }, [user.id]);
+
+  useEffect(()=>{},[chat])
 
   const fetchGetChats = async () => {
     setIsLoading(true); 
@@ -46,7 +49,7 @@ function BoxMessages({ isOpen }) {
 
   return (
     <>
-      <ChatSocketListener socket={chatStandardSocket} />
+      
       {!isChatOpened && (
         <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
           <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
@@ -54,7 +57,7 @@ function BoxMessages({ isOpen }) {
           {isLoading ? (
             <div className="flex justify-center items-center h-full">
               <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-[#8a2be2] border-t-transparent rounded-full" role="status">
-                <span className="sr-only">Loading...</span>
+                <span className="sr-only text-[#8a2be2]">Loading...</span>
               </div>
             </div>
           ) : (
@@ -116,29 +119,8 @@ const ChatOpened = (props) => {
     message,
     setMessage,
     messagesEndRef,
-    fetchGetChats
+    fetchGetChats,
   } = props;
-
-  useEffect(() => {
-      if (chat.chatId) {
-      chatStandardSocket.emit(events.JOIN_CHAT, chat.chatId);  
-    }
-
-   
-    chatStandardSocket.on(events.RECEIVE_MESSAGE, (newMessage) => {
-      if (newMessage.chatId === chat.chatId) {
-        setChat((prevChat) => {
-          const updatedMessages = [...prevChat.messages, newMessage];
-          return { ...prevChat, messages: updatedMessages };
-        });
-        scrollToBottom(); 
-      }
-    });
-    return () => {
-      chatStandardSocket.off(events.RECEIVE_MESSAGE);
-      chatStandardSocket.emit(events.LEAVE_CHAT, chat.chatId);  
-    };
-  }, [chat, chatStandardSocket, setChat]);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -150,19 +132,18 @@ const ChatOpened = (props) => {
     }, 100);
   };
 
-  const closeChat = async() => {
+  const closeChat = async () => {
     setIsChatOpened(false);
-    setChat(null); 
-    await fetchGetChats();
+    setChat(null);
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async(e) => {
     e.preventDefault();
     if (message.trim() === "") return;
 
     const newMessage = {
       chatId: chat.chatId,
-      recipientId:  chat.otherUserID,
+      recipientId: chat.otherUserID,
       senderUserId: user.id,
       messageContent: message,
       updatedAt: new Date().toISOString(),
@@ -172,15 +153,25 @@ const ChatOpened = (props) => {
 
     setChat((prevChat) => {
       const updatedMessages = [...prevChat.messages, newMessage];
-      return { ...prevChat, messages: updatedMessages };
+      return { ...prevChat,
+         messages: updatedMessages,
+         lastMessage:newMessage };
     });
 
-    scrollToBottom(); 
+    scrollToBottom();
     setMessage("");
+    await fetchGetChats();
   };
 
   return (
     <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg">
+      <ChatSocketListener
+        socket={chatStandardSocket}
+        chat={chat}
+        setChat={setChat}
+        scrollToBottom={scrollToBottom}
+        fetchGetChats={fetchGetChats}
+      />
       <div className="mb-4 flex cursor-pointer flex-row gap-1 font-bold text-gray-600 transition-colors">
         <ArrowLeftOutlined className="hover:text-[#8a2be2]" onClick={closeChat} />
         <img
@@ -194,28 +185,29 @@ const ChatOpened = (props) => {
       </div>
 
       <div
-        ref={messagesEndRef} 
+        ref={messagesEndRef}
         className="flex flex-col gap-2 overflow-y-auto rounded-md bg-gray-50 px-3 py-2 shadow-inner"
-        style={{ height: '60%', overflowY: 'auto', scrollBehavior: 'smooth', }} 
+        style={{ height: '60%', overflowY: 'auto', scrollBehavior: 'smooth' }}
       >
         {chat.messages
           .sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
           .map((message, index) => (
             <div
-            key={index}
-            className={`rounded-lg py-2 px-4 text-sm min-w-[55%] ${
-              message.senderUserId === user.id
-                ? "self-end bg-[#a855f7] bg-gradient-to-r text-white text-right"
-                : "self-start bg-gray-200 text-[#8a2be2] text-left"
-            }`}
-          >
-                    
-              <p className="mb-1">{message.messageContent}</p>
-              <small className={`text-xs ${
+              key={index}
+              className={`rounded-lg py-2 px-4 text-sm min-w-[55%] ${
                 message.senderUserId === user.id
-                  ? "text-[#fff] "
-                  : "text-[#8a2be2]"
-              }`}>{formatDate(message.updatedAt)}</small>
+                  ? "self-end bg-[#a855f7] bg-gradient-to-r text-white text-right"
+                  : "self-start bg-gray-200 text-[#8a2be2] text-left"
+              }`}
+            >
+              <p className="mb-1">{message.messageContent}</p>
+              <small
+                className={`text-xs ${
+                  message.senderUserId === user.id ? "text-[#fff]" : "text-[#8a2be2]"
+                }`}
+              >
+                {formatDate(message.updatedAt)}
+              </small>
             </div>
           ))}
       </div>
@@ -237,6 +229,8 @@ const ChatOpened = (props) => {
     </div>
   );
 };
+
+
 
 
 
