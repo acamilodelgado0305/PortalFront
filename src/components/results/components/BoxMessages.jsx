@@ -189,13 +189,14 @@ const ChatOpened = (props) => {
           .sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
           .map((message, index) => (
             <div
-              key={index}
-              className={`rounded-lg p-3 text-sm ${
-                message.senderUserId === user.id
-                  ? "self-end bg-[#a855f7] bg-gradient-to-r text-white"
-                  : "self-start bg-gray-200 text-[#8a2be2]"
-              }`}
-            >
+            key={index}
+            className={`rounded-lg py-2 px-4 text-sm min-w-[55%] ${
+              message.senderUserId === user.id
+                ? "self-end bg-[#a855f7] bg-gradient-to-r text-white text-right"
+                : "self-start bg-gray-200 text-[#8a2be2] text-left"
+            }`}
+          >
+                    
               <p className="mb-1">{message.messageContent}</p>
               <small className={`text-xs ${
                 message.senderUserId === user.id
