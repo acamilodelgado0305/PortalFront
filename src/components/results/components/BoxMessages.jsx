@@ -14,19 +14,11 @@ function BoxMessages({ isOpen }) {
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState("");
   const [isChatOpened, setIsChatOpened] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); 
   const chatStandardSocket = useChatStandardSocket();
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    fetchGetChats();
-
-  }, [user.id]);
-
-  useEffect(()=>{},[chat])
-
-  const fetchGetChats = async () => {
-    setIsLoading(true); 
+   const fetchGetChats = async () => {
     try {
       const response = await getStandarMessageChatsByUser(user.id);
       if (response?.success) {
@@ -35,10 +27,14 @@ function BoxMessages({ isOpen }) {
       }
     } catch (error) {
       console.error("Error fetching chats:", error);
-    } finally {
-      setIsLoading(false); 
     }
   };
+  fetchGetChats()
+  }, []);
+
+  useEffect(()=>{},[chats])
+
+
 
   const openChat = (chat) => {
     setChat(chat);
@@ -49,57 +45,24 @@ function BoxMessages({ isOpen }) {
 
   return (
     <>
-      
-      {!isChatOpened && (
-        <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
-          <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
-          
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-[#8a2be2] border-t-transparent rounded-full" role="status">
-                <span className="sr-only text-[#8a2be2]">Loading...</span>
-              </div>
-            </div>
-          ) : (
-            chats.length > 0 ? (
-              chats.map((chat) => (
-                <div
-                  key={chat.chatIndex}
-                  className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
-                  onClick={() => openChat(chat)}
-                >
-                  <img
-                    src={chat.otherUserImage || "https://via.placeholder.com/50"}
-                    alt={chat.otherUserName}
-                    className="mr-4 h-12 w-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-bold text-black">{chat.otherUserName}</p>
-                    <p className="text-sm text-gray-500">{chat.lastMessage}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No chats available</p>
-            )
-          )}
-        </div>
-      )}
-      {isChatOpened && (
-        <ChatOpened
-          chat={chat}
-          user={user}
-          setIsChatOpened={setIsChatOpened}
-          setChat={setChat}
-          formatDate={formatDate}
-          messagesEndRef={messagesEndRef}
-          setMessage={setMessage}
-          message={message}
-          chatStandardSocket={chatStandardSocket}
-          fetchGetChats={fetchGetChats}
-        />
-      )}
-    </>
+    {!isChatOpened && (
+      <ChatList chats={chats} openChat={openChat}   />
+    )}
+    {isChatOpened && (
+      <ChatOpened
+        chat={chat}
+        user={user}
+        setIsChatOpened={setIsChatOpened}
+        setChat={setChat}
+        formatDate={formatDate}
+        messagesEndRef={messagesEndRef}
+        setMessage={setMessage}
+        message={message}
+        chatStandardSocket={chatStandardSocket}
+        setChats={setChats}
+      />
+    )}
+  </>
   );
 }
 
@@ -119,7 +82,7 @@ const ChatOpened = (props) => {
     message,
     setMessage,
     messagesEndRef,
-    fetchGetChats,
+    setChats,
   } = props;
 
   const scrollToBottom = () => {
@@ -137,7 +100,7 @@ const ChatOpened = (props) => {
     setChat(null);
   };
 
-  const handleSendMessage = async(e) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
     if (message.trim() === "") return;
 
@@ -155,12 +118,31 @@ const ChatOpened = (props) => {
       const updatedMessages = [...prevChat.messages, newMessage];
       return { ...prevChat,
          messages: updatedMessages,
-         lastMessage:newMessage };
+        lastMessage:newMessage };
     });
+    setChats((prevChats) => {
+      console.log("Estado anterior de chats:", prevChats);
 
+      const updatedChats = prevChats.map((chatItem) => {
+        if (chatItem.chatId === chat.chatId) {
+          return {
+            ...chatItem,
+            lastMessage: newMessage.messageContent,
+            updatedAt: newMessage.updatedAt,
+            messages: [...chatItem.messages, newMessage],
+          };
+        } else {
+          console.log("Sin cambios en chat:", chatItem); 
+          return chatItem;
+        }  
+      });
+    
+      console.log("Estado actualizado de chats:", updatedChats);
+      return updatedChats;
+    });
+    
     scrollToBottom();
     setMessage("");
-    await fetchGetChats();
   };
 
   return (
@@ -170,7 +152,6 @@ const ChatOpened = (props) => {
         chat={chat}
         setChat={setChat}
         scrollToBottom={scrollToBottom}
-        fetchGetChats={fetchGetChats}
       />
       <div className="mb-4 flex cursor-pointer flex-row gap-1 font-bold text-gray-600 transition-colors">
         <ArrowLeftOutlined className="hover:text-[#8a2be2]" onClick={closeChat} />
@@ -229,6 +210,45 @@ const ChatOpened = (props) => {
     </div>
   );
 };
+
+
+function ChatList({ chats, openChat }) {
+  useEffect(() => {
+  }, [openChat, chats]); // Eliminamos isLoading de las dependencias
+
+  return (
+    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
+      <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
+
+      {chats.length > 0 ? (
+        chats.map((conversation) => {
+                 
+          return (
+            <div
+              key={conversation.chatIndex}
+              className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
+              onClick={() => openChat(conversation)}
+            >
+              <img
+                src={conversation.otherUserImage || "https://via.placeholder.com/50"}
+                alt={conversation.otherUserName}
+                className="mr-4 h-12 w-12 rounded-full object-cover"
+              />
+              <div>
+                <p className="font-bold text-black">{conversation.otherUserName}</p>
+                <p className="text-sm text-gray-500">{conversation.lastMessage}</p>
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <p className="text-gray-500">No chats available</p>
+      )}
+    </div>
+  );
+}
+
+
 
 
 
