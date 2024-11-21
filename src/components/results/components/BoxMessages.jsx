@@ -8,32 +8,34 @@ import { formatDate, formattedChatInfo } from "../../../helpers";
 import { events } from "../../../enums/standardChatsEvents";
 
 
-function BoxMessages({ isOpen }) {
+function BoxMessages({ isOpen }) { 
   const { user } = useAuth();
   const [chats, setChats] = useState([]);
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState("");
   const [isChatOpened, setIsChatOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
   const chatStandardSocket = useChatStandardSocket();
   const messagesEndRef = useRef(null);
 
-useEffect(() => {
+  useEffect(() => {
     fetchGetChats();
-  }, [user.id]);
+  }, [user.id, chat]);
 
   const fetchGetChats = async () => {
-      try {
-        const response = await getStandarMessageChatsByUser(user.id);
-        if (response?.success) {
-          const formattedChats = formattedChatInfo(response.data);
-          setChats(formattedChats);
-        }
-      } catch (error) {
-        console.error("Error fetching chats:", error);
+    setIsLoading(true); 
+    try {
+      const response = await getStandarMessageChatsByUser(user.id);
+      if (response?.success) {
+        const formattedChats = formattedChatInfo(response.data);
+        setChats(formattedChats);
       }
-    };
-  
-
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+    } finally {
+      setIsLoading(false); 
+    }
+  };
 
   const openChat = (chat) => {
     setChat(chat);
@@ -48,26 +50,35 @@ useEffect(() => {
       {!isChatOpened && (
         <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
           <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
-          {chats.length > 0 ? (
-            chats.map((chat) => (
-              <div
-                key={chat.chatIndex}
-                className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
-                onClick={() => openChat(chat)}
-              >
-                <img
-                  src={chat.otherUserImage || "https://via.placeholder.com/50"}
-                  alt={chat.otherUserName}
-                  className="mr-4 h-12 w-12 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-bold text-black">{chat.otherUserName}</p>
-                  <p className="text-sm text-gray-500">{chat.lastMessage}</p>
-                </div>
+          
+          {isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-[#8a2be2] border-t-transparent rounded-full" role="status">
+                <span className="sr-only">Loading...</span>
               </div>
-            ))
+            </div>
           ) : (
-            <p className="text-gray-500">No chats available</p>
+            chats.length > 0 ? (
+              chats.map((chat) => (
+                <div
+                  key={chat.chatIndex}
+                  className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
+                  onClick={() => openChat(chat)}
+                >
+                  <img
+                    src={chat.otherUserImage || "https://via.placeholder.com/50"}
+                    alt={chat.otherUserName}
+                    className="mr-4 h-12 w-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold text-black">{chat.otherUserName}</p>
+                    <p className="text-sm text-gray-500">{chat.lastMessage}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No chats available</p>
+            )
           )}
         </div>
       )}
@@ -82,11 +93,14 @@ useEffect(() => {
           setMessage={setMessage}
           message={message}
           chatStandardSocket={chatStandardSocket}
+          fetchGetChats={fetchGetChats}
         />
       )}
     </>
   );
 }
+
+
 
 export default BoxMessages;
 
@@ -102,15 +116,15 @@ const ChatOpened = (props) => {
     message,
     setMessage,
     messagesEndRef,
+    fetchGetChats
   } = props;
 
   useEffect(() => {
-    // Al abrir el chat, emitimos un evento para que el servidor asocie este socket con este chat
-    if (chat.chatId) {
-      chatStandardSocket.emit(events.JOIN_CHAT, chat.chatId);  // Suponiendo que el servidor asocie este chatId con el socket
+      if (chat.chatId) {
+      chatStandardSocket.emit(events.JOIN_CHAT, chat.chatId);  
     }
 
-    // Escuchar mensajes solo de este chat
+   
     chatStandardSocket.on(events.RECEIVE_MESSAGE, (newMessage) => {
       if (newMessage.chatId === chat.chatId) {
         setChat((prevChat) => {
@@ -120,8 +134,6 @@ const ChatOpened = (props) => {
         scrollToBottom(); 
       }
     });
-
-    // Cleanup: al salir del chat, dejar de escuchar eventos
     return () => {
       chatStandardSocket.off(events.RECEIVE_MESSAGE);
       chatStandardSocket.emit(events.LEAVE_CHAT, chat.chatId);  
@@ -138,9 +150,10 @@ const ChatOpened = (props) => {
     }, 100);
   };
 
-  const closeChat = () => {
+  const closeChat = async() => {
     setIsChatOpened(false);
-    setChat(null);
+    setChat(null); 
+    await fetchGetChats();
   };
 
   const handleSendMessage = (e) => {
@@ -163,7 +176,7 @@ const ChatOpened = (props) => {
     });
 
     scrollToBottom(); 
-    setMessage("");  // Limpiar el campo de mensaje
+    setMessage("");
   };
 
   return (
