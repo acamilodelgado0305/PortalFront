@@ -46,6 +46,7 @@ function BoxMessages({ isOpen }) {
   return (
     <>
     {!isChatOpened && (
+      // hasta que no esten los chats que hay un loading
       <ChatList chats={chats} openChat={openChat}   />
     )}
     {isChatOpened && (
@@ -94,7 +95,7 @@ const ChatOpened = (props) => {
       }
     }, 100);
   };
-
+  scrollToBottom();
   const closeChat = async () => {
     setIsChatOpened(false);
     setChat(null);
@@ -120,27 +121,15 @@ const ChatOpened = (props) => {
          messages: updatedMessages,
         lastMessage:newMessage };
     });
-    setChats((prevChats) => {
-      console.log("Estado anterior de chats:", prevChats);
 
-      const updatedChats = prevChats.map((chatItem) => {
-        if (chatItem.chatId === chat.chatId) {
-          return {
-            ...chatItem,
-            lastMessage: newMessage.messageContent,
-            updatedAt: newMessage.updatedAt,
-            messages: [...chatItem.messages, newMessage],
-          };
-        } else {
-          console.log("Sin cambios en chat:", chatItem); 
-          return chatItem;
-        }  
-      });
-    
-      console.log("Estado actualizado de chats:", updatedChats);
-      return updatedChats;
+    setChats((prevChats) => {
+      return prevChats.map((chatItem) =>
+        chatItem.chatId === chat.chatId
+          ? { ...chatItem, lastMessage: newMessage.messageContent, updatedAt: newMessage.updatedAt,messages: [...chatItem.messages, newMessage] }
+          : chatItem
+      );
     });
-    
+  
     scrollToBottom();
     setMessage("");
   };
@@ -213,9 +202,6 @@ const ChatOpened = (props) => {
 
 
 function ChatList({ chats, openChat }) {
-  useEffect(() => {
-  }, [openChat, chats]); // Eliminamos isLoading de las dependencias
-
   return (
     <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
       <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
