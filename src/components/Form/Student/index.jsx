@@ -234,7 +234,7 @@ function FormStudent() {
     }
 
     return (
-      <div className="w-full">
+      <div className="w-full ">
         {showSuboptions ? (
           <>
             <div className="mb-4 flex items-center">
@@ -245,7 +245,7 @@ function FormStudent() {
                 Subopciones de {selectedOption.text}
               </h2>
             </div>
-            <div className="max-h-[45em] overflow-y-auto">
+            <div className="max-h-[45rem] overflow-y-auto">
               {showSuboptions.map((suboption, idx) => (
                 <button
                   key={idx}
@@ -285,14 +285,14 @@ function FormStudent() {
         ←
       </button>
 
-      <div className="flex h-screen items-center justify-center flex-col md:flex-row">
-        <div className="flex h-full w-1/2 items-center p-10 pl-20">
-          <h1 className="text-2xl md:text-7xl font-bold text-black  mt-[15vh] md:mt-0">
-            {currentQuestions[currentQuestionIndex].question}
+      <div className="flex md:h-screen items-center justify-center flex-col md:flex-row">
+        <div className="flex h-full md:w-1/2 items-center p-4 md:p-10 md:pl-20">
+          <h1 className="text-2xl md:text-7xl font-bold text-black  mt-[15vh] md:mt-0" >
+            {!showSuboptions ? currentQuestions[currentQuestionIndex].question : ''}
           </h1>
         </div>
 
-        <div className="flex h-[100vh] w-[89%] md:w-[50%] flex-col items-center justify-center bg-white p-10 shadow-lg">
+        <div className="flex md:h-[100vh] w-[89%] md:w-[50%] flex-col items-center justify-center bg-white p-10 shadow-lg">
           {renderProgressBar()}
           {renderQuestionContent()}
 
