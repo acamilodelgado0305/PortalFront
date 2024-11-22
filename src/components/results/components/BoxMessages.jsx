@@ -18,7 +18,20 @@ function BoxMessages({ isOpen }) {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-   const fetchGetChats = async () => {
+     window.addEventListener("sendMessage",fetchGetChats);
+     fetchGetChats();
+   return () => {
+     window.removeEventListener("sendMessage", fetchGetChats);
+  };
+  }, []);
+
+  useEffect(()=>{
+    fetchGetChats()
+  },[])
+
+  useEffect(()=>{},[chats])
+
+  const fetchGetChats = async () => {
     try {
       const response = await getStandarMessageChatsByUser(user.id);
       if (response?.success) {
@@ -29,12 +42,6 @@ function BoxMessages({ isOpen }) {
       console.error("Error fetching chats:", error);
     }
   };
-  fetchGetChats()
-  }, []);
-
-  useEffect(()=>{},[chats])
-
-
 
   const openChat = (chat) => {
     setChat(chat);
@@ -46,7 +53,6 @@ function BoxMessages({ isOpen }) {
   return (
     <>
     {!isChatOpened && (
-      // hasta que no esten los chats que hay un loading
       <ChatList chats={chats} openChat={openChat}   />
     )}
     {isChatOpened && (
@@ -71,6 +77,41 @@ function BoxMessages({ isOpen }) {
 
 export default BoxMessages;
 
+
+function ChatList({ chats, openChat }) {
+  useEffect(() => {
+ }, [chats]);
+  return (
+    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
+      <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
+
+      {chats.length > 0 ? (
+        chats.map((conversation) => {
+          console.log(JSON.stringify(conversation));
+          return (
+            <div
+              key={conversation.chatIndex}
+              className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
+              onClick={() => openChat(conversation)}
+            >
+              <img
+                src={conversation.otherUserImage || "https://via.placeholder.com/50"}
+                alt={conversation.otherUserName}
+                className="mr-4 h-12 w-12 rounded-full object-cover"
+              />
+              <div>
+                <p className="font-bold text-black">{conversation.otherUserName}</p>
+                <p className="text-sm text-gray-500">{conversation.lastMessage}</p>
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <p className="text-gray-500">No chats available</p>
+      )}
+    </div>
+  );
+}
 
 const ChatOpened = (props) => {
   const {
@@ -201,38 +242,7 @@ const ChatOpened = (props) => {
 };
 
 
-function ChatList({ chats, openChat }) {
-  return (
-    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
-      <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
 
-      {chats.length > 0 ? (
-        chats.map((conversation) => {
-                 
-          return (
-            <div
-              key={conversation.chatIndex}
-              className="mb-4 flex cursor-pointer items-center rounded-md bg-white p-2 shadow-md"
-              onClick={() => openChat(conversation)}
-            >
-              <img
-                src={conversation.otherUserImage || "https://via.placeholder.com/50"}
-                alt={conversation.otherUserName}
-                className="mr-4 h-12 w-12 rounded-full object-cover"
-              />
-              <div>
-                <p className="font-bold text-black">{conversation.otherUserName}</p>
-                <p className="text-sm text-gray-500">{conversation.lastMessage}</p>
-              </div>
-            </div>
-          );
-        })
-      ) : (
-        <p className="text-gray-500">No chats available</p>
-      )}
-    </div>
-  );
-}
 
 
 

@@ -26,7 +26,7 @@ function ChatSocketListener({ socket, chat, setChat, scrollToBottom, fetchGetCha
     };
   }, [chat, socket, setChat, scrollToBottom]);
 
-  return null; // Este componente no tiene representación visual.
+  return null;
 }
 
 export default ChatSocketListener;

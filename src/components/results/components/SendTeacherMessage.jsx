@@ -24,6 +24,9 @@ function SendTeacherMessage({ isOpen, onClose, teacher, user }) {
           text: "Tu mensaje fue enviado exitosamente.",
           confirmButtonColor: "#FF7AAC",
         });
+
+        const event = new Event("sendMessage");
+        window.dispatchEvent(event);
         setMessage("");
         onClose();
       } else {
@@ -102,4 +105,3 @@ function SendTeacherMessage({ isOpen, onClose, teacher, user }) {
 }
 
 export default SendTeacherMessage;
-// SendTeacherMessage
