@@ -79,15 +79,31 @@ export default BoxMessages;
 
 
 function ChatList({ chats, openChat }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeoutReached, setTimeoutReached] = useState(false);
+
   useEffect(() => {
- }, [chats]);
+    if (chats.length > 0) {
+      setIsLoading(false);
+    } else {
+      const timeout = setTimeout(() => {
+        setTimeoutReached(true);
+        setIsLoading(false);
+      }, 5000); 
+      return () => clearTimeout(timeout);
+    }
+  }, [chats]);
+
   return (
-    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-[#fff] p-4">
+    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-white p-4">
       <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
 
-      {chats.length > 0 ? (
+      {isLoading ? (
+        <div className="flex h-[400px] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></div>
+        </div>
+      ) : chats.length > 0 ? (
         chats.map((conversation) => {
-          console.log(JSON.stringify(conversation));
           return (
             <div
               key={conversation.chatIndex}
@@ -106,12 +122,13 @@ function ChatList({ chats, openChat }) {
             </div>
           );
         })
-      ) : (
+      ) : timeoutReached ? (
         <p className="text-gray-500">No chats available</p>
-      )}
+      ) : null}
     </div>
   );
 }
+
 
 const ChatOpened = (props) => {
   const {
