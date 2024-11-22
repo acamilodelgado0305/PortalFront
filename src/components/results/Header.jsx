@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { MessageCircle, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUser } from "react-icons/fi";
+import BoxMessages from './components/boxMessages'
 
 const Header = ({ title, showBack = true }) => {
     const navigate = useNavigate();
+    const [isBoxMessageOpen, setIsBoxMessageOpen] = useState(false);
+
+    const handleChangeInbox = ()=>{
+        setIsBoxMessageOpen(!isBoxMessageOpen)
+    }
 
     const handleBack = () => {
         navigate(-1);
@@ -35,9 +41,10 @@ const Header = ({ title, showBack = true }) => {
                         <button
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                             aria-label="Mensajes"
+                            onClick={handleChangeInbox}
                         >
                             <div className="relative">
-                                <svg
+                                <svg 
                                     className="h-8 w-8 text-purple-600"
                                     viewBox="0 0 29.3 29.3"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -100,6 +107,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
                 </div>
             </div>
+            <BoxMessages onClose={handleChangeInbox}  isOpen={isBoxMessageOpen} />
         </header>
     );
 };

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
 import CalendarModal from './components/calendar';
-import Filters from './components/Filters'; // Importa el componente de filtros
+import Filters from './components/Filters'; 
 import Header from './Header';
 import { readAllTeachers } from '../../services/teacher.services';
 import EditReservation from '../dashboard/editReservation'; // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
