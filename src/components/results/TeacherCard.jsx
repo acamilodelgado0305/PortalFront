@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { getFlagUrl } from "../../services/allcountries.js";
 import { Play, Send } from "lucide-react";
 import { ScheduleModal } from "./components/ScheduleModal.jsx";
 import ModalRegister from "./modalRegister.jsx";
 import { useAuth } from "../../Context/AuthContext.jsx";
 import { SendOutlined } from "@ant-design/icons";
-import StandardMessageModal from "./components/StandardMessageModal.jsx";
+import SendTeacherMessage from "./components/SendTeacherMessage.jsx";
 import IconoMensaje from '../../assets/icons/send.svg';
 
 
@@ -14,7 +14,8 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [verMas, setVerMas] = useState(false);
   const [showSendMessageModal, setShowSendMessageModal] = useState(false);
-  const { idToken, user } = useAuth();
+  const {idToken, user} = useAuth();
+
 
 
 
@@ -193,11 +194,11 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
       )}
 
       {showSendMessageModal && (
-        <StandardMessageModal
-          isOpen={showSendMessageModal}
-          onClose={() => { setShowSendMessageModal(false) }}
-          teacher={teacher}
-          user={user}
+        <SendTeacherMessage 
+        isOpen={showSendMessageModal}
+        onClose= {()=>{setShowSendMessageModal(false)}}
+        teacher={teacher}
+        user={user}
         />
       )}
     </div>

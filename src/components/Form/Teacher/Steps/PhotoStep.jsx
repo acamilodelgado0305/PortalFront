@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import  { useState, useCallback, useRef } from "react";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import { useDropzone } from "react-dropzone";

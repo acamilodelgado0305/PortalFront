@@ -25,11 +25,12 @@ const Login = ({ closeRegisterModal, setInicioSesion }) => {
                 },
                 body: JSON.stringify({ email, password })
             });
-
+            
             const data = await response.json();
 
             if (data.success) {
                 login(data.user, data.accessToken, data.idToken, data.refreshToken);
+                console.log('Usuario Logueado: '+JSON.stringify(data))
                 navigate('/dashboard');
             } else {
                 message.error('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
