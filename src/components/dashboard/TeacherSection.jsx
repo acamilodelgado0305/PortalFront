@@ -67,20 +67,23 @@ const TeachersSection = ({ onViewTeacher }) => {
         };
         fetchTeachers();
     }, []);
-
     useEffect(() => {
         console.log("Estado de activeFilters actualizado:", activeFilters);
+
+    }, [showInactive, activeFilters]);
+
+    useEffect(() => {
         applyFilters();
-    }, [teachers, showInactive, activeFilters]);
+    }, [teachers]);
 
     const applyFilters = () => {
         console.log("Función applyFilters llamada.");
         let filtered = [...teachers];
 
-        // Filtro por estado (activo/inactivo)
+        /* // Filtro por estado (activo/inactivo)
         filtered = filtered.filter((teacher) => teacher.status === !showInactive);
         console.log("Aplicando filtros", activeFilters);
-
+ */
         // Filtro por nombre completo
         if (activeFilters.fullName) {
             const searchTerm = activeFilters.fullName.toLowerCase();
