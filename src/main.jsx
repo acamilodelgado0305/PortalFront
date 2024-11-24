@@ -20,7 +20,7 @@ import TeacherDetail from "./components/dashboard/TeacherDetail";
 import "./index.css";
 import Dashboard from "./components/dashboard/dashboard";
 import WhiteBoardProvider from "./components/WhiteBoardDashBoard/components/WhiteBoard/WhiteBoardContext.jsx";
-
+import ChatStandardSocketProvider from "./components/results/ChatStandardSocketProvider.jsx"
 const router = createBrowserRouter([
   {
     path: "/",
@@ -70,13 +70,14 @@ const router = createBrowserRouter([
     element: <WhiteBoardDashBoard />,
   },
   {
-    path: "/teacher-details/:id", // Nueva ruta para los detalles del profesor
+    path: "/teacher-details/:id", 
     element: <TeacherDetail />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    <ChatStandardSocketProvider>
     <WhiteBoardSocketProvider>
       <WhiteBoardProvider>
         <AuthProvider>
@@ -84,5 +85,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </AuthProvider>
       </WhiteBoardProvider>
     </WhiteBoardSocketProvider>
+    </ChatStandardSocketProvider>
   </React.StrictMode>,
 );

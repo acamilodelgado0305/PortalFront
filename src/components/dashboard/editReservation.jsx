@@ -1,12 +1,9 @@
-import { CloseOutlined, ConsoleSqlOutlined, LeftOutlined, RightOutlined, SunOutlined } from "@ant-design/icons"
+import { CloseOutlined, LeftOutlined, RightOutlined, SunOutlined } from "@ant-design/icons"
 import { Button, message, Modal, Popconfirm } from "antd"
 import { useEffect, useState } from "react";
-import './WeeklyCalendar.css';
-import { useAuth } from "../../../Context/AuthContext";
-import Cookies from 'js-cookie';
-import Pay from "./pay";
-import { createClassReservations, getClassReservationCurrentById } from "../../../services/classReservation";
-import { ComputerIcon } from "lucide-react";
+import '../results/components/WeeklyCalendar.css';
+import { useAuth } from "../../Context/AuthContext";
+import { getClassReservationCurrentByIdStudent, updateClassReservation } from "../../services/classReservation";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const zonasHorarias = [
   { pais: "AR", zonaHoraria: "America/Argentina/Buenos_Aires", utc: -3 }, // Argentina
@@ -32,7 +29,7 @@ const zonasHorarias = [
 ];
 
 
-const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => {
+const EditReservation = ({ showCalendarModal, setShowCalendarModal, teacher, idReservation, studentId}) => {
 
   const success = (msg, type) => {
     message.open({ type, content: msg, style: { marginTop: "20vh" } });
@@ -46,12 +43,10 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
   const [timeSlots, setTimeSlots] = useState("");
   const [hourSelected, setHourSelected] = useState("");
   const [hourSelectedTeacher, setHourSelectedTeacher] = useState("");
-  const [classInterval, setClassInterval] = useState([]);
   const [mañana, setMañana] = useState([]);
   const [tarde, setTarde] = useState([]);
   const [horaReservada, setHoraReservada] = useState([]);
   const [weekDays, setWeekDays] = useState([]);
-  const [pay, setPay] = useState(false);
   const [calendarTeacher, setCalendarTeacher] = useState(
     [
       { name: 'Domingo', enable: teacher.Availability.Sunday.enabled, timeSlots: teacher.Availability.Sunday.timeSlots },
@@ -71,15 +66,14 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     return today;
   });
 
-  // funcion para optener las clases ya reservadas del profesor 
+  // funcion para optener las clases ya reservadas del estudiante 
   const claseReservada = async () => {
     try {
-      const response = await getClassReservationCurrentById(teacher.id);
+      const response = await getClassReservationCurrentByIdStudent(studentId, teacher.id);
       if (response.success) {
         setHoraReservada(response.data)
         return;
       }
-      console.log(response)
     } catch (error) {
       console.log(Error)
     }
@@ -107,7 +101,6 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     setStartOfWeek(newStartOfWeek);
   };
 
-
   // funciones para manejar horas 
   const getHourStudent = (date) => {
     const dateString = new Date(date);
@@ -127,7 +120,6 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
   
     
     const formattedTime = `${hours}:${minutes} ${period}`;
-    //console.log(formattedTime)
     return formattedTime
   }
   const getHourTeacher = (date) => {
@@ -171,48 +163,23 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     // agregar informacion a los datos 
     setDaySelected(date),
     setTimeSlots(timeSlots)
+    getCLass(timeSlots, date)
     claseReservada();
-    getHoursFormat(timeSlots, date)
 
   }
-   
-  // optener horas formateadas 
-  const getHoursFormat = (timeSlots, date) =>{
-    let allHours = [];
-    for (let i = 0; i < timeSlots.length; i++) {
-      const getHours = getCLass(timeSlots[i], date);
-      for (let i = 0; i < getHours.length; i++) {
-        allHours.push(getHours[i])
-      }
-    }
-     setMañana(allHours.filter((hora) => hora.hora.includes("AM")));
-     setTarde(allHours.filter((hora) => hora.hora.includes("PM")));
-     setClassInterval(allHours)
 
-  }
   const getCLass = (timeSlots, day) => {
-    console.log(timeSlots)
-    // unificacion de las horas 
-   /* let elements = [];
-    for (let i = 0; i < timeSlots.length; i++) {
-      elements.push(timeSlots[i].start)
-      elements.push(timeSlots[i].end)
-      
-    }
-    elements.sort((a, b) => new Date(a) - new Date(b));
-    console.log(elements)*/
-    const timeStart = timeSlots.start;
-    const timeEnd = timeSlots.end;
+    const timeStart = timeSlots[0].start;
+    const timeEnd = timeSlots[0].end;
     // optener tiempo de los estudiantes y mostrarlos en la interface
     const startMinutes = convertToMinutes(getHourStudent(timeStart))
     const endMinutes = convertToMinutes(getHourStudent(timeEnd));
     const allMminuts = Math.abs(startMinutes - endMinutes);
-    console.log(timeStart,timeEnd, startMinutes, endMinutes, allMminuts)
 
     // optener tiempo de los profesores
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart))
-    //const endMinutesTe = convertToMinutes(getHourTeacher(timeEnd));
-    //const allMminutsTe = Math.abs(startMinutesTe - endMinutesTe);
+    // const endMinutesTe = convertToMinutes(getHourTeacher(timeEnd));
+    //nconst allMminutsTe = Math.abs(startMinutesTe - endMinutesTe);
 
     const classDuration = 30;
     const array = [];
@@ -229,7 +196,8 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
       currentMinutesTeacher += interval; // incrementer la hora a teacher
       currentMinutes += interval; // Incrementar la hora por cada intervalo de 30 minutos
     }
-    return array;
+    setMañana(array.filter((hora) => hora.hora.includes("AM")));
+    setTarde(array.filter((hora) => hora.hora.includes("PM")));
   }
 
 
@@ -256,21 +224,18 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
       return;
     }
 
-    const dataReservation = {
-      studentId: user.id,
-      teacherId: teacher.id,
-      diaReserva: daySelected,
-      horaReserva: hourSelected,
+    const newDataReservation = {
       horaReservaProfesor: hourSelectedTeacher,
-      pay: false
+      diaReserva: daySelected,
+      horaReserva: hourSelected
     }
     resolve(null)
     try {
-      const response = await createClassReservations(dataReservation)
+      const response = await updateClassReservation(idReservation, newDataReservation)
       if (response.success) {
-        success("realiza el pago", "success");
-        setPay(true);
+        success("la reserva fue Reprogramada", "success");
         resolve(null);
+        setShowCalendarModal(false);
       }
 
     } catch (error) {
@@ -286,12 +251,11 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     setFecha(`${weekDays[0].toString().split(" ")[2]}-${weekDays[weekDays.length - 1].toString().split(" ")[2]}  ${weekDays[3].toString().split(" ")[1]} ${weekDays[3].toString().split(" ")[3]}`)
   }, [startOfWeek])
 
-  console.log(hourSelectedTeacher)
   return (
     <Modal
       title={
         <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-          {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
+          Reprograma tu clase 
         </div>
       } open={showCalendarModal}
       onCancel={() => setShowCalendarModal(false)}
@@ -302,25 +266,20 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
       centered
 
     >
-      {
-        pay ?
-          <Pay />
-          :
+      
+        
           <>
             <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">
-              <div className="md:w-10 w-24 rounded">
-                <img className="rounded md:w-14 w-20 h-14" src={teacher.profileImageUrl} alt="teacher" />
-              </div>
               <div>
-                <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
-                <p className="text-md font-sans">Para hablar de tus objetivos y plan de aprendizaje</p>
+                <p className="font-bold font-sans text-xl">Elige un nuevo dia y hora </p>
+                <p className="font-bold text-md font-light">Tu estudiante resivira la notificacion de la Reprogramacion de la clase </p>
               </div>
 
             </div>
             <div className="text-center">
               <div className="flex w-full justify-around">
                 <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
-                <p className="font-sans text-xl">{fecha}</p>
+                <p className="font-mono text-xl">{fecha}</p>
                 <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
               </div>
               <div className="week-days border-b p-3 text-xl">
@@ -336,10 +295,10 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                 })}
               </div>
               <div className="font-mono">
-                <div className="w-full flex justify-start text-md font-sans p-2 ">
+                <div className="w-full flex justify-start text-md font-light p-2 ">
                   {
                     daySelected ?
-                      <p>Horario disponible {mañana[0]?.hora || tarde[0]?.hora} hasta {classInterval[classInterval.length -1]?.hora || mañana[mañana.length -1]?.hora} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+                      <p>Horario disponible {getHourStudent(timeSlots[0]?.start)} hasta {getHourStudent(timeSlots[0]?.end)} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
                       :
                       <p>Elige un dia para reservar la clase</p>
 
@@ -349,9 +308,9 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                 <div className="border-b pb-2 overflow-y-scroll h-90">
 
                   <div>
-                    <div className="flex gap-2 m-2 font-sans font-bold">
+                    <div className="flex gap-2 m-2 font-bold">
                       <SunOutlined className="border-b-2 border-gray-400 text-xl" />
-                      <p className=" text-xl">Por la mañana</p>
+                      <p className="font-bold text-xl">Por la mañana</p>
                     </div>
                     <div className="flex gap-2 flex-wrap text-xl ">
 
@@ -369,12 +328,12 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                             )
                           })
                           :
-                          <p className="m-2 text-lg font-sans">clases no disponibles</p>
+                          <p className="m-2 text-lg">clases no disponibles</p>
                       }
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <div className="flex gap-2 m-2 font-sans font-bold  text-xl">
+                    <div className="flex gap-2 m-2 font-bold text-xl">
                       <SunOutlined />
                       <p>Despues de medio dia</p>
                     </div>
@@ -398,7 +357,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                 </div>
                 <Popconfirm
                   title="confirma tu reserva"
-                  description={`Reservaste una clase con el profesor ${teacher.firstName} 
+                  description={`Reprogramaste la clase
                       el dia ${daySelected.split("/")[0]} 
                       a las ${hourSelected}`}
                   onConfirm={confirm}
@@ -411,16 +370,16 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
                     type="primary"
                   >
-                    Continuar
+                    Reprogramar
                   </Button>
                 </Popconfirm>
               </div>
             </div>
           </>
-      }
+      
     </Modal>
   )
 }
 
 
-export default CalendarModal;
+export default EditReservation;
