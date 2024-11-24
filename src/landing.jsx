@@ -5,6 +5,7 @@ import Steps from "./components/Steps";
 import HowBranakWorks from "./components/HowBranakWorks";
 import Tutor from "./components/Tutor";
 import Subject from "./components/Subject";
+import Header from "./components/results/Header";
 
 import './landing.css'
 
@@ -13,31 +14,14 @@ const Landing = () => {
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Header fijo */}
-      <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between bg-[#7BD8FF] p-4">
-        <div></div>
-        <div>
-        <Link
-            to="/login"
-            className="mr-4 rounded bg-[#5CEFFF] px-4 py-2 text-black"
-          >
-            Iniciar Sessión
-          </Link>
-          <Link
-            to="/sigup"
-            className="rounded bg-[#FFFF45] px-4 py-2 text-black"
-          >     
-            Comenzar Gratis
-          </Link>
-        </div>
-      </header>
-
+      <Header/>
       {/* Main content */}
       <main className="mt-15.5 flex min-h-screen flex-col items-start justify-center">
 
-      <div
-      className="landing_background flex w-full flex-col items-start justify-center"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >     <div className="mt-20 p-20 text-start text-white">
+        <div
+          className="landing_background flex w-full flex-col items-start justify-center"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        >     <div className="mt-20 p-20 text-start text-white">
 
             <h1 className="mb-4 text-[3.1rem]  md:text-[4.1rem] font-bold">
               Elije un buen maestro en 5 minutos

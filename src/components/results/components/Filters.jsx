@@ -280,10 +280,12 @@ const Filters = ({
                         />
                     </div>
                     <FilterButton
+                    
                         label="Especialidades"
                         value={activeFilters.specialty}
                         filterKey="specialty"
                     />
+                    
 
                     <button
                         className={`bg-white text-2xl w-[10em] h-[2.5em] p-6 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''
