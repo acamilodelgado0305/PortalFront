@@ -1,4 +1,4 @@
-import { CloseOutlined, LeftOutlined, RightOutlined, SunOutlined } from "@ant-design/icons"
+import { CloseOutlined, ConsoleSqlOutlined, LeftOutlined, RightOutlined, SunOutlined } from "@ant-design/icons"
 import { Button, message, Modal, Popconfirm } from "antd"
 import { useEffect, useState } from "react";
 import './WeeklyCalendar.css';
@@ -171,18 +171,43 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     // agregar informacion a los datos 
     setDaySelected(date),
     setTimeSlots(timeSlots)
-    getCLass(timeSlots, date)
     claseReservada();
+    getHoursFormat(timeSlots, date)
 
   }
+   
+  // optener horas formateadas 
+  const getHoursFormat = (timeSlots, date) =>{
+    let allHours = [];
+    for (let i = 0; i < timeSlots.length; i++) {
+      const getHours = getCLass(timeSlots[i], date);
+      for (let i = 0; i < getHours.length; i++) {
+        allHours.push(getHours[i])
+      }
+    }
+     setMañana(allHours.filter((hora) => hora.hora.includes("AM")));
+     setTarde(allHours.filter((hora) => hora.hora.includes("PM")));
+     setClassInterval(allHours)
 
+  }
   const getCLass = (timeSlots, day) => {
-    const timeStart = timeSlots[0].start;
-    const timeEnd = timeSlots[0].end;
+    console.log(timeSlots)
+    // unificacion de las horas 
+   /* let elements = [];
+    for (let i = 0; i < timeSlots.length; i++) {
+      elements.push(timeSlots[i].start)
+      elements.push(timeSlots[i].end)
+      
+    }
+    elements.sort((a, b) => new Date(a) - new Date(b));
+    console.log(elements)*/
+    const timeStart = timeSlots.start;
+    const timeEnd = timeSlots.end;
     // optener tiempo de los estudiantes y mostrarlos en la interface
     const startMinutes = convertToMinutes(getHourStudent(timeStart))
     const endMinutes = convertToMinutes(getHourStudent(timeEnd));
     const allMminuts = Math.abs(startMinutes - endMinutes);
+    console.log(timeStart,timeEnd, startMinutes, endMinutes, allMminuts)
 
     // optener tiempo de los profesores
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart))
@@ -204,10 +229,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
       currentMinutesTeacher += interval; // incrementer la hora a teacher
       currentMinutes += interval; // Incrementar la hora por cada intervalo de 30 minutos
     }
-    setMañana(array.filter((hora) => hora.hora.includes("AM")));
-    setTarde(array.filter((hora) => hora.hora.includes("PM")));
-    setClassInterval(array)
-
+    return array;
   }
 
 
@@ -286,8 +308,8 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
           :
           <>
             <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">
-              <div className="w-10 rounded">
-                <img className="rounded w-14 h-14" src={teacher.profileImageUrl} alt="teacher" />
+              <div className="md:w-10 w-24 rounded">
+                <img className="rounded md:w-14 w-20 h-14" src={teacher.profileImageUrl} alt="teacher" />
               </div>
               <div>
                 <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
@@ -317,7 +339,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
                 <div className="w-full flex justify-start text-md font-sans p-2 ">
                   {
                     daySelected ?
-                      <p>Horario disponible {getHourStudent(timeSlots[0]?.start)} hasta {getHourStudent(timeSlots[0]?.end)} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+                      <p>Horario disponible {mañana[0]?.hora || tarde[0]?.hora} hasta {classInterval[classInterval.length -1]?.hora || mañana[mañana.length -1]?.hora} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
                       :
                       <p>Elige un dia para reservar la clase</p>
 

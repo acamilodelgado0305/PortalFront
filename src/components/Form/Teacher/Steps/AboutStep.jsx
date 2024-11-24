@@ -187,8 +187,10 @@ const AboutStep = ({ onChange, setIsVerified }) => {
             className="rounded-md border-2 border-black text-lg"
             size="large"
           >
-            <Option value="math">Mathematics</Option>
-            <Option value="science">Science</Option>
+            <Option value="math">Matematicas</Option>
+            <Option value="science">ciencia</Option>
+            <Option value="ingles">ingles</Option>
+            <Option value="español">español</Option>
           </Select>
         </Form.Item>
 
