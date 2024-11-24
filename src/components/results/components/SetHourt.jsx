@@ -21,7 +21,7 @@ const SetHourt = ({ showCalendarModal, setShowCalendarModal, onFilterSelect }) =
 
     const timeBlocks = {
         "Día": [
-            { label: "9:00 Am -12", icon: <SunOutlined />, key: "morning", start: 9, end: 12 },
+            { label: "9-12", icon: <SunOutlined />, key: "morning", start: 9, end: 12 },
             { label: "12-15", icon: <SunOutlined />, key: "midday", start: 12, end: 15 },
             { label: "15-18", icon: <SunOutlined />, key: "afternoon", start: 15, end: 18 }
         ],
