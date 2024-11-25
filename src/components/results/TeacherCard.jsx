@@ -87,7 +87,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                 {/*------------------------*/}
 
 
-                <div className="mb-3 flex items-start gap-2 text-2xl text-gray-600">
+                <div className="mb-3 flex items-start gap-2 text-base md:text-2xl text-gray-600">
                   <div className="flex flex-col items-start">
                     <span className="block">{teacher.activeStudents || 3} estudiantes activos</span>
                     <span className="block">{teacher.lessonsGiven || 162} lecciones</span>
@@ -100,7 +100,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
 
               </div>
 
-              <div className="lg:text-right">
+              <div className="absolute top-[20px] right-[36px] md:static lg:text-right">
                 <p className="font-semibold text-3xl">
                   <p>US</p>
                   <p className="">{formatPrice(teacher.hourlyRate)}</p>
@@ -116,7 +116,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                 onClick={() => { !idToken ? setShowRegisterModal(true) : setShowCalendarModal(true), setSelectedTeacher(teacher) }}
                 className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
               >
-                Reservar una clase de prueba
+               <span className="hidden sm:inline">Reservar una </span>Clase de prueba
               </button>
               <button
                 onClick={() => {
@@ -136,8 +136,8 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
         </div>
       </div>
 
-      <div className="absolute left-[30%] md:top-0 top-[-3em] z-10 ml-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:left-full">
-        <div className="md:h-[21.8em] md:w-[27em] h-[15em] w-[15em]  border !border-purple-600 border-2 border-black bg-white p-3 shadow-lg ">
+      <div className="absolute left-[0px] md:left-[30%] md:top-0 top-[-3em] z-10 ml-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100 lg:left-full">
+        <div className="md:h-[21.8em] md:w-[27em] h-[20em] w-[20em]  border !border-purple-600 border-2 border-black bg-white p-3 shadow-lg ">
           <div
             className={`relative h-[15em] w-full rounded-lg bg-gray-100 ${teacher.video ? "cursor-pointer" : ""} overflow-hidden`}
             onClick={() => teacher.video && onVideoClick(teacher.video)}
