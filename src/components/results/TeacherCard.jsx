@@ -33,8 +33,8 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
   };
 
   return (
-    <div className="group relative md:w-9/12 ">
-      <div className=" md:w-[50%]  border border-gray-300 bg-white p-6 shadow-sm transition-all duration-200 hover:border-purple-600 border-2 hover:shadow-md  lg:w-[100%]">
+    <div className="group relative lg:w-9/12 ">
+      <div className="border border-gray-300 bg-white p-6 shadow-sm transition-all duration-200 hover:border-purple-600 border-2 hover:shadow-md w-[100%]">
         <div className="flex gap-6 flex-col md:flex-row ">
           <div>
             <img
@@ -47,7 +47,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
             />
           </div>
 
-          <div className="md:w-[50%] w-[100%]  flex-1 lg:w-[100%]">
+          <div className=" w-[100%]  flex-1">
             <div className="flex items-start justify-between  w-full">
 
               <div className={verMas?"w-full":`w-full h-[37vh] overflow-hidden`}>
@@ -111,7 +111,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
 
             <p onClick={() => setVerMas(!verMas)} className="underline cursor-pointer hover:text-blue-300 md:mb-0 mb-32">{!verMas?"ver mas":"ver menos"}</p>
 
-            <div className="flex w-[100%] md:flex-col gap-3 text-right lg:items-end lg:justify-end mt-[-6em]">
+            <div className="flex w-[100%] md:flex-col gap-3 text-right lg:items-end lg:justify-end mt-[-6em] md:mt-[0]     lg:mt-[-6em]">
               <button
                 onClick={() => { !idToken ? setShowRegisterModal(true) : setShowCalendarModal(true), setSelectedTeacher(teacher) }}
                 className="w-[12em] bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
