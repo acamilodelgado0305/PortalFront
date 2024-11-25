@@ -252,9 +252,9 @@ const Results = () => {
         />
       </div >
 
-      <span className="flex items-center justify-center  text-black text-5xl text-bold">
+      <p className="pt-10 flex items-center justify-center  text-black text-5xl text-bold">
         Profesores particulares online: Prueba una clase
-      </span>
+      </p>
 
 
 
@@ -290,7 +290,7 @@ const Results = () => {
             {filteredTeachers.length} profesores disponibles para ajustarse a tus necesidades
           </h2>
 
-          <div className="space-y-6 w-[70em]">
+          <div className="space-y-6">
             {filteredTeachers.map((teacher) => (
               <TeacherCard
                 key={teacher.id}

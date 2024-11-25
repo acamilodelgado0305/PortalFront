@@ -93,7 +93,7 @@ const Filters = ({
     const FilterButton = ({ label, value, filterKey }) => (
         <div className="relative inline-block" ref={(el) => (filterRefs.current[filterKey] = el)}>
             <button
-                className="bg-white text-2xl p-6 w-[10em] h-[2.5em] font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-purple-600 rounded-xl"
+                className="bg-white md:text-2xl text-sm p-6 md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-purple-600 rounded-xl"
                 onClick={() =>
                     setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
                 }
@@ -202,8 +202,8 @@ const Filters = ({
                 `}
             </style>
 
-            <div className="grid grid-cols-3 gap-8">
-                <div className="col-span-2 flex flex-wrap gap-4 w-[70em]">
+            <div className="grid grid-cols-1 gap-8 w-full ">
+                <div className="md:col-span-2 md:flex md:flex-wrap grid grid-cols-2 md:flex-row jus gap-3 justify-items-center w-full">
 
 
                     <FilterButton
@@ -214,13 +214,13 @@ const Filters = ({
 
                     <div className="relative inline-block" ref={(el) => (filterRefs.current.priceRange = el)}>
                         <button
-                            className="bg-white w-[10em] h-[2.5em] text-2xl p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
+                            className="bg-white md:w-[15em] w-[11em] md:h-[4.3em] h-[2.9em] text-2xl text-sm p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
                             onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
                         >
-                            <div className="text-sm text-purple-600 mr-44 mt-[-0.8em]">
+                            <div className="text-xs text-purple-600 md:mr-40 mr-24 mt-[-0.5em] md:mt-[-0.8em]">
                                 Precio
                             </div>
-                            <span className="text-2xl text-purple-600" style={{ marginTop: '-8px', textAlign: 'left' }}>
+                            <span className="md:text-2xl text-sm text-purple-600" style={{ marginTop: '-8px', textAlign: 'left' }}>
                                 USD ${priceRange.min} - ${priceRange.max}
                             </span>
                         </button>
@@ -270,23 +270,25 @@ const Filters = ({
                         filterKey="country"
                     />
                     {/* Input interactivo de Disponibilidad */}
-                    <div className="relative inline-block w-[15em]">
+                    <div className="relative inline-block md:w-[15em] w-[11em] text-sm">
                         <input
                             type="text"
                             readOnly
                             onClick={() => setShowCalendarModal(true)}
                             value={renderAvailabilityText()}
-                            className="w-full border-2 text-2xl font-medium border-purple-600 rounded-xl px-4 py-3 text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full border-2 md:text-2xl  font-medium border-purple-600 rounded-xl md:h-[2.5em] h-[2.9em] text-center text-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                     </div>
                     <FilterButton
+                    
                         label="Especialidades"
                         value={activeFilters.specialty}
                         filterKey="specialty"
                     />
+                    
 
                     <button
-                        className={`bg-white text-2xl w-[10em] h-[2.5em] p-6 font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''
+                        className={`bg-white md:text-2xl text-sm  md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''
                             }`}
                         onClick={() => setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))}
                     >
@@ -294,7 +296,7 @@ const Filters = ({
                     </button>
                 </div>
 
-                <div className="col-span-1 space-y-4 pl-[7em]">
+                <div className="col-span-1  md:space-y-4 md:pl-[7em]">
                     <div className="relative w-[11em]">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
                         <input
