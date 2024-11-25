@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, User, LogOut, HelpCircle, Globe, DollarSign } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import BoxMessages from '../StandardMessages/BoxMessages';
 const ICON_SIZE = 28; // Tamaño estandarizado para todos los iconos
 
 // Traducciones
@@ -39,6 +39,7 @@ const Header = ({ title, showBack = true }) => {
     const [currentCurrency, setCurrentCurrency] = useState('COP');
     const [showLanguageMenu, setShowLanguageMenu] = useState(false);
     const [showCurrencyMenu, setShowCurrencyMenu] = useState(false);
+    const [isOpenMessageBox, setIsOpenMessageBox] = useState(false);
 
     const t = (key) => translations[currentLanguage]?.[key] || translations['en'][key];
 
@@ -104,6 +105,11 @@ const Header = ({ title, showBack = true }) => {
         setCurrentCurrency(currencyCode);
         setShowCurrencyMenu(false);
     };
+
+    const toggleStandardMessagesBox = () =>{
+        setIsOpenMessageBox(!isOpenMessageBox)
+    }
+
 
     return (
         <div className="border-b border-gray-200 shadow-sm">
@@ -193,6 +199,7 @@ const Header = ({ title, showBack = true }) => {
                                     <button
                                         className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                                         aria-label={t('messages')}
+                                        onClick={toggleStandardMessagesBox }
                                     >
                                         <MessageCircle size={ICON_SIZE} className="text-purple-600" strokeWidth={1.5} />
                                     </button>
@@ -235,6 +242,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
                 </div>
             </header>
+          {isAuthenticated &&  <BoxMessages onClose={toggleStandardMessagesBox} isOpen={isOpenMessageBox}/> }
         </div>
     );
 };

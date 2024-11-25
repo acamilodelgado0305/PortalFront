@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { events } from "../../../enums/standardChatsEvents";
+import { events } from "../../enums/standardChatsEvents";
 
 function ChatSocketListener({ socket, chat, setChat, scrollToBottom, fetchGetChats }) {
   useEffect(() => {

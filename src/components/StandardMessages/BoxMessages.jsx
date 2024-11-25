@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { getStandarMessageChatsByUser } from "../../../services/standardMessages.services";
-import { useAuth } from "../../../Context/AuthContext";
+import { getStandarMessageChatsByUser } from "../../services/standardMessages.services.js";
+import { useAuth } from "../../Context/AuthContext.jsx";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { useChatStandardSocket } from "../ChatStandardSocketProvider";
+import { useChatStandardSocket } from "../results/ChatStandardSocketProvider.jsx";
+import { formatDate, formattedChatInfo } from "../../helpers";
+import { events } from "../../enums/standardChatsEvents.js";
 import ChatSocketListener from "./ChatSocketListener";
-import { formatDate, formattedChatInfo } from "../../../helpers";
-import { events } from "../../../enums/standardChatsEvents";
-
 
 function BoxMessages({ isOpen }) { 
   const { user } = useAuth();
@@ -95,7 +94,7 @@ function ChatList({ chats, openChat }) {
   }, [chats]);
 
   return (
-    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-white p-4">
+    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-white p-4 z-[999999]">
       <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
 
       {isLoading ? (
@@ -193,7 +192,7 @@ const ChatOpened = (props) => {
   };
 
   return (
-    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg">
+    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg z-[999999]">
       <ChatSocketListener
         socket={chatStandardSocket}
         chat={chat}
