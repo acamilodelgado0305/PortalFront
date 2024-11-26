@@ -30,3 +30,4 @@ Thumbs.db
 # Lockfiles
 package-lock.json
 yarn.lock
+.vscode/

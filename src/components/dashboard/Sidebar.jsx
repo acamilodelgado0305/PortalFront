@@ -1,19 +1,37 @@
 import React, { useState } from 'react';
 import { FaChalkboardTeacher, FaChartBar, FaCalendarAlt, FaUserFriends, FaWallet, FaLink, FaLifeRing, FaGift, FaChevronLeft, FaChevronRight, FaGraduationCap } from 'react-icons/fa';
+import { useAuth } from '../../Context/AuthContext';  // Asegúrate de importar el contexto
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const { user } = useAuth(); // Trae el rol del usuario desde el contexto
 
-    const menuItems = [
-        { icon: FaChartBar, text: "Dashbord", id: "dashboard" },
-        { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
+    // Los items comunes del menú
+    const commonMenuItems = [
         { icon: FaUserFriends, text: "My Students", id: "students" },
         { icon: FaCalendarAlt, text: "Calendar", id: "calendar" },
-        { icon: FaLink, text: "Workspaces", id: "workspaces" },
-        { icon: FaWallet, text: "Earnings", id: "earnings" },
-        { icon: FaLifeRing, text: "Support", id: "support" },
-        { icon: FaGift, text: "Earn $154.244 and more", id: "rewards" }
+        { icon: FaGift, text: "Payments", id: "rewards" },
     ];
+
+    // Los items específicos para 'teacher' y 'admin'
+    const teacherMenuItems = [
+        { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
+        { icon: FaLifeRing, text: "Support", id: "support" }
+    ];
+
+    // Los items del menú según el rol
+    let menuItems = commonMenuItems;
+
+    if (user.role === 'teacher') {
+        menuItems = [...menuItems, ...teacherMenuItems]; // Agrega los items específicos para el profesor
+    }
+    // Si el rol es admin, puedes agregar los items correspondientes (opcional)
+    if (user.role === 'admin') {
+        menuItems = [
+            { icon: FaChartBar, text: "Dashboard", id: "dashboard" },
+            ...menuItems // El admin ve todos los items
+        ];
+    }
 
     return (
         <div
