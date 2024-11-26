@@ -17,7 +17,7 @@ const subjects = [
 
 const Subject = () => {
   return (
-    <div className="bg-white h-auto w-full">
+    <div className="bg-white h-auto w-full pb-[10vh]">
       <div className="max-w-screen-lg mx-auto ">
 
       <div className="text-center mb-8 ">
@@ -29,7 +29,7 @@ const Subject = () => {
 
       <div className="text-center mt-8">
         <a href="#"
-           className="text-blue-600 underline flex items-center justify-center"
+           className="text-blue-300 underline flex items-center justify-center"
         >
           Ver todas las asignaturas <span className="ml-1">⬇️</span>
         </a>

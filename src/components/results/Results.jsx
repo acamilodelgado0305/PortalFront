@@ -252,8 +252,16 @@ const Results = () => {
         />
       </div >
 
-      <p className="pt-10 flex items-center justify-center text-center text-black text-3xl md:text-5xl text-bold ">
-        Profesores particulares online: Prueba una clase
+      <p className="py-10 flex items-center justify-center text-center text-[#525252] text-3xl md:text-5xl text-bold p-2">
+          <div className="mb-6">
+              <button
+                onClick={handleBack}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 lg:absolute left-5 top-[100px] "
+                aria-label="Regresar"
+              >
+                <ArrowLeft size={24} className="text-gray-600" />
+              </button>
+            </div>  Profesores particulares online: Prueba una clase
       </p>
 
 
@@ -263,15 +271,7 @@ const Results = () => {
 
         <div className="bg-white border-b">
           <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center mb-6">
-              <button
-                onClick={handleBack}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
-                aria-label="Regresar"
-              >
-                <ArrowLeft size={24} className="text-gray-600" />
-              </button>
-            </div>
+        
 
             {/* Incluir el componente Filters */}
             <Filters

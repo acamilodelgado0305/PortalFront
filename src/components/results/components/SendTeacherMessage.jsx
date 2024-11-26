@@ -6,7 +6,7 @@ function SendTeacherMessage({ isOpen, onClose, teacher, user }) {
   const [message, setMessage] = useState("");
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    const teacherId = teacher.cognitoId ? teacher.cognitoId : teacher.id;
+    const teacherId = teacher.id ? teacher.id : teacher.cognitoId;
 
     const data = {
       userId: user.id,
