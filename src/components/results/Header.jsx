@@ -60,7 +60,7 @@ const Header = ({ title, showBack = true }) => {
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         setIsAuthenticated(!!token);
-        detectUserLocation();
+       detectUserLocation(); 
     }, []);
 
     const detectUserLocation = async () => {
@@ -69,12 +69,14 @@ const Header = ({ title, showBack = true }) => {
             const data = await response.json();
             
             const languageMap = {
+                'AR':'es',
                 'CO': 'es',
                 'US': 'en',
                 'BR': 'pt',
             };
             
             const currencyMap = {
+                'AR':'ARS',
                 'CO': 'COP',
                 'US': 'USD',
                 'BR': 'BRL',
