@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, User, LogOut, HelpCircle, Globe, DollarSign } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import BoxMessages from '../StandardMessages/BoxMessages';
 const ICON_SIZE = 28; // Tamaño estandarizado para todos los iconos
 
 // Traducciones
@@ -39,6 +39,7 @@ const Header = ({ title, showBack = true }) => {
     const [currentCurrency, setCurrentCurrency] = useState('COP');
     const [showLanguageMenu, setShowLanguageMenu] = useState(false);
     const [showCurrencyMenu, setShowCurrencyMenu] = useState(false);
+    const [isOpenMessageBox, setIsOpenMessageBox] = useState(false);
 
     const t = (key) => translations[currentLanguage]?.[key] || translations['en'][key];
 
@@ -105,15 +106,20 @@ const Header = ({ title, showBack = true }) => {
         setShowCurrencyMenu(false);
     };
 
+    const toggleStandardMessagesBox = () =>{
+        setIsOpenMessageBox(!isOpenMessageBox)
+    }
+
+
     return (
         <div className="border-b border-gray-200 shadow-sm">
             <header className="bg-white sticky top-0 z-50">
-                <div className="w-full px-4">
+                <div className="w-full px-1 md:px-4">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo y título */}
                         <div className="flex items-center justify-between w-full">
                             <Link to="/" className="flex items-center">
-                                <h1 className="text-purple-600 text-4xl font-semibold">Esturio</h1>
+                                <h1 className="text-purple-600 text-xl md:text-4xl font-semibold">Esturio</h1>
                             </Link>
                             <div className="pt-8 w-full flex items-end justify-center">
                                 {title && (
@@ -125,16 +131,16 @@ const Header = ({ title, showBack = true }) => {
                         </div>
 
                         {/* Navigation Icons and Settings */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center md:gap-4">
                             {/* Language Selector */}
                             <div className="relative">
                                 <button
                                     onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
+                                    className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
                                     aria-label={t('language')}
                                 >
-                                    <Globe size={ICON_SIZE} className="text-purple-600" strokeWidth={1.5} />
-                                    <span className="text-sm font-medium text-gray-600">{currentLanguage.toUpperCase()}</span>
+                                    <Globe size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5}/>
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">{currentLanguage.toUpperCase()}</span>
                                 </button>
 
                                 {showLanguageMenu && (
@@ -156,11 +162,11 @@ const Header = ({ title, showBack = true }) => {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowCurrencyMenu(!showCurrencyMenu)}
-                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
+                                    className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
                                     aria-label="currency"
                                 >
-                                    <DollarSign size={ICON_SIZE} className="text-purple-600" strokeWidth={1.5} />
-                                    <span className="text-sm font-medium text-gray-600">{currentCurrency}</span>
+                                    <DollarSign size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5} />
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">{currentCurrency}</span>
                                 </button>
 
                                 {showCurrencyMenu && (
@@ -181,37 +187,38 @@ const Header = ({ title, showBack = true }) => {
                             {/* Help Button */}
                             <Link
                                 to="/help"
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                                className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                                 aria-label={t('help')}
                             >
-                                <HelpCircle size={ICON_SIZE} className="text-purple-600" strokeWidth={1.5} />
+                                <HelpCircle size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5} />
                             </Link>
 
                             {isAuthenticated ? (
                                 <>
                                     {/* Mensajes Button */}
                                     <button
-                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                                        className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                                         aria-label={t('messages')}
+                                        onClick={toggleStandardMessagesBox }
                                     >
-                                        <MessageCircle size={ICON_SIZE} className="text-purple-600" strokeWidth={1.5} />
+                                        <MessageCircle size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5} />
                                     </button>
 
                                     {/* User Profile */}
                                     <button
-                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                                        className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                                         aria-label={t('profile')}
                                     >
-                                        <User size={ICON_SIZE} className="text-purple-600" strokeWidth={1.5} />
+                                        <User size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5} />
                                     </button>
 
                                     {/* Logout Button */}
                                     <button
                                         onClick={handleLogout}
-                                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 text-purple-600"
+                                        className="flex items-center gap-2 px-1 md:px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors duration-200 text-purple-600"
                                         aria-label={t('logout')}
                                     >
-                                        <LogOut size={ICON_SIZE} strokeWidth={1.5} />
+                                        <LogOut className='w-[22px] md:w-max' size={ICON_SIZE} strokeWidth={1.5} />
                                         <span className="font-medium">{t('logout')}</span>
                                     </button>
                                 </>
@@ -219,13 +226,13 @@ const Header = ({ title, showBack = true }) => {
                                 <>
                                     <Link
                                         to="/login"
-                                        className="w-[8em] px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                                        className="w-max md:w-[8em] px-2 md:px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
                                     >
                                         {t('login')}
                                     </Link>
                                     <Link
                                         to="/register"
-                                        className="px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors duration-200"
+                                        className="w-max px-2 md:px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors duration-200"
                                     >
                                         {t('register')}
                                     </Link>
@@ -235,6 +242,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
                 </div>
             </header>
+          {isAuthenticated &&  <BoxMessages onClose={toggleStandardMessagesBox} isOpen={isOpenMessageBox}/> }
         </div>
     );
 };

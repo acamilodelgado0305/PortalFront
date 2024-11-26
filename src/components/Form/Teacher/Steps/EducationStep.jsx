@@ -29,16 +29,16 @@ const EducationStep = ({ onChange, setIsVerified }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Education</h2>
-      <p className="mb-6 text-xl text-gray-600 text-center">
+    <div className="max-w-3xl mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">Education</h2>
+      <p className="mb-6 text-lg md:text-xl text-gray-600 text-center">
         Tell students more about the higher education that you've completed or are working on.
       </p>
 
       <Form form={form} layout="vertical">
         <Form.Item className="mb-8">
           <Checkbox
-            className="text-xl"
+            className="text-lg md:text-xl"
             checked={!hasHigherEducation}
             onChange={handleCheckboxChange}
           >
@@ -66,7 +66,7 @@ const EducationStep = ({ onChange, setIsVerified }) => {
               icon={<PlusOutlined />}
               onClick={addEducation}
               block
-              className="text-xl p-4"
+              className="text-lg md:text-xl p-4"
             >
               Add another education
             </Button>

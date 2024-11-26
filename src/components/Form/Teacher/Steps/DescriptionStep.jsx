@@ -75,7 +75,7 @@ const ProfileDescriptionStep = ({ onChange, setIsVerified }) => {
 
   return (
     <div className="mx-auto max-w-lg p-6">
-      <Title level={2}>Profile description</Title>
+      <h1 className="text-2xl md:text-3xl font-bold">Profile description</h1>
       <Paragraph>
         This info will go on your public profile. Write it in the language
         you'll be teaching and make sure to follow our{" "}
@@ -87,7 +87,7 @@ const ProfileDescriptionStep = ({ onChange, setIsVerified }) => {
       <Form form={form} layout="vertical">
         {stepsContent.slice(0, step + 1).map((item, index) => (
           <div key={index}>
-            <Title level={3}>{item.title}</Title>
+            <Title level={window.innerWidth < 640 ? 4 : 3} className="py-2 md:py-0">{item.title}</Title>
             {index === step && item.description && (
               <Paragraph>{item.description}</Paragraph>
             )}

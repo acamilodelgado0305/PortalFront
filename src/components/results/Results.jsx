@@ -252,7 +252,7 @@ const Results = () => {
         />
       </div >
 
-      <p className="pt-10 flex items-center justify-center  text-black text-5xl text-bold">
+      <p className="pt-10 flex items-center justify-center text-center text-black text-3xl md:text-5xl text-bold ">
         Profesores particulares online: Prueba una clase
       </p>
 

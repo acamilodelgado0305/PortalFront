@@ -11,6 +11,7 @@ const VideoPreview = ({ urlPreview, setUrlPreview }) => (
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen
       title="YouTube video"
+      className="w-[100%] md:w-[600px] h-[340px]  "
     ></iframe>
     <Button onClick={() => setUrlPreview("")} style={{ marginTop: "10px" }}>
       Cancel

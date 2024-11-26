@@ -137,11 +137,11 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
   };
 
   return (
-    <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-6 text-center text-3xl font-bold text-gray-800">
+    <div className="mx-auto max-w-3xl rounded-lg bg-white p-4 md:p-6 shadow-md">
+      <h2 className="mb-6 text-center text-2xl md:text-3xl font-bold text-gray-800">
         Teaching Certification
       </h2>
-      <p className="mb-6 text-center text-xl text-gray-600">
+      <p className="mb-6 text-center text-lg md:text-xl text-gray-600">
         Do you have teaching certificates? If so, describe them to enhance your
         profile credibility and get more students.
       </p>
@@ -149,7 +149,7 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
       <Form form={form} layout="vertical">
         <Form.Item className="mb-8">
           <Checkbox
-            className="text-xl"
+            className="text-lg md:text-xl"
             checked={!hasCertificate}
             onChange={(e) => {
               e.preventDefault();
@@ -269,7 +269,7 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
                   label={<span className="text-lg">Years of study</span>}
                   required
                 >
-                  <Input.Group compact>
+                  <Input.Group className="gap-2 flex">
                     <Form.Item
                       name={["certificates", index, "studyStart"]}
                       noStyle
@@ -374,7 +374,7 @@ const CertificationStep = ({ onChange, setIsVerified }) => {
             </Button>
 
             <div className="mb-6 rounded-md bg-blue-100 p-4">
-              <p className="text-lg text-blue-800">
+              <p className="text-base md:text-lg text-blue-800">
                 Only authentic documents will be accepted. Any false information
                 can result in the disapproval or suspension of your account.
               </p>

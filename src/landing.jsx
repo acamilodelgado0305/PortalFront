@@ -18,10 +18,11 @@ const Landing = () => {
       {/* Main content */}
       <main className="mt-15.5 flex min-h-screen flex-col items-start justify-center">
 
-        <div
-          className="landing_background flex w-full flex-col items-start justify-center"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        >     <div className="mt-20 p-20 text-start text-white">
+      <div
+      className="landing_background flex w-full flex-col items-start justify-center"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >     <div className="mt-20 p-10 md:p-20 text-start text-white">
+
 
             <h1 className="mb-4 text-[3.1rem]  md:text-[4.1rem] font-bold">
               Elije un buen maestro en 5 minutos

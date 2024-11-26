@@ -5,7 +5,7 @@ const { Option } = Select;
 
 const StudyPeriod = ({ index, logChange }) => (
   <Form.Item label={<span className="text-lg">Years of study</span>} required>
-    <Input.Group compact>
+    <Input.Group  className="gap-2 flex">
       <Form.Item
         name={['education', index, 'study', 'start']}
         noStyle
