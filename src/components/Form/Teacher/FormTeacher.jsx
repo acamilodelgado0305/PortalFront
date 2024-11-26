@@ -145,7 +145,7 @@ if(isVerified) {
         icon={
           <div className={`
             w-8 h-8 rounded-full flex items-center justify-center
-            ${index < currentStep ? 'bg-green-500' : index === currentStep ? 'bg-[#FFFF45]' : 'bg-gray-300'}
+            ${index < currentStep ? 'bg-green-500' : index === currentStep ? 'bg-[#256CCF]' : 'bg-gray-300'}
             transition-all duration-300 ease-in-out
           `}>
             {index < currentStep ? (
