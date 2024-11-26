@@ -8,6 +8,7 @@ import TeacherDetail from './TeacherDetail';
 import Calendar from "./Calendar";
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Header from '../results/Header';
 
 const Dashboard = () => {
     const [activeSection, setActiveSection] = useState('teachers');
@@ -29,7 +30,11 @@ const Dashboard = () => {
         <div className="flex min-h-screen">
             <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
             <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
-                <div className="flex items-center justify-between px-8 py-4">
+                <div>
+                    <Header
+                    />
+                </div >
+                {/* <div className="flex items-center justify-between px-8 py-4">
                     <div className="flex items-center space-x-6">
                         <div className="flex items-center space-x-2 cursor-pointer hover:text-gray-700">
                             <MessageCircle size={20} />
@@ -46,7 +51,7 @@ const Dashboard = () => {
                         <span>Salir</span>
                     </div>
                 </div>
-
+ */}
 
                 <div className="flex-1 p-8">
                     {activeSection === 'dashboard' && <Index />}
