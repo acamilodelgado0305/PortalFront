@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle, HeadphonesIcon, LogOut } from 'lucide-react';
 import Sidebar from './Sidebar';
 import Index from "./index";
@@ -13,10 +13,21 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../results/Header';
 
 const Dashboard = () => {
-    const [activeSection, setActiveSection] = useState('teachers');
+    const [activeSection, setActiveSection] = useState('');
     const [selectedTeacherId, setSelectedTeacherId] = useState(null);
     const { user } = useAuth(); // Trae los datos del usuario
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Establece la sección activa según el rol del usuario cuando se monta el componente
+        if (user.role === 'admin') {
+            setActiveSection('dashboard');  // Para admin, la vista inicial es el dashboard principal
+        } else if (user.role === 'teacher') {
+            setActiveSection('teachers');  // Para profesor, se carga la sección de profesores
+        } else if (user.role === 'student') {
+            setActiveSection('students');  // Para estudiante, se carga la sección de estudiantes
+        }
+    }, [user.role]);  // Re-ejecuta cada vez que cambia el rol del usuario
 
     const handleViewTeacher = (teacherId) => {
         setSelectedTeacherId(teacherId);
