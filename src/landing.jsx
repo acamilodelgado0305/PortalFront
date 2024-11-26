@@ -21,10 +21,10 @@ const Landing = () => {
       <div
       className="landing_background flex w-full flex-col items-start justify-center"
       style={{ backgroundImage: `url(${backgroundImage})` }}
-    >     <div className="mt-20 p-10 md:p-20 text-start text-white">
+    >     <div className="mt-[5vh] md:mt-20 px-10 md:p-10 md:p-20 text-start text-white">
 
 
-            <h1 className="mb-4 text-[3.1rem]  md:text-[4.1rem] font-bold">
+            <h1 className="mb-4 text-[3.0rem]  md:text-[4.1rem] font-bold">
               Elije un buen maestro en 5 minutos
             </h1>
             <p className="text-white-300 mb-6 text-[26px]">El contacto es gratuito</p>
@@ -44,8 +44,7 @@ const Landing = () => {
               </Link>
             </div>
           </div>
-
-          <div className="flex h-[18em] w-full items-center md:items-end justify-end">
+          <div className="flex lg: md:h-[9vh] h-[18em] w-full items-center md:items-end justify-end md:px-[10vh]">
             <div className="mr-12">
               <Link to="/form">
                 <button className="w-full h-[47px] rounded-2xl bg-purple-500 px-6 py-2 text-white text-[1.3rem]  ">
