@@ -234,7 +234,7 @@ function FormStudent() {
     }
 
     return (
-      <div className="w-full">
+      <div className="w-full ">
         {showSuboptions ? (
           <>
             <div className="mb-4 flex items-center">
@@ -245,7 +245,7 @@ function FormStudent() {
                 Subopciones de {selectedOption.text}
               </h2>
             </div>
-            <div className="max-h-[45em] overflow-y-auto">
+            <div className="max-h-[45rem] overflow-y-auto">
               {showSuboptions.map((suboption, idx) => (
                 <button
                   key={idx}
@@ -280,19 +280,20 @@ function FormStudent() {
     <div className="bg-white-400 flex min-h-screen flex-col justify-center">
       <button
         onClick={() => navigate(-1)}
-        className="text-purple absolute left-20 top-20 bg-transparent text-5xl font-bold"
+        className="text-purple absolute left-20 top-[10vh] md:top-20 bg-transparent text-5xl font-bold"
       >
-        ←
+            {window.innerWidth < 707 ? ((!showSuboptions) ?  '←' :' ') : ('←') }
       </button>
 
-      <div className="flex h-screen items-center justify-center">
-        <div className="flex h-full w-1/2 items-center p-10 pl-20">
-          <h1 className="text-7xl font-bold text-black">
-            {currentQuestions[currentQuestionIndex].question}
+      <div className="flex md:h-screen items-center justify-center flex-col md:flex-row">
+        <div className="flex h-full md:w-1/2 items-center p-4 md:p-10 md:pl-20">
+          <h1 className="text-2xl md:text-7xl font-bold text-black  mt-[15vh] md:mt-0" >
+            {window.innerWidth < 707 ? ((!showSuboptions) ? currentQuestions[currentQuestionIndex].question : '')   : (currentQuestions[currentQuestionIndex].question)}
+
           </h1>
         </div>
 
-        <div className="flex h-[100vh] w-[50%] flex-col items-center justify-center bg-white p-10 shadow-lg">
+        <div className="flex md:h-[100vh] w-[89%] md:w-[50%] flex-col items-center justify-center bg-white p-10 shadow-lg">
           {renderProgressBar()}
           {renderQuestionContent()}
 

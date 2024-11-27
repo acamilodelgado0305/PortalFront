@@ -31,7 +31,7 @@ const TeacherBanner = () => {
             </p>
 
             {/* Botón dentro del Link */}
-            <button className="bg-blue-800 text-white text-2xl md:text-3xl p-7 px-10 rounded-md shadow-md hover:bg-blue-600">
+            <button className="bg-blue-800 text-white text-2xl p-4 md:p-7 px-10 rounded-md shadow-md hover:bg-blue-600">
               Regístrate {!isWideScreen && "como profesor/a particular"}
             </button>
           </div>
