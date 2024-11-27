@@ -228,13 +228,13 @@ const Header = ({ title, showBack = true }) => {
                                 <>
                                     <Link
                                         to="/login"
-                                        className="w-max md:w-[8em] px-2 md:px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                                        className="w-max md:w-[8em] px-1 md:px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
                                     >
                                         {t('login')}
                                     </Link>
                                     <Link
                                         to="/register"
-                                        className="w-max px-2 md:px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors duration-200"
+                                        className="w-max px-1 md:px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors duration-200"
                                     >
                                         {t('register')}
                                     </Link>

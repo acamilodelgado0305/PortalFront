@@ -8,6 +8,8 @@ import GoogleLogo from '../../../assets/icons/icons8-logo-de-google.svg';
 import { useNavigate } from 'react-router-dom';
 
 const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
+  const [name, setName] = useState("");
+  const [lastName, setLastName ] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -125,7 +127,25 @@ const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
         <div className="text-center text-gray-500 mb-4">o</div>
 
         {!receiveCode ? (
-          <form onSubmit={handleRegister}>
+          <form onSubmit={handleRegister}>     
+          <div className="mb-4 flex gap-2">
+              <input
+                className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
+                type="email"
+                placeholder="Nombre"
+                value={email}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+                    <input
+                className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
+                type="email"
+                placeholder="Apellido"
+                value={email}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
             <div className="mb-4">
               <input
                 className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
@@ -136,6 +156,7 @@ const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
                 required
               />
             </div>
+       
             <div className="mb-4 relative">
               <input
                 className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
