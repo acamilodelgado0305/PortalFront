@@ -43,7 +43,7 @@ const Dashboard = () => {
                     <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
                         <Header />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full">
                         {activeSection === 'dashboard' && <Index />}
                         {activeSection === 'students' && <StudentsSection />}
                         {activeSection === 'teachers' && <TeachersSection onViewTeacher={handleViewTeacher} />}
@@ -66,7 +66,7 @@ const Dashboard = () => {
                     <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
                         <Header />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full">
                         {activeSection === 'teachers' && <TeacherDashboard />} {/* Solo muestra TeacherDashboard */}
                         {activeSection === 'calendar' && <Calendar />}
                     </div>
@@ -84,7 +84,7 @@ const Dashboard = () => {
                     <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
                         <Header />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-full">
                         {activeSection === 'students' && <StudentDashboard />} {/* Solo muestra StudentDashboard */}
                         {activeSection === 'calendar' && <Calendar />}
                     </div>
