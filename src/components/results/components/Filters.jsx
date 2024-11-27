@@ -67,7 +67,7 @@ const Filters = ({
         return (
             <div
                 ref={(el) => (filterRefs.current[filterKey] = el)}
-                className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20"
+                className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20 w-[100%]"
             >
                 <div className="p-4">
                     <h3 className="font-semibold mb-3">{title}</h3>
@@ -93,7 +93,7 @@ const Filters = ({
     const FilterButton = ({ label, value, filterKey }) => (
         <div className="relative inline-block" ref={(el) => (filterRefs.current[filterKey] = el)}>
             <button
-                className="bg-white md:text-2xl text-sm p-6 md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center space-x-3 border-2 border-purple-600 rounded-xl"
+                className="bg-white md:text-2xl text-sm p-6 md:w-[10em] md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] font-medium  py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center border-2 border-purple-600 rounded-xl flex justify-between "
                 onClick={() =>
                     setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
                 }
@@ -220,7 +220,7 @@ const Filters = ({
                             <div className="text-xs text-purple-600 md:mr-40 mr-24 mt-[-0.5em] md:mt-[-0.8em]">
                                 Precio
                             </div>
-                            <span className="md:text-2xl text-sm text-purple-600" style={{ marginTop: '-8px', textAlign: 'left' }}>
+                            <span className="md:text-2xl text-sm text-purple-600" style={{ marginTop: '-4px', textAlign: 'left' }}>
                                 USD ${priceRange.min} - ${priceRange.max}
                             </span>
                         </button>
@@ -296,7 +296,7 @@ const Filters = ({
                     </button>
                 </div>
 
-                <div className="col-span-1  md:space-y-4 md:pl-[7em]">
+                <div className="col-span-1  md:space-y-4 ">
                     <div className="relative w-[11em]">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
                         <input
@@ -304,7 +304,7 @@ const Filters = ({
                             placeholder="Buscar por nombre"
                             value={activeFilters.fullName || ''}
                             onChange={handleNameChange}
-                            className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-3 text-2xl text-400 placeholder:text-purple-600"
+                            className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-1 md:py-3 text-xl md:text-2xl text-400 placeholder:text-purple-600"
                         />
                     </div>
 

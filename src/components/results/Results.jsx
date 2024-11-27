@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import TeacherCard from './TeacherCard';
 import ModalRegister from './modalRegister';
 import CalendarModal from './components/calendar';
-import Filters from './components/Filters'; 
+import Filters from './components/Filters';
 import Header from './Header';
 import { readAllTeachers } from '../../services/teacher.services';
 import EditReservation from '../dashboard/editReservation'; // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
 import { useAuth } from '../../Context/AuthContext'; // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
 
 const Results = () => {
-   const {user} = useAuth(); // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
+  const { user } = useAuth(); // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
 
   const [teachers, setTeachers] = useState([]);
   const [filteredTeachers, setFilteredTeachers] = useState([]);
@@ -252,8 +252,16 @@ const Results = () => {
         />
       </div >
 
-      <p className="pt-10 flex items-center justify-center  text-black text-5xl text-bold">
-        Profesores particulares online: Prueba una clase
+      <p className="py-10 flex items-center justify-center text-center text-[#525252] text-3xl md:text-5xl text-bold p-2">
+          <div className="mb-6">
+              <button
+                onClick={handleBack}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 lg:absolute left-5 top-[100px] "
+                aria-label="Regresar"
+              >
+                <ArrowLeft size={24} className="text-gray-600" />
+              </button>
+            </div>  Profesores particulares online: Prueba una clase
       </p>
 
 
@@ -263,15 +271,7 @@ const Results = () => {
 
         <div className="bg-white border-b">
           <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center mb-6">
-              <button
-                onClick={handleBack}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 mr-4"
-                aria-label="Regresar"
-              >
-                <ArrowLeft size={24} className="text-gray-600" />
-              </button>
-            </div>
+        
 
             {/* Incluir el componente Filters */}
             <Filters
@@ -327,9 +327,9 @@ const Results = () => {
       {
         showCalendarModal
         &&
-         //  este componente comentado se utiliza para realizar la reprogramacion de la de la reserva del estudiante por parte del profesor
-         //<EditReservation teacher={selectedTeacher} setShowCalendarModal={setShowCalendarModal} idReservation={"9fc0b056-f8fa-4021-876b-eb07c26ccd8b"} studentId={user.id}/>
-         
+        //  este componente comentado se utiliza para realizar la reprogramacion de la de la reserva del estudiante por parte del profesor
+        //<EditReservation teacher={selectedTeacher} setShowCalendarModal={setShowCalendarModal} idReservation={"9fc0b056-f8fa-4021-876b-eb07c26ccd8b"} studentId={user.id}/>
+
         <CalendarModal teacher={selectedTeacher} setShowCalendarModal={setShowCalendarModal} showCalendarModal={showCalendarModal} />
 
       }
