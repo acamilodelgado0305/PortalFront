@@ -63,14 +63,22 @@ const router = createBrowserRouter([
   },
   {
     path: "/results",
-    element: <Results />,
+    element: (
+      <ProtectedRoute>
+        <Results />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/whiteboard/:room",
-    element: <WhiteBoardDashBoard />,
+    element: (
+      <ProtectedRoute>
+        <WhiteBoardDashBoard />
+      </ProtectedRoute>
+    ),
   },
   {
-    path: "/teacher-details/:id", 
+    path: "/teacher-details/:id",
     element: <TeacherDetail />,
   },
 ]);
@@ -78,13 +86,13 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ChatStandardSocketProvider>
-    <WhiteBoardSocketProvider>
-      <WhiteBoardProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </WhiteBoardProvider>
-    </WhiteBoardSocketProvider>
+      <WhiteBoardSocketProvider>
+        <WhiteBoardProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </WhiteBoardProvider>
+      </WhiteBoardSocketProvider>
     </ChatStandardSocketProvider>
   </React.StrictMode>,
 );
