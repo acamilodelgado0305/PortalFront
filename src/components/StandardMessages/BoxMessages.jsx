@@ -32,9 +32,7 @@ function BoxMessages({ isOpen }) {
 
   const fetchGetChats = async () => {
     try {
-      console.log(JSON.stringify(user))
-      const id = user.role == "teacher" ? user.roleId : user.id;
-      const response = await getStandarMessageChatsByUser(id);
+      const response = await getStandarMessageChatsByUser(user.id);
       console.log('User Id ' +user.id)
       if (response?.success) {
         const formattedChats = formattedChatInfo(response.data);

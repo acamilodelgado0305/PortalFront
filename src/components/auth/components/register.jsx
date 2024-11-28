@@ -53,7 +53,7 @@ const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
 
     setLoading(true);
     try {
-      const response = await createStudentCognito({ email, password, role: "student" });
+      const response = await createStudentCognito({ email, password, role: "student", name, lastName });
       if (response.success) {
         setReceiveCode(true);
         success("Revisa tu correo para confirmar tu registro", "success");
@@ -131,17 +131,17 @@ const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
           <div className="mb-4 flex gap-2">
               <input
                 className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
-                type="email"
+                type="name"
                 placeholder="Nombre"
-                value={email}
+                value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
               />
                     <input
                 className="w-full p-2 border-2 border-black rounded-lg focus:outline-none text-center"
-                type="email"
+                type="lastName"
                 placeholder="Apellido"
-                value={email}
+                value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
               />
