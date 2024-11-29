@@ -1,10 +1,3 @@
-/*
-
-
-router.get("/studentId/:studentId", classController.getClassesByStudentIdHandler);
-
-*/
-
 import { backApi } from "./utils";
 
 const createClass = async (data) =>{
