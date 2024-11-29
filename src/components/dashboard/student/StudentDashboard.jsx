@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'antd';  // Usamos el Button de Ant Design
 import { Card } from '@mui/material';  // Usamos el Card de Material UI
 import { Link } from 'react-router-dom';  // Para los enlaces
+import { FormRegister } from './components/formRegister';
+import { useAuth } from '../../../Context/AuthContext';
+import { getStudentById } from '../../../services/studendent.services';
+import { data } from 'autoprefixer';
+
 
 const professors = [
     { id: 1, name: 'Dr. Juan Pérez', subject: 'Matemáticas' },
@@ -11,12 +16,38 @@ const professors = [
 
 const StudentDashboard = () => {
     const [activeSection, setActiveSection] = useState('students');
+    const [isRegister, setIsRegister] = useState(true);
+    const [showModalRegister, setShowModalRegister] = useState(false);
+    const [studentRegis, setStudentRegis] = useState("");
+    
+    const {user} = useAuth();
 
+    const getStudent = async () => {
+        try {
+            const student = await getStudentById(user.id);
+            if (student.success) {
+                setIsRegister(student.success)
+                setStudentRegis(student.data)
+            }else {
+                setIsRegister(student.success)
+            }
+        } catch (error) {
+            console.log(error)
+            if (error.response.data) {
+                setIsRegister(error.response.data.success);
+                return;
+            }
+        }
+    }
+    useEffect(() => {
+    getStudent();
+    },[])
     return (
         <div className="flex min-h-screen flex-col bg-gray-50">
             {/* Encabezado */}
-            <div className="w-full sticky top-0 bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md">
-                <h1 className="text-3xl font-semibold text-center">Bienvenido su Perfil Estudiantil</h1>
+            <div className="w-full relative sticky top-0 bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md">
+                <img className='rounded-full w-10 absolute top-0 left-[-20px]' src={studentRegis.url} alt="" />
+                <h1 className="text-3xl font-semibold text-center">{`Bienvenido ${studentRegis?studentRegis.nombre: ""} a su Perfil Estudiantil`}</h1>
             </div>
 
             {/* Contenido principal */}
@@ -28,6 +59,15 @@ const StudentDashboard = () => {
                             Ir a la Pizarra
                         </Button>
                     </Link>
+                    {
+                     !isRegister 
+                     && 
+                     <Button
+                     onClick={() => setShowModalRegister(true)}
+                      className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-600 transition-all ml-9">
+                       Continuar con el registro
+                     </Button>
+                    }
                 </div>
 
                 {/* Sección de profesores */}
@@ -55,6 +95,11 @@ const StudentDashboard = () => {
                     {/* Agregar calendario o tareas según sea necesario */}
                 </div>
             </div>
+                    {
+                        showModalRegister?
+                        <FormRegister getStudent={getStudent} setIsRegister={setIsRegister} user={user} setShowModal={setShowModalRegister} showModal={showModalRegister} />
+                        :null
+                    }
         </div>
     );
 };
