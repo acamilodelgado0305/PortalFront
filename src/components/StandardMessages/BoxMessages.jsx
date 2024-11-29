@@ -26,19 +26,16 @@ function BoxMessages({ isOpen }) {
 
   useEffect(()=>{
     fetchGetChats()
-  },[])
+  },[user.id])
 
   useEffect(()=>{},[chats])
 
   const fetchGetChats = async () => {
     try {
       const response = await getStandarMessageChatsByUser(user.id);
-      console.log('User Id ' +user.id)
       if (response?.success) {
         const formattedChats = formattedChatInfo(response.data);
-        console.error('RESPUESTA DEL SERVIDOR')
         console.log(JSON.stringify(response.data));
-        console.error('FORMATEADO: ');
         console.log(JSON.stringify(formattedChats))
         setChats(formattedChats);
       }
