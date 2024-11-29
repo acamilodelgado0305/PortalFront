@@ -6,8 +6,8 @@ import Flag from 'react-world-flags';
 
 const TeachersSection = ({ onViewTeacher }) => {
     const [teachers, setTeachers] = useState([]); // Todos los profesores
-    const [filteredActiveTeachers, setFilteredActiveTeachers] = useState([]); // Profesores activos filtrados
-    const [filteredInactiveTeachers, setFilteredInactiveTeachers] = useState([]); // Profesores inactivos filtrados
+    const [filteredActiveTeachers, setFilteredActiveTeachers] = useState([]);
+    const [filteredInactiveTeachers, setFilteredInactiveTeachers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -26,22 +26,56 @@ const TeachersSection = ({ onViewTeacher }) => {
         isNative: false,
     });
 
+    const fetchTeachers = async () => {
+        try {
+            const response = await fetch('https://back.app.esturio.com/api/teachers');
+            const data = await response.json();
+            setTeachers(data.data); // Todos los profesores
+            setFilteredActiveTeachers(data.data.filter((teacher) => teacher.status === true));
+            setFilteredInactiveTeachers(data.data.filter((teacher) => teacher.status === false));
+            setLoading(false);
+        } catch (err) {
+            setError('Error al cargar los profesores');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchTeachers = async () => {
-            try {
-                const response = await fetch('https://back.app.esturio.com/api/teachers');
-                const data = await response.json();
-                setTeachers(data.data); // Todos los profesores
-                setFilteredActiveTeachers(data.data.filter((teacher) => teacher.status === true));
-                setFilteredInactiveTeachers(data.data.filter((teacher) => teacher.status === false));
-                setLoading(false);
-            } catch (err) {
-                setError('Error al cargar los profesores');
-                setLoading(false);
-            }
-        };
         fetchTeachers();
     }, []);
+
+    const showApprovalModal = (teacher) => {
+        setSelectedTeacher(teacher);
+        setApprovalModalVisible(true);
+    };
+    // Función para aprobar al profesor después de que el usuario confirme
+    const approveTeacher = async () => {
+        const teacher = selectedTeacher;
+
+        console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
+
+        // Llamada PUT al backend para actualizar el estado de aprobación
+        const response = await fetch(`https://back.app.esturio.com/api/teachers/${teacher.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                status: true,
+            }),
+        });
+
+        if (response.ok) {
+
+            fetchTeachers();
+
+
+            setApprovalModalVisible(false);
+        } else {
+            console.error('Error al aprobar al profesor');
+            setApprovalModalVisible(false);
+        }
+    };
 
     useEffect(() => {
         applyFilters();
@@ -105,27 +139,7 @@ const TeachersSection = ({ onViewTeacher }) => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
-    const approveTeacher = async (teacher) => {
-        console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
 
-        // Llamada PUT al backend para actualizar el estado de aprobación
-        const response = await fetch(`https://back.app.esturio.com/api/teachers/${teacher.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                status: true,  // Cambiar el estado a aprobado
-            }),
-        });
-
-        if (response.ok) {
-            // Mostrar el modal de aprobación exitosa
-            setApprovalModalVisible(true);
-        } else {
-            console.error('Error al aprobar al profesor');
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
@@ -249,7 +263,7 @@ const TeachersSection = ({ onViewTeacher }) => {
                                 </button>
                                 <button
                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                    onClick={() => approveTeacher(teacher)}
+                                    onClick={() => showApprovalModal(teacher)}
                                 >
                                     <FaCheckCircle className="text-green-500" size={20} />
                                 </button>
@@ -259,9 +273,9 @@ const TeachersSection = ({ onViewTeacher }) => {
                 ))}
             </div>
             <Modal
-                title="Aprobar Profesor"
+                title="Confirmar Aprobación"
                 visible={approvalModalVisible}
-                onOk={() => setApprovalModalVisible(false)}
+                onOk={approveTeacher}
                 onCancel={() => setApprovalModalVisible(false)}
                 okText="Aceptar"
                 cancelText="Cancelar"
