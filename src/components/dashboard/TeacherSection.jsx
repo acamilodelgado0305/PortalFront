@@ -104,9 +104,27 @@ const TeachersSection = ({ onViewTeacher }) => {
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
-    const approveTeacher = (teacher) => {
+
+    const approveTeacher = async (teacher) => {
         console.log(`Profesor ${teacher.firstName} ${teacher.lastName} aprobado`);
-        setApprovalModalVisible(true);
+
+        // Llamada PUT al backend para actualizar el estado de aprobación
+        const response = await fetch(`https://back.app.esturio.com/api/teachers/${teacher.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                status: true,  // Cambiar el estado a aprobado
+            }),
+        });
+
+        if (response.ok) {
+            // Mostrar el modal de aprobación exitosa
+            setApprovalModalVisible(true);
+        } else {
+            console.error('Error al aprobar al profesor');
+        }
     };
 
     return (
