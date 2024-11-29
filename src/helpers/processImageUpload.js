@@ -16,6 +16,22 @@ export const uploadImageToS3 = async (formData, setFormData) => {
     } 
   }
 };
+export const uploadImageStudent = async (profileImageUrl) => {
+  if (!profileImageUrl) {
+    return "carga una imagen para continuar"
+     }
+
+    const imageUrl = profileImageUrl;
+
+    if (typeof imageUrl !== 'string' && !imageUrl.startsWith('data:image/')) {
+      return " el formato es incorrecto"
+    } 
+    const fileName = 'uploaded-image'; 
+      const file = convertBase64ToFile(imageUrl, fileName);
+      const uploadedImageUrl = await uploadFile(file, file.type);
+      return uploadedImageUrl;
+  
+};
 
   
   export const convertBase64ToFile = (dataUrl, fileName) => {
