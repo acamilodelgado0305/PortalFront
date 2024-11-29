@@ -35,7 +35,7 @@ const TeacherDashboard = () => {
             <div className="flex-1 p-8 space-y-6">
                 {/* Botón para ir a la pizarra */}
                 <div className="flex justify-center">
-                    <Link to="/pizarra">
+                    <Link to="/whiteboard/:room">
                         <Button className="bg-purple-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-purple-700 transition-all">
                             Ir a la Pizarra
                         </Button>
