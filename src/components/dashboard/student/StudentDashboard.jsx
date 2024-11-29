@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { Button, Modal, Input, Upload, message } from 'antd';  // Usamos Ant Design para el modal
-import { useAuth } from '../../../Context/AuthContext';
+import { useEffect, useState } from 'react';
+import { Button } from 'antd';  // Usamos el Button de Ant Design
 import { Card } from '@mui/material';  // Usamos el Card de Material UI
 import { Link } from 'react-router-dom';  // Para los enlaces
+import { FormRegister } from './components/formRegister';
+import { useAuth } from '../../../Context/AuthContext';
+import { getStudentById } from '../../../services/studendent.services';
+import { data } from 'autoprefixer';
+import { Modal, Input, Upload, message } from 'antd';  // Usamos Ant Design para el modal
 import { UserOutlined, CameraOutlined } from '@ant-design/icons';  // Íconos de Ant Design
 
 const professors = [
@@ -20,35 +24,35 @@ const studentData = {
 
 const StudentDashboard = () => {
     const [activeSection, setActiveSection] = useState('students');
-    const [isModalVisible, setIsModalVisible] = useState(false);  // Estado para manejar la visibilidad del modal
+    const [isRegister, setIsRegister] = useState(true);
+    const [showModalRegister, setShowModalRegister] = useState(false);
+    const [studentRegis, setStudentRegis] = useState("");
+    
     const [userName, setUserName] = useState('');  // Estado para el nombre del usuario
-    const [profilePicture, setProfilePicture] = useState(null);  // Estado para la foto de perfil
     const { user, accessToken } = useAuth();  // Obtener los datos del usuario desde el contexto
 
-    // Función para manejar el formulario de registro
-    const handleRegister = () => {
-        const data = {
-            userName,
-            email: user?.email,  // Email ya precargado desde el contexto
-            profilePicture,
-        };
-
-        // Simulación de envío de datos (esto debe enviarse a tu API o servidor)
-        console.log(data);
-        message.success('Registro completado exitosamente');
-        setIsModalVisible(false);
-    };
-
-    // Función para manejar la carga de la foto de perfil
-    const handleUploadChange = ({ file }) => {
-        if (file.status === 'done') {
-            message.success('Foto de perfil cargada');
-            setProfilePicture(file.originFileObj);
-        } else if (file.status === 'error') {
-            message.error('Error al cargar la foto');
+    // funcion para optener el usuario con toda la informacion
+    const getStudent = async () => {
+        try {
+            const student = await getStudentById(user.id);
+            if (student.success) {
+                setIsRegister(student.success)
+                setStudentRegis(student.data)
+            }else {
+                setIsRegister(student.success)
+            }
+        } catch (error) {
+            console.log(error)
+            if (error.response.data) {
+                setIsRegister(error.response.data.success);
+                return;
+            }
         }
-    };
-
+    }
+    useEffect(() => {
+    getStudent();
+    },[])
+    console.log(studentRegis)
     return (
         <div className="flex min-h-screen flex-col bg-gray-50 max-w-full mx-auto">
             {/* Encabezado */}
@@ -68,71 +72,19 @@ const StudentDashboard = () => {
                             </Button>
                         </Link>
 
-                        {/* Botón "Continuar Registro" */}
-                        <Button
-                            className="bg-purple-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-purple-700 transition-all"
-                            onClick={() => setIsModalVisible(true)}  // Mostrar el modal
-                        >
-                            Continuar Registro
-                        </Button>
+                        {/* Botón "Continuar Registro" */}   
+                   {
+                     !isRegister 
+                     && 
+                     <Button
+                     onClick={() => setShowModalRegister(true)}
+                      className="bg-purple-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-purple-600 transition-all ml-9">
+                       Continuar con el registro
+                     </Button>
+                    }
+                        
                     </div>
                 </div>
-
-                {/* Modal para continuar con el registro */}
-                <Modal
-                    title="Continuar Registro"
-                    visible={isModalVisible}
-                    onCancel={() => setIsModalVisible(false)}  // Cerrar el modal
-                    onOk={handleRegister}  // Enviar datos
-                    className="rounded-xl shadow-xl"
-                    bodyStyle={{ padding: '20px' }} // Añadir padding adicional dentro del modal
-                >
-                    <div>
-                        {/* Campo para el correo, precargado desde el contexto */}
-                        <div className="mb-6">
-                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">Correo</label>
-                            <Input
-                                id="email"
-                                value={user?.email}
-                                disabled
-                                className="w-full mt-2 py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                            />
-                        </div>
-
-                        {/* Campo para el nombre */}
-                        <div className="mb-6">
-                            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">Nombre Completo</label>
-                            <Input
-                                id="name"
-                                value={userName}
-                                onChange={(e) => setUserName(e.target.value)}
-                                placeholder="Escribe tu nombre"
-                                className="w-full mt-2 py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                            />
-                        </div>
-
-                        {/* Campo para cargar foto de perfil */}
-                        <div className="mb-6">
-                            <label htmlFor="profilePicture" className="block text-sm font-semibold text-gray-700 mb-2">Foto de Perfil</label>
-                            <Upload
-                                id="profilePicture"
-                                showUploadList={false}
-                                beforeUpload={() => false}  // Prevenir subida automática
-                                onChange={handleUploadChange}
-                                accept="image/*"
-                                className="mb-2"
-                            >
-                                <Button
-                                    icon={<CameraOutlined />}
-                                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 focus:outline-none transition-all"
-                                >
-                                    Subir Foto
-                                </Button>
-                            </Upload>
-                        </div>
-                    </div>
-                </Modal>
-
 
                 {/* Card de Datos del Estudiante */}
                 <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -140,8 +92,8 @@ const StudentDashboard = () => {
                     <Card className="flex flex-col items-center">
                         {/* Imagen de perfil, mostrando la URL de la imagen si está disponible */}
                         <div className="mb-4">
-                            {profilePicture ? (
-                                <img src={URL.createObjectURL(profilePicture)} alt="Perfil" className="w-32 h-32 rounded-full" />
+                            {studentRegis.url ? (
+                                <img src={studentRegis.url} alt="Perfil" className="w-32 h-32 rounded-full" />
                             ) : studentData.profilePicture ? (
                                 <img src={studentData.profilePicture} alt="Perfil" className="w-32 h-32 rounded-full" />
                             ) : (
@@ -151,8 +103,8 @@ const StudentDashboard = () => {
 
                         {/* Mostrar el nombre y correo */}
                         <div className="text-center">
-                            <p className="font-semibold text-lg">{userName || studentData.userName}</p>
-                            <p className="text-gray-600">{user?.email || studentData.email}</p>
+                            <p className="font-semibold text-lg">{userName || studentRegis.nombre}</p>
+                            <p className="text-gray-600">{user?.email || studentRegis.email}</p>
                         </div>
                     </Card>
                 </div>
@@ -181,6 +133,11 @@ const StudentDashboard = () => {
                     <p className="text-gray-600">Aquí aparecerán tus actividades y recordatorios.</p>
                 </div>
             </div>
+                    {
+                        showModalRegister?
+                        <FormRegister getStudent={getStudent} setIsRegister={setIsRegister} user={user} setShowModal={setShowModalRegister} showModal={showModalRegister} />
+                        :null
+                    }
         </div>
     );
 };
