@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { events } from "../../enums/whiteboardEvents.js";
 
 // components
-import Header from "../Header.jsx";
+import Header from "../results/Header.jsx";
 import AudioPlayer from "./components/AudioPlayer/index.jsx";
 import WhiteBoard from "./components/WhiteBoard/Index.jsx";
 import { WhiteBoardContext } from "./components/WhiteBoard/WhiteBoardContext.jsx";
