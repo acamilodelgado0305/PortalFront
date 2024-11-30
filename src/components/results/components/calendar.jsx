@@ -7,29 +7,9 @@ import Cookies from 'js-cookie';
 import Pay from "./pay";
 import { createClassReservations, getClassReservationCurrentById } from "../../../services/classReservation";
 import { ComputerIcon } from "lucide-react";
+import { zonasHorariasg } from "./ZonaHoraria";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const zonasHorarias = [
-  { pais: "AR", zonaHoraria: "America/Argentina/Buenos_Aires", utc: -3 }, // Argentina
-  { pais: "BO", zonaHoraria: "America/La_Paz", utc: -4 },               // Bolivia
-  { pais: "BR", zonaHoraria: "America/Sao_Paulo", utc: -3 },             // Brasil
-  { pais: "CA", zonaHoraria: "America/Toronto", utc: -5 },               // Canadá (Toronto)
-  { pais: "CL", zonaHoraria: "America/Santiago", utc: -4 },              // Chile
-  { pais: "CO", zonaHoraria: "America/Bogota", utc: -5 },                // Colombia
-  { pais: "CR", zonaHoraria: "America/Costa_Rica", utc: -6 },            // Costa Rica
-  { pais: "CU", zonaHoraria: "America/Havana", utc: -5 },                // Cuba
-  { pais: "EC", zonaHoraria: "America/Guayaquil", utc: -5 },             // Ecuador
-  { pais: "SV", zonaHoraria: "America/El_Salvador", utc: -6 },           // El Salvador
-  { pais: "GT", zonaHoraria: "America/Guatemala", utc: -6 },             // Guatemala
-  { pais: "HN", zonaHoraria: "America/Tegucigalpa", utc: -6 },           // Honduras
-  { pais: "MX", zonaHoraria: "America/Mexico_City", utc: -6 },           // México
-  { pais: "NI", zonaHoraria: "America/Managua", utc: -6 },               // Nicaragua
-  { pais: "PA", zonaHoraria: "America/Panama", utc: -5 },                // Panamá
-  { pais: "PY", zonaHoraria: "America/Asuncion", utc: -4 },              // Paraguay
-  { pais: "PE", zonaHoraria: "America/Lima", utc: -5 },                  // Perú
-  { pais: "DO", zonaHoraria: "America/Santo_Domingo", utc: -4 },         // República Dominicana
-  { pais: "UY", zonaHoraria: "America/Montevideo", utc: -3 },            // Uruguay
-  { pais: "VE", zonaHoraria: "America/Caracas", utc: -4 },               // Venezuela
-];
+const zonasHorarias = zonasHorariasg
 
 
 const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => {
@@ -168,6 +148,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
 
   // Procesar y generar intervalos de clases
   function processDate(date, timeSlots) {
+
     // agregar informacion a los datos 
     setDaySelected(date),
     setTimeSlots(timeSlots)
@@ -178,6 +159,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
    
   // optener horas formateadas 
   const getHoursFormat = (timeSlots, date) =>{
+   // console.log(timeSlots)
     let allHours = [];
     for (let i = 0; i < timeSlots.length; i++) {
       const getHours = getCLass(timeSlots[i], date);
@@ -188,10 +170,10 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
      setMañana(allHours.filter((hora) => hora.hora.includes("AM")));
      setTarde(allHours.filter((hora) => hora.hora.includes("PM")));
      setClassInterval(allHours)
+     console.log(allHours)
 
   }
   const getCLass = (timeSlots, day) => {
-    console.log(timeSlots)
     // unificacion de las horas 
    /* let elements = [];
     for (let i = 0; i < timeSlots.length; i++) {
@@ -207,8 +189,7 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     const startMinutes = convertToMinutes(getHourStudent(timeStart))
     const endMinutes = convertToMinutes(getHourStudent(timeEnd));
     const allMminuts = Math.abs(startMinutes - endMinutes);
-    console.log(timeStart,timeEnd, startMinutes, endMinutes, allMminuts)
-
+    
     // optener tiempo de los profesores
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart))
     //const endMinutesTe = convertToMinutes(getHourTeacher(timeEnd));
@@ -286,7 +267,6 @@ const CalendarModal = ({ showCalendarModal, setShowCalendarModal, teacher }) => 
     setFecha(`${weekDays[0].toString().split(" ")[2]}-${weekDays[weekDays.length - 1].toString().split(" ")[2]}  ${weekDays[3].toString().split(" ")[1]} ${weekDays[3].toString().split(" ")[3]}`)
   }, [startOfWeek])
 
-  console.log(hourSelectedTeacher)
   return (
     <Modal
       title={
