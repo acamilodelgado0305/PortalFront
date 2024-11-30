@@ -295,7 +295,7 @@ const CalendarModal = ({
     }*/
     resolve(null);
     try {
-      const response = await createClassReservation(dataReservation);
+      const response = await createClassReservations(dataReservation);
       if (response.success) {
         success("realiza el pago", "success");
         setPay(true);
