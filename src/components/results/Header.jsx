@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, User, LogOut, HelpCircle, Globe, DollarSign } from 'lucide-react';
+import { MessageCircle, User, LogOut, HelpCircle, Globe, DollarSign, UserSearch } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import BoxMessages from '../StandardMessages/BoxMessages';
+import { FaChartBar } from 'react-icons/fa';
+import { useAuth } from '../../Context/AuthContext';
 const ICON_SIZE = 28; // Tamaño estandarizado para todos los iconos
 
 // Traducciones
@@ -40,6 +42,8 @@ const Header = ({ title, showBack = true }) => {
     const [showLanguageMenu, setShowLanguageMenu] = useState(false);
     const [showCurrencyMenu, setShowCurrencyMenu] = useState(false);
     const [isOpenMessageBox, setIsOpenMessageBox] = useState(false);
+
+    const {handleDashboard, dashboard}= useAuth()
 
     const t = (key) => translations[currentLanguage]?.[key] || translations['en'][key];
 
@@ -112,7 +116,9 @@ const Header = ({ title, showBack = true }) => {
         setIsOpenMessageBox(!isOpenMessageBox)
     }
 
-
+    const changeDashboard = () => {
+        handleDashboard(dashboard !== "results"? "teachers":"results")
+    }
     return (
         <div className="border-b border-gray-200 shadow-sm">
             <header className="bg-white sticky top-0 z-50">
@@ -134,6 +140,34 @@ const Header = ({ title, showBack = true }) => {
 
                         {/* Navigation Icons and Settings */}
                         <div className="flex items-center md:gap-4">
+                            {/*dashboard*/}
+                            {    isAuthenticated?
+                               (
+                                dashboard == "teachers"?
+                                <Link
+                                to={"/dashboard"}
+                                onClick={() => changeDashboard()}
+                                >
+                                  <div className='flex p-2 items-center gap-2 hover:border rounded cursor-pointer hover:bg-gray-100'>
+                                    <FaChartBar className='text-purple-600'/>
+                                    <p>Dashboard</p>
+                                  </div>
+                                </Link>
+                                :
+                                <Link
+                                to={"/results"}
+                                onClick={() => changeDashboard()}
+                                >
+                                  <div className='flex p-2 items-center gap-2 hover:border rounded cursor-pointer hover:bg-gray-100'>
+                                    <UserSearch className='text-purple-600'/>
+                                    <p>profesores</p>
+                                  </div>
+                                </Link>
+
+                               )
+                                :
+                                null
+                            }
                             {/* Language Selector */}
                             <div className="relative">
                                 <button
