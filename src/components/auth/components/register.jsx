@@ -53,7 +53,7 @@ const Register = ({ selectedTeacher, closeRegisterModal, setInicioSesion }) => {
 
     setLoading(true);
     try {
-      const response = await createStudentCognito({ email, password, role: "student", name, lastName });
+      const response = await createStudentCognito({ email, password, role: "student", name, lastName, profileImageUrl:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVWEVLolIV4bhei6NmC_4Q7gVdygDmvdDdRA&s" });
       if (response.success) {
         setReceiveCode(true);
         success("Revisa tu correo para confirmar tu registro", "success");
