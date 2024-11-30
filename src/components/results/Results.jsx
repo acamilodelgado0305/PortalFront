@@ -252,7 +252,7 @@ const Results = () => {
         />
       </div >
 
-      <p className="py-10 flex items-center justify-center text-center text-[#525252] text-3xl md:text-5xl text-bold p-2">
+      <p className="py-10 flex items-center justify-center text-center text-[#525252] text-3xl md:text-4xl text-bold p-2">
           <div className="mb-6">
               <button
                 onClick={handleBack}

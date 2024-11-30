@@ -3,7 +3,6 @@ import { backApi } from "./utils";
 const createTeacher = async (data) => {
   try {
     const response = await backApi.post('/api/teachers/', data);
-    console.log('Se creo un teacher? ' + JSON.stringify(response))
     return response.data;
   } catch (error) {
     console.error("Error creating teacher:", error);
