@@ -126,7 +126,7 @@ const MultiStepForm = () => {
         </AntSteps>
       </div>
 
-      <div className="max-w-[80em] mx-auto px-4">
+      <div className="max-w-[50em] mx-auto px-4">
         <Card
           title={<h2 className="text-2xl font-bold text-gray-800">{stepTitles[currentStep]}</h2>}
           className="shadow-xl rounded-lg bg-white mb-8"

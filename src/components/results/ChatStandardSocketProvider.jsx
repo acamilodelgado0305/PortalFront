@@ -13,7 +13,7 @@ const ChatStandardSocketProvider = ({children}) => {
 
     useEffect(()=>{
         // ('https://back-prueba.app.esturio.com/chat');
-        const newSocket = io('http://localhost:4005/chat');
+        const newSocket = io('https://back.app.esturio.com/chat');
         setSocket(newSocket);
         return () =>{
             newSocket.close();

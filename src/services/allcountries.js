@@ -219,6 +219,6 @@
 ];
 
 export const getFlagUrl = (countryCode) => {
-  const country = allCountries.find((country) => country.code === countryCode.toLowerCase());
+  const country = allCountries.find((country) => country.code === countryCode?.toLowerCase());
   return country ? country.flag : 'Country code not found';
 };
