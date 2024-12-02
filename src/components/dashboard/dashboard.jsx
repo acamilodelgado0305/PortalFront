@@ -50,7 +50,7 @@ const Dashboard = () => {
                         {activeSection === 'teacherDetail' && selectedTeacherId && (
                             <TeacherDetail teacherId={selectedTeacherId} onBack={() => setActiveSection('teachers')} />
                         )}
-                        {activeSection === 'calendar' && <Calendar />}
+                        {activeSection === 'calendar' && <Calendar  user={user}/>}
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@ const Dashboard = () => {
                     </div>
                     <div className="flex-1 w-full">
                         {activeSection === 'teachers' && <TeacherDashboard />} {/* Solo muestra TeacherDashboard */}
-                        {activeSection === 'calendar' && <Calendar />}
+                        {activeSection === 'calendar' && <Calendar  user={user} />}
                     </div>
                 </div>
             </div>
@@ -86,7 +86,7 @@ const Dashboard = () => {
                     </div>
                     <div className="flex-1 min-w-full">
                         {activeSection === 'students' && <StudentDashboard />} {/* Solo muestra StudentDashboard */}
-                        {activeSection === 'calendar' && <Calendar />}
+                        {activeSection === 'calendar' && <Calendar user={user}/>}
                     </div>
                 </div>
             </div>

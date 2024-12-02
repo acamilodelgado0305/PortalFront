@@ -12,21 +12,32 @@ import {
 import moment from 'moment';
 import 'moment/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-
+import { getClassesByTeacherId, getClassesByStudentId } from '../../services/class.services';
+import { formatCalendarData, formatCalendarTeacherData } from '../../helpers';
 // Configurar momento en español
 moment.locale('es');
 const localizer = momentLocalizer(moment);
 const { Title, Text } = Typography;
 
-const Calendario = ({ teacherId }) => {
+const Calendario = ({ user }) => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         const fetchScheduledClasses = async () => {
-            // Simulación de datos de clases agendadas con información adicional
-            const simulatedEvents = [
+            let result;
+            let simulatedEvents;
+            if(user.role == 'student') {
+               result = await getClassesByStudentId(user.id);
+                simulatedEvents = formatCalendarData(result.data);
+               
+           
+            } else if(user.role == 'teacher') {
+                result = await getClassesByTeacherId(user.id);
+                simulatedEvents = formatCalendarTeacherData(result.data);
+            } else {
+             simulatedEvents = [
                 {
                     id: 1,
                     title: 'Clase con Juan Pérez',
@@ -67,12 +78,12 @@ const Calendario = ({ teacherId }) => {
                     level: 'Intermedio',
                     status: 'pendiente'
                 },
-            ];
+            ];}
             setEvents(simulatedEvents);
         };
 
         fetchScheduledClasses();
-    }, [teacherId]);
+    }, [user.id]);
 
     const eventStyleGetter = (event) => {
         let style = {
