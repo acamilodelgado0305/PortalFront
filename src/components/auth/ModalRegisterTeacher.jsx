@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { FaApple, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ModalRegisterTeacher = ({ isOpen, onClose, selectedTeacher, setInicioSesion }) => {
-  const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState(selectedTeacher.firstName);
+  const [lastName, setLastName] = useState(selectedTeacher.lastName);
+  const [email, setEmail] = useState(selectedTeacher.email);
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
@@ -60,7 +60,7 @@ const ModalRegisterTeacher = ({ isOpen, onClose, selectedTeacher, setInicioSesio
         role: "teacher",
         name,
         lastName,
-        roleId: selectedTeacher  // Aquí es donde usamos el ID del profesor
+        roleId: selectedTeacher.id  // Aquí es donde usamos el ID del profesor
       });
       if (response.success) {
         setReceiveCode(true);

@@ -49,9 +49,8 @@ const MultiStepForm = () => {
     try {
       // Crear al profesor con los datos del formulario
       const teacherData = await createTeacher(formData);
-
       // Guardar el ID del profesor y pasarlo a la modal de registro
-      setSelectedTeacher(teacherData.id);  // Guardar solo el ID del profesor
+      setSelectedTeacher(teacherData.teacher);  // Guardar solo el ID del profesor
 
       // Mostrar la modal de registro con el teacherId
       setShowRegisterModal(true);
