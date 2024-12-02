@@ -26,7 +26,7 @@ function BoxMessages({ isOpen }) {
 
   useEffect(()=>{
     fetchGetChats()
-  },[])
+  },[user.id])
 
   useEffect(()=>{},[chats])
 

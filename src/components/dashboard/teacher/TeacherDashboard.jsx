@@ -122,7 +122,7 @@ const TeacherDashboard = () => {
                         <p>No hay estudiantes por aprobar.</p>
                     )}
                 </div>
-                               <StudentLastMessages />
+                               <StudentLastMessages user={user}/>
             </div>
         </div>
     );

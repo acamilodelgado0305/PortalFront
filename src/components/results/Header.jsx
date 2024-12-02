@@ -115,10 +115,16 @@ const Header = ({ title, showBack = true }) => {
     const toggleStandardMessagesBox = () =>{
         setIsOpenMessageBox(!isOpenMessageBox)
     }
-
+    
     const changeDashboard = () => {
         handleDashboard(dashboard !== "results"? "teachers":"results")
     }
+    useEffect(() => {
+        window.addEventListener("openBoxMessage",toggleStandardMessagesBox);
+      return () => {
+        window.removeEventListener("openBoxMessage", toggleStandardMessagesBox);
+     };
+     }, []);
     return (
         <div className="border-b border-gray-200 shadow-sm">
             <header className="bg-white sticky top-0 z-50">
