@@ -5,6 +5,7 @@ import { useAuth } from '../../Context/AuthContext';
 import { FaApple, FaEye, FaEyeSlash, FaFacebook } from 'react-icons/fa';
 import Cookies from "js-cookie"
 import { loginCognito } from '../../services/studendent.services';
+import { useNavigate } from 'react-router-dom';
 
 const LoginModal = ({ isOpen, onClose, inicioSesion, setInicioSesion }) => {
   const [email, setEmail] = useState("");
@@ -12,6 +13,8 @@ const LoginModal = ({ isOpen, onClose, inicioSesion, setInicioSesion }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const {login} = useAuth();
+
+  const navigate = useNavigate()
 
   const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
@@ -23,7 +26,8 @@ const LoginModal = ({ isOpen, onClose, inicioSesion, setInicioSesion }) => {
       if (data.success) {
         login(data.user, data.accessToken, data.idToken, data.refreshToken);
         onClose();
-        console.log(data)
+        redirect(data.user);
+        
       } else {
         console.error('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
       }
@@ -31,7 +35,16 @@ const LoginModal = ({ isOpen, onClose, inicioSesion, setInicioSesion }) => {
       console.error('Error durante el inicio de sesión:', error);
     }
   };
-
+  const redirect = (user) => {
+    switch (user.role){
+      case 'student':
+      navigate('/results');
+      break;
+      case 'teacher':
+        navigate('/dashboard');
+        break;
+    }
+ }
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
                 <h2 className="text-2xl font-bold text-center mb-6">Iniciar sesión</h2>

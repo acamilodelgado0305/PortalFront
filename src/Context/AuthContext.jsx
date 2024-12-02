@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken') || null);
     const [idToken, setIdToken] = useState(localStorage.getItem('idToken') || null);
     const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken') || null);
+    const [dashboard, setDashboard] = useState(localStorage.getItem('dashboard') || null);
 
     // Función para almacenar el usuario y los tokens
     const login = (userData, access, id, refresh) => {
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('accessToken', access);
         localStorage.setItem('idToken', id);
         localStorage.setItem('refreshToken', refresh);
+        localStorage.setItem('dashboard', "results");
     };
 
     // Función para cerrar sesión
@@ -37,10 +39,22 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('idToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('dashboard');
+
     };
 
+    const handleDashboard = (change) => {
+          if (change == "results") {
+            localStorage.setItem('dashboard', "teachers");
+            setDashboard("teachers");
+        } else {
+            localStorage.setItem('dashboard', "results");
+            setDashboard("results");
+          }
+    }
+
     return (
-        <AuthContext.Provider value={{ user, accessToken, idToken, refreshToken, login, logout }}>
+        <AuthContext.Provider value={{ user, accessToken, idToken, refreshToken, login, logout, handleDashboard, dashboard }}>
             {children}
         </AuthContext.Provider>
     );

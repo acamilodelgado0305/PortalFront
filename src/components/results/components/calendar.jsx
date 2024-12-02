@@ -9,7 +9,6 @@ import { Button, message, Modal, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import "./WeeklyCalendar.css";
 import { useAuth } from "../../../Context/AuthContext";
-import Cookies from "js-cookie";
 import Pay from "./pay";
 import {
   createClassReservations,
@@ -17,38 +16,9 @@ import {
 } from "../../../services/classReservation";
 import {createClass } from "../../../services/class.services"
 import { ComputerIcon } from "lucide-react";
-import { getLocalStartAndEnd } from "../../../helpers";
-const daysOfWeek = [
-  "Domingo",
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-];
-const zonasHorarias = [
-  { pais: "AR", zonaHoraria: "America/Argentina/Buenos_Aires", utc: -3 }, // Argentina
-  { pais: "BO", zonaHoraria: "America/La_Paz", utc: -4 }, // Bolivia
-  { pais: "BR", zonaHoraria: "America/Sao_Paulo", utc: -3 }, // Brasil
-  { pais: "CA", zonaHoraria: "America/Toronto", utc: -5 }, // Canadá (Toronto)
-  { pais: "CL", zonaHoraria: "America/Santiago", utc: -4 }, // Chile
-  { pais: "CO", zonaHoraria: "America/Bogota", utc: -5 }, // Colombia
-  { pais: "CR", zonaHoraria: "America/Costa_Rica", utc: -6 }, // Costa Rica
-  { pais: "CU", zonaHoraria: "America/Havana", utc: -5 }, // Cuba
-  { pais: "EC", zonaHoraria: "America/Guayaquil", utc: -5 }, // Ecuador
-  { pais: "SV", zonaHoraria: "America/El_Salvador", utc: -6 }, // El Salvador
-  { pais: "GT", zonaHoraria: "America/Guatemala", utc: -6 }, // Guatemala
-  { pais: "HN", zonaHoraria: "America/Tegucigalpa", utc: -6 }, // Honduras
-  { pais: "MX", zonaHoraria: "America/Mexico_City", utc: -6 }, // México
-  { pais: "NI", zonaHoraria: "America/Managua", utc: -6 }, // Nicaragua
-  { pais: "PA", zonaHoraria: "America/Panama", utc: -5 }, // Panamá
-  { pais: "PY", zonaHoraria: "America/Asuncion", utc: -4 }, // Paraguay
-  { pais: "PE", zonaHoraria: "America/Lima", utc: -5 }, // Perú
-  { pais: "DO", zonaHoraria: "America/Santo_Domingo", utc: -4 }, // República Dominicana
-  { pais: "UY", zonaHoraria: "America/Montevideo", utc: -3 }, // Uruguay
-  { pais: "VE", zonaHoraria: "America/Caracas", utc: -4 }, // Venezuela
-];
+import { zonasHorariasg } from "./ZonaHoraria";
+const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const zonasHorarias = zonasHorariasg
 
 const CalendarModal = ({
   showCalendarModal,
@@ -220,16 +190,17 @@ const CalendarModal = ({
 
   // Procesar y generar intervalos de clases
   function processDate(date, timeSlots) {
-    console.log("Esta es la fecha que puede el profesor: ");
-    console.log(JSON.stringify(date));
-    // agregar informacion a los datos
-    setDaySelected(date), setTimeSlots(timeSlots);
+
+    // agregar informacion a los datos 
+    setDaySelected(date),
+    setTimeSlots(timeSlots)
     claseReservada();
     getHoursFormat(timeSlots, date);
   }
-
-  // optener horas formateadas
-  const getHoursFormat = (timeSlots, date) => {
+   
+  // optener horas formateadas 
+  const getHoursFormat = (timeSlots, date) =>{
+   // console.log(timeSlots)
     let allHours = [];
     for (let i = 0; i < timeSlots.length; i++) {
       const getHours = getCLass(timeSlots[i], date);
@@ -244,9 +215,8 @@ const CalendarModal = ({
     setClassInterval(allHours);
   };
   const getCLass = (timeSlots, day) => {
-    console.log(timeSlots);
-    // unificacion de las horas
-    /* let elements = [];
+    // unificacion de las horas 
+   /* let elements = [];
     for (let i = 0; i < timeSlots.length; i++) {
       elements.push(timeSlots[i].start)
       elements.push(timeSlots[i].end)
@@ -260,8 +230,7 @@ const CalendarModal = ({
     const startMinutes = convertToMinutes(getHourStudent(timeStart));
     const endMinutes = convertToMinutes(getHourStudent(timeEnd));
     const allMminuts = Math.abs(startMinutes - endMinutes);
-    console.log(timeStart, timeEnd, startMinutes, endMinutes, allMminuts);
-
+    
     // optener tiempo de los profesores
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart));
     //const endMinutesTe = convertToMinutes(getHourTeacher(timeEnd));
@@ -309,24 +278,24 @@ const CalendarModal = ({
       return;
     }
 
-   /* const dataReservation = {
+     const dataReservation = {
       studentId: user.id,
       teacherId: teacher.id,
       diaReserva: daySelected,
       horaReserva: hourSelected,
       horaReservaProfesor: hourSelectedTeacher,
       pay: false,
-    }; */
+    }; 
 
-    const data = {
+    /*const data = {
       teacherId: teacher.userId,
       studentId:user.id,
       date: daySelected,
       hours: hourSelected,
-    }
+    }*/
     resolve(null);
     try {
-      const response = await createClass(data);
+      const response = await createClassReservations(dataReservation);
       if (response.success) {
         success("realiza el pago", "success");
         setPay(true);
@@ -346,222 +315,128 @@ const CalendarModal = ({
     );
   }, [startOfWeek]);
 
-  const [selectedIndex, setSelectedIndex] = useState(null);
-
-  // Función que se ejecuta cuando se marca o desmarca un checkbox
-  const handleSelectSlot = (index) => {
-    if (selectedIndex === index) {
-      setSelectedIndex(null);
-    } else {
-      setSelectedIndex(index); 
-      setHourSelected(timeSlots[index])
-  };
-  }
   return (
     <Modal
-      title={
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            fontSize: "24px",
-            fontWeight: "bold",
-          }}
-        >
-          {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
-        </div>
-      }
-      open={showCalendarModal}
-      onCancel={() => setShowCalendarModal(false)}
-      footer={null}
-      width={550}
-      height={800}
-      closeIcon={<CloseOutlined className="text-xl text-black" />}
-      centered
-    >
-      {pay ? (
+    title={
+      <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
+        {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
+      </div>
+    } open={showCalendarModal}
+    onCancel={() => setShowCalendarModal(false)}
+    footer={null}
+    width={550}
+    height={800}
+    closeIcon={<CloseOutlined className="text-black text-xl" />}
+    centered
+
+  >
+    {
+      pay ?
         <Pay />
-      ) : (
+        :
         <>
-          <div className="mb-2 flex gap-4 border-b pb-3 font-mono">
-            <div className="w-24 rounded md:w-10">
-              <img
-                className="h-14 w-20 rounded md:w-14"
-                src={teacher.profileImageUrl}
-                alt="teacher"
-              />
+          <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">
+            <div className="md:w-10 w-24 rounded">
+              <img className="rounded md:w-14 w-20 h-14" src={teacher.profileImageUrl} alt="teacher" />
             </div>
             <div>
-              <p className="font-sans text-xl font-bold">
-                Reserva una clase de prueba con {teacher.firstName}
-              </p>
-              <p className="text-md font-sans">
-                Para hablar de tus objetivos y plan de aprendizaje
-              </p>
+              <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
+              <p className="text-md font-sans">Para hablar de tus objetivos y plan de aprendizaje</p>
             </div>
+
           </div>
           <div className="text-center">
             <div className="flex w-full justify-around">
-              <div
-                className="h-10 w-10 cursor-pointer rounded border-2 p-1 text-xl hover:bg-gray-200"
-                onClick={handlePreviousWeek}
-              >
-                <LeftOutlined />
-              </div>
+              <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
               <p className="font-sans text-xl">{fecha}</p>
-              <div
-                className="h-10 w-10 cursor-pointer rounded border-2 p-1 text-xl hover:bg-gray-200"
-                onClick={handleNextWeek}
-              >
-                <RightOutlined />
-              </div>
+              <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
             </div>
             <div className="week-days border-b p-3 text-xl">
               {weekDays.map((date, index) => {
                 return (
                   <div key={index} className="">
-                    <div className="day-name text-xl">
-                      {daysOfWeek[date.getDay()].slice(0, 3)}
-                    </div>
+                    <div className="day-name text-xl">{daysOfWeek[date.getDay()].slice(0, 3)}</div>
                     <div
-                      onClick={() => {
-                        calendarTeacher[date.getDay()].enable &&
-                          processDate(
-                            date.toLocaleDateString(),
-                            calendarTeacher[date.getDay()].timeSlots,
-                          );
-                      }}
-                      className={`border-3 h-8 w-10 rounded border border-white p-1 ${calendarTeacher[date.getDay()].enable ? "cursor-pointer hover:border-purple-800 hover:bg-purple-500" : "bg-gray-200"} ${daySelected == date.toLocaleDateString() && "border-purple-500 bg-purple-400"}`}
-                    >
-                      {date.toLocaleDateString().split("/")[0]}
-                    </div>
+                      onClick={() => { calendarTeacher[date.getDay()].enable && processDate(date.toLocaleDateString(), calendarTeacher[date.getDay()].timeSlots) }}
+                      className={`border border-white rounded w-10 h-8 p-1   border-3  ${calendarTeacher[date.getDay()].enable ? "cursor-pointer hover:border-purple-800 hover:bg-purple-500" : "bg-gray-200"} ${daySelected == date.toLocaleDateString() && "bg-purple-400 border-purple-500"}`}>{date.toLocaleDateString().split("/")[0]}</div>
                   </div>
-                );
+                )
               })}
             </div>
             <div className="font-mono">
-            <div className="text-md flex w-full justify-start p-2 font-sans">
-  {daySelected ? (
-        timeSlots.map((slot, index) => (
-          <div key={index} className="flex items-center">
-            {/* Checkbox para seleccionar el timeSlot */}
-            <input
-              type="checkbox"
-              checked={selectedIndex === index} // Marcar si el índice está seleccionado
-              onChange={() => handleSelectSlot(index)} // Cambiar el estado
-              className="mr-2"
-            />
-            <p
-              style={{
-                fontWeight: selectedIndex === index ? 'bold' : 'normal',
-                color: selectedIndex === index ? 'green' : 'black',
-              }}
-            >
-              Horario disponible {getLocalStartAndEnd(timeSlots[index]).start} a {getLocalStartAndEnd(timeSlots[index]).end}
-            </p>
-          </div>
-        ))
-   
-    
-  ) : (
-    <p>Elige un día para reservar la clase</p>
-  )}
-</div>
+              <div className="w-full flex justify-start text-md font-sans p-2 ">
+                {
+                  daySelected ?
+                    <p>Horario disponible {mañana[0]?.hora || tarde[0]?.hora} hasta {classInterval[classInterval.length -1]?.hora || mañana[mañana.length -1]?.hora} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+                    :
+                    <p>Elige un dia para reservar la clase</p>
 
+                }
+              </div>
 
-              <div className="h-90 overflow-y-scroll border-b pb-2">
+              <div className="border-b pb-2 overflow-y-scroll h-90">
+
                 <div>
-                  <div className="m-2 flex gap-2 font-sans font-bold">
+                  <div className="flex gap-2 m-2 font-sans font-bold">
                     <SunOutlined className="border-b-2 border-gray-400 text-xl" />
-                    <p className="text-xl">Por la mañana</p>
+                    <p className=" text-xl">Por la mañana</p>
                   </div>
-                  <div className="flex flex-wrap gap-2 text-xl">
-                    {mañana.length > 0 ? (
-                      mañana.map((item, i) => {
-                        const hora = horaReservada.filter(
-                          (hora) => hora.horaReserva == item.hora,
-                        );
-                        return (
-                          <div
-                            onClick={() => {
-                              hora[0]?.horaReserva == item.hora &&
-                              item.fecha == hora[0]?.diaReserva
-                                ? null
-                                : setHourSelected(item.hora),
-                                setHourSelectedTeacher(item.horaTeacher);
-                            }}
-                            key={i}
-                            className={`w-[100px] select-none rounded border p-1 ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}
-                          >
-                            <span
-                              style={{ fontFamily: "fontSize, sans-serif" }}
-                            >
-                              {item.hora.split(" ")[0]}
-                            </span>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <p className="m-2 font-sans text-lg">
-                        clases no disponibles
-                      </p>
-                    )}
+                  <div className="flex gap-2 flex-wrap text-xl ">
+
+                    {
+                      mañana.length > 0 ?
+                        mañana.map((item, i) => {
+                          const hora = horaReservada.filter((hora) => hora.horaReserva == item.hora);
+                          return (
+                            <div
+                              onClick={() => { hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva  ? null : setHourSelected(item.hora), setHourSelectedTeacher(item.horaTeacher)}}
+                              key={i}
+                              className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}>
+                              <span style={{ fontFamily: 'fontSize, sans-serif' }}>{item.hora.split(" ")[0]}</span>
+                            </div>
+                          )
+                        })
+                        :
+                        <p className="m-2 text-lg font-sans">clases no disponibles</p>
+                    }
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <div className="m-2 flex gap-2 font-sans text-xl font-bold">
+                  <div className="flex gap-2 m-2 font-sans font-bold  text-xl">
                     <SunOutlined />
                     <p>Despues de medio dia</p>
                   </div>
-                  <div className="flex flex-wrap gap-2 text-xl">
-                    {tarde.length > 0 ? (
-                      tarde.map((tarde, i) => {
-                        const hora = horaReservada.filter(
-                          (hora) => hora.horaReserva == tarde.hora,
-                        );
-                        return (
-                          <div
-                            onClick={() => {
-                              hora[0]?.horaReserva == tarde.hora &&
-                              tarde.fecha == hora[0]?.diaReserva
-                                ? null
-                                : setHourSelected(tarde.hora),
-                                setHourSelectedTeacher(tarde.horaTeacher);
-                            }}
-                            key={i}
-                            className={`w-[100px] select-none rounded border p-1 ${hourSelected == tarde.hora ? "bg-purple-400" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}
-                          >
-                            <span
-                              style={{ fontFamily: "fontSize, sans-serif" }}
-                            >
-                              {tarde.hora.split(" ")[0]}
-                            </span>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <p className="m-2 font-light">clases no disponibles</p>
-                    )}
+                  <div className="flex gap-2 flex-wrap text-xl">
+                    {
+                      tarde.length > 0 ?
+                        tarde.map((tarde, i) => {
+                          const hora = horaReservada.filter((hora) => hora.horaReserva == tarde.hora);
+                          return (
+                            <div onClick={() => { hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva  ? null : setHourSelected(tarde.hora), setHourSelectedTeacher(tarde.horaTeacher)}} key={i} className={`w-[100px] border p-1 rounded select-none  ${hourSelected == tarde.hora ? "bg-purple-400" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "hover:bg-purple-500 cursor-pointer"}`}>
+                              <span style={{ fontFamily: 'fontSize, sans-serif' }}>{tarde.hora.split(" ")[0]}</span>
+                            </div>
+                          )
+                        })
+                        :
+                        <p className="m-2 font-light">clases no disponibles</p>
+                    }
                   </div>
                 </div>
+
               </div>
               <Popconfirm
                 title="confirma tu reserva"
                 description={`Reservaste una clase con el profesor ${teacher.firstName} 
-                      el dia ${daySelected.split("/")[0]} 
-                      a las ${getLocalStartAndEnd(hourSelected).start}`}
+                    el dia ${daySelected.split("/")[0]} 
+                    a las ${hourSelected}`}
                 onConfirm={confirm}
-                onOpenChange={() => console.log("open change")}
+                onOpenChange={() => console.log('open change')}
               >
                 <Button
                   className="m-2"
-                  style={{ backgroundColor: "#9D4EDD" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9D4EDD")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#9D4EDD")
-                  }
+                  style={{ backgroundColor: '#9D4EDD' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
                   type="primary"
                 >
                   Continuar
@@ -570,8 +445,8 @@ const CalendarModal = ({
             </div>
           </div>
         </>
-      )}
-    </Modal>
+    }
+  </Modal>
   );
 };
 
