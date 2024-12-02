@@ -11,7 +11,7 @@ import ScheduleStep from "./Steps/ScheduleStep";
 import PricingStep from "./Steps/PricingStep";
 import { createTeacher } from '../../../services/teacher.services';
 import { uploadImageToS3 } from "../../../helpers/processImageUpload";
-import ModalRegister from "../../auth/ModalRegister";
+import ModalRegisterTeacher from "../../auth/ModalRegisterTeacher";
 import Header from "../../results/Header";
 
 const { Step } = AntSteps;
@@ -25,6 +25,8 @@ const MultiStepForm = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [inicioSesion, setInicioSesion] = useState(null);
 
   const handleFormChange = (changedValues) => {
     setFormData((prevData) => ({ ...prevData, ...changedValues }));
@@ -37,7 +39,7 @@ const MultiStepForm = () => {
 
   const onFinish = () => {
     if (currentStep === 7) {
-      setShowRegisterModal(true);
+      handleRegisterSuccess();
     }
   };
 
@@ -45,8 +47,13 @@ const MultiStepForm = () => {
     setShowRegisterModal(false);
     setIsSubmitting(true);
     try {
-      await createTeacher(formData);
-      setIsModalVisible(true);
+      // Crear al profesor con los datos del formulario
+      const teacherData = await createTeacher(formData);
+      // Guardar el ID del profesor y pasarlo a la modal de registro
+      setSelectedTeacher(teacherData.teacher);  // Guardar solo el ID del profesor
+
+      // Mostrar la modal de registro con el teacherId
+      setShowRegisterModal(true);
     } catch (error) {
       console.error("Teacher registration failed:", error);
       message.error("Failed to complete teacher registration");
@@ -54,7 +61,6 @@ const MultiStepForm = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleModalOk = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -172,10 +178,11 @@ const MultiStepForm = () => {
         </Card>
       </div>
 
-      <ModalRegister
+      <ModalRegisterTeacher
         isOpen={showRegisterModal}
         onClose={() => setShowRegisterModal(false)}
-        onSuccess={handleRegisterSuccess}
+        selectedTeacher={selectedTeacher}  // Pasar el ID del profesor aquí
+        setInicioSesion={setInicioSesion}
       />
 
       <Modal
@@ -184,9 +191,9 @@ const MultiStepForm = () => {
         onOk={handleModalOk}
         onCancel={handleModalOk}
         footer={[
-          <Button 
-            key="ok" 
-            onClick={handleModalOk} 
+          <Button
+            key="ok"
+            onClick={handleModalOk}
             className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition duration-300"
           >
             OK

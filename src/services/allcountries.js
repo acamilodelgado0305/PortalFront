@@ -218,7 +218,8 @@
   { code: "zw", name: "Zimbabwe", flag: "https://flagcdn.com/w320/zw.png" }
 ];
 
-export const getFlagUrl = (countryCode) => {
-  const country = allCountries.find((country) => country.code === countryCode.toLowerCase());
+export const getFlagUrl = (countryCode = "") => {
+    const code = countryCode.toLowerCase()
+  const country = allCountries.find((country) => country.code === code);
   return country ? country.flag : 'Country code not found';
 };
