@@ -35,8 +35,6 @@ function BoxMessages({ isOpen }) {
       const response = await getStandarMessageChatsByUser(user.id);
       if (response?.success) {
         const formattedChats = formattedChatInfo(response.data);
-        console.log(JSON.stringify(response.data));
-        console.log(JSON.stringify(formattedChats))
         setChats(formattedChats);
       }
     } catch (error) {
