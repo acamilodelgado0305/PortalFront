@@ -10,11 +10,11 @@ import { useEffect, useState } from "react";
 import "./WeeklyCalendar.css";
 import { useAuth } from "../../../Context/AuthContext";
 import Pay from "./pay";
+import { createClass } from "../../../services/class.services";
 import {
   createClassReservations,
   getClassReservationCurrentById,
 } from "../../../services/classReservation";
-import {createClass } from "../../../services/class.services"
 import { ComputerIcon } from "lucide-react";
 import { zonasHorariasg } from "./ZonaHoraria";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -277,7 +277,7 @@ const CalendarModal = ({
       resolve(null);
       return;
     }
-
+ /*
      const dataReservation = {
       studentId: user.id,
       teacherId: teacher.id,
@@ -285,17 +285,17 @@ const CalendarModal = ({
       horaReserva: hourSelected,
       horaReservaProfesor: hourSelectedTeacher,
       pay: false,
-    }; 
+    }; */
 
-    /*const data = {
-      teacherId: teacher.userId,
+   const data = {
+      teacherId: teacher.id,
       studentId:user.id,
       date: daySelected,
       hours: hourSelected,
-    }*/
+    }
     resolve(null);
     try {
-      const response = await createClassReservations(dataReservation);
+      const response = await createClass(data);
       if (response.success) {
         success("realiza el pago", "success");
         setPay(true);
