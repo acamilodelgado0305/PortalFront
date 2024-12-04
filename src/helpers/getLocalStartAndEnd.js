@@ -1,20 +1,20 @@
 export const getLocalStartAndEnd = (utcTimes) => {
-
   const { start, end } = utcTimes;
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  const startLocal = new Date(start).toLocaleTimeString(undefined, {
-    timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const formatTime = (dateString, timeZone) => {
+    const date = new Date(dateString);
+    const options = {
+      timeZone,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true, 
+    };
+    return date.toLocaleTimeString(undefined, options);
+  };
 
-  const endLocal = new Date(end).toLocaleTimeString(undefined, {
-    timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+  const startLocal = formatTime(start, timeZone);
+  const endLocal = formatTime(end, timeZone);
 
   return { start: startLocal, end: endLocal };
 };
