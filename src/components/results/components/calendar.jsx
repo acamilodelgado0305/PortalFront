@@ -17,6 +17,7 @@ import {
 } from "../../../services/classReservation";
 import { ComputerIcon } from "lucide-react";
 import { zonasHorariasg } from "./ZonaHoraria";
+import { getLocalStartAndEnd } from "../../../helpers/getLocalStartAndEnd";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const zonasHorarias = zonasHorariasg
 
@@ -87,7 +88,6 @@ const CalendarModal = ({
     return today;
   });
 
-  // funcion para optener las clases ya reservadas del profesor
   const claseReservada = async () => {
     try {
       const response = await getClassReservationCurrentById(teacher.id);
@@ -101,7 +101,6 @@ const CalendarModal = ({
     }
   };
 
-  // Calcular los días de la semana en función del inicio de la semana
   const getWeekDays = () => {
     return Array.from({ length: 7 }, (_, i) => {
       const day = new Date(startOfWeek);
@@ -122,47 +121,15 @@ const CalendarModal = ({
     setStartOfWeek(newStartOfWeek);
   };
 
-  // funciones para manejar horas
-  const getHourStudent = (date) => {
-    const dateString = new Date(date);
-    const timeZoneLocal = zonasHorarias.filter(
-      (zona) =>
-        zona.zonaHoraria == Intl.DateTimeFormat().resolvedOptions().timeZone,
-    );
-    const utcLocal = zonasHorarias.filter(
-      (z) => z.pais == timeZoneLocal[0].pais,
-    );
-    const utcTeacher = zonasHorarias.filter(
-      (z) => z.pais == teacher.countryOfBirth.toUpperCase(),
-    );
-    const diferennciaHoraria =
-      Math.abs(utcTeacher[0].utc) > Math.abs(utcLocal[0].utc)
-        ? Math.abs(utcLocal[0].utc) + utcTeacher[0].utc
-        : Math.abs(utcLocal[0].utc) - Math.abs(utcTeacher[0].utc);
-
-    let hours = dateString.getUTCHours();
-    hours = hours + diferennciaHoraria;
-    const minutes = dateString.getUTCMinutes().toString().padStart(2, "0");
-    const period = hours >= 12 ? "PM" : "AM";
-    // se suma las horas
-    //hours + horaUtc
-    // Convertir a formato de 12 horas
-    hours = hours % 12 || 12; // Si la hora es 0 (medianoche), se convierte en 12
-
-    const formattedTime = `${hours}:${minutes} ${period}`;
-    //console.log(formattedTime)
-    return formattedTime;
-  };
   const getHourTeacher = (date) => {
     const dateString = new Date(date);
+    console.log('dateString \n'+JSON.stringify(dateString))
     let hours = dateString.getUTCHours();
 
     const minutes = dateString.getUTCMinutes().toString().padStart(2, "0");
     const period = hours >= 12 ? "PM" : "AM";
-    // se suma las horas
-    //hours + horaUtc
-    // Convertir a formato de 12 horas
-    hours = hours % 12 || 12; // Si la hora es 0 (medianoche), se convierte en 12
+ 
+    hours = hours % 12 || 12; 
 
     const formattedTime = `${hours}:${minutes} ${period}`;
     return formattedTime;
@@ -183,24 +150,18 @@ const CalendarModal = ({
     let mins = minutes % 60;
     const period = hours >= 12 ? "PM" : "AM";
 
-    // Convertir a formato de 12 horas
-    hours = hours % 12 || 12; // 0 horas se convierte a 12 para AM/PM
+    hours = hours % 12 || 12; 
     return `${hours}:${mins.toString().padStart(2, "0")} ${period}`;
   }
 
-  // Procesar y generar intervalos de clases
   function processDate(date, timeSlots) {
-
-    // agregar informacion a los datos 
     setDaySelected(date),
     setTimeSlots(timeSlots)
     claseReservada();
     getHoursFormat(timeSlots, date);
   }
    
-  // optener horas formateadas 
   const getHoursFormat = (timeSlots, date) =>{
-   // console.log(timeSlots)
     let allHours = [];
     for (let i = 0; i < timeSlots.length; i++) {
       const getHours = getCLass(timeSlots[i], date);
@@ -213,28 +174,18 @@ const CalendarModal = ({
     setMañana(allHours.filter((hora) => hora.hora.includes("AM")));
     setTarde(allHours.filter((hora) => hora.hora.includes("PM")));
     setClassInterval(allHours);
-  };
+    };
   const getCLass = (timeSlots, day) => {
-    // unificacion de las horas 
-   /* let elements = [];
-    for (let i = 0; i < timeSlots.length; i++) {
-      elements.push(timeSlots[i].start)
-      elements.push(timeSlots[i].end)
-      
-    }
-    elements.sort((a, b) => new Date(a) - new Date(b));
-    console.log(elements)*/
     const timeStart = timeSlots.start;
     const timeEnd = timeSlots.end;
-    // optener tiempo de los estudiantes y mostrarlos en la interface
-    const startMinutes = convertToMinutes(getHourStudent(timeStart));
-    const endMinutes = convertToMinutes(getHourStudent(timeEnd));
+   const hrs = getLocalStartAndEnd({start:timeStart, end:timeEnd})
+
+    const startMinutes = convertToMinutes(hrs.start);
+    const endMinutes = convertToMinutes(hrs.end);
     const allMminuts = Math.abs(startMinutes - endMinutes);
     
-    // optener tiempo de los profesores
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart));
-    //const endMinutesTe = convertToMinutes(getHourTeacher(timeEnd));
-    //const allMminutsTe = Math.abs(startMinutesTe - endMinutesTe);
+
 
     const classDuration = 30;
     const array = [];
@@ -248,14 +199,12 @@ const CalendarModal = ({
       const timeString = convertToTimeString(currentMinutes);
       const timeTeacher = convertToTimeString(currentMinutesTeacher);
       array.push({ hora: timeString, fecha: day, horaTeacher: timeTeacher });
-      currentMinutesTeacher += interval; // incrementer la hora a teacher
-      currentMinutes += interval; // Incrementar la hora por cada intervalo de 30 minutos
+      currentMinutesTeacher += interval; 
+      currentMinutes += interval; 
     }
-    console.log("Array que estoy devolviendo " + JSON.stringify(array));
     return array;
   };
 
-  // Función para crear una reserva
   const confirm = () =>
     new Promise((resolve) => {
       createClassReservation(resolve);
@@ -277,18 +226,8 @@ const CalendarModal = ({
       resolve(null);
       return;
     }
- /*
-     const dataReservation = {
-      studentId: user.id,
-      teacherId: teacher.id,
-      diaReserva: daySelected,
-      horaReserva: hourSelected,
-      horaReservaProfesor: hourSelectedTeacher,
-      pay: false,
-    }; */
-
    const data = {
-      teacherId: teacher.id,
+      teacherId: teacher.userId || teacher.id,
       studentId:user.id,
       date: daySelected,
       hours: hourSelected,
@@ -306,7 +245,6 @@ const CalendarModal = ({
     }
   };
 
-  // Efecto para actualizar los días de la semana y fecha
   useEffect(() => {
     const weekDays = getWeekDays();
     setWeekDays(weekDays);
@@ -387,6 +325,7 @@ const CalendarModal = ({
                       mañana.length > 0 ?
                         mañana.map((item, i) => {
                           const hora = horaReservada.filter((hora) => hora.horaReserva == item.hora);
+                          console.log('hora reservada  '+horaReservada)
                           return (
                             <div
                               onClick={() => { hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva  ? null : setHourSelected(item.hora), setHourSelectedTeacher(item.horaTeacher)}}
