@@ -2,7 +2,7 @@ import { backApi } from "./utils";
 
 const createClass = async (data) =>{
     try {
-        const response = await backApi.post('/api/classes/', data);
+        const response = await backApi.post('/api/clases/', data);
         return response.data;
     } catch (error) {
         console.error("Error creating teacher:", error);
@@ -11,7 +11,7 @@ const createClass = async (data) =>{
 }
 const readAllClasses= async () => {
     try {
-      const response = await backApi.get('/api/classes');
+      const response = await backApi.get('/api/clases');
       return response.data;
     } catch (error) {
       console.error("Error reading classes:", error);
