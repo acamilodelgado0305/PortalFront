@@ -8,9 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { FaApple, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ModalRegisterTeacher = ({ isOpen, onClose, selectedTeacher, setInicioSesion }) => {
-  const [name, setName] = useState(selectedTeacher?.firstName);
-  const [lastName, setLastName] = useState(selectedTeacher?.lastName);
-  const [email, setEmail] = useState(selectedTeacher?.email);
+  const [name, setName] = useState(selectedTeacher.firstName);
+  const [lastName, setLastName] = useState(selectedTeacher.lastName);
+  const [email, setEmail] = useState(selectedTeacher.email);
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
