@@ -75,7 +75,7 @@ const EducationForm = (props) => {
         rules={[{ required: true, message: 'Please enter your university' }]}
       >
         <Input 
-          className="text-lg border-2 border-black rounded-md p-3" 
+          className="text-lg border-2 border-black rounded-md p-2" 
           placeholder="E.g. Mount Royal University" 
           onInput={(e) => logChange('university', e.target.value, index)}
         />
@@ -87,7 +87,7 @@ const EducationForm = (props) => {
         rules={[{ required: true, message: 'Please enter your degree' }]}
       >
         <Input 
-          className="text-lg border-2 border-black rounded-md p-3" 
+          className="text-lg border-2 border-black rounded-md p-2" 
           placeholder="E.g. Bachelor's degree in the English Language" 
           onInput={(e) => logChange('degree', e.target.value, index)} 
         />
@@ -118,7 +118,7 @@ const EducationForm = (props) => {
         rules={[{ required: true, message: 'Please enter your specialization' }]}
       >
         <Input 
-          className="text-lg border-2 border-black rounded-md p-3" 
+          className="text-lg border-2 border-black rounded-md p-2" 
           placeholder="E.g. Teaching English as a Foreign Language" 
           onInput={(e) => logChange('specialization', e.target.value, index)} 
         />

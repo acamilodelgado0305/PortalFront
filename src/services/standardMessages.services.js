@@ -19,6 +19,18 @@ const getStandardMessageById = async (id) => {
   }
 };
 
+const getStandarMessageChatsByUser = async (userId) =>{
+  try {
+    const response = await backApi.get(`/api/standardMessages/userId/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting StandardMessage:", error);
+    throw error;
+  }
+}
+
+
+
 const getStandarMessagesByChatId = async (chatId) => {
   try {
     const response = await backApi.get(`/api/standardMessages/chatId/${chatId}`);
@@ -49,10 +61,22 @@ const deleteStandardMessageById = async (id) => {
   }
 };
 
+const deleteStandarMessagesByChatId = async (chatId) => {
+  try {
+    const response = await backApi.delete(`/api/standardMessages/chatId/${chatId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting StandarMessages by chatId :", error);
+    throw error;
+  }
+};
+
 export {
   createStandardMessage,
   getStandardMessageById,
   getStandarMessagesByChatId,
+  getStandarMessageChatsByUser,
   updateStandardMessage,
   deleteStandardMessageById,
+  deleteStandarMessagesByChatId
 };

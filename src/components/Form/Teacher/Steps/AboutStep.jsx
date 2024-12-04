@@ -12,11 +12,11 @@ import { allCountries } from "../../../../services/allcountries";
 import { checkTeacherEmailExists } from "../../../../services/teacher.services";
 import { languages, levels } from "./data/languages";
 
-const { Option } = Select;
+
+const { Option, OptGroup } = Select;
 
 const AboutStep = ({ onChange, setIsVerified }) => {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
   const [emailError, setEmailError] = useState("");
   const [emailStatus, setEmailStatus] = useState(null);
   const [formValues, setFormValues] = useState({});
@@ -44,8 +44,6 @@ const AboutStep = ({ onChange, setIsVerified }) => {
       "firstName",
       "lastName",
       "email",
-      "password",
-      "confirmPassword",
       "countryOfBirth",
       "subjectYouTeach",
       "language",
@@ -62,7 +60,7 @@ const AboutStep = ({ onChange, setIsVerified }) => {
   }, [formValues, setIsVerified]);
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-md">
+    <div className="mx-auto max-w-full rounded-lg bg-white shadow-md">
       <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
         Personal Information
       </h2>
@@ -120,40 +118,8 @@ const AboutStep = ({ onChange, setIsVerified }) => {
           />
         </Form.Item>
 
-        {/* Password Fields */}
-        <Form.Item
-          label={<span className="text-lg font-medium">Password</span>}
-          name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input.Password
-            placeholder="Enter your password"
-            className="rounded-md border-2 border-black p-3 text-lg"
-            iconRender={(visible) =>
-              visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
-            }
-            visibilityToggle={{
-              onClick: () => setPasswordVisible(!passwordVisible),
-            }}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label={<span className="text-lg font-medium">Confirm Password</span>}
-          name="confirmPassword"
-          rules={[{ required: true, message: "Please confirm your password!" }]}
-        >
-          <Input.Password
-            placeholder="Confirm your password"
-            className="rounded-md border-2 border-black p-3 text-lg"
-            iconRender={(visible) =>
-              visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
-            }
-            visibilityToggle={{
-              onClick: () => setConfirmPasswordVisible(!confirmPasswordVisible),
-            }}
-          />
-        </Form.Item>
+    
+        
 
         <Form.Item
           label={<span className="text-lg font-medium">Country of Birth</span>}
@@ -182,13 +148,84 @@ const AboutStep = ({ onChange, setIsVerified }) => {
             { required: true, message: "Please select the subject you teach!" },
           ]}
         >
+
+
+
           <Select
             placeholder="Select the subject you teach"
             className="rounded-md border-2 border-black text-lg"
             size="large"
           >
-            <Option value="math">Mathematics</Option>
-            <Option value="science">Science</Option>
+            {/* Arts */}
+            <OptGroup label="Arts">
+              <Option value="painting">Painting</Option>
+              <Option value="drawing">Drawing</Option>
+              <Option value="music">Music</Option>
+              <Option value="dance">Dance</Option>
+              <Option value="theater">Theater</Option>
+              <Option value="photography">Photography</Option>
+              <Option value="sculpture">Sculpture</Option>
+            </OptGroup>
+
+            {/* Programming */}
+            <OptGroup label="Programming">
+              <Option value="python">Python</Option>
+              <Option value="javascript">JavaScript</Option>
+              <Option value="java">Java</Option>
+              <Option value="cpp">C++</Option>
+              <Option value="web_dev">Web Development</Option>
+              <Option value="mobile_dev">Mobile Development</Option>
+              <Option value="data_science">Data Science</Option>
+            </OptGroup>
+
+            {/* Crafts */}
+            <OptGroup label="Crafts">
+              <Option value="knitting">Knitting</Option>
+              <Option value="ceramics">Ceramics</Option>
+              <Option value="origami">Origami</Option>
+              <Option value="jewelry">Handmade Jewelry</Option>
+              <Option value="sewing">Sewing</Option>
+            </OptGroup>
+
+            {/* Languages */}
+            <OptGroup label="Languages">
+              <Option value="english">English</Option>
+              <Option value="spanish">Spanish</Option>
+              <Option value="french">French</Option>
+              <Option value="german">German</Option>
+              <Option value="portuguese">Portuguese</Option>
+              <Option value="italian">Italian</Option>
+              <Option value="chinese">Mandarin Chinese</Option>
+            </OptGroup>
+
+            {/* Academic */}
+            <OptGroup label="Academic">
+              <Option value="mathematics">Mathematics</Option>
+              <Option value="physics">Physics</Option>
+              <Option value="chemistry">Chemistry</Option>
+              <Option value="biology">Biology</Option>
+              <Option value="history">History</Option>
+              <Option value="literature">Literature</Option>
+              <Option value="geography">Geography</Option>
+            </OptGroup>
+
+            {/* Music */}
+            <OptGroup label="Musical Instruments">
+              <Option value="piano">Piano</Option>
+              <Option value="guitar">Guitar</Option>
+              <Option value="violin">Violin</Option>
+              <Option value="drums">Drums</Option>
+              <Option value="singing">Singing</Option>
+            </OptGroup>
+
+            {/* Sports */}
+            <OptGroup label="Sports">
+              <Option value="yoga">Yoga</Option>
+              <Option value="fitness">Fitness</Option>
+              <Option value="dance">Dance</Option>
+              <Option value="martial_arts">Martial Arts</Option>
+              <Option value="swimming">Swimming</Option>
+            </OptGroup>
           </Select>
         </Form.Item>
 

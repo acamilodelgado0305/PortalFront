@@ -1,19 +1,55 @@
 import React, { useState } from 'react';
-import { FaChalkboardTeacher, FaChartBar, FaCalendarAlt, FaUserFriends, FaWallet, FaLink, FaLifeRing, FaGift, FaChevronLeft, FaChevronRight, FaGraduationCap } from 'react-icons/fa';
+import {
+    FaChalkboardTeacher,
+    FaChartBar,
+    FaCalendarAlt,
+    FaUserFriends,
+    FaWallet,
+    FaLink,
+    FaLifeRing,
+    FaGift,
+    FaChevronLeft,
+    FaChevronRight,
+    FaGraduationCap
+} from 'react-icons/fa';
+import { useAuth } from '../../Context/AuthContext';  // Asegúrate de importar el contexto
 
 const Sidebar = ({ activeSection, setActiveSection }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const { user } = useAuth(); // Trae el rol del usuario desde el contexto
 
-    const menuItems = [
-        { icon: FaChartBar, text: "Dashbord", id: "dashboard" },
-        { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
+    // Los items comunes del menú
+    const commonMenuItems = [
         { icon: FaUserFriends, text: "My Students", id: "students" },
         { icon: FaCalendarAlt, text: "Calendar", id: "calendar" },
+        { icon: FaGift, text: "Payments", id: "rewards" },
+    ];
+
+    // Los items específicos para 'teacher'
+    const teacherMenuItems = [
+        { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
+        { icon: FaLifeRing, text: "Support", id: "support" }
+    ];
+
+    // Los items específicos para 'admin'
+    const adminMenuItems = [
+        { icon: FaChartBar, text: "Dashboard", id: "dashboard" },
+        { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
         { icon: FaLink, text: "Workspaces", id: "workspaces" },
         { icon: FaWallet, text: "Earnings", id: "earnings" },
-        { icon: FaLifeRing, text: "Support", id: "support" },
         { icon: FaGift, text: "Earn $154.244 and more", id: "rewards" }
     ];
+
+    // Los items del menú según el rol
+    let menuItems = commonMenuItems;
+
+    if (user.role === 'teacher') {
+        menuItems = [...menuItems, ...teacherMenuItems]; // Agrega los items específicos para el profesor
+    }
+
+    if (user.role === 'admin') {
+        menuItems = [...adminMenuItems, ...menuItems]; // El admin ve todos los items
+    }
 
     return (
         <div
@@ -55,9 +91,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
                             <li
                                 key={item.id}
                                 className={`cursor-pointer p-2 rounded flex items-center
-                                ${activeSection === item.id ?
-                                        'bg-gray-100 text-gray-800' :
-                                        'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
+                                ${activeSection === item.id ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
                                 ${isCollapsed ? 'justify-center' : 'justify-start'}
                                 transition-colors duration-200`}
                                 onClick={() => setActiveSection(item.id)}

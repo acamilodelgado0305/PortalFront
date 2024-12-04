@@ -1,20 +1,51 @@
 import { useState } from "react";
 import { createStandardMessage } from "../../../services/standardMessages.services";
+import Swal from "sweetalert2";
 
-function StandardMessageModal({ isOpen, onClose, teacher, user }) {
+function SendTeacherMessage({ isOpen, onClose, teacher, user }) {
   const [message, setMessage] = useState("");
-
-  const handleSendMessage = async(e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    console.log(`Mensaje para ${teacher.firstname}: ${message}`);
+    const teacherId = teacher.userId ? teacher.userId : teacher.id;
+
     const data = {
-        userId:'1234',
-        touserId: teacher.id,
-        message,
+      userId: user.id,
+      touserId: teacherId,
+      message,
+    };
+
+    try {
+      const response = await createStandardMessage(data);
+
+      if (response.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Mensaje enviado",
+          text: "Tu mensaje fue enviado exitosamente.",
+          confirmButtonColor: "#FF7AAC",
+        });
+
+        const event = new Event("sendMessage");
+        window.dispatchEvent(event);
+        setMessage("");
+        onClose();
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un problema al enviar el mensaje. Intenta nuevamente.",
+          confirmButtonColor: "#FF7AAC",
+        });
+      }
+    } catch (error) {
+      console.error("Error al enviar el mensaje:", error.message);
+      Swal.fire({
+        icon: "error",
+        title: "Error inesperado",
+        text: "Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.",
+        confirmButtonColor: "#FF7AAC",
+      });
     }
-   const response =  await createStandardMessage(data)
-   console.log('REsponse de creación del chat y el mensaje '+ JSON.stringify)
-    onClose(); 
   };
 
   if (!isOpen) return null;
@@ -50,8 +81,10 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
         <h2 className="mb-4 text-xl font-semibold text-center pt-5">
           Enviar mensaje a {teacher.firstName} {teacher.lastName}
         </h2>
-        <h3 className="mb-4 text-[18px] py-5  text-gray text-center"> Habla con el profesor sobre tus necesidades de aprendizaje, tus inquietudes y consultas
-             </h3>
+        <h3 className="mb-4 text-[18px] py-5 text-gray text-center">
+          Habla con el profesor sobre tus necesidades de aprendizaje, tus inquietudes y consultas
+        </h3>
+
         <form onSubmit={handleSendMessage}>
           <textarea
             className="mb-4 h-32 w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -61,7 +94,7 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
           />
           <button
             type="submit"
-            className="w-full rounded-md border-[3.5px] border-black bg-[#FF7AAC] px-4 py-2 font-semibold text-black hover:bg-[#D4658F]"
+            className="w-full rounded-md border-[3.5px] border-black bg-[#a855f7] px-4 py-2 font-semibold text-black hover:bg-[#6A369C]"
           >
             Enviar
           </button>
@@ -71,4 +104,4 @@ function StandardMessageModal({ isOpen, onClose, teacher, user }) {
   );
 }
 
-export default StandardMessageModal;
+export default SendTeacherMessage;

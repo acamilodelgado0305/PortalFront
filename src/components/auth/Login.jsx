@@ -25,12 +25,14 @@ const Login = ({ closeRegisterModal, setInicioSesion }) => {
                 },
                 body: JSON.stringify({ email, password })
             });
-
+            
             const data = await response.json();
 
             if (data.success) {
                 login(data.user, data.accessToken, data.idToken, data.refreshToken);
-                navigate('/dashboard');
+                console.log('Usuario Logueado: '+JSON.stringify(data))
+                navigate('/results');
+                redirect(data.user)
             } else {
                 message.error('Error en el inicio de sesión: ' + (data.message || 'Credenciales incorrectas'));
             }
@@ -39,6 +41,16 @@ const Login = ({ closeRegisterModal, setInicioSesion }) => {
             message.error('Error en el servidor. Intente de nuevo más tarde.');
         }
     };
+     const redirect = (user) => {
+        switch (user.role){
+          case 'student':
+          navigate('/results');
+          break;
+          case 'teacher':
+            navigate('/dashboard');
+            break;
+        }
+     }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
