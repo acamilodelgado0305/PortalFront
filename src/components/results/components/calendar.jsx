@@ -125,10 +125,11 @@ const CalendarModal = ({
   // funciones para manejar horas
   const getHourStudent = (date) => {
     const dateString = new Date(date);
+   
     const timeZoneLocal = zonasHorarias.filter(
       (zona) =>
         zona.zonaHoraria == Intl.DateTimeFormat().resolvedOptions().timeZone,
-    );
+    ); console.log('timeZoneLocals \n'+JSON.stringify(timeZoneLocal))
     const utcLocal = zonasHorarias.filter(
       (z) => z.pais == timeZoneLocal[0].pais,
     );
@@ -155,6 +156,7 @@ const CalendarModal = ({
   };
   const getHourTeacher = (date) => {
     const dateString = new Date(date);
+    console.log('dateString \n'+JSON.stringify(dateString))
     let hours = dateString.getUTCHours();
 
     const minutes = dateString.getUTCMinutes().toString().padStart(2, "0");
@@ -288,7 +290,7 @@ const CalendarModal = ({
     }; */
 
    const data = {
-      teacherId: teacher.id,
+      teacherId: teacher.userId || teacher.id,
       studentId:user.id,
       date: daySelected,
       hours: hourSelected,
@@ -296,6 +298,7 @@ const CalendarModal = ({
     resolve(null);
     try {
       const response = await createClass(data);
+      console.log('response '+JSON.stringify(response))
       if (response.success) {
         success("realiza el pago", "success");
         setPay(true);
@@ -387,6 +390,7 @@ const CalendarModal = ({
                       mañana.length > 0 ?
                         mañana.map((item, i) => {
                           const hora = horaReservada.filter((hora) => hora.horaReserva == item.hora);
+                          console.log('hora reservada  '+horaReservada)
                           return (
                             <div
                               onClick={() => { hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva  ? null : setHourSelected(item.hora), setHourSelectedTeacher(item.horaTeacher)}}
