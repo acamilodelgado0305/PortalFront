@@ -315,13 +315,15 @@ const Filters = ({
 
 
                     <button
-                        className={`md:text-2xl text-sm md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 border-2 rounded-xl transition-colors duration-200 ${activeFilters.isNative
-                                ? 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700'
-                                : 'bg-white text-purple-600 border-purple-600 hover:bg-gray-50'
+                        className={`md:text-2xl text-sm md:w-[12em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 border-2 rounded-xl transition-colors duration-200 ${activeFilters.isNative
+                            ? 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700'
+                            : 'bg-white text-purple-600 border-purple-600 hover:bg-gray-50'
                             }`}
-                        onClick={() => setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))}
+                        onClick={() =>
+                            setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))
+                        }
                     >
-                        Hablante nativo
+                        {activeFilters.isNative ? 'Hablante no nativo' : 'Hablante nativo'}
                     </button>
                 </div>
 
