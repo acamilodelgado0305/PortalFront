@@ -280,12 +280,12 @@ const Filters = ({
                         />
                     </div>
                     <FilterButton
-                    
+
                         label="Especialidades"
                         value={activeFilters.specialty}
                         filterKey="specialty"
                     />
-                    
+
 
                     <button
                         className={`bg-white md:text-2xl text-sm  md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''
@@ -296,26 +296,30 @@ const Filters = ({
                     </button>
                 </div>
 
-                <div className="col-span-1  md:space-y-4 ">
-                    <div className="relative w-[11em]">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por nombre"
-                            value={activeFilters.fullName || ''}
-                            onChange={handleNameChange}
-                            className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-1 md:py-3 text-xl md:text-2xl text-400 placeholder:text-purple-600"
-                        />
-                    </div>
+                <div className="col-span-1 md:space-y-4">
+    <div className="flex items-center justify-between w-full">
+        <div className="relative w-[11em]">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
+            <input
+                type="text"
+                placeholder="Buscar por nombre"
+                value={activeFilters.fullName || ''}
+                onChange={handleNameChange}
+                className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-1 md:py-3 text-xl md:text-2xl text-400 placeholder:text-purple-600"
+            />
+        </div>
 
-                    <button
-                        onClick={handleClearFilters}
-                        className="w-full bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
-                    >
-                        <X size={20} />
-                        Limpiar filtros
-                    </button>
-                </div>
+        <button
+            onClick={handleClearFilters}
+            className="ml-4 bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium"
+        >
+            <X size={20} />
+            Limpiar filtros
+        </button>
+    </div>
+</div>
+
+
             </div>
 
             {showCalendarModal && (
