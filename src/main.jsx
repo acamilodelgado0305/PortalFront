@@ -64,9 +64,8 @@ const router = createBrowserRouter([
   {
     path: "/results",
     element: (
-      <ProtectedRoute>
-        <Results />
-      </ProtectedRoute>
+
+      <Results />
     ),
   },
   {
