@@ -7,9 +7,9 @@ import { formatDate, formattedChatInfo } from "../../helpers";
 import { events } from "../../enums/standardChatsEvents.js";
 import ChatSocketListener from "./ChatSocketListener";
 
-function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) { 
+function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
   const { user } = useAuth();
-  
+
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState("");
   const [isChatOpened, setIsChatOpened] = useState(false);
@@ -17,35 +17,34 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
   const messagesEndRef = useRef(null);
   const messagesRef = useRef(null);
 
-
   useEffect(() => {
-     window.addEventListener("sendMessage",fetchGetChats);
-     window.addEventListener("chatExist", openExistingChat);
-     fetchGetChats();
-   return () => {
-     window.removeEventListener("sendMessage", fetchGetChats);
-     window.removeEventListener("chatExist", openExistingChat);
-  };
+    window.addEventListener("sendMessage", fetchGetChats);
+    window.addEventListener("chatExist", openExistingChat);
+    fetchGetChats();
+    return () => {
+      window.removeEventListener("sendMessage", fetchGetChats);
+      window.removeEventListener("chatExist", openExistingChat);
+    };
   }, []);
   useEffect(() => {
     const handleClickOutside = (event) => {
-  
-      if (messagesRef.current && !messagesRef.current.contains(event.target)) {   
-         setIsOpenMessageBox(false)
+      if (messagesRef.current && !messagesRef.current.contains(event.target)) {
+        setIsChatOpened(false);
+        setIsOpenMessageBox(false);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
-  useEffect(()=>{
-    fetchGetChats()
-  },[user.id])
 
-  useEffect(()=>{},[chats])
+  useEffect(() => {
+    fetchGetChats();
+  }, [user.id]);
+
+  useEffect(() => {}, [chats]);
 
   const fetchGetChats = async () => {
     try {
@@ -61,18 +60,17 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
 
   const openExistingChat = async (e) => {
     const teacherId = e?.detail?.teacherId;
-  
-    const chat = chats.find(chat => chat.otherUserID === teacherId);
-  
+
+    const chat = chats.find((chat) => chat.otherUserID === teacherId);
+
     if (chat) {
       window.scrollTo(0, 0);
-      openChat(chat); 
+      openChat(chat);
       setIsOpenMessageBox(true);
     } else {
       console.error("Chat no encontrado para el teacherId:", teacherId);
     }
   };
-  
 
   const openChat = (chat) => {
     setChat(chat);
@@ -83,31 +81,26 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
 
   return (
     <div ref={messagesRef}>
-    {!isChatOpened && (
-      <ChatList chats={chats} openChat={openChat}   />
-    )}
-    {isChatOpened && (
-      <ChatOpened
-        chat={chat}
-        user={user}
-        setIsChatOpened={setIsChatOpened}
-        setChat={setChat}
-        formatDate={formatDate}
-        messagesEndRef={messagesEndRef}
-        setMessage={setMessage}
-        message={message}
-        chatStandardSocket={chatStandardSocket}
-        setChats={setChats}
-      />
-    )}
-  </div>
+      {!isChatOpened && <ChatList chats={chats} openChat={openChat} />}
+      {isChatOpened && (
+        <ChatOpened
+          chat={chat}
+          user={user}
+          setIsChatOpened={setIsChatOpened}
+          setChat={setChat}
+          formatDate={formatDate}
+          messagesEndRef={messagesEndRef}
+          setMessage={setMessage}
+          message={message}
+          chatStandardSocket={chatStandardSocket}
+          setChats={setChats}
+        />
+      )}
+    </div>
   );
 }
 
-
-
 export default BoxMessages;
-
 
 function ChatList({ chats, openChat }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -120,13 +113,13 @@ function ChatList({ chats, openChat }) {
       const timeout = setTimeout(() => {
         setTimeoutReached(true);
         setIsLoading(false);
-      }, 5000); 
+      }, 5000);
       return () => clearTimeout(timeout);
     }
   }, [chats]);
 
   return (
-    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-white p-4 z-[999999]">
+    <div className="absolute right-[4px] z-[999999] h-[500px] w-[100%] overflow-y-auto rounded-[5px] border-2 border-[#8a2be2] bg-white p-4 md:w-[500px]">
       <h2 className="mb-4 font-bold text-gray-500">Chats</h2>
 
       {isLoading ? (
@@ -142,13 +135,21 @@ function ChatList({ chats, openChat }) {
               onClick={() => openChat(conversation)}
             >
               <img
-                src={conversation.otherUserImage || "https://via.placeholder.com/50"}
+                src={
+                  conversation.otherUserImage ||
+                  "https://via.placeholder.com/50"
+                }
                 alt={conversation.otherUserName}
-                className="mr-4 h-12 w-12 rounded-full object-cover"
+                className="mr-4 h-12 w-12 rounded-full object-contain"
               />
+
               <div>
-                <p className="font-bold text-black">{conversation.otherUserName}</p>
-                <p className="text-sm text-gray-500">{conversation.lastMessage}</p>
+                <p className="font-bold text-black">
+                  {conversation.otherUserName}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {conversation.lastMessage}
+                </p>
               </div>
             </div>
           );
@@ -159,7 +160,6 @@ function ChatList({ chats, openChat }) {
     </div>
   );
 }
-
 
 const ChatOpened = (props) => {
   const {
@@ -206,25 +206,32 @@ const ChatOpened = (props) => {
 
     setChat((prevChat) => {
       const updatedMessages = [...prevChat.messages, newMessage];
-      return { ...prevChat,
-         messages: updatedMessages,
-        lastMessage:newMessage };
+      return {
+        ...prevChat,
+        messages: updatedMessages,
+        lastMessage: newMessage,
+      };
     });
 
     setChats((prevChats) => {
       return prevChats.map((chatItem) =>
         chatItem.chatId === chat.chatId
-          ? { ...chatItem, lastMessage: newMessage.messageContent, updatedAt: newMessage.updatedAt,messages: [...chatItem.messages, newMessage] }
-          : chatItem
+          ? {
+              ...chatItem,
+              lastMessage: newMessage.messageContent,
+              updatedAt: newMessage.updatedAt,
+              messages: [...chatItem.messages, newMessage],
+            }
+          : chatItem,
       );
     });
-  
+
     scrollToBottom();
     setMessage("");
   };
 
   return (
-    <div className="absolute right-[4px] h-[500px] w-[100%] md:w-[500px] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg z-[999999]">
+    <div className="absolute right-[4px] z-[999999] h-[500px] w-[100%] rounded-lg border border-[#8a2be2] bg-white p-4 shadow-lg md:w-[500px]">
       <ChatSocketListener
         socket={chatStandardSocket}
         chat={chat}
@@ -232,37 +239,42 @@ const ChatOpened = (props) => {
         scrollToBottom={scrollToBottom}
       />
       <div className="mb-4 flex cursor-pointer flex-row gap-1 font-bold text-gray-600 transition-colors">
-        <ArrowLeftOutlined className="hover:text-[#8a2be2]" onClick={closeChat} />
+        <ArrowLeftOutlined
+          className="hover:text-[#8a2be2]"
+          onClick={closeChat}
+        />
         <img
           src={chat.otherUserImage || "https://via.placeholder.com/50"}
           alt={chat.otherUserName}
-          className="mr-4 h-12 w-12 rounded-[4px] object-cover"
+          className="mr-4 h-12 w-12 rounded-[4px] object-contain"
         />
         <div className="flex flex-col justify-center">
-          <p className="font-bold text-gray">{chat.otherUserName}</p>
+          <p className="text-gray font-bold">{chat.otherUserName}</p>
         </div>
       </div>
 
       <div
         ref={messagesEndRef}
         className="flex flex-col gap-2 overflow-y-auto rounded-md bg-gray-50 px-3 py-2 shadow-inner"
-        style={{ height: '60%', overflowY: 'auto', scrollBehavior: 'smooth' }}
+        style={{ height: "60%", overflowY: "auto", scrollBehavior: "smooth" }}
       >
         {chat.messages
           .sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt))
           .map((message, index) => (
             <div
               key={index}
-              className={`rounded-lg py-2 px-4 text-sm min-w-[55%] ${
+              className={`min-w-[55%] rounded-lg px-4 py-2 text-sm ${
                 message.senderUserId === user.id
-                  ? "self-end bg-[#6702ff75] bg-gradient-to-r text-white text-right"
-                  : "self-start bg-gray-200 text-[#8a2be2] text-left"
+                  ? "self-end bg-[#6702ff75] bg-gradient-to-r text-right text-white"
+                  : "self-start bg-gray-200 text-left text-[#8a2be2]"
               }`}
             >
               <p className="mb-1">{message.messageContent}</p>
               <small
                 className={`text-xs ${
-                  message.senderUserId === user.id ? "text-[#fff]" : "text-[#8a2be2]"
+                  message.senderUserId === user.id
+                    ? "text-[#fff]"
+                    : "text-[#8a2be2]"
                 }`}
               >
                 {formatDate(message.updatedAt)}
@@ -288,16 +300,3 @@ const ChatOpened = (props) => {
     </div>
   );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-

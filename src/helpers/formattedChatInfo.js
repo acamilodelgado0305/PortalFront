@@ -1,7 +1,5 @@
+import svgProfile from '../components/StandardMessages/humanicon.svg'
 export const formattedChatInfo = (response) =>{
-// https://img.freepik.com/vector-premium/circulo-morado-icono-persona-blanca_876006-6.jpg   violeta
-// https://st3.depositphotos.com/7541698/32515/v/450/depositphotos_325154520-stock-illustration-talking-people-vector-icon-isolated.jpg // gris
-// mulitcolot https://cdn-icons-png.flaticon.com/512/7153/7153150.png
  return  response
           .map((chat) => {
             console.log('Otro usuario: ')
@@ -16,7 +14,7 @@ export const formattedChatInfo = (response) =>{
                 otherUser.lastName || ""
               }`,
               otherUserID: otherUser.id,
-              otherUserImage: otherUser.profileImageUrl || 'https://img.freepik.com/vector-premium/circulo-morado-icono-persona-blanca_876006-6.jpg',
+              otherUserImage: otherUser.profileImageUrl || svgProfile,
               messages: chat.messages,
               chatId: chat.messages[0].chatId,
             };

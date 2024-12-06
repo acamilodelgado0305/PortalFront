@@ -71,6 +71,7 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
     }, []);
 
     useEffect(()=>{
+        if(setChatsContacts)
         setChatsContacts(chats)
     },[chats])
 
@@ -291,7 +292,8 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
                     </div>
                 </div>
             </header>
-          {isAuthenticated &&  <BoxMessages setIsOpenMessageBox={setIsOpenMessageBox} isOpen={isOpenMessageBox}  chats={chats} setChats={setChats}/> }
+          {isAuthenticated &&   <BoxMessages setIsOpenMessageBox={setIsOpenMessageBox} isOpen={isOpenMessageBox}  chats={chats} setChats={setChats}/> }
+          
         </div>
     );
 };
