@@ -43,7 +43,7 @@ const Header = ({ title, showBack = true }) => {
     const [showCurrencyMenu, setShowCurrencyMenu] = useState(false);
     const [isOpenMessageBox, setIsOpenMessageBox] = useState(false);
 
-    const {handleDashboard, dashboard}= useAuth()
+    const { handleDashboard, dashboard } = useAuth()
 
     const t = (key) => translations[currentLanguage]?.[key] || translations['en'][key];
 
@@ -64,23 +64,23 @@ const Header = ({ title, showBack = true }) => {
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         setIsAuthenticated(!!token);
-       detectUserLocation(); 
+        detectUserLocation();
     }, []);
 
     const detectUserLocation = async () => {
         try {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
-            
+
             const languageMap = {
-                'AR':'es',
+                'AR': 'es',
                 'CO': 'es',
                 'US': 'en',
                 'BR': 'pt',
             };
-            
+
             const currencyMap = {
-                'AR':'ARS',
+                'AR': 'ARS',
                 'CO': 'COP',
                 'US': 'USD',
                 'BR': 'BRL',
@@ -88,7 +88,7 @@ const Header = ({ title, showBack = true }) => {
 
             setCurrentLanguage(languageMap[data.country_code] || 'en');
             setCurrentCurrency(currencyMap[data.country_code] || 'USD');
-            
+
         } catch (error) {
             console.error('Error detecting location:', error);
             setCurrentLanguage('en');
@@ -112,19 +112,19 @@ const Header = ({ title, showBack = true }) => {
         setShowCurrencyMenu(false);
     };
 
-    const toggleStandardMessagesBox = () =>{
+    const toggleStandardMessagesBox = () => {
         setIsOpenMessageBox(!isOpenMessageBox)
     }
-    
+
     const changeDashboard = () => {
-        handleDashboard(dashboard !== "results"? "teachers":"results")
+        handleDashboard(dashboard !== "results" ? "teachers" : "results")
     }
     useEffect(() => {
-        window.addEventListener("openBoxMessage",toggleStandardMessagesBox);
-      return () => {
-        window.removeEventListener("openBoxMessage", toggleStandardMessagesBox);
-     };
-     }, []);
+        window.addEventListener("openBoxMessage", toggleStandardMessagesBox);
+        return () => {
+            window.removeEventListener("openBoxMessage", toggleStandardMessagesBox);
+        };
+    }, []);
     return (
         <div className="border-b border-gray-200 shadow-sm">
             <header className="bg-white sticky top-0 z-50">
@@ -147,30 +147,30 @@ const Header = ({ title, showBack = true }) => {
                         {/* Navigation Icons and Settings */}
                         <div className="flex items-center md:gap-4">
                             {/*dashboard*/}
-                            {    isAuthenticated?
-                               (
-                                dashboard == "teachers"?
-                                <Link
-                                to={"/dashboard"}
-                                onClick={() => changeDashboard()}
-                                >
-                                  <div className='flex p-2 items-center gap-2 hover:border rounded cursor-pointer hover:bg-gray-100'>
-                                    <FaChartBar className='text-purple-600'/>
-                                    <p>Dashboard</p>
-                                  </div>
-                                </Link>
-                                :
-                                <Link
-                                to={"/results"}
-                                onClick={() => changeDashboard()}
-                                >
-                                  <div className='flex p-2 items-center gap-2 hover:border rounded cursor-pointer hover:bg-gray-100'>
-                                    <UserSearch className='text-purple-600'/>
-                                    <p>profesores</p>
-                                  </div>
-                                </Link>
+                            {isAuthenticated ?
+                                (
+                                    dashboard == "teachers" ?
+                                        <Link
+                                            to={"/dashboard"}
+                                            onClick={() => changeDashboard()}
+                                        >
+                                            <div className='flex p-2 items-center gap-2 hover:border rounded cursor-pointer hover:bg-gray-100'>
+                                                <FaChartBar className='text-purple-600' />
+                                                <p>Dashboard</p>
+                                            </div>
+                                        </Link>
+                                        :
+                                        <Link
+                                            to={"/results"}
+                                            onClick={() => changeDashboard()}
+                                        >
+                                            <div className='flex p-2 items-center gap-2 hover:border rounded cursor-pointer hover:bg-gray-100'>
+                                                <UserSearch className='text-purple-600' />
+                                                <p>Results</p>
+                                            </div>
+                                        </Link>
 
-                               )
+                                )
                                 :
                                 null
                             }
@@ -181,7 +181,7 @@ const Header = ({ title, showBack = true }) => {
                                     className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
                                     aria-label={t('language')}
                                 >
-                                    <Globe size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5}/>
+                                    <Globe size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5} />
                                     <span className="text-xs md:text-sm font-medium text-gray-600">{currentLanguage.toUpperCase()}</span>
                                 </button>
 
@@ -241,7 +241,7 @@ const Header = ({ title, showBack = true }) => {
                                     <button
                                         className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
                                         aria-label={t('messages')}
-                                        onClick={toggleStandardMessagesBox }
+                                        onClick={toggleStandardMessagesBox}
                                     >
                                         <MessageCircle size={ICON_SIZE} className="text-purple-600 w-[22px] md:w-max" strokeWidth={1.5} />
                                     </button>
@@ -268,7 +268,7 @@ const Header = ({ title, showBack = true }) => {
                                 <>
                                     <Link
                                         to="/login"
-                                        className="w-max md:w-[8em] px-1 md:px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                                        className="w-max md:w-[8em] px-1 md:px-4 py-2 bg-[#FFFF45] hover:bg-yellow-200 rounded-lg transition-colors duration-200 mx-8"
                                     >
                                         {t('login')}
                                     </Link>
@@ -284,7 +284,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
                 </div>
             </header>
-          {isAuthenticated &&  <BoxMessages onClose={toggleStandardMessagesBox} isOpen={isOpenMessageBox}/> }
+            {isAuthenticated && <BoxMessages onClose={toggleStandardMessagesBox} isOpen={isOpenMessageBox} />}
         </div>
     );
 };
