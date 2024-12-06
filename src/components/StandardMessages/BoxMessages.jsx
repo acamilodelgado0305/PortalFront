@@ -7,7 +7,7 @@ import { formatDate, formattedChatInfo } from "../../helpers";
 import { events } from "../../enums/standardChatsEvents.js";
 import ChatSocketListener from "./ChatSocketListener";
 
-function BoxMessages({ isOpen }) { 
+function BoxMessages({ isOpen, setIsOpenMessageBox }) { 
   const { user } = useAuth();
   const [chats, setChats] = useState([]);
   const [chat, setChat] = useState(null);
@@ -15,6 +15,7 @@ function BoxMessages({ isOpen }) {
   const [isChatOpened, setIsChatOpened] = useState(false);
   const chatStandardSocket = useChatStandardSocket();
   const messagesEndRef = useRef(null);
+  const messagesRef = useRef(null);
 
   useEffect(() => {
      window.addEventListener("sendMessage",fetchGetChats);
@@ -23,7 +24,20 @@ function BoxMessages({ isOpen }) {
      window.removeEventListener("sendMessage", fetchGetChats);
   };
   }, []);
-
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+  
+      if (messagesRef.current && !messagesRef.current.contains(event.target)) {   
+         setIsOpenMessageBox(false)
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  
   useEffect(()=>{
     fetchGetChats()
   },[user.id])
@@ -50,7 +64,7 @@ function BoxMessages({ isOpen }) {
   if (!isOpen || !user) return null;
 
   return (
-    <>
+    <div ref={messagesRef}>
     {!isChatOpened && (
       <ChatList chats={chats} openChat={openChat}   />
     )}
@@ -68,7 +82,7 @@ function BoxMessages({ isOpen }) {
         setChats={setChats}
       />
     )}
-  </>
+  </div>
   );
 }
 

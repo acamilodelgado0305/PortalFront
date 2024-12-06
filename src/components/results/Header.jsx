@@ -284,7 +284,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
                 </div>
             </header>
-          {isAuthenticated &&  <BoxMessages onClose={toggleStandardMessagesBox} isOpen={isOpenMessageBox}/> }
+          {isAuthenticated &&  <BoxMessages setIsOpenMessageBox={setIsOpenMessageBox} isOpen={isOpenMessageBox}/> }
         </div>
     );
 };
