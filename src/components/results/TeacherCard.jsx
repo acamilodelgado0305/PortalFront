@@ -9,7 +9,7 @@ import SendTeacherMessage from "./components/SendTeacherMessage.jsx";
 import IconoMensaje from '../../assets/icons/send.svg';
 
 
-const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher }) => {
+const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher, chatsContacts, allChats }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [verMas, setVerMas] = useState(false);
@@ -24,10 +24,32 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
   };
 
 
+
   const getYouTubeThumbnail = (url) => {
     const videoId = url.split("/").pop();
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   };
+
+
+const isChatExist = (teacherId) => {
+  const otherUserIDs = chatsContacts.map(chat => chat.otherUserID);
+
+  if (!otherUserIDs.includes(teacherId)) {
+    setShowSendMessageModal(true);
+  } else {
+    // Filtrar el chat correspondiente
+    const matchedChat = chatsContacts.find(chat => chat.otherUserID === teacherId);
+
+    // Enviar el chat en el detalle del evento
+    const event = new CustomEvent("chatExist", {
+      detail: {chat: matchedChat },
+    });
+    window.dispatchEvent(event);
+  }
+};
+
+console.log('Hay token ? '+idToken)
+  
 
   return (
     <div className="group relative lg:w-9/12 ">
@@ -124,7 +146,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
               </button>
               <button
                 onClick={() => {
-                  !idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true);
+                  !idToken ? setShowRegisterModal(true) : isChatExist(teacher.id);
                 }}
                 className="w-[12em] flex items-center gap-2 border border-purple-600 text-gray-700 py-2 px-1 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
