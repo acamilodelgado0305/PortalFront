@@ -34,7 +34,7 @@ const translations = {
     }
 };
 
-const Header = ({ title, showBack = true }) => {
+const Header = ({ title, showBack = true, setChatsContacts }) => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState('es');
@@ -42,6 +42,9 @@ const Header = ({ title, showBack = true }) => {
     const [showLanguageMenu, setShowLanguageMenu] = useState(false);
     const [showCurrencyMenu, setShowCurrencyMenu] = useState(false);
     const [isOpenMessageBox, setIsOpenMessageBox] = useState(false);
+    const [chats, setChats] = useState([]);
+
+    
 
     const {handleDashboard, dashboard}= useAuth()
 
@@ -66,6 +69,10 @@ const Header = ({ title, showBack = true }) => {
         setIsAuthenticated(!!token);
        detectUserLocation(); 
     }, []);
+
+    useEffect(()=>{
+        setChatsContacts(chats)
+    },[chats])
 
     const detectUserLocation = async () => {
         try {
@@ -284,7 +291,7 @@ const Header = ({ title, showBack = true }) => {
                     </div>
                 </div>
             </header>
-          {isAuthenticated &&  <BoxMessages setIsOpenMessageBox={setIsOpenMessageBox} isOpen={isOpenMessageBox}/> }
+          {isAuthenticated &&  <BoxMessages setIsOpenMessageBox={setIsOpenMessageBox} isOpen={isOpenMessageBox}  chats={chats} setChats={setChats}/> }
         </div>
     );
 };

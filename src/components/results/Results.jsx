@@ -14,6 +14,7 @@ const Results = () => {
   const { user } = useAuth(); // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
 
   const [teachers, setTeachers] = useState([]);
+  const [ chatsContacts, setChatsContacts] = useState([]);
   const [filteredTeachers, setFilteredTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -249,6 +250,7 @@ const Results = () => {
 
       <div>
         <Header
+        setChatsContacts={setChatsContacts}
         />
       </div >
 
@@ -299,6 +301,7 @@ const Results = () => {
                 closeRegisterModal={closeRegisterModal}
                 setSelectedTeacher={setSelectedTeacher}
                 setShowCalendarModal={setShowCalendarModal}
+                chatsContacts={chatsContacts}
               />
             ))}
 

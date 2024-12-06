@@ -7,9 +7,9 @@ import { formatDate, formattedChatInfo } from "../../helpers";
 import { events } from "../../enums/standardChatsEvents.js";
 import ChatSocketListener from "./ChatSocketListener";
 
-function BoxMessages({ isOpen, setIsOpenMessageBox }) { 
+function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) { 
   const { user } = useAuth();
-  const [chats, setChats] = useState([]);
+  
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState("");
   const [isChatOpened, setIsChatOpened] = useState(false);
@@ -17,11 +17,14 @@ function BoxMessages({ isOpen, setIsOpenMessageBox }) {
   const messagesEndRef = useRef(null);
   const messagesRef = useRef(null);
 
+
   useEffect(() => {
      window.addEventListener("sendMessage",fetchGetChats);
+     window.addEventListener("chatExist", openExistingChat);
      fetchGetChats();
    return () => {
      window.removeEventListener("sendMessage", fetchGetChats);
+     window.removeEventListener("chatExist", openExistingChat);
   };
   }, []);
   useEffect(() => {
@@ -55,6 +58,21 @@ function BoxMessages({ isOpen, setIsOpenMessageBox }) {
       console.error("Error fetching chats:", error);
     }
   };
+
+  const openExistingChat = async (e) => {
+    const teacherId = e?.detail?.teacherId;
+  
+    const chat = chats.find(chat => chat.otherUserID === teacherId);
+  
+    if (chat) {
+      window.scrollTo(0, 0);
+      openChat(chat); 
+      setIsOpenMessageBox(true);
+    } else {
+      console.error("Chat no encontrado para el teacherId:", teacherId);
+    }
+  };
+  
 
   const openChat = (chat) => {
     setChat(chat);
@@ -237,7 +255,7 @@ const ChatOpened = (props) => {
               key={index}
               className={`rounded-lg py-2 px-4 text-sm min-w-[55%] ${
                 message.senderUserId === user.id
-                  ? "self-end bg-[#a855f7] bg-gradient-to-r text-white text-right"
+                  ? "self-end bg-[#6702ff75] bg-gradient-to-r text-white text-right"
                   : "self-start bg-gray-200 text-[#8a2be2] text-left"
               }`}
             >
