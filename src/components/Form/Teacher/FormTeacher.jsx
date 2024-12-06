@@ -148,7 +148,7 @@ const MultiStepForm = () => {
               {currentStep > 0 && (
                 <Button
                   onClick={prev}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-6 rounded-md transition duration-300"
+                  className="bg-gray-200 hover:bg-purple-500 text-gray-700 py-2 px-6 rounded-md transition duration-300"
                 >
                   Previous
                 </Button>
@@ -157,7 +157,7 @@ const MultiStepForm = () => {
               {currentStep < stepTitles.length - 1 && (
                 <Button
                   onClick={next}
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition duration-300"
+                  className="bg-purple-500 hover:bg-purple-500 text-white py-2 px-6 rounded-md transition duration-300"
                 >
                   Next
                 </Button>
