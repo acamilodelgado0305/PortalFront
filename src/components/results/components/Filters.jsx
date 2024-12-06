@@ -11,17 +11,43 @@ const Filters = ({
     setShowFilterModal,
 }) => {
     const [priceRange, setPriceRange] = useState({
-        min: activeFilters.priceRange?.[0] || 10,
-        max: activeFilters.priceRange?.[1] || 35,
+        min: activeFilters.priceRange?.[0] || 5,
+        max: activeFilters.priceRange?.[1] || 100,
     });
     const [showCalendarModal, setShowCalendarModal] = useState(false); // Controlar visibilidad del calendario
     const [availabilityFilters, setAvailabilityFilters] = useState([]); // Acumular días y horarios seleccionados
     const filterRefs = useRef({});
 
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Revisar cada modal activo
+            Object.keys(showFilterModal).forEach((key) => {
+                if (showFilterModal[key] && filterRefs.current[key]) {
+                    // Verificar si el clic fue fuera del modal
+                    if (!filterRefs.current[key].contains(event.target)) {
+                        setShowFilterModal((prev) => ({
+                            ...prev,
+                            [key]: false
+                        }));
+                    }
+                }
+            });
+        };
+
+        // Agregar event listener
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // Cleanup
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showFilterModal]);
+
     useEffect(() => {
         setPriceRange({
-            min: activeFilters.priceRange?.[0] || 10,
-            max: activeFilters.priceRange?.[1] || 35,
+            min: activeFilters.priceRange?.[0] || 5,
+            max: activeFilters.priceRange?.[1] || 100,
         });
     }, [activeFilters.priceRange]);
 
@@ -66,7 +92,6 @@ const Filters = ({
 
         return (
             <div
-                ref={(el) => (filterRefs.current[filterKey] = el)}
                 className="absolute mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-20 w-[100%]"
             >
                 <div className="p-4">
@@ -91,39 +116,41 @@ const Filters = ({
     };
 
     const FilterButton = ({ label, value, filterKey }) => (
-        <div className="relative inline-block" ref={(el) => (filterRefs.current[filterKey] = el)}>
-            <button
-                className="bg-white md:text-2xl text-sm p-6 md:w-[10em] md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] font-medium  py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center border-2 border-purple-600 rounded-xl flex justify-between "
-                onClick={() =>
-                    setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
-                }
-            >
-                <span>{label}</span>
-                {value && <span className="text-gray-400">{value}</span>}
-                <svg
-                    className="w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+        <div className="relative inline-block">
+            <div ref={(el) => (filterRefs.current[filterKey] = el)}>
+                <button
+                    className="bg-white md:text-2xl text-sm p-6 md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] font-medium py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center border-2 border-purple-600 rounded-xl flex justify-between"
+                    onClick={() =>
+                        setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
+                    }
                 >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-            </button>
+                    <span className="truncate mr-2">{label}</span>
+                    {value && <span className="text-xl text-gray-400">{value}</span>}
+                    <svg
+                        className="w-4 h-4 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
 
-            <FilterModal
-                title={label}
-                options={
-                    filterKey === 'country'
-                        ? filterOptions[filterKey].map((item) => item.name)
-                        : filterOptions[filterKey] || []
-                }
-                onSelect={(selected) => {
-                    setActiveFilters((prev) => ({ ...prev, [filterKey]: selected }));
-                }}
-                onClose={() => setShowFilterModal((prev) => ({ ...prev, [filterKey]: false }))}
-                isOpen={showFilterModal[filterKey]}
-                filterKey={filterKey}
-            />
+                <FilterModal
+                    title={label}
+                    options={
+                        filterKey === 'country'
+                            ? filterOptions[filterKey].map((item) => item.name)
+                            : filterOptions[filterKey] || []
+                    }
+                    onSelect={(selected) => {
+                        setActiveFilters((prev) => ({ ...prev, [filterKey]: selected }));
+                    }}
+                    onClose={() => setShowFilterModal((prev) => ({ ...prev, [filterKey]: false }))}
+                    isOpen={showFilterModal[filterKey]}
+                    filterKey={filterKey}
+                />
+            </div>
         </div>
     );
 
@@ -144,6 +171,8 @@ const Filters = ({
             priceRange: [prev.priceRange?.[0] || priceRange.min, newMax],
         }));
     };
+
+
 
     return (
         <>
@@ -236,14 +265,14 @@ const Filters = ({
                                         <div
                                             className="slider-range"
                                             style={{
-                                                left: `${((priceRange.min - 10) / 25) * 100}%`,
-                                                right: `${100 - ((priceRange.max - 10) / 25) * 100}%`,
+                                                left: `${((priceRange.min - 5) / 95) * 100}%`,
+                                                right: `${100 - ((priceRange.max - 5) / 95) * 100}%`,
                                             }}
                                         ></div>
                                         <input
                                             type="range"
-                                            min="10"
-                                            max="35"
+                                            min="5"
+                                            max="100"
                                             step="1"
                                             value={priceRange.min}
                                             onChange={handleMinChange}
@@ -251,14 +280,15 @@ const Filters = ({
                                         />
                                         <input
                                             type="range"
-                                            min="10"
-                                            max="35"
+                                            min="5"
+                                            max="100"
                                             step="1"
                                             value={priceRange.max}
                                             onChange={handleMaxChange}
                                             className="slider"
                                         />
                                     </div>
+
                                 </div>
                             </div>
                         )}
@@ -280,42 +310,50 @@ const Filters = ({
                         />
                     </div>
                     <FilterButton
-                    
+
                         label="Especialidades"
                         value={activeFilters.specialty}
                         filterKey="specialty"
                     />
-                    
+
 
                     <button
-                        className={`bg-white md:text-2xl text-sm  md:w-[10em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 text-purple-600 border-2 border-purple-600 rounded-xl hover:bg-gray-50 ${activeFilters.isNative ? 'bg-blue-50' : ''
+                        className={`md:text-2xl text-sm md:w-[12em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 border-2 rounded-xl transition-colors duration-200 ${activeFilters.isNative
+                            ? 'bg-white text-purple-600 border-purple-600 hover:bg-gray-50'
+                            : 'bg-white text-purple-600 border-purple-600 hover:bg-gray-50'
                             }`}
-                        onClick={() => setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))}
+                        onClick={() =>
+                            setActiveFilters((prev) => ({ ...prev, isNative: !prev.isNative }))
+                        }
                     >
-                        Hablante nativo
+                        {activeFilters.isNative ? 'Hablante no nativo' : 'Hablante nativo'}
                     </button>
                 </div>
 
-                <div className="col-span-1  md:space-y-4 ">
-                    <div className="relative w-[11em]">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por nombre"
-                            value={activeFilters.fullName || ''}
-                            onChange={handleNameChange}
-                            className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-1 md:py-3 text-xl md:text-2xl text-400 placeholder:text-purple-600"
-                        />
+                <div className="col-span-1 md:space-y-4">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="relative w-[11em]">
+                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-purple-600" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por nombre"
+                                value={activeFilters.fullName || ''}
+                                onChange={handleNameChange}
+                                className="w-[12em] border-2 border-purple-600 rounded-xl pl-10 pr-6 py-1 md:py-3 text-xl md:text-2xl text-400 placeholder:text-purple-600"
+                            />
+                        </div>
+
+                        <button
+                            onClick={handleClearFilters}
+                            className="ml-4 bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium"
+                        >
+                            <X size={20} />
+                            Limpiar filtros
+                        </button>
                     </div>
-
-                    <button
-                        onClick={handleClearFilters}
-                        className="w-full bg-transparent rounded-xl px-6 py-3 text-xl text-gray-600 border border-gray flex items-center justify-center gap-3 font-medium fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
-                    >
-                        <X size={20} />
-                        Limpiar filtros
-                    </button>
                 </div>
+
+
             </div>
 
             {showCalendarModal && (

@@ -44,7 +44,7 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
     fetchGetChats();
   }, [user.id]);
 
-  useEffect(() => {}, [chats]);
+  useEffect(() => {}, [chats.length]);
 
   const fetchGetChats = async () => {
     try {
@@ -60,9 +60,8 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
 
   const openExistingChat = async (e) => {
     const teacherId = e?.detail?.teacherId;
-
     const chat = chats.find((chat) => chat.otherUserID === teacherId);
-
+    console.log('Se tendria que haber abierto este chat')
     if (chat) {
       window.scrollTo(0, 0);
       openChat(chat);

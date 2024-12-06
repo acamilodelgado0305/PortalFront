@@ -42,7 +42,7 @@ const Results = () => {
   });
 
   const filterOptions = {
-    priceRange: [10, 35],
+    priceRange: [5,100],
     country: [
       { code: 'us', name: 'Estados Unidos' },
       { code: 'es', name: 'España' },
@@ -68,7 +68,6 @@ const Results = () => {
     const getAllTeachers = async () => {
       try {
         const response = await fetch("https://back.app.esturio.com/api/teachers");
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -116,7 +115,7 @@ const Results = () => {
 
   const clearFilters = () => {
     setActiveFilters({
-      priceRange: [0, 35],
+      priceRange: [0, 100],
       country: '',
       availability: '',
       specialty: '',

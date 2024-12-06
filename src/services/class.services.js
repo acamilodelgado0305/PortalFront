@@ -21,7 +21,7 @@ const readAllClasses= async () => {
 
   const getClassById = async (id) => {
     try {
-      const response = await backApi.get(`/api/clases/${id}`);
+      const response = await backApi.get(`/api/classes/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error getting class with id ${id}:`, error);
@@ -31,7 +31,7 @@ const readAllClasses= async () => {
 
 const getClassesByTeacherId = async(teacherId) =>{
     try {
-        const response = await backApi.get(`/api/clases/teacherId/${teacherId}`);
+        const response = await backApi.get(`/api/classes/teacherId/${teacherId}`);
         return response.data;
       } catch (error) {
         console.error(`Error getting classes with teacherId : ${teacherId}:`, error);
@@ -41,7 +41,7 @@ const getClassesByTeacherId = async(teacherId) =>{
 
 const getClassesByStudentId = async(studentId) =>{
     try {
-        const response = await backApi.get(`/api/clases/studentId/${studentId}`);
+        const response = await backApi.get(`/api/classes/studentId/${studentId}`);
         return response.data;
       } catch (error) {
         console.error(`Error getting classes with studentId : ${studentId}:`, error);
@@ -52,7 +52,7 @@ const getClassesByStudentId = async(studentId) =>{
 
   const updateClassById = async (id, updatedData) => {
     try {
-      const response = await backApi.put(`/api/clases/${id}`, updatedData);
+      const response = await backApi.put(`/api/classes/${id}`, updatedData);
       return response.data;
     } catch (error) {
       console.error(`Error updating class with id ${id}:`, error);
@@ -62,7 +62,7 @@ const getClassesByStudentId = async(studentId) =>{
   
   const deleteClassById = async (id) => {
     try {
-      const response = await backApi.delete(`/api/clases/${id}`);
+      const response = await backApi.delete(`/api/classes/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error deleting class with id ${id}:`, error);
