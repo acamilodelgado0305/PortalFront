@@ -59,16 +59,12 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
   };
 
   const openExistingChat = async (e) => {
-    const teacherId = e?.detail?.teacherId;
-    const chat = chats.find((chat) => chat.otherUserID === teacherId);
-    console.log('Se tendria que haber abierto este chat')
+    const chat = e?.detail?.chat;
     if (chat) {
       window.scrollTo(0, 0);
       openChat(chat);
       setIsOpenMessageBox(true);
-    } else {
-      console.error("Chat no encontrado para el teacherId:", teacherId);
-    }
+    } 
   };
 
   const openChat = (chat) => {

@@ -9,7 +9,7 @@ import SendTeacherMessage from "./components/SendTeacherMessage.jsx";
 import IconoMensaje from '../../assets/icons/send.svg';
 
 
-const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher, chatsContacts }) => {
+const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher, chatsContacts, allChats }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [verMas, setVerMas] = useState(false);
@@ -31,18 +31,24 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
   };
 
 
-  const isChatExist = (teacherId) => {
-    const otherUserIDs = chatsContacts.map(chat => chat.otherUserID);
-  
-    if (!otherUserIDs.includes(teacherId)) {
-      setShowSendMessageModal(true);
-    } else {
-      const event = new CustomEvent("chatExist", {
-        detail: { teacherId },
-      });
-      window.dispatchEvent(event);
-    }
-  };
+const isChatExist = (teacherId) => {
+  const otherUserIDs = chatsContacts.map(chat => chat.otherUserID);
+
+  if (!otherUserIDs.includes(teacherId)) {
+    setShowSendMessageModal(true);
+  } else {
+    // Filtrar el chat correspondiente
+    const matchedChat = chatsContacts.find(chat => chat.otherUserID === teacherId);
+
+    // Enviar el chat en el detalle del evento
+    const event = new CustomEvent("chatExist", {
+      detail: {chat: matchedChat },
+    });
+    window.dispatchEvent(event);
+  }
+};
+
+console.log('Hay token ? '+idToken)
   
 
   return (
