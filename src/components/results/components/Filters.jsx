@@ -11,8 +11,8 @@ const Filters = ({
     setShowFilterModal,
 }) => {
     const [priceRange, setPriceRange] = useState({
-        min: activeFilters.priceRange?.[0] || 10,
-        max: activeFilters.priceRange?.[1] || 35,
+        min: activeFilters.priceRange?.[0] || 5,
+        max: activeFilters.priceRange?.[1] || 100,
     });
     const [showCalendarModal, setShowCalendarModal] = useState(false); // Controlar visibilidad del calendario
     const [availabilityFilters, setAvailabilityFilters] = useState([]); // Acumular días y horarios seleccionados
@@ -46,8 +46,8 @@ const Filters = ({
 
     useEffect(() => {
         setPriceRange({
-            min: activeFilters.priceRange?.[0] || 10,
-            max: activeFilters.priceRange?.[1] || 35,
+            min: activeFilters.priceRange?.[0] || 5,
+            max: activeFilters.priceRange?.[1] || 100,
         });
     }, [activeFilters.priceRange]);
 
@@ -124,8 +124,8 @@ const Filters = ({
                         setShowFilterModal((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }))
                     }
                 >
-                    <span>{label}</span>
-                    {value && <span className="text-gray-400">{value}</span>}
+                    <span className="truncate mr-2">{label}</span>
+                    {value && <span className="text-xl text-gray-400">{value}</span>}
                     <svg
                         className="w-4 h-4 text-gray-400"
                         fill="none"
@@ -171,6 +171,8 @@ const Filters = ({
             priceRange: [prev.priceRange?.[0] || priceRange.min, newMax],
         }));
     };
+
+
 
     return (
         <>
@@ -263,14 +265,14 @@ const Filters = ({
                                         <div
                                             className="slider-range"
                                             style={{
-                                                left: `${((priceRange.min - 10) / 25) * 100}%`,
-                                                right: `${100 - ((priceRange.max - 10) / 25) * 100}%`,
+                                                left: `${((priceRange.min - 5) / 95) * 100}%`,
+                                                right: `${100 - ((priceRange.max - 5) / 95) * 100}%`,
                                             }}
                                         ></div>
                                         <input
                                             type="range"
-                                            min="10"
-                                            max="35"
+                                            min="5"
+                                            max="100"
                                             step="1"
                                             value={priceRange.min}
                                             onChange={handleMinChange}
@@ -278,14 +280,15 @@ const Filters = ({
                                         />
                                         <input
                                             type="range"
-                                            min="10"
-                                            max="35"
+                                            min="5"
+                                            max="100"
                                             step="1"
                                             value={priceRange.max}
                                             onChange={handleMaxChange}
                                             className="slider"
                                         />
                                     </div>
+
                                 </div>
                             </div>
                         )}
@@ -316,7 +319,7 @@ const Filters = ({
 
                     <button
                         className={`md:text-2xl text-sm md:w-[12em] w-[11em] md:h-[2.5em] h-[2.9em] p-6 text-center font-medium px-6 py-3 border-2 rounded-xl transition-colors duration-200 ${activeFilters.isNative
-                            ? 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700'
+                            ? 'bg-white text-purple-600 border-purple-600 hover:bg-gray-50'
                             : 'bg-white text-purple-600 border-purple-600 hover:bg-gray-50'
                             }`}
                         onClick={() =>
