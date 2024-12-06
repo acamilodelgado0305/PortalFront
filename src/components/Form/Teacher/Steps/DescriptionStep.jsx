@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Typography, Alert } from "antd";
+import { Form, Input, Button, Typography, Alert, Descriptions } from "antd";
+import { CheckCircleOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 const { Title, Paragraph, Link } = Typography;
 
 const stepsContent = [
   {
-    title: "1. Introduce yourself",
-    description:
-      "Show potential students who you are! Share your teaching experience and passion for education and briefly mention your interests and hobbies.",
-    placeholder: "Hello, my name is... and I'm from...",
-    name: "introduction",
-    message: "Please introduce yourself",
+    title: "1. Write a catchy headline",
+    description: "",
+    placeholder: "Write a catchy headline...",
+    name: "headline",
+    message: "Please write a headline",
   },
   {
     title: "2. Teaching experience",
@@ -28,11 +28,12 @@ const stepsContent = [
     message: "Please motivate your students",
   },
   {
-    title: "4. Write a catchy headline",
-    description: "",
-    placeholder: "Write a catchy headline...",
-    name: "headline",
-    message: "Please write a headline",
+    title: "4. Introduce yourself",
+    description:
+      "Show potential students who you are! Share your teaching experience and passion for education and briefly mention your interests and hobbies.",
+    placeholder: "Hello, my name is... and I'm from...",
+    name: "introduction",
+    message: "Please introduce yourself",
   },
 ];
 
@@ -72,7 +73,7 @@ const ProfileDescriptionStep = ({ onChange, setIsVerified }) => {
     const allFieldsFilled = Object.values(formValues).every(value => value.trim() !== "");
     setIsVerified(allFieldsFilled);
   }, [formValues]);
-
+  
   return (
     <div className="mx-auto max-w-lg p-6">
       <h1 className="text-2xl md:text-3xl font-bold">Profile description</h1>
@@ -85,33 +86,36 @@ const ProfileDescriptionStep = ({ onChange, setIsVerified }) => {
       </Paragraph>
 
       <Form form={form} layout="vertical">
-        {stepsContent.slice(0, step + 1).map((item, index) => (
-          <div key={index}>
-            <Title level={window.innerWidth < 640 ? 4 : 3} className="py-2 md:py-0">{item.title}</Title>
-            {index === step && item.description && (
-              <Paragraph>{item.description}</Paragraph>
-            )}
-            {index === step && (
-              <Form.Item
-                name={item.name}
-                rules={[{ required: true, message: item.message }]}
-              >
-                <TextArea
-                className="text-lg border-2 border-black rounded-md"
-                  rows={6}
-                  placeholder={item.placeholder}
+        {stepsContent.slice(0, step + 1).map((item, index) => {
+          const description = formValues[item.name];
+          return (
+            <div key={index}>
+              <Title level={window.innerWidth < 640 ? 4 : 3} className="py-2 md:py-0">{item.title}   {<CheckCircleOutlined  className={`text-lg ${description? "text-green-500": "text-red-400"}`}/>}  </Title>
+              {index === step && item.description && (
+                <Paragraph>{item.description}</Paragraph>
+              )}
+              {index === step && (
+                <Form.Item
                   name={item.name}
-                  value={formValues[item.name]}
-                  onChange={(e) => {
-                    handleTextChange(e);
-                    handleInputChange(e);
-                  }}
-                  maxLength={400}
-                />
-              </Form.Item>
-            )}
-          </div>
-        ))}
+                  rules={[{ required: true, message: item.message }]}
+                >
+                  <TextArea
+                  className="text-lg border-2 border-black rounded-md"
+                    rows={6}
+                    placeholder={item.placeholder}
+                    name={item.name}
+                    value={formValues[item.name]}
+                    onChange={(e) => {
+                      handleTextChange(e);
+                      handleInputChange(e);
+                    }}
+                    maxLength={400}
+                  />
+                </Form.Item>
+              )}
+            </div>
+          )
+        })}
 
         <div className="mt-6 flex items-center justify-between">
           <span>{charCount} / 400</span>
@@ -119,12 +123,12 @@ const ProfileDescriptionStep = ({ onChange, setIsVerified }) => {
 
         <div className="mt-4">
           {step > 0 && (
-            <Button onClick={handleBackStep} className="mr-2">
+            <Button onClick={handleBackStep} className="mr-2 ">
               Previous
             </Button>
           )}
           {step < stepsContent.length - 1 && (
-            <Button type="primary" onClick={handleNextStep}>
+            <Button className="bg-purple-500" onClick={handleNextStep}>
               Continue
             </Button>
           )}
