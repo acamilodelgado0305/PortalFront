@@ -47,7 +47,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
           <div className=" w-[100%]  flex-1">
             <div className="flex items-start justify-between  w-full">
 
-              <div className={verMas?"w-full":`w-full h-[20vh] overflow-hidden`}>
+              <div className={verMas?"w-full":`w-full h-[35vh] overflow-hidden`}>
                 <div className="mb-2 flex items-center gap-2">
                   <h3 className="md:text-3xl text-2xl font-medium text-bold">
                     {teacher.firstName} {teacher.lastName}
@@ -66,12 +66,32 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                   </div>
                 </div>
 
+                 {/*------------------------*/}
 
-                <p className="mb-1 text-2xl text-black pb-4 lg:pb-0 ">
+
+                 <div className="mb-3 flex items-start gap-2 text-base md:text-2xl text-gray-600">
+                  <div className="flex flex-col items-start">
+                  <p className="mb-1 text-2xl text-black pb-4 lg:pb-0 ">
                   Enseña: {teacher.subjectYouTeach}
 
                 </p>
+                    <div className="flex gap-5 text-lg"> 
+                      <span className="block">{teacher.activeStudents || 3} estudiantes activos</span>
+                      <span className="block">{teacher.lessonsGiven || 162} lecciones</span>
+                    </div>
+                    <span className="block text-lg">
+                      Habla {teacher.language} ({teacher.languageLevel === "native" ? "Nativo" : "Avanzado"})
+                    </span>
+                  </div>
+                </div>
+                
                 <div className="md:w-[41em] w-full">
+                <p className="mb-1 md:text-2xl text-base text-black pb-4 lg:pb-0  mb-4">
+                  {teacher.description?.headline}
+                  </p>
+                  <p className="mb-1 md:text-2xl text-base text-black pb-4 lg:pb-0  mb-4">
+                  {teacher.description?.motivateStudents || "Tomar una clase es invertir en ti mismo: ganas conocimiento, descubres nuevas habilidades y te acercas a tus metas. ¡El primer paso hacia el éxito comienza aprendiendo algo nuevo hoy!"}
+                  </p>
                   <p className="mb-1 md:text-2xl text-base text-black pb-4 lg:pb-0">
 
                     {teacher.description?.introduction}
@@ -79,21 +99,6 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                     
 
                 </div>
-
-
-                {/*------------------------*/}
-
-
-                <div className="mb-3 flex items-start gap-2 text-base md:text-2xl text-gray-600">
-                  <div className="flex flex-col items-start">
-                    <span className="block">{teacher.activeStudents || 3} estudiantes activos</span>
-                    <span className="block">{teacher.lessonsGiven || 162} lecciones</span>
-                    <span className="block">
-                      Habla {teacher.language} ({teacher.languageLevel === "native" ? "Nativo" : "Avanzado"})
-                    </span>
-                  </div>
-                </div>
-
 
               </div>
 
@@ -104,6 +109,8 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                  
                 </p>
               </div>
+
+              
             </div>
 
             <p onClick={() => setVerMas(!verMas)} className="underline cursor-pointer hover:text-blue-300 md:mb-0 mb-32">{!verMas?"ver mas":"ver menos"}</p>
