@@ -108,7 +108,7 @@ const MultiStepForm = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Header />
-      <div className="p-6 bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg mb-2 hidden sm:block">
+      <div className="p-6 bg-gradient-to-r from-[#504b85] to-cyan-500 shadow-lg mb-2 hidden sm:block">
         <AntSteps current={currentStep} className="custom-steps">
           {stepTitles.map((title, index) => (
             <Step
@@ -117,7 +117,7 @@ const MultiStepForm = () => {
               icon={
                 <div className={`
                   w-8 h-8 rounded-full flex items-center justify-center
-                  ${index < currentStep ? 'bg-green-500' : index === currentStep ? 'bg-[#256CCF]' : 'bg-gray-300'}
+                  ${index < currentStep ? 'bg-green-500' : index === currentStep ? 'bg-[#8c8c27]' : 'bg-gray-300'}
                   transition-all duration-300 ease-in-out
                 `}>
                   {index < currentStep ? (
