@@ -225,7 +225,7 @@ function FormStudent() {
             onChange={handleBudgetChange}
             className="absolute -top-2 h-[50px] mt-4 w-full cursor-pointer appearance-none rounded-lg bg-transparent custom-range"
           />
-          <div className="mt-4 text-center text-xl font-semibold">
+          <div className="mt-4 text-center text-3xl font-semibold">
             {budget} {currentQuestion.unit}
           </div>
         </div>
@@ -282,13 +282,13 @@ function FormStudent() {
         onClick={() => navigate(-1)}
         className="text-purple absolute left-20 top-[10vh] md:top-20 bg-transparent text-5xl font-bold"
       >
-            {window.innerWidth < 707 ? ((!showSuboptions) ?  '←' :' ') : ('←') }
+        {window.innerWidth < 707 ? ((!showSuboptions) ? '←' : ' ') : ('←')}
       </button>
 
       <div className="flex md:h-screen items-center justify-center flex-col md:flex-row">
         <div className="flex h-full md:w-1/2 items-center p-4 md:p-10 md:pl-20">
           <h1 className="text-2xl md:text-7xl font-bold text-black  mt-[15vh] md:mt-0" >
-            {window.innerWidth < 707 ? ((!showSuboptions) ? currentQuestions[currentQuestionIndex].question : '')   : (currentQuestions[currentQuestionIndex].question)}
+            {window.innerWidth < 707 ? ((!showSuboptions) ? currentQuestions[currentQuestionIndex].question : '') : (currentQuestions[currentQuestionIndex].question)}
 
           </h1>
         </div>
