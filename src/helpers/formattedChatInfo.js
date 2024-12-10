@@ -1,6 +1,5 @@
+import svgProfile from '../components/StandardMessages/humanicon.svg'
 export const formattedChatInfo = (response) =>{
-
-
  return  response
           .map((chat) => {
             console.log('Otro usuario: ')
@@ -15,7 +14,7 @@ export const formattedChatInfo = (response) =>{
                 otherUser.lastName || ""
               }`,
               otherUserID: otherUser.id,
-              otherUserImage: otherUser.profileImageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVWEVLolIV4bhei6NmC_4Q7gVdygDmvdDdRA&s',
+              otherUserImage: otherUser.profileImageUrl || svgProfile,
               messages: chat.messages,
               chatId: chat.messages[0].chatId,
             };

@@ -9,17 +9,21 @@ import Header from './Header';
 import { readAllTeachers } from '../../services/teacher.services';
 import EditReservation from '../dashboard/editReservation'; // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
 import { useAuth } from '../../Context/AuthContext'; // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
+import { getStandarMessageChatsByUser } from '../../services/standardMessages.services';
+import { formattedChatInfo } from '../../helpers';
 
 const Results = () => {
   const { user } = useAuth(); // eliminar si es necesario al momento de implementar la edicion de la reserva de la clase
 
   const [teachers, setTeachers] = useState([]);
+  const [ chatsContacts, setChatsContacts] = useState([]);
   const [filteredTeachers, setFilteredTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [allChats, setAllChats] = useState([])
   const navigate = useNavigate();
   const [activeFilters, setActiveFilters] = useState({
     priceRange: '',
@@ -67,7 +71,6 @@ const Results = () => {
     const getAllTeachers = async () => {
       try {
         const response = await fetch("https://back.app.esturio.com/api/teachers");
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -94,7 +97,18 @@ const Results = () => {
         setLoading(false);
       }
     };
-
+    const fetchGetChats = async () => {
+      try {
+        const response = await getStandarMessageChatsByUser(user.id);
+        if (response?.success) {
+          const formattedChats = formattedChatInfo(response.data);
+          setAllChats(formattedChats);
+        }
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    };
+    fetchGetChats();
     getAllTeachers();
   }, []);
 
@@ -249,6 +263,7 @@ const Results = () => {
 
       <div>
         <Header
+        setChatsContacts={setChatsContacts}
         />
       </div >
 
@@ -299,6 +314,8 @@ const Results = () => {
                 closeRegisterModal={closeRegisterModal}
                 setSelectedTeacher={setSelectedTeacher}
                 setShowCalendarModal={setShowCalendarModal}
+                chatsContacts={chatsContacts}
+                allChats={allChats}
               />
             ))}
 

@@ -60,6 +60,7 @@ const ModalRegisterTeacher = ({ isOpen, onClose, selectedTeacher, setInicioSesio
         role: "teacher",
         name,
         lastName,
+        profileImageUrl:selectedTeacher.profileImageUrl,
         roleId: selectedTeacher.id  // Aquí es donde usamos el ID del profesor
       });
       if (response.success) {

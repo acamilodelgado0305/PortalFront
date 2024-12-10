@@ -9,7 +9,7 @@ import SendTeacherMessage from "./components/SendTeacherMessage.jsx";
 import IconoMensaje from '../../assets/icons/send.svg';
 
 
-const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher }) => {
+const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedTeacher, chatsContacts, allChats }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [verMas, setVerMas] = useState(false);
@@ -24,10 +24,32 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
   };
 
 
+
   const getYouTubeThumbnail = (url) => {
     const videoId = url.split("/").pop();
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   };
+
+
+const isChatExist = (teacherId) => {
+  const otherUserIDs = chatsContacts.map(chat => chat.otherUserID);
+
+  if (!otherUserIDs.includes(teacherId)) {
+    setShowSendMessageModal(true);
+  } else {
+    // Filtrar el chat correspondiente
+    const matchedChat = chatsContacts.find(chat => chat.otherUserID === teacherId);
+
+    // Enviar el chat en el detalle del evento
+    const event = new CustomEvent("chatExist", {
+      detail: {chat: matchedChat },
+    });
+    window.dispatchEvent(event);
+  }
+};
+
+console.log('Hay token ? '+idToken)
+  
 
   return (
     <div className="group relative lg:w-9/12 ">
@@ -66,12 +88,32 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                   </div>
                 </div>
 
+                 {/*------------------------*/}
 
-                <p className="mb-1 text-2xl text-black pb-4 lg:pb-0 ">
+
+                 <div className="mb-3 flex items-start gap-2 text-base md:text-2xl text-gray-600">
+                  <div className="flex flex-col items-start">
+                  <p className="mb-1 text-2xl text-black pb-4 lg:pb-0 ">
                   Enseña: {teacher.subjectYouTeach}
 
                 </p>
+                    <div className="flex gap-5 text-lg"> 
+                      <span className="block">{teacher.activeStudents || 3} estudiantes activos</span>
+                      <span className="block">{teacher.lessonsGiven || 162} lecciones</span>
+                    </div>
+                    <span className="block text-lg">
+                      Habla {teacher.language} ({teacher.languageLevel === "native" ? "Nativo" : "Avanzado"})
+                    </span>
+                  </div>
+                </div>
+                
                 <div className="md:w-[41em] w-full">
+                <p className="mb-1 md:text-2xl text-base text-black pb-4 lg:pb-0  mb-4">
+                  {teacher.description?.headline}
+                  </p>
+                  <p className="mb-1 md:text-2xl text-base text-black pb-4 lg:pb-0  mb-4">
+                  {teacher.description?.motivateStudents || "Tomar una clase es invertir en ti mismo: ganas conocimiento, descubres nuevas habilidades y te acercas a tus metas. ¡El primer paso hacia el éxito comienza aprendiendo algo nuevo hoy!"}
+                  </p>
                   <p className="mb-1 md:text-2xl text-base text-black pb-4 lg:pb-0">
 
                     {teacher.description?.introduction}
@@ -79,21 +121,6 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                     
 
                 </div>
-
-
-                {/*------------------------*/}
-
-
-                <div className="mb-3 flex items-start gap-2 text-base md:text-2xl text-gray-600">
-                  <div className="flex flex-col items-start">
-                    <span className="block">{teacher.activeStudents || 3} estudiantes activos</span>
-                    <span className="block">{teacher.lessonsGiven || 162} lecciones</span>
-                    <span className="block">
-                      Habla {teacher.language} ({teacher.languageLevel === "native" ? "Nativo" : "Avanzado"})
-                    </span>
-                  </div>
-                </div>
-
 
               </div>
 
@@ -104,6 +131,8 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
                  
                 </p>
               </div>
+
+              
             </div>
 
             <p onClick={() => setVerMas(!verMas)} className="underline cursor-pointer hover:text-blue-300 md:mb-0 mb-32">{!verMas?"ver mas":"ver menos"}</p>
@@ -117,7 +146,7 @@ const TeacherCard = ({ teacher, onVideoClick, setShowCalendarModal, setSelectedT
               </button>
               <button
                 onClick={() => {
-                  !idToken ? setShowRegisterModal(true) : setShowSendMessageModal(true);
+                  !idToken ? setShowRegisterModal(true) : isChatExist(teacher.id);
                 }}
                 className="w-[12em] flex items-center gap-2 border border-purple-600 text-gray-700 py-2 px-1 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
               >
