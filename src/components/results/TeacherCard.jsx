@@ -69,7 +69,7 @@ console.log('Hay token ? '+idToken)
           <div className=" w-[100%]  flex-1">
             <div className="flex items-start justify-between  w-full">
 
-              <div className={verMas?"w-full":`w-full h-[35vh] overflow-hidden`}>
+              <div className={verMas?"w-full":`w-full h-[16em] overflow-hidden`}>
                 <div className="mb-2 flex items-center gap-2">
                   <h3 className="md:text-3xl text-2xl font-medium text-bold">
                     {teacher.firstName} {teacher.lastName}
