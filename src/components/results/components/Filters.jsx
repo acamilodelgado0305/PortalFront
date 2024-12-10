@@ -243,7 +243,7 @@ const Filters = ({
 
                     <div className="relative inline-block" ref={(el) => (filterRefs.current.priceRange = el)}>
                         <button
-                            className="bg-white md:w-[15em] w-[11em] md:h-[4.3em] h-[2.9em] text-2xl text-sm p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
+                            className="bg-white md:w-[16em] w-[11em] md:h-[4.3em] h-[2.9em] text-2xl text-sm p-4 font-medium px-6 py-3 text-purple-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 flex flex-col items-center space-y-1 border-2 border-purple-600 rounded-xl"
                             onClick={() => setShowFilterModal((prev) => ({ ...prev, priceRange: !prev.priceRange }))}
                         >
                             <div className="text-xs text-purple-600 md:mr-40 mr-24 mt-[-0.5em] md:mt-[-0.8em]">
