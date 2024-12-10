@@ -185,7 +185,7 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
                             {/* Language Selector */}
                             <div className="relative">
                                 <button
-                                    onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                                    onClick={() => {setShowLanguageMenu(!showLanguageMenu), showCurrencyMenu&&setShowCurrencyMenu(false)}}
                                     className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
                                     aria-label={t('language')}
                                 >
@@ -211,7 +211,7 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
                             {/* Currency Selector */}
                             <div className="relative">
                                 <button
-                                    onClick={() => setShowCurrencyMenu(!showCurrencyMenu)}
+                                    onClick={() => {setShowCurrencyMenu(!showCurrencyMenu),showLanguageMenu&& setShowLanguageMenu(false)}}
                                     className="p-1 md:p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 flex items-center gap-1"
                                     aria-label="currency"
                                 >
@@ -276,7 +276,7 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
                                 <>
                                     <Link
                                         to="/login"
-                                        className="w-max md:w-[8em] px-1 md:px-4 py-2 bg-[#FFFF45] hover:bg-yellow-200 rounded-lg transition-colors duration-200 mx-8"
+                                        className="w-max  px-1 md:px-4 py-2 bg-[#FFFF45] hover:bg-yellow-200 rounded-lg transition-colors duration-200 mx-8"
                                     >
                                         {t('login')}
                                     </Link>
