@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, User, LogOut, HelpCircle, Globe, DollarSign, UserSearch } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import BoxMessages from '../StandardMessages/BoxMessages';
@@ -44,8 +44,21 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
     const [isOpenMessageBox, setIsOpenMessageBox] = useState(false);
     const [chats, setChats] = useState([]);
 
-    
-
+    const btnRef = useRef(null);
+      
+    useEffect(() => {
+        const handleClickOutsideBtn = (event) => {
+            if (btnRef.current && !btnRef.current.contains(event.target)) {
+              setShowCurrencyMenu(false);
+              setShowLanguageMenu(false);
+            }
+          };
+      
+          document.addEventListener("click", handleClickOutsideBtn);
+          return () => {
+            document.removeEventListener("click", handleClickOutsideBtn);
+          };
+    }, [])
     const { handleDashboard, dashboard } = useAuth()
 
     const t = (key) => translations[currentLanguage]?.[key] || translations['en'][key];
@@ -134,7 +147,7 @@ const Header = ({ title, showBack = true, setChatsContacts }) => {
         };
     }, []);
     return (
-        <div className="border-b border-gray-200 shadow-sm">
+        <div ref={btnRef} className="border-b border-gray-200 shadow-sm">
             <header className="bg-white sticky top-0 z-50">
                 <div className="w-full px-1 md:px-4">
                     <div className="flex justify-between items-center h-16">
