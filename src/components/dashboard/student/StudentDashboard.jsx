@@ -10,7 +10,7 @@ import { Modal, Input, Upload, message } from "antd";
 import { UserOutlined, CameraOutlined } from "@ant-design/icons";
 import { FcApproval, FcBusinessContact , FcCancel  } from "react-icons/fc";
 import { getClassesByStudentId } from "../../../services/class.services";
-import { getUpcomingClasses, getNextClass, getTimeRemaining } from "../../../helpers";
+import { getUpcomingClasses, getNextClass } from "../../../helpers";
 import CountdownTimer from "./components/CountdownTimer ";
 
 const professors = [
@@ -60,7 +60,8 @@ const StudentDashboard = () => {
       try {
         const result = await getClassesByStudentId(user.id);
         if (result.success) {
-          setClasses(result.data);
+          const activeClasses =getUpcomingClasses(result.data);
+          setClasses(activeClasses);
           setNextClass(getNextClass(result.data))
           console.log("Clases del estudiante " + JSON.stringify(result.data));
         }
@@ -94,13 +95,12 @@ const StudentDashboard = () => {
     {nextClass ? (
       <div>
         <div className="text-lg  text-gray-800">
-          <h1 className="text-xl text-[#9333ea]">Tu proxima Clase</h1>   <div className="text-lg  text-blue-400">
+          <h1 className="text-xl text-[#9333ea]">Tu proxima Clase</h1>    
+             <div className="text-lg  text-blue-400">
           Profesor: {nextClass.teacher.firstName}
         </div>
-          <span>Fecha: {nextClass.date}  {nextClass.hours}</span>
+          <span>Fecha: {nextClass.date} {nextClass.hours}</span>
         </div>
-     
-        <div className="text-gray-500">{getTimeRemaining(nextClass.date, nextClass.hours)}</div> 
         <CountdownTimer classDate={nextClass.date} classTime={nextClass.hours} />
       </div>
     ) : (
@@ -111,11 +111,13 @@ const StudentDashboard = () => {
   </div>
         </div>
 
+        {/* Card de Datos del Estudiante */}
         <div className="rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-blue-600">
             Tu Perfil
           </h2>
           <Card className="flex flex-col items-center">
+            {/* Imagen de perfil, mostrando la URL de la imagen si está disponible */}
             <div className="mb-4">
               {studentRegis.url ? (
                 <img
@@ -160,7 +162,7 @@ const StudentDashboard = () => {
             Tus Clases
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {(showAll ? getUpcomingClasses(classes): getUpcomingClasses(classes).slice(0,3)).map((professor) => (
+            {(showAll ? classes: classes.slice(0,3)).map((professor) => (
               <Card
                 key={professor.teacher.id}
                 className="shadow-md transition-all hover:shadow-lg"
@@ -196,12 +198,13 @@ const StudentDashboard = () => {
               </Card>
             ))}
           </div>
+          {classes.length > 2 &&
           <button
           onClick={() => setShowAll(!showAll)}
           className="mt-4 text-blue-500 hover:underline"
         >
           {showAll ? 'Ver menos' : 'Ver más'}
-        </button>
+        </button>}
         </div>
 
         {/* Sección de actividades */}
