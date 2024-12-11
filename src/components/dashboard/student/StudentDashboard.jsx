@@ -10,7 +10,8 @@ import { Modal, Input, Upload, message } from "antd";
 import { UserOutlined, CameraOutlined } from "@ant-design/icons";
 import { FcApproval, FcBusinessContact , FcCancel  } from "react-icons/fc";
 import { getClassesByStudentId } from "../../../services/class.services";
-import { getUpcomingClasses, getNextClass } from "../../../helpers";
+import { getUpcomingClasses, getNextClass, getTimeRemaining } from "../../../helpers";
+import CountdownTimer from "./components/CountdownTimer ";
 
 const professors = [
   { id: 1, name: "Dr. Juan Pérez", subject: "Matemáticas" },
@@ -93,12 +94,14 @@ const StudentDashboard = () => {
     {nextClass ? (
       <div>
         <div className="text-lg  text-gray-800">
-          <h1 className="text-xl text-[#9333ea]">Tu proxima Clase</h1>
-          <span>Fecha: {nextClass.date}</span>
-        </div>
-        <div className="text-lg  text-blue-400">
+          <h1 className="text-xl text-[#9333ea]">Tu proxima Clase</h1>   <div className="text-lg  text-blue-400">
           Profesor: {nextClass.teacher.firstName}
         </div>
+          <span>Fecha: {nextClass.date}  {nextClass.hours}</span>
+        </div>
+     
+        <div className="text-gray-500">{getTimeRemaining(nextClass.date, nextClass.hours)}</div> 
+        <CountdownTimer classDate={nextClass.date} classTime={nextClass.hours} />
       </div>
     ) : (
       <div className="text-gray-500 text-center">
@@ -108,13 +111,11 @@ const StudentDashboard = () => {
   </div>
         </div>
 
-        {/* Card de Datos del Estudiante */}
         <div className="rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-blue-600">
             Tu Perfil
           </h2>
           <Card className="flex flex-col items-center">
-            {/* Imagen de perfil, mostrando la URL de la imagen si está disponible */}
             <div className="mb-4">
               {studentRegis.url ? (
                 <img
