@@ -63,7 +63,6 @@ const StudentDashboard = () => {
           const activeClasses =getUpcomingClasses(result.data);
           setClasses(activeClasses);
           setNextClass(getNextClass(result.data))
-          console.log("Clases del estudiante " + JSON.stringify(result.data));
         }
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -101,7 +100,7 @@ const StudentDashboard = () => {
         </div>
           <span>Fecha: {nextClass.date} {nextClass.hours}</span>
         </div>
-        <CountdownTimer classDate={nextClass.date} classTime={nextClass.hours} />
+        <CountdownTimer nextClassId={nextClass.id} classDate={nextClass.date} classTime={nextClass.hours} />
       </div>
     ) : (
       <div className="text-gray-500 text-center">

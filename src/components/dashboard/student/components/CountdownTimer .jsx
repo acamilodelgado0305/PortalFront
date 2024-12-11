@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const CountdownTimer = ({ classDate, classTime }) => {
+const CountdownTimer = ({ nextClassId, classDate, classTime }) => {
+  const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState('');
   const [isCountdownActive, setIsCountdownActive] = useState(false);
+  const [isRedirectButtonVisible, setIsRedirectButtonVisible] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,22 +28,28 @@ const CountdownTimer = ({ classDate, classTime }) => {
       if (timeDiff <= 0) {
         clearInterval(interval);
         setTimeRemaining('La clase ya pasó.');
+        setIsCountdownActive(false); // Dejar de mostrar el contador cuando ya pasó
+        setIsRedirectButtonVisible(false); // Asegurarse de que el botón se oculte
       } else {
         const daysLeft = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
         const hoursLeft = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutesLeft = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         const secondsLeft = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
+        // Mostrar solo si faltan menos de 45 minutos
         if (minutesLeft < 45) {
-          setIsCountdownActive(true); // Mostrar cartel solo cuando falta menos de 45 minutos
+          setIsCountdownActive(true);
           setTimeRemaining(`Faltan ${minutesLeft} minutos y ${secondsLeft} segundos.`);
-        } else {
-          setIsCountdownActive(false);
-          if (daysLeft === 0) {
-            setTimeRemaining(`Hoy, faltan ${hoursLeft} horas, ${minutesLeft} minutos y ${secondsLeft} segundos.`);
+
+          // Mostrar el botón si faltan menos de 20 minutos
+          if (minutesLeft < 20) {
+            setIsRedirectButtonVisible(true);
           } else {
-            setTimeRemaining(`${daysLeft} días, ${hoursLeft} horas, ${minutesLeft} minutos y ${secondsLeft} segundos restantes.`);
+            setIsRedirectButtonVisible(false);
           }
+        } else {
+          setIsCountdownActive(false); // Si faltan más de 45 minutos, ocultar el temporizador
+          setIsRedirectButtonVisible(false); // Asegurarse de que el botón esté oculto
         }
       }
     }, 1000);
@@ -48,13 +57,26 @@ const CountdownTimer = ({ classDate, classTime }) => {
     return () => clearInterval(interval);
   }, [classDate, classTime]);
 
+  const handleGoToWhiteboard = () => {
+    navigate("/whiteboard/"+nextClassId); 
+  };
+
   return (
-    <div className="text-center py-4 px-6 rounded-md bg-[#9333ea40] shadow-lg mt-1">
-      <h3 className="text-xl font-semibold">Tiempo restante para la clase:</h3>
-      {timeRemaining && <p className="mt-2 text-lg">{timeRemaining}</p>}
-    </div>
+    isCountdownActive && (  // Solo mostrar cuando falten menos de 45 minutos
+      <div className="text-center py-4 px-6 rounded-md bg-[#9333ea40] shadow-lg mt-1">
+        <h3 className="text-xl font-semibold">Tiempo restante para la clase:</h3>
+        {timeRemaining && <p className="mt-2 text-lg">{timeRemaining}</p>}
+        {isRedirectButtonVisible && (
+          <button
+            onClick={handleGoToWhiteboard}
+            className="rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700 mt-1"
+          >
+            Ir a la Pizarra
+          </button>
+        )}
+      </div>
+    )
   );
 };
 
 export default CountdownTimer;
-
