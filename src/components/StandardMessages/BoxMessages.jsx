@@ -6,6 +6,7 @@ import { useChatStandardSocket } from "../results/ChatStandardSocketProvider.jsx
 import { formatDate, formattedChatInfo } from "../../helpers";
 import { events } from "../../enums/standardChatsEvents.js";
 import ChatSocketListener from "./ChatSocketListener";
+import "./BoxMessages.css";
 
 function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
   const { user } = useAuth();
@@ -64,7 +65,7 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
       window.scrollTo(0, 0);
       openChat(chat);
       setIsOpenMessageBox(true);
-    } 
+    }
   };
 
   const openChat = (chat) => {
@@ -260,15 +261,15 @@ const ChatOpened = (props) => {
               key={index}
               className={`min-w-[55%] rounded-lg px-4 py-2 text-sm ${
                 message.senderUserId === user.id
-                  ? "self-end bg-[#6702ff75] bg-gradient-to-r text-right text-white"
-                  : "self-start bg-gray-200 text-left text-[#8a2be2]"
+                  ? "message-outgoing self-end"
+                  : "message-incoming self-start"
               }`}
             >
               <p className="mb-1">{message.messageContent}</p>
               <small
                 className={`text-xs ${
                   message.senderUserId === user.id
-                    ? "text-[#fff]"
+                    ? "text-black"
                     : "text-[#8a2be2]"
                 }`}
               >
