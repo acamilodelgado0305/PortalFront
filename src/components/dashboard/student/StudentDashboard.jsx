@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { Button } from "antd"; // Usamos el Button de Ant Design
-import { Card } from "@mui/material"; // Usamos el Card de Material UI
-import { Link } from "react-router-dom"; // Para los enlaces
+import { Button } from "antd";
+import { Card } from "@mui/material";
+import { Link } from "react-router-dom";
 import { FormRegister } from "./components/formRegister";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
 import { data } from "autoprefixer";
-import { Modal, Input, Upload, message } from "antd"; // Usamos Ant Design para el modal
-import { UserOutlined, CameraOutlined } from "@ant-design/icons"; // Íconos de Ant Design
+import { Modal, Input, Upload, message } from "antd";
+import { UserOutlined, CameraOutlined } from "@ant-design/icons";
+import { FcApproval, FcBusinessContact , FcCancel  } from "react-icons/fc";
 import { getClassesByStudentId } from "../../../services/class.services";
+import { getUpcomingClasses, getNextClass } from "../../../helpers";
 
 const professors = [
   { id: 1, name: "Dr. Juan Pérez", subject: "Matemáticas" },
@@ -16,7 +18,6 @@ const professors = [
   { id: 3, name: "Lic. Laura Martínez", subject: "Lengua y Literatura" },
 ];
 
-// Datos simulados de estudiantes para la vista previa
 const studentData = {
   userName: "Juan Estudiante",
   email: "juan@correo.com",
@@ -26,11 +27,13 @@ const studentData = {
 
 const StudentDashboard = () => {
   const [activeSection, setActiveSection] = useState("students");
+  const [showAll, setShowAll] = useState(false);
   const [isRegister, setIsRegister] = useState(true);
   const [showModalRegister, setShowModalRegister] = useState(false);
   const [studentRegis, setStudentRegis] = useState("");
   const [classes, setClasses] = useState([]);
   const [userName, setUserName] = useState("");
+  const [nextClass, setNextClass] = useState(null)
   const { user, accessToken } = useAuth();
 
   const getStudent = async () => {
@@ -50,13 +53,15 @@ const StudentDashboard = () => {
       }
     }
   };
+
   useEffect(() => {
     const fetchClasses = async () => {
       try {
         const result = await getClassesByStudentId(user.id);
         if (result.success) {
           setClasses(result.data);
-          console.log('Clases del estudiante '+JSON.stringify(result.data))
+          setNextClass(getNextClass(result.data))
+          console.log("Clases del estudiante " + JSON.stringify(result.data));
         }
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -65,7 +70,6 @@ const StudentDashboard = () => {
     fetchClasses();
     getStudent();
   }, []);
-  console.log(studentRegis);
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-gray-50">
       {/* Encabezado */}
@@ -75,29 +79,33 @@ const StudentDashboard = () => {
         </h1>
       </div>
 
-      {/* Contenido principal */}
       <div className="flex-1 space-y-6 p-8">
         <div className="flex-1 space-y-6 p-8">
-          {/* Contenedor con los dos botones uno al lado del otro */}
           <div className="flex justify-center space-x-4">
-            {" "}
-            {/* Alinea horizontalmente y agrega espacio entre botones */}
-            {/* Botón para ir a la pizarra */}
-            <Link to="/whiteboard/:room">
+                  <Link to="/whiteboard/:room">
               <Button className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-md transition-all hover:bg-purple-700">
                 Ir a la Pizarra
               </Button>
             </Link>
-            {/* Botón "Continuar Registro" */}
-            {!isRegister && (
-              <Button
-                onClick={() => setShowModalRegister(true)}
-                className="ml-9 rounded-lg bg-purple-500 px-6 py-3 text-white shadow-md transition-all hover:bg-purple-600"
-              >
-                Continuar con el registro
-              </Button>
-            )}
+     
           </div>
+          <div className="p-4 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-4">
+    {nextClass ? (
+      <div>
+        <div className="text-lg  text-gray-800">
+          <h1 className="text-xl text-[#9333ea]">Tu proxima Clase</h1>
+          <span>Fecha: {nextClass.date}</span>
+        </div>
+        <div className="text-lg  text-blue-400">
+          Profesor: {nextClass.teacher.firstName}
+        </div>
+      </div>
+    ) : (
+      <div className="text-gray-500 text-center">
+        No hay clases próximas.
+      </div>
+    )}
+  </div>
         </div>
 
         {/* Card de Datos del Estudiante */}
@@ -135,6 +143,14 @@ const StudentDashboard = () => {
               </p>
             </div>
           </Card>
+          {!isRegister && (
+              <Button
+                onClick={() => setShowModalRegister(true)}
+                className="ml-9 rounded-lg bg-purple-500 px-6 py-3 text-white shadow-md transition-all hover:bg-purple-600"
+              >
+                Continuar con el registro
+              </Button>
+            )}
         </div>
 
         {/* Sección de profesores */}
@@ -143,7 +159,7 @@ const StudentDashboard = () => {
             Tus Clases
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {classes.map((professor) => (
+            {(showAll ? getUpcomingClasses(classes): getUpcomingClasses(classes).slice(0,3)).map((professor) => (
               <Card
                 key={professor.teacher.id}
                 className="shadow-md transition-all hover:shadow-lg"
@@ -152,7 +168,23 @@ const StudentDashboard = () => {
                   <span className="text-lg font-semibold">
                     {professor.teacher.firstName}
                   </span>
-                  <span className="text-gray-600">{professor.teacher.subjectYouTeach}</span>
+                  <span className="text-gray-600">
+                    {professor.teacher.subjectYouTeach}
+                  </span>
+                  <span className="text-gray-600">{professor.date}</span>
+                  <span className="text-gray-600">
+                    {professor.status ? (
+                  <div className="flex items-center gap-1 text-green-600 font-medium">
+                  Aceptada por el profesor <FcApproval className="text-lg" />
+                </div>
+                  
+                    ) : (
+                      <div className="flex items-center gap-1 text-[#673ab7] font-medium">
+                      Pendiente <FcBusinessContact className="text-lg" />
+                    </div>
+                    )}
+                  </span>
+
                   <Link
                     to={`/profesor/${professor.id}`}
                     className="mt-2 text-blue-500 hover:underline"
@@ -163,6 +195,12 @@ const StudentDashboard = () => {
               </Card>
             ))}
           </div>
+          <button
+          onClick={() => setShowAll(!showAll)}
+          className="mt-4 text-blue-500 hover:underline"
+        >
+          {showAll ? 'Ver menos' : 'Ver más'}
+        </button>
         </div>
 
         {/* Sección de actividades */}
