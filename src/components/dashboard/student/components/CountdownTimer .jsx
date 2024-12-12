@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { message } from 'antd'; 
 
 const CountdownTimer = ({ nextClassId, classDate }) => {
   const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState('');
   const [isRedirectButtonVisible, setIsRedirectButtonVisible] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false); 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const classDateTime = new Date(classDate);  // classDate debe ser una cadena ISO
+      const classDateTime = new Date(classDate);  
       const currentDate = new Date();
       const timeDiff = classDateTime - currentDate;
 
@@ -30,8 +32,10 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
         // Mostrar el botón solo si faltan menos de 15 minutos
         if (minutesLeft <= 15) {
           setIsRedirectButtonVisible(true);
+          setIsButtonDisabled(false); 
         } else {
-          setIsRedirectButtonVisible(false);
+          setIsRedirectButtonVisible(true);
+          setIsButtonDisabled(true);
         }
       }
     }, 1000);
@@ -40,7 +44,11 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
   }, [classDate]);
 
   const handleGoToWhiteboard = () => {
-    navigate("/whiteboard/" + nextClassId);
+    if (isButtonDisabled) {
+      message.warning('El botón estará disponible cuando falten menos de 15 minutos.');
+    } else {
+      navigate("/whiteboard/" + nextClassId);
+    }
   };
 
   return (

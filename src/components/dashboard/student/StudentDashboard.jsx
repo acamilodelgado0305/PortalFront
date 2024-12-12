@@ -72,7 +72,7 @@ const StudentDashboard = () => {
               <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
               <div className="text-lg text-blue-400">Profesor: {nextClass.teacher.firstName}</div>
               <span>Fecha: {nextClass.date} {convertToLocalTime(nextClass.hours)}</span>
-       <CountdownTimer   nextClassId={nextClass.id} classDate={nextClass.hours} /> 
+          <CountdownTimer   nextClassId={nextClass.id} classDate={nextClass.hours} /> 
             </div>
           ) : (
             <div className="text-gray-500 text-center">No hay clases próximas.</div>
