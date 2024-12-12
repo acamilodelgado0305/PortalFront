@@ -7,10 +7,10 @@ const ClassCard = ({ professor }) => {
   const { date, hours, status } = professor;
 
   return (
-    <div className="shadow-md bg-[#f0f8ff7a] transition-all hover:shadow-lg">
+    <div className="shadow-md bg-[#fff] transition-all hover:shadow-lg">
       <div className="flex flex-col p-4">
         <span className="text-lg font-semibold">{firstName}</span>
-        <span className="text-[#60a5fa]">{subjectYouTeach}</span>
+        <span className="text-purple-600">{subjectYouTeach}</span>
         <span className="text-gray-600">{date} {'  '} {convertToLocalTime(hours)}</span>
         <span className="text-gray-600">
           {!hasClassEnded(professor) && (status ? (
@@ -35,7 +35,7 @@ const ClassCard = ({ professor }) => {
         </span>
         <Link
           to={`/profesor/${professor.id}`}
-          className="mt-2 text-blue-500 hover:underline"
+          className="mt-2 text-purple-600 hover:underline"
         >
           Ver detalles
         </Link>

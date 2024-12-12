@@ -23,17 +23,21 @@ const ClasesHeader = ({ classes, onClassClick }) => {
                     : "Estudiante desconocido"}
                 </span>
                 <span className="text-gray-600">
-                  Estado: {classItem.status ? "Aprobado" : "Pendiente"}
-                </span>
-                <span className="text-gray-600">
                   Fecha:{classItem.date} {convertToLocalTime(classItem.hours)}
                 </span>
                 <span className="text-gray-600">
                   {!hasClassEnded(classItem) &&
-                         <div className="flex items-center gap-1 font-medium text-green-600">
-                          Clase pendiente
-                         <FcApproval className="text-lg" />
-                       </div>}
+                    (classItem.status ? (
+                      <div className="flex items-center gap-1 font-medium text-green-600">
+                        Aceptado por el usted{" "}
+                        <FcApproval className="text-lg" />
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 font-medium text-[#673ab7]">
+                        Pendiente de aprobación{" "}
+                        <FcBusinessContact className="text-lg" />
+                      </div>
+                    ))}
                   {hasClassEnded(classItem) && !classItem.status && (
                     <div className="flex items-center gap-1 font-medium text-[#D50000]">
                       Finalizada sin aprobar <FcCancel className="text-lg" />

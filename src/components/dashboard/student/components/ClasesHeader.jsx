@@ -31,7 +31,7 @@ const ClasesHeader = ({
         <p className="text-lg font-semibold text-[#9638e]">
           {studentRegis?.nombre || "Usuario"}
         </p>
-        <p className="text-[#7eaefa]">{studentRegis?.email || "Correo"}</p>
+        <p className="text-purple-600">{studentRegis?.email || "Correo"}</p>
       </div>
     </div>
     {!isRegister && (
@@ -52,7 +52,7 @@ const ClasesHeader = ({
         {nextClass ? (
           <div>
             <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
-            <div className="text-lg text-blue-400">
+            <div className="text-lg text-purple-600">
               Profesor: {nextClass.teacher.firstName}
             </div>
             <span>
