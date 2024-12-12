@@ -1,29 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { message } from 'antd'; 
 
 const CountdownTimer = ({ nextClassId, classDate }) => {
   const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState('');
   const [isRedirectButtonVisible, setIsRedirectButtonVisible] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false); 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const classDateTime = new Date(classDate);  
+      const classDateTime = new Date(classDate);  // classDate debe ser una cadena ISO
       const currentDate = new Date();
       const timeDiff = classDateTime - currentDate;
 
       if (timeDiff <= 0) {
         clearInterval(interval);
-        setTimeRemaining('La clase ya pasó.');
-        setIsRedirectButtonVisible(false);
+        setTimeRemaining('La clase ya empezó.');
+        setIsRedirectButtonVisible(true);
       } else {
         const minutesLeft = Math.floor(timeDiff / (1000 * 60));
         const secondsLeft = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
         // Mostrar el tiempo restante solo si faltan menos de 45 minutos
-        if (minutesLeft <= 45 && minutesLeft > 0) {
+        if (minutesLeft <= 45 && minutesLeft >= 0) {
           setTimeRemaining(`Faltan ${minutesLeft} minutos y ${secondsLeft} segundos.`);
         } else {
           setTimeRemaining('');
@@ -32,10 +30,8 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
         // Mostrar el botón solo si faltan menos de 15 minutos
         if (minutesLeft <= 15) {
           setIsRedirectButtonVisible(true);
-          setIsButtonDisabled(false); 
         } else {
-          setIsRedirectButtonVisible(true);
-          setIsButtonDisabled(true);
+          setIsRedirectButtonVisible(false);
         }
       }
     }, 1000);
@@ -44,11 +40,7 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
   }, [classDate]);
 
   const handleGoToWhiteboard = () => {
-    if (isButtonDisabled) {
-      message.warning('El botón estará disponible cuando falten menos de 15 minutos.');
-    } else {
-      navigate("/whiteboard/" + nextClassId);
-    }
+    navigate("/whiteboard/" + nextClassId);
   };
 
   return (

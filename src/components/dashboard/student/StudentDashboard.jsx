@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import { Card } from "@mui/material";
@@ -8,17 +9,20 @@ import { FormRegister } from "./components/formRegister";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
 import { getClassesByStudentId } from "../../../services/class.services";
-import { getUpcomingClasses, getNextClass, convertToLocalTime } from "../../../helpers";
+import { getUpcomingClasses, getNextClass, convertToLocalTime, getActiveClasses } from "../../../helpers";
 
 import CountdownTimer from "./components/CountdownTimer ";
 const defaultProfilePicture = "https://res.cloudinary.com/dybws2ubw/image/upload/v1725210316/avatar-image_jouu10.jpg";
 
 const StudentDashboard = () => {
+  const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const [isRegister, setIsRegister] = useState(true);
   const [showModalRegister, setShowModalRegister] = useState(false);
   const [studentRegis, setStudentRegis] = useState(null);
   const [classes, setClasses] = useState([]);
+  const [activeClass, setActiveClass ] = useState(null);
+  const [allClasses, setAllClasses] = useState(null);
   const [nextClass, setNextClass] = useState(null);
   const { user } = useAuth();
 
@@ -38,6 +42,7 @@ const StudentDashboard = () => {
       const result = await getClassesByStudentId(user.id);
       if (result.success) {
         const activeClasses = getUpcomingClasses(result.data);
+        setAllClasses(result.data)
         setClasses(activeClasses);
         setNextClass(getNextClass(result.data));
       }
@@ -45,41 +50,28 @@ const StudentDashboard = () => {
       console.error("Error fetching classes:", error);
     }
   };
-
+  const handleGoToWhiteboard = (nextClassId) => {
+    navigate("/whiteboard/" + nextClassId);
+  };
   useEffect(() => {
     fetchStudentData();
     fetchClassesData();
   }, []);
+
+useEffect(()=>{
+  if(allClasses){
+    const data = getActiveClasses(allClasses)
+  setActiveClass(data)
+    console.log('Clase activa '+JSON.stringify(data))
+}
+}, [allClasses?.length])
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-gray-50">
       <div className="sticky top-0 w-full bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md">
         <h1 className="text-center text-3xl font-semibold">Bienvenido a tu Perfil Estudiantil</h1>
       </div>
-
-      <div className="flex-1 space-y-6 p-8">
-        <div className="flex justify-center space-x-4">
-          <Link to="/whiteboard/:room">
-            <Button className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-md transition-all hover:bg-purple-700">
-              Ir a la Pizarra
-            </Button>
-          </Link>
-        </div>
-
-        <div className="p-4 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-4">
-          {nextClass ? (
-            <div>
-              <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
-              <div className="text-lg text-blue-400">Profesor: {nextClass.teacher.firstName}</div>
-              <span>Fecha: {nextClass.date} {convertToLocalTime(nextClass.hours)}</span>
-          <CountdownTimer   nextClassId={nextClass.id} classDate={nextClass.hours} /> 
-            </div>
-          ) : (
-            <div className="text-gray-500 text-center">No hay clases próximas.</div>
-          )}
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-lg">
+      <div className="rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-blue-600">Tu Perfil</h2>
           <Card className="flex flex-col items-center">
             <div className="mb-4">
@@ -104,6 +96,56 @@ const StudentDashboard = () => {
           )}
         </div>
 
+      <div className="flex-1 space-y-6 p-8">{/*
+        <div className="flex justify-center space-x-4">
+          <Link to="/whiteboard/:room">
+            <Button className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-md transition-all hover:bg-purple-700">
+              Ir a la Pizarra
+            </Button>
+          </Link>
+        </div> */}
+
+
+
+<div className="flex">
+
+        <div className="p-4 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-4">
+          {nextClass ? (
+            <div>
+              <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
+              <div className="text-lg text-blue-400">Profesor: {nextClass.teacher.firstName}</div>
+              <span>Fecha: {nextClass.date} {convertToLocalTime(nextClass.hours)}</span>
+             <CountdownTimer   nextClassId={nextClass.id} classDate={nextClass.hours} /> 
+            </div>
+          ) : (
+            <div className="text-gray-500 text-center">No hay clases próximas.</div>
+          )}
+        </div>
+        <div className="p-4 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-4">
+          {activeClass || activeClass?.length > 0 ? (
+            <>
+            <div>
+              <h1 className="text-xl text-[#9333ea]">Clase Activa</h1>
+              <div className="text-lg text-blue-400">Profesor: {activeClass[0]?.teacher?.firstName}</div>
+              <span>Fecha: {activeClass?.date} Inició {convertToLocalTime(activeClass[0]?.hours)}</span>
+           
+            </div>   <button
+            onClick={()=>handleGoToWhiteboard(activeClass[0]?.id)}
+            className="rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700 mt-1"
+          >
+            Ir a la Pizarra
+          </button></>
+          ) : (
+            <div className="text-gray-500 text-center">No hay clases Activas.</div>
+          )}
+        </div>
+
+</div>
+
+
+
+
+    
         {/* Classes Section */}
         <div className="rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-blue-600">Tus Clases</h2>
