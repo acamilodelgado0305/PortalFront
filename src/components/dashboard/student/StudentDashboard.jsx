@@ -4,7 +4,12 @@ import { Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import { Card } from "@mui/material";
 import { UserOutlined } from "@ant-design/icons";
-import { FcApproval, FcBusinessContact, FcCancel, FcRating   } from "react-icons/fc";
+import {
+  FcApproval,
+  FcBusinessContact,
+  FcCancel,
+  FcRating,
+} from "react-icons/fc";
 import { FormRegister } from "./components/formRegister";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
@@ -83,10 +88,12 @@ const StudentDashboard = () => {
           Bienvenido a tu Perfil Estudiantil
         </h1>
       </div>
-      <div className="rounded-lg  p-6 ">
-        <h2 className="mb-4 text-xl font-semibold text-blue-600">Tu Perfil</h2>
-        <div className="flex flex-col items-center">
-          <div className="mb-4">
+      <div className="rounded-lg p-6">
+        <div className="flex flex-col items-end pr-[250px]">
+          <h2 className="mb-4 text-[30px] font-semibold text-[#9638eb]">
+            Tu Perfil
+          </h2>
+          <div className="mb-1">
             <img
               src={studentRegis?.url || defaultProfilePicture}
               alt="Perfil"
@@ -110,7 +117,7 @@ const StudentDashboard = () => {
         )}
       </div>
 
-      <div className="flex-1 space-y-6 p-8">
+      <div className="flex-1 space-y-4 p-4 pb-8">
         {/*
         <div className="flex justify-center space-x-4">
           <Link to="/whiteboard/:room">
@@ -120,8 +127,8 @@ const StudentDashboard = () => {
           </Link>
         </div> */}
 
-        <div className="flex">
-          <div className="mx-auto max-w-sm space-y-4 rounded-xl  p-4 ">
+        <div className="mb-6 flex  absolute top-[300px] left-[350px]">
+          <div className="mx-4 max-w-sm rounded-xl p-4">
             {nextClass ? (
               <div>
                 <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
@@ -142,7 +149,7 @@ const StudentDashboard = () => {
               </div>
             )}
           </div>
-          <div className="mx-auto max-w-sm space-y-4 rounded-xl  p-4 ">
+          <div className="mx-6 max-w-sm rounded-xl p-4">
             {activeClass?.length > 0 ? (
               <>
                 <div>
@@ -163,19 +170,18 @@ const StudentDashboard = () => {
                 </button>
               </>
             ) : (
-              <div className="flex justify-center items-center h-full">
-              <div className="text-center text-gray-500">
-                No hay clases Activas.
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center text-gray-500">
+                  No hay clase en este momento
+                </div>
               </div>
-            </div>
-            
             )}
           </div>
         </div>
 
         {/* Classes Section */}
         <div className="rounded-lg bg-white p-6 shadow-lg">
-          <h2 className="mb-4 text-xl font-semibold text-blue-600">
+          <h2 className="mb-4 text-xl font-semibold text-[#74a5fa]">
             Próximas Actividades
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -228,7 +234,7 @@ const StudentDashboard = () => {
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow-lg">
-          <h2 className="mb-4 text-xl font-semibold text-blue-600">
+          <h2 className="mb-4 text-xl font-semibold text-[#74a5fa]">
             Todas tus clases
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -251,29 +257,29 @@ const StudentDashboard = () => {
                     {professor.date} {convertToLocalTime(professor.hours)}
                   </span>
                   <span className="text-gray-600">
-                    {!hasClassEnded(professor) && (professor.status ? (
-                      <div className="flex items-center gap-1 font-medium text-green-600">
-                        Aceptada por el profesor{" "}
-                        <FcApproval className="text-lg" />
+                    {!hasClassEnded(professor) &&
+                      (professor.status ? (
+                        <div className="flex items-center gap-1 font-medium text-green-600">
+                          Aceptada por el profesor{" "}
+                          <FcApproval className="text-lg" />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 font-medium text-[#673ab7]">
+                          Pendiente aceptación
+                          <FcBusinessContact className="text-lg" />
+                        </div>
+                      ))}
+                    {hasClassEnded(professor) && !professor.status && (
+                      <div className="flex items-center gap-1 font-medium text-[#D50000]">
+                        Finalizó sin realizarse <FcCancel className="text-lg" />
                       </div>
-                    ) : (
-                      <div className="flex items-center gap-1 font-medium text-[#673ab7]">
-                        Pendiente aceptación<FcBusinessContact className="text-lg" />
+                    )}
+                    {hasClassEnded(professor) && professor.status && (
+                      <div className="flex items-center gap-1 font-medium text-[#D50000]">
+                        Clase terminada <FcRating className="text-lg" />
                       </div>
-                    ))}
-                   {hasClassEnded(professor) && !professor.status && 
-                    <div className="flex items-center gap-1 font-medium text-[#D50000]">
-                     Finalizó sin realizarse <FcCancel  className="text-lg" />
-                  </div>
-                   }
-                         {hasClassEnded(professor) && professor.status && 
-                    <div className="flex items-center gap-1 font-medium text-[#D50000]">
-                       Clase terminada <FcRating   className="text-lg" />
-                  </div>
-                   }
-
+                    )}
                   </span>
-
 
                   {/*
                    <span className="text-gray-600">
