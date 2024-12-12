@@ -83,9 +83,9 @@ const StudentDashboard = () => {
           Bienvenido a tu Perfil Estudiantil
         </h1>
       </div>
-      <div className="rounded-lg bg-white p-6 shadow-lg">
+      <div className="rounded-lg  p-6 ">
         <h2 className="mb-4 text-xl font-semibold text-blue-600">Tu Perfil</h2>
-        <Card className="flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <div className="mb-4">
             <img
               src={studentRegis?.url || defaultProfilePicture}
@@ -99,7 +99,7 @@ const StudentDashboard = () => {
             </p>
             <p className="text-gray-600">{studentRegis?.email || user.email}</p>
           </div>
-        </Card>
+        </div>
         {!isRegister && (
           <Button
             onClick={() => setShowModalRegister(true)}
@@ -121,7 +121,7 @@ const StudentDashboard = () => {
         </div> */}
 
         <div className="flex">
-          <div className="mx-auto max-w-sm space-y-4 rounded-xl bg-white p-4 shadow-md">
+          <div className="mx-auto max-w-sm space-y-4 rounded-xl  p-4 ">
             {nextClass ? (
               <div>
                 <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
@@ -142,7 +142,7 @@ const StudentDashboard = () => {
               </div>
             )}
           </div>
-          <div className="mx-auto max-w-sm space-y-4 rounded-xl bg-white p-4 shadow-md">
+          <div className="mx-auto max-w-sm space-y-4 rounded-xl  p-4 ">
             {activeClass?.length > 0 ? (
               <>
                 <div>
