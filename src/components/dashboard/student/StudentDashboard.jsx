@@ -4,7 +4,7 @@ import { Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import { Card } from "@mui/material";
 import { UserOutlined } from "@ant-design/icons";
-import { FcApproval, FcBusinessContact } from "react-icons/fc";
+import { FcApproval, FcBusinessContact, FcCancel, FcRating   } from "react-icons/fc";
 import { FormRegister } from "./components/formRegister";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
@@ -143,7 +143,7 @@ const StudentDashboard = () => {
             )}
           </div>
           <div className="mx-auto max-w-sm space-y-4 rounded-xl bg-white p-4 shadow-md">
-            {activeClass || activeClass?.length > 0 ? (
+            {activeClass?.length > 0 ? (
               <>
                 <div>
                   <h1 className="text-xl text-[#9333ea]">Clase Activa</h1>
@@ -163,9 +163,12 @@ const StudentDashboard = () => {
                 </button>
               </>
             ) : (
+              <div className="flex justify-center items-center h-full">
               <div className="text-center text-gray-500">
                 No hay clases Activas.
               </div>
+            </div>
+            
             )}
           </div>
         </div>
@@ -224,13 +227,11 @@ const StudentDashboard = () => {
           )}
         </div>
 
-        {/* Upcoming Activities */}
         <div className="rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-blue-600">
             Todas tus clases
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Asegurándonos de que allClasses sea un array válido antes de hacer .slice() */}
             {(showAllOldClasses
               ? allClasses
               : (allClasses || []).slice(0, 3)
@@ -257,9 +258,20 @@ const StudentDashboard = () => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-1 font-medium text-[#673ab7]">
-                        Pendiente <FcBusinessContact className="text-lg" />
+                        Pendiente aceptación<FcBusinessContact className="text-lg" />
                       </div>
                     ))}
+                   {hasClassEnded(professor) && !professor.status && 
+                    <div className="flex items-center gap-1 font-medium text-[#D50000]">
+                     Finalizó sin realizarse <FcCancel  className="text-lg" />
+                  </div>
+                   }
+                         {hasClassEnded(professor) && professor.status && 
+                    <div className="flex items-center gap-1 font-medium text-[#D50000]">
+                       Clase terminada <FcRating   className="text-lg" />
+                  </div>
+                   }
+
                   </span>
 
 
