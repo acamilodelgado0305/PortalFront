@@ -48,7 +48,6 @@ const isChatExist = (teacherId) => {
   }
 };
 
-console.log('Hay token ? '+idToken)
   
 
   return (

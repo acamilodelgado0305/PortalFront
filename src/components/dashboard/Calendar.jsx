@@ -14,7 +14,6 @@ import 'moment/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { getClassesByTeacherId, getClassesByStudentId } from '../../services/class.services';
 import { formatCalendarData, formatCalendarTeacherData } from '../../helpers';
-// Configurar momento en español
 moment.locale('es');
 const localizer = momentLocalizer(moment);
 const { Title, Text } = Typography;
