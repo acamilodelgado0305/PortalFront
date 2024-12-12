@@ -14,11 +14,12 @@ const ClasesHeader = ({
 }) => {
   return (
     <div className="mb-6 flex justify-between items-center">
-  <div className="rounded-lg p-6 ">
-    <div className="flex flex-col items-center">
+  <div className="rounded-lg p-6 "> 
       <h2 className="mb-4 text-[30px] font-semibold text-[#9638eb]">
         Tu Perfil
       </h2>
+    <div className="flex flex-col items-center">
+   
       <div className="mb-4">
         <img
           src={studentRegis?.url || defaultProfilePicture}
@@ -27,10 +28,10 @@ const ClasesHeader = ({
         />
       </div>
       <div className="text-center">
-        <p className="text-lg font-semibold">
+        <p className="text-lg font-semibold text-[#9638e]">
           {studentRegis?.nombre || "Usuario"}
         </p>
-        <p className="text-gray-600">{studentRegis?.email || "Correo"}</p>
+        <p className="text-[#7eaefa]">{studentRegis?.email || "Correo"}</p>
       </div>
     </div>
     {!isRegister && (

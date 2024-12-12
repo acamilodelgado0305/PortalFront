@@ -45,9 +45,9 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
 
   return (
     timeRemaining && (
-      <div className="text-center py-4 px-6 rounded-md bg-[#9333ea40] shadow-lg mt-1">
-        <h3 className="text-xl font-semibold">Tiempo restante para la clase:</h3>
-        <p className="mt-2 text-lg">{timeRemaining}</p>
+      <div className="text-center py-4 px-6 rounded-md bg-[#9333ea40] shadow-lg mt-3">
+        <h3 className="text-lg font-semibold">Tiempo restante para la clase:</h3>
+        <p className="mt-2 text-lg text-[#9333ea]">{timeRemaining}</p>
         {isRedirectButtonVisible && (
           <button
             onClick={handleGoToWhiteboard}

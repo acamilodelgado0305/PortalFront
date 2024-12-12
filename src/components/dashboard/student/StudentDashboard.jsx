@@ -5,7 +5,8 @@ import UpcomingClasses from "./components/UpcomingClasses";
 import AllClasses from "./components/AllClasses";
 import { FormRegister } from "./components/FormRegister";
 import { useAuth } from "../../../Context/AuthContext";
-import { getStudentById,  getClassesByStudentId } from "../../../services/studendent.services";
+import { getStudentById } from "../../../services/studendent.services";
+import { getClassesByStudentId } from "../../../services/class.services";
 import { getUpcomingClasses, getNextClass } from "../../../helpers";
 
 const defaultProfilePicture =
@@ -58,6 +59,11 @@ const StudentDashboard = () => {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-gray-50">
+          <div className="sticky top-0 w-full bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md">
+        <h1 className="text-center text-3xl font-semibold">
+          Bienvenido a tu Perfil Estudiantil
+        </h1>
+      </div>
       <ClasesHeader
         studentRegis={studentRegis}
         defaultProfilePicture={defaultProfilePicture}
