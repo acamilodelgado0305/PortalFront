@@ -20,7 +20,6 @@ export const getActiveClasses = (classList) => {
     const endClassDate = new Date(classDate);
     endClassDate.setMinutes(classDate.getMinutes() + 60);
 
-    // Verificar si la clase está activa (pasó el inicio pero no más de 60 minutos)
     return currentDate >= classDate && currentDate <= endClassDate;
   });
 
