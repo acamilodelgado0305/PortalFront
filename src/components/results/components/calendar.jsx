@@ -17,7 +17,7 @@ import {
 } from "../../../services/classReservation";
 import { ComputerIcon } from "lucide-react";
 import { zonasHorariasg } from "./ZonaHoraria";
-import { getLocalStartAndEnd } from "../../../helpers/getLocalStartAndEnd";
+import { getLocalStartAndEnd, getLocalTimeWithTimezone } from "../../../helpers/getLocalStartAndEnd";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const zonasHorarias = zonasHorariasg
 
@@ -226,11 +226,13 @@ const CalendarModal = ({
       resolve(null);
       return;
     }
+
+  const hours = getLocalTimeWithTimezone(hourSelected);
    const data = {
       teacherId: teacher.userId || teacher.id,
       studentId:user.id,
       date: daySelected,
-      hours: hourSelected,
+      hours,
     }
     resolve(null);
     try {
