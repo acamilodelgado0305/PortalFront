@@ -1,14 +1,9 @@
 export const getUpcomingClasses = (classList) => {
   const currentDate = new Date();
-  
-  currentDate.setHours(0, 0, 0, 0);
-  
   const upcomingClasses = classList.filter(classItem => {
-    const [day, month, year] = classItem.date.split("/").map(Number);
-    const classDate = new Date(year, month - 1, day); 
-
-    classDate.setHours(0, 0, 0, 0);
-
+    const classDate = new Date(classItem.hours);
+    
+  
     return classDate >= currentDate;
   });
 
