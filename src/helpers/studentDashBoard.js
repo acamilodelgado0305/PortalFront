@@ -28,6 +28,15 @@ export const getActiveClasses = (classList) => {
   return activeClasses;
 };
 
+export const hasClassEnded = (classItem) => {
+  const currentDate = new Date();  
+  const classDate = new Date(classItem.hours);  
+
+  const endClassDate = new Date(classDate);
+  endClassDate.setMinutes(classDate.getMinutes() + 60);
+
+  return currentDate > endClassDate;
+};
 
 
 
