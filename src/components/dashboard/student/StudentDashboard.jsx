@@ -8,7 +8,7 @@ import { FormRegister } from "./components/formRegister";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
 import { getClassesByStudentId } from "../../../services/class.services";
-import { getUpcomingClasses, getNextClass } from "../../../helpers";
+import { getUpcomingClasses, getNextClass, convertToLocalTime } from "../../../helpers";
 
 import CountdownTimer from "./components/CountdownTimer ";
 const defaultProfilePicture = "https://res.cloudinary.com/dybws2ubw/image/upload/v1725210316/avatar-image_jouu10.jpg";
@@ -71,8 +71,8 @@ const StudentDashboard = () => {
             <div>
               <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
               <div className="text-lg text-blue-400">Profesor: {nextClass.teacher.firstName}</div>
-              <span>Fecha: {nextClass.date} {nextClass.hours}</span>
-           <CountdownTimer   nextClassId={nextClass.id} classDate={nextClass.date} classTime={nextClass.hours} /> 
+              <span>Fecha: {nextClass.date} {convertToLocalTime(nextClass.hours)}</span>
+        {/*  <CountdownTimer   nextClassId={nextClass.id} classDate={nextClass.date} classTime={nextClass.hours} />  */}  
             </div>
           ) : (
             <div className="text-gray-500 text-center">No hay clases próximas.</div>
@@ -113,7 +113,7 @@ const StudentDashboard = () => {
                 <div className="flex flex-col p-4">
                   <span className="text-lg font-semibold">{professor.teacher.firstName}</span>
                   <span className="text-gray-600">{professor.teacher.subjectYouTeach}</span>
-                  <span className="text-gray-600">{professor.date}</span>
+                  <span className="text-gray-600">{professor.date} {convertToLocalTime(professor.hours)}</span>
                   <span className="text-gray-600">
                     {professor.status ? (
                       <div className="flex items-center gap-1 text-green-600 font-medium">

@@ -227,7 +227,7 @@ const CalendarModal = ({
       return;
     }
 
-  const hours = getLocalTimeWithTimezone(hourSelected);
+  const hours = getLocalTimeWithTimezone(daySelected, hourSelected);
    const data = {
       teacherId: teacher.userId || teacher.id,
       studentId:user.id,
