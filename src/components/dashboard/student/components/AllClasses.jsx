@@ -1,8 +1,13 @@
 import ClassCard from "./ClassCard";
+import { useNavigate } from "react-router-dom";
 import { Button, List, Tag } from 'antd';
 import {  UserSearch } from 'lucide-react';
 
 const AllClasses = ({ allClasses, showAllOldClasses, setShowAllOldClasses }) => {
+  const navigate = useNavigate();
+  const goToResults = ()=>{
+    navigate("/results")
+  }
   return (
     <div className={`rounded-lg bg-[#fff] p-6 shadow-lg ${allClasses?.length == 0 && 'h-[200px]'}`}>
       <h2 className="mb-4 text-xl font-semibold text-purple-600 ">Todas Tus Clases</h2>
@@ -13,7 +18,7 @@ const AllClasses = ({ allClasses, showAllOldClasses, setShowAllOldClasses }) => 
         ).map((professor) => (
           <ClassCard key={professor.teacher.id} professor={professor} />
         ))}
-         {allClasses?.length == 0 && <div className="gap-4"><div className="w-full">No has acordado una clase aún. ¡Contacta con un profesor en la sección de Result! </div><Button className="bg-purple-600 text-white  mt-2">Result <UserSearch/></Button></div>}
+         {allClasses?.length == 0 && <div className="gap-4"><div className="w-full">No has acordado una clase aún. ¡Contacta con un profesor en la sección de Result! </div><Button className="bg-purple-600 text-white  mt-2" onClick={goToResults}>Result <UserSearch/></Button></div>}
       </div>
       {allClasses && allClasses.length > 3 && (
         <button
