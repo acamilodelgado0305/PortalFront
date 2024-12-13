@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "antd";
-import CountdownTimer from "../../student/components/CountdownTimer";
+import CountdownTimer from "../../CountdownTimer";
 import { convertToLocalTime } from "../../../../helpers";
 const defaultProfilePicture =
   "https://res.cloudinary.com/dybws2ubw/image/upload/v1725210316/avatar-image_jouu10.jpg";

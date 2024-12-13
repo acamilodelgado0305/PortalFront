@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "antd";
-import CountdownTimer from "./CountdownTimer";
+import CountdownTimer from "../../CountdownTimer";
 import { convertToLocalTime } from "../../../../helpers";
 
 const ClasesHeader = ({
