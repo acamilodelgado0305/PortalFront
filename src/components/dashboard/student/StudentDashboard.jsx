@@ -70,7 +70,6 @@ const StudentDashboard = () => {
         nextClass={nextClass}
         isRegister={isRegister}
         setShowModalRegister={setShowModalRegister}
-        handleGoToWhiteboard={handleGoToWhiteboard}
         activeClass={activeClass}
       />
       <div className="flex-1 space-y-4 p-4 pb-8">

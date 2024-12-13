@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { getClassesByTeacherId, updateClassById } from "../../../services/class.services.js";
-import { getUpcomingClasses, getNextClass, getActiveClasses } from "../../../helpers";
+import { getUpcomingClasses, getNextClass, getActiveClasses, sortClassesByDate } from "../../../helpers";
 import { useAuth } from '../../../Context/AuthContext.jsx';
 import StudentLastMessages from './components/StudentLastMessages.jsx';
 import AllClasses from './components/AllClasses.jsx'; 
 import ClassesHeader from './components/ClassesHeader.jsx'
-import StudentsToApprove from './components/StudentsToApprove.jsx'; 
+import ClassesToApprove from './components/ClassesToApprove.jsx'; 
 import { getTeacherById } from '../../../services/teacher.services.js';
 import UpcomingClasses from './components/UpcomingClasses.jsx';
 
@@ -23,29 +23,14 @@ const TeacherDashboard = () => {
   const handleViewClass = (classId) => {
     setActiveSection('classDetail');
   };
-
-  const approveStudent = async (classId) => {
-    try {
-      const data = { status: true };
-      const result = await updateClassById(classId, data);
-      if (result.success) {
-        setClasses(prevClasses =>
-          prevClasses.map(item =>
-            item.id === classId ? { ...item, status: true } : item
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error approving student:", error);
-    }
-  };
+  
 
   const fetchClasses = async () => {
     try {
       const result = await getClassesByTeacherId(user.id);
       if (result.success) {
         setClasses(getUpcomingClasses(result.data)); // clases activas
-        setAllClasses(result.data); // Activas e inactivas
+        setAllClasses(sortClassesByDate(result.data)); // Activas e inactivas
         setActiveClass(getActiveClasses(result.data)); // clase del momento
         setNextClass(getNextClass(result.data)); // proxima clase
       }
@@ -68,7 +53,7 @@ const TeacherDashboard = () => {
     fetchTeacher();
   }, [user.id]);
 
-  const studentsToApprove = classes.filter(classItem => !classItem.status);
+  const classesToApprove = classes.filter(classItem => !classItem.status);
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -92,7 +77,7 @@ const TeacherDashboard = () => {
 
     <UpcomingClasses classes={classes} />
         
-        <StudentsToApprove studentsToApprove={studentsToApprove} approveStudent={approveStudent} />
+        <ClassesToApprove classesToApprove={classesToApprove} setClasses={setClasses} />
     <AllClasses allClasses={allClasses} />
         <StudentLastMessages user={user} />
       </div>

@@ -56,9 +56,11 @@ const ClassesHeader = ({ teacher, nextClass, activeClass }) => {
             />
           </div>
         ) : (
-          <div className="text-center text-gray-500">
-            No hay clases próximas.
-          </div>
+          <>
+              <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
+          <div className="flex gap-1 items-center justify-center py-3 px-4 rounded-md bg-[#fff] h-[100px]  text-[#9638eb]">
+          <FaCalendarTimes/>  No hay proximas clases  
+       </div></>
         )}
       </div>
 
