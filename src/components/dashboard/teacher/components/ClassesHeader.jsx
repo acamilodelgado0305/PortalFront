@@ -1,11 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { FaCalendarTimes } from "react-icons/fa";
 import { Button } from "antd";
 import CountdownTimer from "../../CountdownTimer";
 import { convertToLocalTime } from "../../../../helpers";
 const defaultProfilePicture =
   "https://res.cloudinary.com/dybws2ubw/image/upload/v1725210316/avatar-image_jouu10.jpg";
 const ClassesHeader = ({ teacher, nextClass, activeClass }) => {
-  console.log(JSON.stringify(teacher))
+   const navigate = useNavigate();
+   const handleGoToWhiteboard = (nextClassId) => {
+     navigate("/whiteboard/" + nextClassId);
+   };
   return (
 
     <div> <h2 className="m-4 text-[30px] font-semibold text-[#9638eb]">
@@ -71,18 +76,24 @@ const ClassesHeader = ({ teacher, nextClass, activeClass }) => {
                 {convertToLocalTime(activeClass[0]?.hours)}
               </span>
             </div>
-            <button
-              className="mt-1 rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700"
-            >
-              Ir a la Pizarra
-            </button>
+        <div className="text-center py-3 px-6 rounded-md bg-[#9333ea66] shadow-lg mt-3">
+                  <h3 className={`text-lg font-semibold text-[#a14eec]`}>¡La clase ya inició, ingresa aquí!</h3>
+                  <span  className={`text-lg text-[#a14eec]`}>
+                    Fecha: {activeClass?.date} Inició{" "}
+                    {convertToLocalTime(activeClass[0]?.hours)}
+                  </span>
+                  <button
+                  onClick={() => handleGoToWhiteboard(activeClass[0]?.id)}
+                  className="mt-1 rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700"
+                >
+                  Ir a la Pizarra
+                </button>
+                </div>
           </>
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-gray-500">
-              No hay clase en este momento
-            </div>
-          </div>
+              <div className="flex gap-1 items-center justify-center py-3 px-4 rounded-md bg-[#fff] h-[100px]  text-[#9638eb]">
+                     <FaCalendarTimes/>  No hay clase en este momento 
+                  </div>
         )}
       </div>
     </div></div>

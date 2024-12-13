@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import { FaCalendarTimes } from "react-icons/fa";
 import CountdownTimer from "../../CountdownTimer";
@@ -11,8 +12,11 @@ const ClasesHeader = ({
   activeClass,
   isRegister,
   setShowModalRegister,
-  handleGoToWhiteboard,
 }) => {
+  const navigate = useNavigate();
+  const handleGoToWhiteboard = (nextClassId) => {
+    navigate("/whiteboard/" + nextClassId);
+  };
   return (
     <>  
     <div className="m-4">
@@ -113,7 +117,7 @@ const ClasesHeader = ({
 
           </>
         ) : (
-          <div className="flex gap-1 items-center justify-center py-3 px-4 rounded-md bg-[#9333ea66] h-[100px]  text-white">
+          <div className="flex gap-1 items-center justify-center py-3 px-4 rounded-md bg-[#fff] h-[100px]  text-[#9638eb]">
              <FaCalendarTimes/>  No hay clase en este momento 
           </div>
         )}

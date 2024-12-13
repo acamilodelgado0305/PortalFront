@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import ClasesHeader from "./components/ClasesHeader";
 import UpcomingClasses from "./components/UpcomingClasses";
 import AllClasses from "./components/AllClasses";
@@ -13,7 +13,7 @@ const defaultProfilePicture =
   "https://res.cloudinary.com/dybws2ubw/image/upload/v1725210316/avatar-image_jouu10.jpg";
 
 const StudentDashboard = () => {
-  const navigate = useNavigate();
+
   const [showAllOldClasses, setShowAllOldClasses] = useState(false);
   const [isRegister, setIsRegister] = useState(true);
   const [showModalRegister, setShowModalRegister] = useState(false);
@@ -50,9 +50,7 @@ const StudentDashboard = () => {
     }
   };
 
-  const handleGoToWhiteboard = (nextClassId) => {
-    navigate("/whiteboard/" + nextClassId);
-  };
+
 
   useEffect(() => {
     fetchStudentData();
