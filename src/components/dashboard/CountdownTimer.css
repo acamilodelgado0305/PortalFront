@@ -5,8 +5,7 @@
   
   .digital-clock {
     font-family: 'DigitalClock', sans-serif;
-    font-size: 2.3rem; 
-    color: #9333ea; 
+     color: #9333ea; 
     letter-spacing: 2px; 
     text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea; 
   }
