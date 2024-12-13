@@ -14,9 +14,16 @@ const ClasesHeader = ({
   handleGoToWhiteboard,
 }) => {
   return (
-    <>  <h2 className="m-4 text-[30px] font-semibold text-[#9638eb]">
+    <>  
+    <div className="m-4">
+    <h2 className="text-[30px] font-semibold text-[#9638eb]">
         Tu Perfil
       </h2>
+      <h4 className="text-[17px] text-[#9638eb]">
+        Gestión de clases
+      </h4>
+      
+      </div>
     <div className="mb-6 flex justify-between items-center md:px-4">     
    
   <div className="rounded-lg p-6 "> 
