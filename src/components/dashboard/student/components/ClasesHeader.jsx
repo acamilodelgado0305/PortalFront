@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "antd";
+import { FaCalendarTimes } from "react-icons/fa";
 import CountdownTimer from "../../CountdownTimer";
 import { convertToLocalTime } from "../../../../helpers";
 
@@ -68,8 +69,8 @@ const ClasesHeader = ({
         ) : (
           <>
            <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
-          <div className="flex items-center justify-center py-3 px-6 rounded-md bg-[#9333ea66] h-[100px] text-white">
-            No hay clases próximas.
+          <div className="flex gap-1 items-center justify-center py-3 px-6 rounded-md bg-[#9333ea66] h-[100px] text-white">
+          <FaCalendarTimes/>  No hay clases próximas.
           </div></>
         )}
       </div>
@@ -105,10 +106,8 @@ const ClasesHeader = ({
 
           </>
         ) : (
-          <div className="flex items-center justify-center py-3 px-6 rounded-md bg-[#9333ea66] h-[100px]">
-            <div className="text-center  text-white">
-              No hay clase en este momento
-            </div>
+          <div className="flex gap-1 items-center justify-center py-3 px-4 rounded-md bg-[#9333ea66] h-[100px]  text-white">
+             <FaCalendarTimes/>  No hay clase en este momento 
           </div>
         )}
       </div>
