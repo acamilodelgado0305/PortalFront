@@ -1,51 +1,36 @@
 import React from "react";
 import { Button } from "antd";
-import CountdownTimer from "./CountdownTimer";
+import CountdownTimer from "../../student/components/CountdownTimer";
 import { convertToLocalTime } from "../../../../helpers";
-
-const ClasesHeader = ({
-  studentRegis,
-  defaultProfilePicture,
-  nextClass,
-  activeClass,
-  isRegister,
-  setShowModalRegister,
-  handleGoToWhiteboard,
-}) => {
+const defaultProfilePicture =
+  "https://res.cloudinary.com/dybws2ubw/image/upload/v1725210316/avatar-image_jouu10.jpg";
+const ClassesHeader = ({ teacher, nextClass, activeClass }) => {
+  console.log(JSON.stringify(teacher))
   return (
-    <>  <h2 className="m-4 text-[30px] font-semibold text-[#9638eb]">
+
+    <div> <h2 className="m-4 text-[30px] font-semibold text-[#9638eb]">
         Tu Perfil
       </h2>
-    <div className="mb-6 flex justify-between items-center md:px-4">     
-   
+    <div className="mb-6 flex justify-between items-center md:px-4">
   <div className="rounded-lg p-6 "> 
-
+     
     <div className="flex flex-col items-center">
    
       <div className="mb-4">
         <img
-          src={studentRegis?.url || defaultProfilePicture}
+          src={teacher?.profileImageUrl || defaultProfilePicture}
           alt="Perfil"
           className="h-[11rem] w-[11rem] rounded-full"
         />
       </div>
       <div className="text-center">
-        <p className="text-[1.5rem] font-semibold text-[#9638eb]">
-          {studentRegis?.nombre || "Usuario"}
+        <p className="text-[1.5rem] font-semibold  text-[#9638eb]">
+          {teacher?.firstName  || "Usuario"} {teacher?.lastName}
         </p>
-        <p className="text-purple-600">{studentRegis?.email || "Correo"}</p>
+        <p className="text-purple-600">{teacher?.email || "Correo"}</p>
       </div>
     </div>
-    {!isRegister && (
-      <div className="mt-6">
-        <Button
-          onClick={() => setShowModalRegister(true)}
-          className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-md transition-all hover:bg-purple-600"
-        >
-          Continuar con el registro
-        </Button>
-      </div>
-    )}
+    
   </div>
 
 
@@ -55,7 +40,7 @@ const ClasesHeader = ({
           <div>
             <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
             <div className="text-lg text-purple-600">
-              Profesor: {nextClass.teacher.firstName}
+              Estudiante: {nextClass.student.nombre}
             </div>
             <span>
               Fecha: {nextClass.date} {convertToLocalTime(nextClass.hours)}
@@ -79,7 +64,7 @@ const ClasesHeader = ({
           <>
             <div>
               <div className="text-lg text-blue-400">
-                Profesor: {activeClass[0]?.teacher?.firstName}
+                Estudiante: {activeClass[0]?.student?.firstName}
               </div>
               <span>
                 Fecha: {activeClass?.date} Inició{" "}
@@ -87,7 +72,6 @@ const ClasesHeader = ({
               </span>
             </div>
             <button
-              onClick={() => handleGoToWhiteboard(activeClass[0]?.id)}
               className="mt-1 rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700"
             >
               Ir a la Pizarra
@@ -101,8 +85,8 @@ const ClasesHeader = ({
           </div>
         )}
       </div>
-    </div></>
+    </div></div>
   );
 };
 
-export default ClasesHeader;
+export default ClassesHeader;

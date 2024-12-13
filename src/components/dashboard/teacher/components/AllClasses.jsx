@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { hasClassEnded, convertToLocalTime } from "../../../../helpers";
 import { FcApproval, FcBusinessContact, FcCancel, FcRating } from "react-icons/fc";
 
-const ClasesHeader = ({ classes, onClassClick }) => {
+const AllClasses = ({ classes, onClassClick }) => {
   return (
     <div className="rounded-lg bg-white p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-purple-600">Tus Clases</h2>
@@ -64,4 +64,4 @@ const ClasesHeader = ({ classes, onClassClick }) => {
   );
 };
 
-export default ClasesHeader;
+export default AllClasses;
