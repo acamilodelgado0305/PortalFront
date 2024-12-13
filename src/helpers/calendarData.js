@@ -23,7 +23,6 @@ export const formatCalendarTeacherData = (data) => {
             return null; 
         }
 
-
         return {
             id, // ID de la clase
             title: `Clase con ${student.nombre} ${student.apellido}`, 

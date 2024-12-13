@@ -1,0 +1,48 @@
+.message-outgoing {
+    position: relative;
+    background-color: #d4b7ed;
+    text-align: right;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+    margin-left: auto;
+    font-weight: 500;
+  }
+  
+  .message-outgoing::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    border-left: 7px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 11px solid transparent;
+    border-bottom: 12px solid #d4b7ed;
+    transform: translateY(31%);
+  }
+  
+  /* Mensaje recibido */
+  .message-incoming {
+    position: relative;
+    background-color: #e5e5e5;
+    color: #8a2be2;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+    margin-right: auto;
+  }
+  
+  .message-incoming::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -10px; 
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent; 
+    border-top: 11px solid transparent;
+    border-bottom: 12px solid #e5e5e5; 
+    transform: translateY(31%);
+  }
+  

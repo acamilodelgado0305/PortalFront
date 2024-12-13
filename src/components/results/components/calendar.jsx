@@ -10,13 +10,14 @@ import { useEffect, useState } from "react";
 import "./WeeklyCalendar.css";
 import { useAuth } from "../../../Context/AuthContext";
 import Pay from "./pay";
+import { createClass } from "../../../services/class.services";
 import {
   createClassReservations,
   getClassReservationCurrentById,
 } from "../../../services/classReservation";
-import { createClass } from "../../../services/class.services"
 import { ComputerIcon } from "lucide-react";
 import { zonasHorariasg } from "./ZonaHoraria";
+import { getLocalStartAndEnd, getLocalTimeWithTimezone } from "../../../helpers/getLocalStartAndEnd";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const zonasHorarias = zonasHorariasg
 
@@ -87,7 +88,6 @@ const CalendarModal = ({
     return today;
   });
 
-  // funcion para optener las clases ya reservadas del profesor
   const claseReservada = async () => {
     try {
       const response = await getClassReservationCurrentById(teacher.id);
@@ -101,7 +101,6 @@ const CalendarModal = ({
     }
   };
 
-  // Calcular los días de la semana en función del inicio de la semana
   const getWeekDays = () => {
     return Array.from({ length: 7 }, (_, i) => {
       const day = new Date(startOfWeek);
@@ -122,47 +121,15 @@ const CalendarModal = ({
     setStartOfWeek(newStartOfWeek);
   };
 
-  // funciones para manejar horas
-  const getHourStudent = (date) => {
-    const dateString = new Date(date);
-    const timeZoneLocal = zonasHorarias.filter(
-      (zona) =>
-        zona.zonaHoraria == Intl.DateTimeFormat().resolvedOptions().timeZone,
-    );
-    const utcLocal = zonasHorarias.filter(
-      (z) => z.pais == timeZoneLocal[0].pais,
-    );
-    const utcTeacher = zonasHorarias.filter(
-      (z) => z.pais == teacher.countryOfBirth.toUpperCase(),
-    );
-    const diferennciaHoraria =
-      Math.abs(utcTeacher[0].utc) > Math.abs(utcLocal[0].utc)
-        ? Math.abs(utcLocal[0].utc) + utcTeacher[0].utc
-        : Math.abs(utcLocal[0].utc) - Math.abs(utcTeacher[0].utc);
-
-    let hours = dateString.getUTCHours();
-    hours = hours + diferennciaHoraria;
-    const minutes = dateString.getUTCMinutes().toString().padStart(2, "0");
-    const period = hours >= 12 ? "PM" : "AM";
-    // se suma las horas
-    //hours + horaUtc
-    // Convertir a formato de 12 horas
-    hours = hours % 12 || 12; // Si la hora es 0 (medianoche), se convierte en 12
-
-    const formattedTime = `${hours}:${minutes} ${period}`;
-    //console.log(formattedTime)
-    return formattedTime;
-  };
   const getHourTeacher = (date) => {
     const dateString = new Date(date);
+    console.log('dateString \n'+JSON.stringify(dateString))
     let hours = dateString.getUTCHours();
 
     const minutes = dateString.getUTCMinutes().toString().padStart(2, "0");
     const period = hours >= 12 ? "PM" : "AM";
-    // se suma las horas
-    //hours + horaUtc
-    // Convertir a formato de 12 horas
-    hours = hours % 12 || 12; // Si la hora es 0 (medianoche), se convierte en 12
+ 
+    hours = hours % 12 || 12; 
 
     const formattedTime = `${hours}:${minutes} ${period}`;
     return formattedTime;
@@ -183,24 +150,18 @@ const CalendarModal = ({
     let mins = minutes % 60;
     const period = hours >= 12 ? "PM" : "AM";
 
-    // Convertir a formato de 12 horas
-    hours = hours % 12 || 12; // 0 horas se convierte a 12 para AM/PM
+    hours = hours % 12 || 12; 
     return `${hours}:${mins.toString().padStart(2, "0")} ${period}`;
   }
 
-  // Procesar y generar intervalos de clases
   function processDate(date, timeSlots) {
-
-    // agregar informacion a los datos 
     setDaySelected(date),
-      setTimeSlots(timeSlots)
+    setTimeSlots(timeSlots)
     claseReservada();
     getHoursFormat(timeSlots, date);
   }
-
-  // optener horas formateadas 
-  const getHoursFormat = (timeSlots, date) => {
-    // console.log(timeSlots)
+   
+  const getHoursFormat = (timeSlots, date) =>{
     let allHours = [];
     for (let i = 0; i < timeSlots.length; i++) {
       const getHours = getCLass(timeSlots[i], date);
@@ -208,33 +169,23 @@ const CalendarModal = ({
         allHours.push(getHours[i]);
       }
     }
-    console.log('Esto debe ir en mañana ' + JSON.stringify(allHours))
+    console.log('Esto debe ir en mañana '+JSON.stringify(allHours))
 
     setMañana(allHours.filter((hora) => hora.hora.includes("AM")));
     setTarde(allHours.filter((hora) => hora.hora.includes("PM")));
     setClassInterval(allHours);
-  };
+    };
   const getCLass = (timeSlots, day) => {
-    // unificacion de las horas 
-    /* let elements = [];
-     for (let i = 0; i < timeSlots.length; i++) {
-       elements.push(timeSlots[i].start)
-       elements.push(timeSlots[i].end)
-       
-     }
-     elements.sort((a, b) => new Date(a) - new Date(b));
-     console.log(elements)*/
     const timeStart = timeSlots.start;
     const timeEnd = timeSlots.end;
-    // optener tiempo de los estudiantes y mostrarlos en la interface
-    const startMinutes = convertToMinutes(getHourStudent(timeStart));
-    const endMinutes = convertToMinutes(getHourStudent(timeEnd));
-    const allMminuts = Math.abs(startMinutes - endMinutes);
+   const hrs = getLocalStartAndEnd({start:timeStart, end:timeEnd})
 
-    // optener tiempo de los profesores
+    const startMinutes = convertToMinutes(hrs.start);
+    const endMinutes = convertToMinutes(hrs.end);
+    const allMminuts = Math.abs(startMinutes - endMinutes);
+    
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart));
-    //const endMinutesTe = convertToMinutes(getHourTeacher(timeEnd));
-    //const allMminutsTe = Math.abs(startMinutesTe - endMinutesTe);
+
 
     const classDuration = 30;
     const array = [];
@@ -248,64 +199,54 @@ const CalendarModal = ({
       const timeString = convertToTimeString(currentMinutes);
       const timeTeacher = convertToTimeString(currentMinutesTeacher);
       array.push({ hora: timeString, fecha: day, horaTeacher: timeTeacher });
-      currentMinutesTeacher += interval; // incrementer la hora a teacher
-      currentMinutes += interval; // Incrementar la hora por cada intervalo de 30 minutos
+      currentMinutesTeacher += interval; 
+      currentMinutes += interval; 
     }
-    console.log("Array que estoy devolviendo " + JSON.stringify(array));
     return array;
   };
 
-  // Función para crear una reserva
   const confirm = () =>
     new Promise((resolve) => {
       createClassReservation(resolve);
     });
 
   const createClassReservation = async (resolve) => {
-    // Validaciones
     if (!daySelected) {
       success("selecciona un dia", "warning");
-      resolve(false);
+      resolve(null);
       return;
     }
     if (!user.id) {
       success("Inicia sesion", "warning");
-      resolve(false);
+      resolve(null);
       return;
     }
     if (!hourSelected) {
       success("selecciona una hora", "warning");
-      resolve(false);
+      resolve(null);
       return;
     }
 
-    const dataReservation = {
-      studentId: user.id,
-      teacherId: teacher.id,
-      diaReserva: daySelected,
-      horaReserva: hourSelected,
-      horaReservaProfesor: hourSelectedTeacher,
-      pay: false,
-    };
-
+  const hours = getLocalTimeWithTimezone(daySelected, hourSelected);
+   const data = {
+      teacherId: teacher.userId || teacher.id,
+      studentId:user.id,
+      date: daySelected,
+      hours,
+    }
+    resolve(null);
     try {
-      const response = await createClass(dataReservation);
+      const response = await createClass(data);
       if (response.success) {
         success("realiza el pago", "success");
         setPay(true);
-        resolve(true); // Resolvemos con true para indicar éxito
-      } else {
-        success("Error al crear la reserva", "error");
-        resolve(false);
+        resolve(null);
       }
     } catch (error) {
       console.log(error);
-      success("Error al crear la reserva", "error");
-      resolve(false);
     }
   };
 
-  // Efecto para actualizar los días de la semana y fecha
   useEffect(() => {
     const weekDays = getWeekDays();
     setWeekDays(weekDays);
@@ -316,176 +257,137 @@ const CalendarModal = ({
 
   return (
     <Modal
-      title={
-        <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-          {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
-        </div>
-      } open={showCalendarModal}
-      onCancel={() => setShowCalendarModal(false)}
-      footer={null}
-      width={550}
-      height={800}
-      closeIcon={<CloseOutlined className="text-black text-xl" />}
-      centered
+    title={
+      <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
+        {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
+      </div>
+    } open={showCalendarModal}
+    onCancel={() => setShowCalendarModal(false)}
+    footer={null}
+    width={550}
+    height={800}
+    closeIcon={<CloseOutlined className="text-black text-xl" />}
+    centered
 
-    >
-      {
-        pay ?
-          <Pay />
-          :
-          <>
-            <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">
-              <div className="md:w-10 w-24 rounded">
-                <img className="rounded md:w-14 w-20 h-14" src={teacher.profileImageUrl} alt="teacher" />
-              </div>
-              <div>
-                <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
-                <p className="text-md font-sans">Para hablar de tus objetivos y plan de aprendizaje</p>
-              </div>
-
+  >
+    {
+      pay ?
+        <Pay />
+        :
+        <>
+          <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">
+            <div className="md:w-10 w-24 rounded">
+              <img className="rounded md:w-14 w-20 h-14" src={teacher.profileImageUrl} alt="teacher" />
             </div>
-            <div className="text-center">
-              <div className="flex w-full justify-around">
-                <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
-                <p className="font-sans text-xl">{fecha}</p>
-                <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
-              </div>
-              <div className="week-days border-b p-3 text-xl">
-                {weekDays.map((date, index) => {
-                  return (
-                    <div key={index} className="">
-                      <div className="day-name text-xl">{daysOfWeek[date.getDay()].slice(0, 3)}</div>
-                      <div
-                        onClick={() => { calendarTeacher[date.getDay()].enable && processDate(date.toLocaleDateString(), calendarTeacher[date.getDay()].timeSlots) }}
-                        className={`border border-white rounded w-10 h-8 p-1   border-3  ${calendarTeacher[date.getDay()].enable ? "cursor-pointer hover:border-purple-800 hover:bg-purple-500" : "bg-gray-200"} ${daySelected == date.toLocaleDateString() && "bg-purple-400 border-purple-500"}`}>{date.toLocaleDateString().split("/")[0]}</div>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="font-mono">
-                <div className="w-full flex justify-start text-md font-sans p-2 ">
-                  {
-                    daySelected ?
-                      <p>Horario disponible {mañana[0]?.hora || tarde[0]?.hora} hasta {classInterval[classInterval.length - 1]?.hora || mañana[mañana.length - 1]?.hora} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
-                      :
-                      <p>Elige un dia para reservar la clase</p>
+            <div>
+              <p className="font-bold font-sans text-xl">Reserva una clase de prueba con {teacher.firstName}</p>
+              <p className="text-md font-sans">Para hablar de tus objetivos y plan de aprendizaje</p>
+            </div>
 
-                  }
-                </div>
-
-                <div className="border-b pb-2 overflow-y-scroll h-90">
-
-                  <div>
-                    <div className="flex gap-2 m-2 font-sans font-bold">
-                      <SunOutlined className="border-b-2 border-gray-400 text-xl" />
-                      <p className=" text-xl">Por la mañana</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap text-xl ">
-
-                      {
-                        mañana.length > 0 ?
-                          mañana.map((item, i) => {
-                            const hora = horaReservada.filter((hora) => hora.horaReserva == item.hora);
-                            return (
-                              <div
-                                onClick={() => { hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? null : setHourSelected(item.hora), setHourSelectedTeacher(item.horaTeacher) }}
-                                key={i}
-                                className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}>
-                                <span style={{ fontFamily: 'fontSize, sans-serif' }}>{item.hora.split(" ")[0]}</span>
-                              </div>
-                            )
-                          })
-                          :
-                          <p className="m-2 text-lg font-sans">clases no disponibles</p>
-                      }
-                    </div>
+          </div>
+          <div className="text-center">
+            <div className="flex w-full justify-around">
+              <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handlePreviousWeek}><LeftOutlined /></div>
+              <p className="font-sans text-xl">{fecha}</p>
+              <div className="border-2 rounded text-xl  cursor-pointer hover:bg-gray-200 w-10 h-10 p-1" onClick={handleNextWeek}><RightOutlined /></div>
+            </div>
+            <div className="week-days border-b p-3 text-xl">
+              {weekDays.map((date, index) => {
+                return (
+                  <div key={index} className="">
+                    <div className="day-name text-xl">{daysOfWeek[date.getDay()].slice(0, 3)}</div>
+                    <div
+                      onClick={() => { calendarTeacher[date.getDay()].enable && processDate(date.toLocaleDateString(), calendarTeacher[date.getDay()].timeSlots) }}
+                      className={`border border-white rounded w-10 h-8 p-1   border-3  ${calendarTeacher[date.getDay()].enable ? "cursor-pointer hover:border-purple-800 hover:bg-purple-500" : "bg-gray-200"} ${daySelected == date.toLocaleDateString() && "bg-purple-400 border-purple-500"}`}>{date.toLocaleDateString().split("/")[0]}</div>
                   </div>
-                  <div className="flex flex-col">
-                    <div className="flex gap-2 m-2 font-sans font-bold  text-xl">
-                      <SunOutlined />
-                      <p>Despues de medio dia</p>
-                    </div>
-                    <div className="flex gap-2 flex-wrap text-xl">
-                      {
-                        tarde.length > 0 ?
-                          tarde.map((tarde, i) => {
-                            const hora = horaReservada.filter((hora) => hora.horaReserva == tarde.hora);
-                            return (
-                              <div onClick={() => { hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? null : setHourSelected(tarde.hora), setHourSelectedTeacher(tarde.horaTeacher) }} key={i} className={`w-[100px] border p-1 rounded select-none  ${hourSelected == tarde.hora ? "bg-purple-400" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "hover:bg-purple-500 cursor-pointer"}`}>
-                                <span style={{ fontFamily: 'fontSize, sans-serif' }}>{tarde.hora.split(" ")[0]}</span>
-                              </div>
-                            )
-                          })
-                          :
-                          <p className="m-2 font-light">clases no disponibles</p>
-                      }
-                    </div>
-                  </div>
+                )
+              })}
+            </div>
+            <div className="font-mono">
+              <div className="w-full flex justify-start text-md font-sans p-2 ">
+                {
+                  daySelected ?
+                    <p>Horario disponible {mañana[0]?.hora || tarde[0]?.hora} hasta {classInterval[classInterval.length -1]?.hora || mañana[mañana.length -1]?.hora} {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+                    :
+                    <p>Elige un dia para reservar la clase</p>
 
-                </div>
+                }
+              </div>
+
+              <div className="border-b pb-2 overflow-y-scroll h-90">
+
                 <div>
-                  <Popconfirm
-                    title="Confirmación de Reserva"
-                    description={
-                      <div>
-                        <p className="font-medium mb-2">Detalles de tu reserva:</p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Profesor: {teacher.firstName} {teacher.lastName}</li>
-                          <li>Fecha: {daySelected.split("/")[0]} de {new Date(daySelected).toLocaleString('es', { month: 'long' })}</li>
-                          <li>Hora: {hourSelected}</li>
-                        </ul>
-                        <p className="mt-2 text-gray-600">
-                          ¿Deseas confirmar esta reserva?
-                        </p>
-                      </div>
+                  <div className="flex gap-2 m-2 font-sans font-bold">
+                    <SunOutlined className="border-b-2 border-gray-400 text-xl" />
+                    <p className=" text-xl">Por la mañana</p>
+                  </div>
+                  <div className="flex gap-2 flex-wrap text-xl ">
+
+                    {
+                      mañana.length > 0 ?
+                        mañana.map((item, i) => {
+                          const hora = horaReservada.filter((hora) => hora.horaReserva == item.hora);
+                          console.log('hora reservada  '+horaReservada)
+                          return (
+                            <div
+                              onClick={() => { hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva  ? null : setHourSelected(item.hora), setHourSelectedTeacher(item.horaTeacher)}}
+                              key={i}
+                              className={`w-[100px] border p-1 rounded select-none ${hourSelected == item.hora ? "bg-purple-500" : null} ${hora[0]?.horaReserva == item.hora && item.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "cursor-pointer hover:bg-purple-500"}`}>
+                              <span style={{ fontFamily: 'fontSize, sans-serif' }}>{item.hora.split(" ")[0]}</span>
+                            </div>
+                          )
+                        })
+                        :
+                        <p className="m-2 text-lg font-sans">clases no disponibles</p>
                     }
-                    onConfirm={async () => {
-                      try {
-                        const result = await confirm();
-                        if (result) {
-                          notification.success({
-                            message: 'Reserva Exitosa',
-                            description: 'Tu clase ha sido reservada correctamente. Por favor, procede con el pago.',
-                            placement: 'top',
-                            duration: 5
-                          });
-                        } else {
-                          notification.error({
-                            message: 'Error en la Reserva',
-                            description: 'No se pudo completar la reserva. Por favor, intenta nuevamente.',
-                            placement: 'top',
-                            duration: 5
-                          });
-                        }
-                      } catch (error) {
-                        notification.error({
-                          message: 'Error',
-                          description: 'Ocurrió un error inesperado. Por favor, intenta nuevamente.',
-                          placement: 'top',
-                          duration: 5
-                        });
-                      }
-                    }}
-                    okText="Confirmar"
-                    cancelText="Cancelar"
-                    okButtonProps={{
-                      style: { backgroundColor: '#9D4EDD' }
-                    }}
-                  >
-                    <Button
-                      className="m-2 hover:opacity-90 transition-opacity"
-                      style={{ backgroundColor: '#9D4EDD' }}
-                      type="primary"
-                    >
-                      Continuar
-                    </Button>
-                  </Popconfirm>
+                  </div>
                 </div>
+                <div className="flex flex-col">
+                  <div className="flex gap-2 m-2 font-sans font-bold  text-xl">
+                    <SunOutlined />
+                    <p>Despues de medio dia</p>
+                  </div>
+                  <div className="flex gap-2 flex-wrap text-xl">
+                    {
+                      tarde.length > 0 ?
+                        tarde.map((tarde, i) => {
+                          const hora = horaReservada.filter((hora) => hora.horaReserva == tarde.hora);
+                          return (
+                            <div onClick={() => { hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva  ? null : setHourSelected(tarde.hora), setHourSelectedTeacher(tarde.horaTeacher)}} key={i} className={`w-[100px] border p-1 rounded select-none  ${hourSelected == tarde.hora ? "bg-purple-400" : null} ${hora[0]?.horaReserva == tarde.hora && tarde.fecha == hora[0]?.diaReserva ? "bg-gray-300" : "hover:bg-purple-500 cursor-pointer"}`}>
+                              <span style={{ fontFamily: 'fontSize, sans-serif' }}>{tarde.hora.split(" ")[0]}</span>
+                            </div>
+                          )
+                        })
+                        :
+                        <p className="m-2 font-light">clases no disponibles</p>
+                    }
+                  </div>
+                </div>
+
               </div>
+              <Popconfirm
+                title="confirma tu reserva"
+                description={`Reservaste una clase con el profesor ${teacher.firstName} 
+                    el dia ${daySelected.split("/")[0]} 
+                    a las ${hourSelected}`}
+                onConfirm={confirm}
+                onOpenChange={() => console.log('open change')}
+              >
+                <Button
+                  className="m-2"
+                  style={{ backgroundColor: '#9D4EDD' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
+                  type="primary"
+                >
+                  Continuar
+                </Button>
+              </Popconfirm>
             </div>
-          </>
-      }
-    </Modal>
+          </div>
+        </>
+    }
+  </Modal>
   );
 };
 
