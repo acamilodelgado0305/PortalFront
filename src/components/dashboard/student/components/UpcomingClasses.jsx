@@ -1,6 +1,8 @@
+import { useState } from "react";
 import ClassCard from "./ClassCard";
 
-const UpcomingClasses = ({ classes, showAll, setShowAll }) => {
+const UpcomingClasses = ({ classes}) => {
+  const [showAll, setShowAll] = useState(false);
   return (
     <div className={`rounded-lg bg-[#fff] p-6 shadow-lg ${classes?.length == 0 && 'h-[200px]'}`}>
       <h2 className="mb-4 text-xl font-semibold text-purple-600">Actividades Próximas</h2>

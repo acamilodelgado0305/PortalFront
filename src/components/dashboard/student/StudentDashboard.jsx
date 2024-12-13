@@ -14,7 +14,6 @@ const defaultProfilePicture =
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
-  const [showAll, setShowAll] = useState(false);
   const [showAllOldClasses, setShowAllOldClasses] = useState(false);
   const [isRegister, setIsRegister] = useState(true);
   const [showModalRegister, setShowModalRegister] = useState(false);
@@ -77,7 +76,7 @@ const StudentDashboard = () => {
         activeClass={activeClass}
       />
       <div className="flex-1 space-y-4 p-4 pb-8">
-        <UpcomingClasses classes={classes} showAll={showAll} setShowAll={setShowAll} />
+        <UpcomingClasses classes={classes} />
         <AllClasses
           allClasses={allClasses}
           showAllOldClasses={showAllOldClasses}

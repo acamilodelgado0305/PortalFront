@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { getClassesByTeacherId, updateClassById } from "../../../services/class.services.js";
-import { getUpcomingClasses, getNextClass } from "../../../helpers";
+import { getUpcomingClasses, getNextClass, getActiveClasses } from "../../../helpers";
 import { useAuth } from '../../../Context/AuthContext.jsx';
 import StudentLastMessages from './components/StudentLastMessages.jsx';
 import AllClasses from './components/AllClasses.jsx'; 
@@ -43,9 +43,10 @@ const TeacherDashboard = () => {
     try {
       const result = await getClassesByTeacherId(user.id);
       if (result.success) {
-        setClasses(getUpcomingClasses(result.data));
-        setAllClasses(result.data);
-        setNextClass(getNextClass(result.data));
+        setClasses(getUpcomingClasses(result.data)); // clases activas
+        setAllClasses(result.data); // Activas e inactivas
+        setActiveClass(getActiveClasses(result.data)); // clase del momento
+        setNextClass(getNextClass(result.data)); // proxima clase
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
@@ -76,6 +77,7 @@ const TeacherDashboard = () => {
 <ClassesHeader 
     teacher={teacherRegis}
     nextClass={nextClass}
+    activeClass={activeClass}
 
 />
    <div className="flex-1 p-8 space-y-6">
@@ -87,10 +89,10 @@ const TeacherDashboard = () => {
           </Link>
         </div> */}
 
-        <AllClasses classes={classes} />
+    
         
         <StudentsToApprove studentsToApprove={studentsToApprove} approveStudent={approveStudent} />
-
+    <AllClasses classes={allClasses} />
         <StudentLastMessages user={user} />
       </div>
     </div>
