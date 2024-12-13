@@ -78,20 +78,29 @@ const ClasesHeader = ({
         {activeClass?.length > 0 ? (
           <>
             <div>
-              <div className="text-lg text-blue-400">
+              <div className="text-lg text-[#9333ea]">
                 Profesor: {activeClass[0]?.teacher?.firstName}
               </div>
+
               <span>
+              Fecha: {activeClass[0].date} {convertToLocalTime(activeClass[0].hours)}
+            </span>
+              <div className="text-center py-3 px-6 rounded-md bg-[#9333ea66] shadow-lg mt-3">
+              <h3 className={`text-lg font-semibold text-[#a14eec]`}>¡La clase ya inició, ingresa aquí!</h3>
+              <span  className={`text-lg text-[#a14eec]`}>
                 Fecha: {activeClass?.date} Inició{" "}
                 {convertToLocalTime(activeClass[0]?.hours)}
               </span>
-            </div>
-            <button
+              <button
               onClick={() => handleGoToWhiteboard(activeClass[0]?.id)}
               className="mt-1 rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700"
             >
               Ir a la Pizarra
             </button>
+            </div>
+</div>
+
+
           </>
         ) : (
           <div className="flex h-full items-center justify-center">
