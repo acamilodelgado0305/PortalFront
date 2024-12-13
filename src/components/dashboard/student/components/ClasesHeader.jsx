@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
-import { FaCalendarTimes } from "react-icons/fa";
+import { FaCalendarTimes, FaChalkboardTeacher } from "react-icons/fa";
 import CountdownTimer from "../../CountdownTimer";
 import { convertToLocalTime } from "../../../../helpers";
 
@@ -46,7 +46,14 @@ const ClasesHeader = ({
           {studentRegis?.nombre || "Usuario"}
         </p>
         <p className="text-purple-600">{studentRegis?.email || "Correo"}</p>
+          <button
+                onClick={()=>handleGoToWhiteboard(studentRegis.id)}
+                className="rounded-lg bg-purple-500 px-6 py-1 text-white items-center justify-center shadow-md transition-all hover:bg-purple-700 mt-1 flex gap-3"
+              >
+               Pizarra de Prueba <FaChalkboardTeacher/>
+              </button>
       </div>
+
     </div>
     {!isRegister && (
       <div className="mt-6">
@@ -105,11 +112,11 @@ const ClasesHeader = ({
                 Fecha: {activeClass?.date} Inició{" "}
                 {convertToLocalTime(activeClass[0]?.hours)}
               </span>
-              <button
-              onClick={() => handleGoToWhiteboard(activeClass[0]?.id)}
-              className="mt-1 rounded-lg bg-purple-500 px-6 py-1 text-white shadow-md transition-all hover:bg-purple-700"
+         <button
+              onClick={()=>handleGoToWhiteboard(activeClass.id)}
+              className="rounded-lg bg-purple-500 px-6 py-1 text-white items-center justify-center shadow-md transition-all hover:bg-purple-700 mt-1 flex gap-3"
             >
-              Ir a la Pizarra
+              Ir a la Pizarra <FaChalkboardTeacher/>
             </button>
             </div>
 </div>
