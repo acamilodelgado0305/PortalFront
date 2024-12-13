@@ -66,9 +66,11 @@ const ClasesHeader = ({
             />
           </div>
         ) : (
-          <div className="text-center text-gray-500">
+          <>
+           <h1 className="text-xl text-[#9333ea]">Tu próxima Clase</h1>
+          <div className="flex items-center justify-center py-3 px-6 rounded-md bg-[#9333ea66] h-[100px] text-white">
             No hay clases próximas.
-          </div>
+          </div></>
         )}
       </div>
 
@@ -103,8 +105,8 @@ const ClasesHeader = ({
 
           </>
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-gray-500">
+          <div className="flex items-center justify-center py-3 px-6 rounded-md bg-[#9333ea66] h-[100px]">
+            <div className="text-center  text-white">
               No hay clase en este momento
             </div>
           </div>
