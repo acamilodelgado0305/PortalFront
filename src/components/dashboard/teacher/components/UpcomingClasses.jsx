@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ClassCard from "./ClassCard";
 
-const UpcomingClasses = ({ classes}) => {
+const UpcomingClasses = ({classes}) => {
   const [showAll, setShowAll] = useState(false);
   return (
     <div className={`rounded-lg bg-[#fff] p-6 shadow-lg ${classes?.length == 0 && 'h-[200px]'}`}>

@@ -9,6 +9,7 @@ import AllClasses from './components/AllClasses.jsx';
 import ClassesHeader from './components/ClassesHeader.jsx'
 import StudentsToApprove from './components/StudentsToApprove.jsx'; 
 import { getTeacherById } from '../../../services/teacher.services.js';
+import UpcomingClasses from './components/UpcomingClasses.jsx';
 
 
 const TeacherDashboard = () => {
@@ -89,10 +90,10 @@ const TeacherDashboard = () => {
           </Link>
         </div> */}
 
-    
+    <UpcomingClasses classes={classes} />
         
         <StudentsToApprove studentsToApprove={studentsToApprove} approveStudent={approveStudent} />
-    <AllClasses classes={allClasses} />
+    <AllClasses allClasses={allClasses} />
         <StudentLastMessages user={user} />
       </div>
     </div>
