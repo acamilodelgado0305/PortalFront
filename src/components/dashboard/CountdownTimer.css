@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'DigitalClock';
+    src: url('../../assets/fonts/DS-DIGIB.TTF') format('truetype');
+  }
+  
+  .digital-clock {
+    font-family: 'DigitalClock', sans-serif;
+     color: #9333ea; 
+    letter-spacing: 2px; 
+    text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea; 
+  }
+  

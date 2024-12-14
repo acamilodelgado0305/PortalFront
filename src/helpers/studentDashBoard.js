@@ -49,12 +49,13 @@ export const hasClassEnded = (classItem) => {
       const dateA = new Date(yearA, monthA - 1, dayA);
       const dateB = new Date(yearB, monthB - 1, dayB);
   
-      return dateA - dateB; 
+      return dateB - dateA; 
     });
   };
   
   export const getNextClass = (classList) => {
-    const upcomingClasses = getUpcomingClasses(classList);
+    const filteredClasses = classList.filter((classItem) => classItem.status);
+    const upcomingClasses = getUpcomingClasses(filteredClasses);
     
     return upcomingClasses.length > 0 ? upcomingClasses[0] : null;
   };

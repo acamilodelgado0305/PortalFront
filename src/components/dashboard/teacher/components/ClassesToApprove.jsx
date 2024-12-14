@@ -1,14 +1,32 @@
 import { Button, List, Tag } from 'antd';
 import { Link } from 'react-router-dom';
+import { updateClassById } from '../../../../services/class.services';
+import { hasClassEnded, convertToLocalTime, getUpcomingClasses } from "../../../../helpers";
 
-const StudentsToApprove = ({ studentsToApprove, approveStudent }) => {
+const ClassesToApprove = ({ classesToApprove, setClasses }) => {
+  const classesToAprove = getUpcomingClasses(classesToApprove)
+  const approveStudent = async (classId) => {
+    try {
+      const data = { status: true };
+      const result = await updateClassById(classId, data);
+      if (result.success) {
+        setClasses(prevClasses =>
+          prevClasses.map(item =>
+            item.id === classId ? { ...item, status: true } : item
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error approving student:", error);
+    }
+  };
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-xl font-semibold text-purple-600 mb-4">Estudiantes por Aprobar</h2>
-      {studentsToApprove.length > 0 ? (
+      <h2 className="text-xl font-semibold text-purple-600 mb-4">Clases por Aprobar</h2>
+      {classesToAprove.length > 0 ? (
         <List
           itemLayout="horizontal"
-          dataSource={studentsToApprove}
+          dataSource={classesToAprove}
           renderItem={(classItem) => (
             <List.Item
               key={classItem.id}
@@ -23,7 +41,7 @@ const StudentsToApprove = ({ studentsToApprove, approveStudent }) => {
             >
               <List.Item.Meta
                 title={classItem.student ? `${classItem.student.nombre} ${classItem.student.apellido}` : 'Estudiante desconocido'}
-                description={`Estado: ${classItem.status ? 'Aprobado' : 'Pendiente'}`}
+                description={`${convertToLocalTime(classItem.hours)}  ${classItem.date}`}
               />
               <Tag color={classItem.status ? 'green' : 'red'}>
                 {classItem.status ? 'Aprobado' : 'Pendiente'}
@@ -38,4 +56,4 @@ const StudentsToApprove = ({ studentsToApprove, approveStudent }) => {
   );
 };
 
-export default StudentsToApprove;
+export default ClassesToApprove;
