@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../../Context/AuthContext.jsx';
 import { pencilCursor, eraserCursor, textCursor, zoomInCursor, zoomOutCursor } from './utils/cursorIcons.js';
-import { Button, message } from 'antd';
+import { Button, notification } from 'antd';
 import { Rnd } from "react-rnd";
 import LeftControlsBar from './LeftControlsBar';
 import DrawingCanvas from './DrawingCanvas';
@@ -16,7 +16,11 @@ function WhiteBoard({ socket, context }) {
 
   useEffect(() => {
     if (user.id === room && !messageShown) {
-      message.warning('Esta pizarra es de prueba no de clase', 3);
+      notification.warning({
+        message: 'Advertencia',
+        description: 'Esta pizarra es de prueba no de clase. La pizarra de clase, se habilita 15 minutos antes de la clase',
+        duration: 6,
+      });
       setMessageShown(true); 
     }
   }, [user.id, room, messageShown]);

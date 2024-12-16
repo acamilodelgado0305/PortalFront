@@ -57,7 +57,7 @@ const TeacherDashboard = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-      <div className="w-full sticky top-0 bg-gradient-to-r from-purple-600 to-purple-400 p-6 text-white shadow-md">
+      <div className="w-full sticky top-0 bg-gradient-to-r from-purple-600 to-purple-400 p-6 text-white shadow-md z-[9] ">
         <h1 className="text-3xl font-semibold text-center">Bienvenido al Dashboard del Profesor</h1>
       </div>
 <ClassesHeader 
