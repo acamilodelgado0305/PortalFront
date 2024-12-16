@@ -1,11 +1,24 @@
 export const formatCalendarData = (data) => {
     return data.map((classData) => {
         const { teacher, hours, id, status } = classData;
+
+
+        const start = new Date(hours);
+        
+        if (isNaN(start)) {
+            console.warn('Fecha de inicio no válida:', classData);
+            return null;
+        }
+
+        const end = new Date(start);
+        end.setHours(start.getHours() + 1); 
+
+
         return {
             id, // ID de la clase
             title: `Clase con ${teacher.firstName} ${teacher.lastName}`, // Título dinámico
-            start: new Date(hours.start), // Hora de inicio
-            end: new Date(hours.end), // Hora de fin
+            start: start, // Hora de inicio
+            end: end, // Hora de fin
             studentName: `${teacher.firstName} ${teacher.lastName}`, // Nombre del profesor
             subject: teacher.subjectYouTeach, // Materia que enseña el profesor
             level: teacher.languageLevel, // Nivel de idioma del profesor
@@ -23,16 +36,26 @@ export const formatCalendarTeacherData = (data) => {
             return null; 
         }
 
+        const start = new Date(hours);
+        
+        if (isNaN(start)) {
+            console.warn('Fecha de inicio no válida:', classData);
+            return null;
+        }
+
+        const end = new Date(start);
+        end.setHours(start.getHours() + 1); 
+
         return {
             id, // ID de la clase
             title: `Clase con ${student.nombre} ${student.apellido}`, 
-            start: new Date(hours.start), 
-            end: new Date(hours.end),
+            start: start, 
+            end: end,
             studentName: `${student.nombre} ${student.apellido}`, 
             subject: 'materia', 
             level: '', 
             status: status ? 'confirmada' : 'pendiente', 
         };
-    }).filter(Boolean);
+    }).filter(Boolean); // Remove null entries
 };
 
