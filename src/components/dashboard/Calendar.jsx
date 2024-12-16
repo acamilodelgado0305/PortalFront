@@ -35,6 +35,8 @@ const Calendario = ({ user }) => {
             } else if(user.role == 'teacher') {
                 result = await getClassesByTeacherId(user.id);
                 simulatedEvents = formatCalendarTeacherData(result.data);
+                console.log('simulatedEvents \n')
+                console.log(JSON.stringify(simulatedEvents))
             } else {
              simulatedEvents = [
                 {
