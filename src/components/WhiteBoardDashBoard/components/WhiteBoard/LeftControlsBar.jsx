@@ -13,7 +13,39 @@ import { FloatButton } from "antd";
 import { FontColorsOutlined } from "@ant-design/icons";
 import { BiMinus } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
+
+import pencilBlack from "./utils/pencil-black.svg";
+import zoomPlusBlack from "./utils/zoom plus black.svg";
+import zoomMinusBlack from './utils/zoom minus black.svg';
+import undoBlack from "./utils/undo-black.svg";
+import redoBlack from "./utils/redo-black.svg";
+import trashBlack from './utils/trash-black.svg';
+import textIconBlack from "./utils/text-icon-black.svg";
+import straightBlack from "./utils/straight-black.svg";
+import squareIconBlack from "./utils/square-icon-black.svg";
 import sizeIcon from "./utils/size-icon.svg";
+import sizeBlack from "./utils/size-black.svg";
+import shareScreenBlack from "./utils/share-screen-black.svg";
+import segmentIconBlack from "./utils/segment-icon-black.svg";
+import colorPaletteBlack from "./utils/color-palette-black.svg";
+import pointerIconBlack from "./utils/pointer-icon-black.svg";
+import circleBlack from "./utils/circle-black.svg";
+
+import leftBlack from "./utils/left-black.svg";
+import homeBlack from "./utils/home-black.svg";
+import handIconBlack from "./utils/hand-icon-black.svg";
+import filesBlack from "./utils/files-black.svg";
+import eraserBlack from "./utils/eraser-black.svg";
+import crossBlack from "./utils/cross-black.svg";
+
+import classicStyleBlack from "./utils/classic-style-black.svg";
+
+import chatBlack from "./utils/chat-black.svg";
+import blurCircleBlack from "./utils/blur-circle-black.svg";
+import blackLock from "./utils/black-lock.svg";
+import backgroundIconBlack from "./utils/background-icon-black.svg"
+import arrowIconBlack from "./utils/arrow-icon-black.svg"
+
 
 // GLOBAL
 const emitToSocket = true;
@@ -80,7 +112,8 @@ const TrashBinClearerButton = ({ context, style }) => (
     onClick={() => context.clearWhiteBoard(emitToSocket)}
     style={style}
   >
-    <RiDeleteBin6Line size={30} />
+    {/* trashBlack */}
+    <img src={trashBlack}  alt="uploadBlack Icon" style={{ width: "30px", height: "30px" }}/>
   </Button>
 );
 
@@ -91,14 +124,22 @@ const UndoRedoButtons = ({ context, style }) => (
       style={style}
       activeCondition={false}
     >
-      <IoReturnUpBack size={25} />
+    <img src={undoBlack}  alt="uploadBlack Icon" style={{ width: "30px", height: "30px" }}/>
     </Button>
     <Button
       onClick={() => context.redo(emitToSocket)}
       style={style}
       activeCondition={false}
     >
-      <IoReturnUpForward size={25} />
+       <img 
+  src={redoBlack} 
+  alt="redoBlack Icon" 
+  style={{ 
+    width: "30px", 
+    height: "30px", 
+  }} 
+/>
+
     </Button>
   </>
 );
@@ -109,7 +150,7 @@ const ZoomButton = ({ context, style }) => (
     style={style}
     activeCondition={context.drawingMode === "zoom"}
   >
-    {context.zoomType === "in" ? <BsZoomIn size={30} /> : <BsZoomOut size={30} />}
+    {context.zoomType === "in" ? <img src={zoomPlusBlack}  alt="Zoom plusIcon" style={{ width: "30px", height: "30px" }}/> : <img src={zoomMinusBlack}  alt="Zoom munus Icon" style={{ width: "30px", height: "30px" }}/>}
   </Button>
 );
 
@@ -123,7 +164,14 @@ const PencilEraserToggleButton = ({ context, style }) => (
       style={style}
       activeCondition={context.drawingMode === "draw" && context.currentDrawTool === "line"}
     >
-      <BsPencil size={30} />
+          <img 
+  src={pencilBlack} 
+  alt="pencilBlack Icon" 
+  style={{ 
+    width: "30px", 
+    height: "30px", 
+  }} 
+/>
     </Button>
     <Button
       onClick={() => {
@@ -132,7 +180,15 @@ const PencilEraserToggleButton = ({ context, style }) => (
       style={style}
       activeCondition={context.drawingMode === "erase"}
     >
-      <BsEraser size={30} />
+      {/* eraserBlack */}
+      <img 
+  src={eraserBlack} 
+  alt="eraserBlack Icon" 
+  style={{ 
+    width: "30px", 
+    height: "30px", 
+  }} 
+/>
     </Button>
   </>
 );
@@ -161,7 +217,7 @@ const ColorOptionButton = ({ context, style, isMovil }) => {
         style={style}
         activeCondition={false}
       >
-        <IoColorPaletteOutline size={30} />
+        <img src={colorPaletteBlack}  alt="uploadBlack Icon" style={{ width: "30px", height: "30px" }}/>
       </Button>
     </>
   );
@@ -199,11 +255,12 @@ const LineWidthPickerButton = ({ context, style, isMovil }) => {
 };
 
 const CurrentDrawToolPickerButtons = ({ context, style }) => {
+  // circleBlack
   const tools = [
-    { name: "rectangle", icon: <FaRegSquare size={30} /> },
-    { name: "circle", icon: <FaRegCircle size={30} /> },
-    { name: "straightLine", icon: <BiMinus size={30} /> },
-    { name: "arrow", icon: <FaLongArrowAltRight size={30} style={{ height: "40%", width: "120%" }} /> },
+    { name: "rectangle", icon: <img src={squareIconBlack} alt="squareIconBlack Icon" style={{ width: "30px", height: "30px" }} /> },
+    { name: "circle", icon: <img src={circleBlack} alt="circleBlack Icon" style={{ width: "30px", height: "30px" }} />  },
+    { name: "straightLine", icon:  <img src={segmentIconBlack} alt="segmentIconBlack Icon" style={{ width: "30px", height: "30px" }} /> },
+    { name: "arrow", icon:  <img src={straightBlack} alt="straightBlack Icon" style={{ width: "30px", height: "30px" }} /> },
   ];
   return (
     <div className="flex flex-col gap-1">
@@ -227,7 +284,8 @@ const TextButton = ({ context, style }) => (
     style={style}
     activeCondition={context.drawingMode === "text"}
   >
-    <FontColorsOutlined style={{ fontSize: "30px" }} />
+    {/* textIconBlack  handIconBlack*/}
+    <img src={textIconBlack} alt="Text Icon" style={{ width: "30px", height: "30px" }} />
   </Button>
 );
 
@@ -237,7 +295,7 @@ const DruggerButton = ({ context, style }) => (
     style={style}
     activeCondition={context.drawingMode === "hand"}
   >
-    {context.drawingMode === "hand" ? <FaRegHandRock size={30} /> : <FaRegHandPaper size={30} />}
+    <img src={handIconBlack} alt="Text Icon" style={{ width: "30px", height: "30px" }} /> 
   </Button>
 );
 
