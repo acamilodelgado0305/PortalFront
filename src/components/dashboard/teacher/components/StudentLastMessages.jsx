@@ -6,7 +6,19 @@ import { formattedChatInfo } from "../../../../helpers";
 
 function StudentLastMessages({user}) {
     const [chats, setChats] = useState([]);
-    useEffect(() => {
+
+    const handleOpenConversation = (chat) => {
+      const event = new CustomEvent("openConversation", {
+        detail: { chat }
+      });
+      window.dispatchEvent(event);
+    };
+
+    const handleOpenMessagesBox =()=>{
+        const event = new Event("openBoxMessage");
+        window.dispatchEvent(event);
+    }
+  useEffect(() => {
         const fetchGetChats = async () => {
             try {
               const response = await getStandarMessageChatsByUser(user.id);
@@ -21,19 +33,13 @@ function StudentLastMessages({user}) {
           fetchGetChats();
     }, [user.id]);
 
-    const handleOpenMessagesBox =()=>{
-        const event = new Event("openBoxMessage");
-        window.dispatchEvent(event);
-    }
-
-
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-xl font-semibold text-purple-600 mb-4">Chat con Estudiantes</h2>
     <div className="space-y-4">
         {/* Solo quiero que se vean los ultimos tres chats de la lista de chats */}
         {chats.slice(0,3).map((conversation, index) => (
-            <div key={index} className="flex items-center space-x-4">
+            <div key={index} className="flex items-center space-x-4 cursor-pointer" onClick={()=>{handleOpenConversation(conversation)}}>
                 <MessageOutlined className="text-purple-600 w-6 h-6" />
                 <span className="text-lg font-semibold">{conversation.otherUserName}</span>
                 <p className="text-gray-500">
