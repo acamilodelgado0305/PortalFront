@@ -12,7 +12,7 @@ export const WhiteBoardSocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('https://back-prueba.app.esturio.com/whiteboard'); 
+    const newSocket = io('https://back.app.esturio.com/whiteboard'); 
     setSocket(newSocket);
     return () => {
       newSocket.close();
