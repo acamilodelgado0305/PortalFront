@@ -16,7 +16,7 @@ const ClassesHeader = ({ teacher, nextClass, activeClass }) => {
     <div> <h2 className="m-4 text-[30px] font-semibold text-[#9638eb]">
         Tu Perfil
       </h2>
-    <div className="mb-6 flex justify-between items-center md:px-4">
+    <div className="mb-6 flex flex-col md:flex-row justify-between items-center md:px-4">
   <div className="rounded-lg p-6 "> 
      
     <div className="flex flex-col items-center">
