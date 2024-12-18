@@ -21,10 +21,12 @@ function BoxMessages({ isOpen, setIsOpenMessageBox, chats, setChats }) {
   useEffect(() => {
     window.addEventListener("sendMessage", fetchGetChats);
     window.addEventListener("chatExist", openExistingChat);
+    window.addEventListener("openConversation",openExistingChat )
     fetchGetChats();
     return () => {
       window.removeEventListener("sendMessage", fetchGetChats);
       window.removeEventListener("chatExist", openExistingChat);
+      window.addEventListener("openConversation",openExistingChat );
     };
   }, []);
   useEffect(() => {

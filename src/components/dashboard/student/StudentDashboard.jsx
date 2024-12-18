@@ -59,7 +59,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-gray-50">
-          <div className="sticky top-0 w-full bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md">
+          <div className="sticky top-0 w-full bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md z-[9]">
         <h1 className="text-center text-3xl font-semibold">
           Bienvenido a tu Perfil Estudiantil
         </h1>

@@ -21,7 +21,7 @@ const ClassCard = ({ classItem }) => {
         <span className="text-gray-600">
           {!hasClassEnded(classItem) &&
             (classItem.status ? (
-              <div className="flex items-center gap-1 font-medium text-green-600">
+              <div className="flex items-center gap-1 font-medium text-[#8bc34a]">
                 Aceptado por usted <FcApproval className="text-lg" />
               </div>
             ) : (
@@ -35,7 +35,7 @@ const ClassCard = ({ classItem }) => {
             </div>
           )}
           {hasClassEnded(classItem) && classItem.status && (
-            <div className="flex items-center gap-1 font-medium text-[#D50000]">
+            <div className="flex items-center gap-1 font-medium text-[#f44336]">
               Clase finalizada <FcRating className="text-lg" />
             </div>
           )}

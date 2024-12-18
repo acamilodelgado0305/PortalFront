@@ -14,7 +14,7 @@ const ClassCard = ({ professor }) => {
         <span className="text-gray-600">{date} {'  '} {convertToLocalTime(hours)}</span>
         <span className="text-gray-600">
           {!hasClassEnded(professor) && (status ? (
-            <div className="flex items-center gap-1 font-medium text-green-600">
+            <div className="flex items-center gap-1 font-medium text-[#8bc34a]">
               Aceptado por el profesor <FcApproval className="text-lg" />
             </div>
           ) : (
@@ -28,7 +28,7 @@ const ClassCard = ({ professor }) => {
             </div>
           )}
           {hasClassEnded(professor) && status && (
-            <div className="flex items-center gap-1 font-medium text-[#D50000]">
+            <div className="flex items-center gap-1 font-medium text-[#f44336]">
               Clase finalizada <FcRating className="text-lg" />
             </div>
           )}
