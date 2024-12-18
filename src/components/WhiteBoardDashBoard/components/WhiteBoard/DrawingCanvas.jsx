@@ -63,7 +63,6 @@ function DrawingCanvas({ context }) {
   const handleWheelZoom = (event) => {
     const stage = event.target.getStage();
     const position = event.target.getStage().getPointerPosition();
-    console.log(JSON.stringify(event))
     if (event.evt.deltaY < 0) {
       // porque siempre entra aqui, sin importar si me alejo o me acerco
       context.zoomIn(position, stage, emitToSocket);

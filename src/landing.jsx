@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import backgroundImage from "../images/fondos.webp";
+//import backgroundImage from "../images/imagen2.webp";
+import backgroundImage from "../images/imagen3.jpg";
 import TeacherBanner from "./components/TeacherBanner";
 import Steps from "./components/Steps";
 import HowBranakWorks from "./components/HowBranakWorks";
@@ -19,13 +20,13 @@ const Landing = () => {
       <main className="mt-15.5 flex min-h-screen flex-col items-start justify-center">
 
       <div
-      className="landing_background flex w-full flex-col items-start justify-center"
+      className="landing_background flex w-full flex-col items-start justify-between"
       style={{ backgroundImage: `url(${backgroundImage})` }}
-    >     <div className="mt-[5vh] md:mt-20 px-10 md:p-10 md:p-20 text-start text-white">
+    >     <div className="mt-[5vh] md:mt-20 px-10 md:p-10 md:p-20 text-start text-purple-600">
 
 
             <h1 className="mb-4 text-[3.0rem]  md:text-[4.1rem] font-bold">
-              Elije un buen maestro en 5 minutos
+              Elije un buen <span className="text-purple-700">maestro</span> en 5 minutos
             </h1>
             <p className="text-white-300 mb-6 text-[26px]">El contacto es gratuito</p>
           </div>
