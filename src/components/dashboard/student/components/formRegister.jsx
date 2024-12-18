@@ -293,4 +293,5 @@ const FormRegister = ({ showModal, setShowModal, user, setIsRegister, getStudent
     </Modal>
   )
 }
+
 export default FormRegister
