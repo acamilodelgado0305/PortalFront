@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ClasesHeader from "./components/ClasesHeader";
 import UpcomingClasses from "./components/UpcomingClasses";
 import AllClasses from "./components/AllClasses";
-import { FormRegister } from "./components/FormRegister";
+import FormRegister from "./components/FormRegister.jsx";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
 import { getClassesByStudentId } from "../../../services/class.services";
@@ -59,7 +59,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-gray-50">
-          <div className="sticky top-0 w-full bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md z-[9]">
+      <div className="sticky top-0 w-full bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white shadow-md z-[9]">
         <h1 className="text-center text-3xl font-semibold">
           Bienvenido a tu Perfil Estudiantil
         </h1>

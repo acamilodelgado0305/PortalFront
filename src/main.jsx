@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "../src/Context/AuthContext";
 import { WhiteBoardSocketProvider } from "./components/WhiteBoardDashBoard/WhiteBoardSocketProvider.jsx";
 import ProtectedRoute from "./ProtectedRoute";
-
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import ErrorPage from "./error-page";
 import Landing from "./landing";
 
@@ -85,14 +85,20 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ChatStandardSocketProvider>
-      <WhiteBoardSocketProvider>
-        <WhiteBoardProvider>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
-        </WhiteBoardProvider>
-      </WhiteBoardSocketProvider>
-    </ChatStandardSocketProvider>
+    <PayPalScriptProvider
+      options={{
+        "client-id": "Ad7F7AE1fhfG2q47qS7PDWuN2N0GfwV9_FMSbEV6mlveiomxe2_5K-xfVCngqz1TNBLuiiWrRreJmVSn",
+      }}
+    >
+      <ChatStandardSocketProvider>
+        <WhiteBoardSocketProvider>
+          <WhiteBoardProvider>
+            <AuthProvider>
+              <RouterProvider router={router} />
+            </AuthProvider>
+          </WhiteBoardProvider>
+        </WhiteBoardSocketProvider>
+      </ChatStandardSocketProvider>
+    </PayPalScriptProvider>,
   </React.StrictMode>,
 );
