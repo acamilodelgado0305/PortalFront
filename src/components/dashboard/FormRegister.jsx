@@ -4,9 +4,9 @@ import { useCallback, useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
 import { useDropzone } from "react-dropzone";
 import Swal from "sweetalert2";
-import { verifyNumber } from "../../../../services/validations";
-import { createStudent } from "../../../../services/studendent.services";
-import { uploadImageStudent, uploadImageToS3 } from "../../../../helpers/processImageUpload";
+import { verifyNumber } from "../../services/validations";
+import { createStudent } from "../../services/studendent.services";
+import { uploadImageStudent, uploadImageToS3 } from "../../helpers/processImageUpload";
 
 const FormRegister = ({ showModal, setShowModal, user, setIsRegister, getStudent }) => {
 

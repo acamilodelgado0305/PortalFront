@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ClasesHeader from "./components/ClasesHeader";
 import UpcomingClasses from "./components/UpcomingClasses";
 import AllClasses from "./components/AllClasses";
-import FormRegister from "../../dashboard/student/components/FormRegister";
+import FormRegister from "../FormRegister";
 import { useAuth } from "../../../Context/AuthContext";
 import { getStudentById } from "../../../services/studendent.services";
 import { getClassesByStudentId } from "../../../services/class.services";
