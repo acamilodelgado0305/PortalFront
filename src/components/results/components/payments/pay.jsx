@@ -213,7 +213,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         <span className="text-purple-600 font-bold text-4xl">←</span>
                     </button>
                     <img
-                        src={"/src/assets/caba.png"}
+                        src={"https://res.cloudinary.com/dybws2ubw/image/upload/v1734818674/caba_tmxsay.png"}
                         className="w-10 h-12"
                         alt="User Icon"
                     />
