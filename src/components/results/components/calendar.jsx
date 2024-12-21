@@ -259,16 +259,15 @@ const CalendarModal = ({
     <Modal
       title={
         <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-          {pay ? "realiza el pago y disfruta tu clase" : "Reserva tu clase"}
+          {pay ? "Payment Account" : "Reserva tu clase"}
         </div>
       } open={showCalendarModal}
       onCancel={() => setShowCalendarModal(false)}
       footer={null}
-      width={550}
+      width={500}
       height={800}
       closeIcon={<CloseOutlined className="text-black text-xl" />}
       centered
-
     >
       {
         pay ?
