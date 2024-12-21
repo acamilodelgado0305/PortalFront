@@ -101,8 +101,8 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         console.log("Rendering Payment Options");
 
         return (
-            <div className="flex flex-col  bg-white shadow-lg rounded-lg p-6 w-full max-w-lg border-2 border-black">
-                <div className="flex flex-col items-start gap-4">
+            <div className="flex flex-col  bg-white shadow-lg rounded-lg p-2 w-full max-w-lg border-2 border-black">
+                <div className="flex flex-col items-start">
                     <button
                         className="text-purple-600 "
                         onClick={() => setCurrentView("proceedToPayment")}
@@ -116,7 +116,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     />
                 </div>
 
-                <h2 className=" flex flex-col items-center text-2xl font-semibold  mb-4">Payment Options</h2>
+                <h2 className=" flex flex-col items-center text-2xl text-center font-semibold  my-6">How do you plan to pay for your classes?</h2>
                 <div className="flex flex-col gap-6 p-8">
                     {/* Opción de Tarjeta de Crédito */}
                     <div
@@ -202,25 +202,70 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     );
 
     const renderBilling = () => (
-        <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-4">Billing</h2>
-            <p className="text-gray-600 mb-4">Make sure you have paid for your class.</p>
-            <p className="text-xl font-semibold text-gray-800 mb-6">USD 204.00</p>
-            <button
-                className="w-full bg-blue-600 text-white py-3 mb-4 rounded-lg text-lg font-semibold hover:bg-blue-500 transition"
-                onClick={() => {
-                    console.log("Switching to Payment Options");
-                    setCurrentView("paymentOptions"); // Cambia a la vista de opciones de pago
-                }}
-            >
-                Pay Now
-            </button>
-            <button
-                className="text-blue-600 font-medium hover:underline"
-                onClick={() => setCurrentView("menu")}
-            >
-                Back
-            </button>
+        <div className="flex flex-col gap-6 bg-white shadow-lg rounded-lg p-2 w-full max-w-lg border-[1px] border-black">
+            <div className="relative">
+                {/* Contenedor principal */}
+                <div className="flex flex-col items-start">
+                    <button
+                        className="text-purple-600"
+                        onClick={() => setCurrentView("menu")}
+                    >
+                        <span className="text-purple-600 font-bold text-4xl">←</span>
+                    </button>
+                    <img
+                        src={"/src/assets/caba.png"}
+                        className="w-10 h-12"
+                        alt="User Icon"
+                    />
+                </div>
+
+                {/* Fecha en la parte superior derecha */}
+                <p className="absolute top-0 right-0 text-lg font-medium text-gray-800">
+                    {new Date().toLocaleDateString("en-GB")}
+                </p>
+            </div>
+            <div className="flex flex-col ">
+                <h1 className="my-4"> {user.firstName} {user.lastName}</h1>
+                <p className="text-gray-600"> You have a class on:</p>
+                <span>Make sure you have paid for your class so you are ready to go at tke time you selected. </span>
+
+                <div className="overflow-x-auto mt-8">
+                    <table className="table-auto border-collapse border border-gray-200 w-full text-left text-sm">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="border border-gray-300 px-4 py-2">Quantity</th>
+                                <th className="border border-gray-300 px-4 py-2">Description</th>
+                                <th className="border border-gray-300 px-4 py-2">Cost/hour</th>
+                                <th className="border border-gray-300 px-4 py-2">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td className="border border-gray-300 px-4 py-2 text-blue-600">1h</td>
+                                <td className="border border-gray-300 px-4 py-2 text-blue-600">language tuition</td>
+                                <td className="border border-gray-300 px-4 py-2 text-blue-600">USD {parseFloat(hourValue).toFixed(2)}</td>
+                                <td className="border border-gray-300 px-4 py-2 text-blue-600">USD {parseFloat(hourValue).toFixed(2)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p className="text-xl text-center font-semibold text-gray-800 my-10">USD {parseFloat(hourValue).toFixed(2)}</p>
+
+                <div className="flex justify-end">
+                    <button
+                        className="w-36 bg-purple-600 text-white py-2 mb-4 mt-20 rounded-[28px] text-lg font-semibold hover:bg-purple-400 transition"
+                        onClick={() => {
+                            console.log("Switching to Payment Options");
+                            setCurrentView("paymentOptions"); // Cambia a la vista de opciones de pago
+                        }}
+                    >
+                        Pay Now
+                    </button>
+                </div>
+
+            </div>
+
         </div>
     );
 
