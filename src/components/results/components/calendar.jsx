@@ -272,7 +272,14 @@ const CalendarModal = ({
     >
       {
         pay ?
-          <Pay />
+          <Pay
+            teacher={teacher}
+            user={user}
+            daySelected={daySelected}
+            hourSelected={hourSelected}
+            hourSelectedTeacher={hourSelectedTeacher}
+            hourValue={teacher.hourlyRate} // Asumiendo que el valor de la hora está aquí
+          />
           :
           <>
             <div className="flex pb-3 mb-2 border-b gap-4 font-mono ">

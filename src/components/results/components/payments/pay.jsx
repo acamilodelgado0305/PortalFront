@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 
-const Pay = () => {
+const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
     const [selectedMethod, setSelectedMethod] = useState(null);
     const renderMenu = () => (
@@ -61,7 +61,7 @@ const Pay = () => {
     const renderProceedToPayment = () => (
         <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
             <h2 className="text-2xl font-semibold text-blue-600 mb-4">Proceed to Payment</h2>
-            <p className="text-lg text-gray-800 mb-6">USD 420.00</p>
+            <p className="text-lg text-gray-800 mb-6">USD ${hourValue}</p>
             <button
                 className="w-full bg-blue-600 text-white py-3 mb-4 rounded-lg text-lg font-semibold hover:bg-blue-500 transition"
                 onClick={() => {
@@ -118,7 +118,7 @@ const Pay = () => {
                                     purchase_units: [
                                         {
                                             amount: {
-                                                value: "204.00", // Cambia este valor al monto dinámico
+                                                value: hourValue, // Cambia este valor al monto dinámico
                                             },
                                         },
                                     ],
