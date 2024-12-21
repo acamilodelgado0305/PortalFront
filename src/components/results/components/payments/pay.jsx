@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
+import humanIcon from "../../../../../public/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
     const [selectedMethod, setSelectedMethod] = useState(null);
@@ -8,7 +9,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         <div className="flex flex-col bg-white rounded-lg w-full max-w-md border-2 border-black p-2">
             <div className="flex flex-col gap-4 w-full p-8 mb-20">
                 <img
-                    src={user?.profileImageUrl || "/src/components/StandardMessages/humanicon.svg"}
+                    src={user?.profileImageUrl || humanIcon}
                     className="w-20 h-20"
                     alt="User Icon"
                 />
@@ -110,7 +111,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         <span className="text-purple-600 font-bold text-4xl">←</span>
                     </button>
                     <img
-                        src={"/src/assets/caba.png"}
+                        src={"https://res.cloudinary.com/dybws2ubw/image/upload/v1734818674/caba_tmxsay.png"}
                         className="w-10 h-12"
                         alt="User Icon"
                     />
