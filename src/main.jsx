@@ -15,6 +15,7 @@ import RegisterPage from "./components/auth/RegisterPage";
 import Results from "./components/results/Results";
 import WhiteBoardDashBoard from "./components/WhiteBoardDashBoard/Index.jsx";
 import TeacherDetail from "./components/dashboard/TeacherDetail";
+import VideoModal from "./components/VideoConference/VideoModal.jsx";
 
 
 import "./index.css";
@@ -78,8 +79,16 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/teacher-details/:id",
-    element: <TeacherDetail />,
+    path: "/whiteboard/:room",
+    element: (
+      <ProtectedRoute>
+        <WhiteBoardDashBoard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/meet",
+    element: <VideoModal />,
   },
 ]);
 
