@@ -26,8 +26,14 @@ const VideoCall = () => {
     const [isHost, setIsHost] = useState(false);
     const [meetingData, setMeetingData] = useState(null);
 
+    const [audioLevel, setAudioLevel] = useState(0);
+    const [isMuted, setIsMuted] = useState(false);
+    const [isTestingAudio, setIsTestingAudio] = useState(false);
+    const [audioInputDevice, setAudioInputDevice] = useState(null);
+
     const localVideoRef = useRef(null);
     const remoteVideoRefs = useRef({});
+    const audioAnalyzerInterval = useRef(null);
 
     // Función para crear una reunión
     const createMeeting = async () => {
@@ -51,6 +57,47 @@ const VideoCall = () => {
         } catch (err) {
             console.error('Error details:', err);
             setError('Error al crear la reunión: ' + err.message);
+        }
+    };
+
+
+    const testAudio = async () => {
+        if (!meetingSession) return;
+
+        try {
+            setIsTestingAudio(true);
+
+            // Obtener lista de dispositivos de audio
+            const audioInputs = await meetingSession.audioVideo.listAudioInputDevices();
+
+            if (audioInputs.length === 0) {
+                throw new Error('No se encontraron dispositivos de audio');
+            }
+
+            // Seleccionar el primer dispositivo de audio
+            const selectedDevice = audioInputs[0];
+            setAudioInputDevice(selectedDevice);
+
+            // Iniciar el audio input
+            await meetingSession.audioVideo.startAudioInput(selectedDevice.deviceId);
+
+            // Configurar el observador de métricas de audio
+            meetingSession.audioVideo.addObserver({
+                metricsDidReceive: (metrics) => {
+                    if (metrics.audioInputLevel !== null) {
+                        const level = Math.min(Math.floor(metrics.audioInputLevel * 100), 100);
+                        setAudioLevel(level);
+                    }
+                }
+            });
+
+            // Iniciar el analizador de audio
+            startAudioAnalyzer();
+
+        } catch (err) {
+            console.error('Error al probar el audio:', err);
+            setError('Error al probar el audio: ' + err.message);
+            setIsTestingAudio(false);
         }
     };
 
@@ -116,6 +163,58 @@ const VideoCall = () => {
         } catch (err) {
             console.error('Session initialization error:', err);
             setError('Error al inicializar la sesión: ' + err.message);
+        }
+    };
+
+    // Función para iniciar el analizador de audio
+    const startAudioAnalyzer = () => {
+        if (audioAnalyzerInterval.current) {
+            clearInterval(audioAnalyzerInterval.current);
+        }
+
+        audioAnalyzerInterval.current = setInterval(() => {
+            if (meetingSession && !isMuted) {
+                try {
+                    // Obtener métricas directamente del observador de audio
+                    meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
+                        meetingSession.configuration.credentials.attendeeId,
+                        (attendeeId, volume, muted, signalStrength) => {
+                            // Convertir el volumen a un porcentaje (volume viene entre 0 y 1)
+                            const levelPercentage = Math.min(Math.round(volume * 100), 100);
+                            // Solo actualizar si tenemos un valor válido
+                            if (!isNaN(levelPercentage) && levelPercentage >= 0) {
+                                setAudioLevel(levelPercentage);
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.error('Error en el análisis de audio:', error);
+                    // Si hay error, establecer el nivel a 0
+                    setAudioLevel(0);
+                }
+            } else {
+                // Si está muteado o no hay sesión, establecer el nivel a 0
+                setAudioLevel(0);
+            }
+        }, 100);
+    };
+
+    // Función para alternar el mute del audio
+    const toggleMute = async () => {
+        if (!meetingSession) return;
+
+        try {
+            if (isMuted) {
+                await meetingSession.audioVideo.resubscribe();
+                setIsMuted(false);
+            } else {
+                await meetingSession.audioVideo.unsubscribe();
+                setIsMuted(true);
+            }
+            setAudioLevel(0); // Resetear el nivel de audio al mutear
+        } catch (err) {
+            console.error('Error al cambiar el estado del audio:', err);
+            setError('Error al cambiar el estado del audio: ' + err.message);
         }
     };
 
@@ -234,6 +333,17 @@ const VideoCall = () => {
         };
     }, [meetingSession]);
 
+
+
+    // Limpiar el intervalo del analizador de audio al desmontar
+    useEffect(() => {
+        return () => {
+            if (audioAnalyzerInterval.current) {
+                clearInterval(audioAnalyzerInterval.current);
+            }
+        };
+    }, []);
+
     return (
         <div className="p-4">
             <div className="mb-4 space-y-4">
@@ -258,6 +368,54 @@ const VideoCall = () => {
                         />
                     </div>
                 )}
+
+
+                {meetingSession && (
+                    <div className="mb-4 space-y-4">
+                        <div className="flex items-center space-x-4">
+                            <button
+                                onClick={testAudio}
+                                className={`px-4 py-2 rounded ${isTestingAudio
+                                    ? 'bg-green-500 hover:bg-green-600'
+                                    : 'bg-blue-500 hover:bg-blue-600'
+                                    } text-white transition-colors`}
+                            >
+                                {isTestingAudio ? 'Probando Audio...' : 'Probar Audio'}
+                            </button>
+
+                            <button
+                                onClick={toggleMute}
+                                className={`px-4 py-2 rounded ${isMuted
+                                    ? 'bg-red-500 hover:bg-red-600'
+                                    : 'bg-green-500 hover:bg-green-600'
+                                    } text-white transition-colors`}
+                            >
+                                {isMuted ? 'Unmute' : 'Mute'}
+                            </button>
+
+                            {isTestingAudio && (
+                                <div className="flex items-center space-x-2">
+                                    <div className="text-sm">Nivel de Audio:</div>
+                                    <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
+                                        <div
+                                            className="h-full bg-blue-500 transition-all duration-200"
+                                            style={{ width: `${audioLevel}%` }}
+                                        />
+                                    </div>
+                                    <div className="text-sm">{audioLevel}%</div>
+                                </div>
+                            )}
+                        </div>
+
+                        {audioInputDevice && (
+                            <div className="text-sm text-gray-600">
+                                Dispositivo de audio: {audioInputDevice.label}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+
 
                 {!meetingSession && (
                     <div className="space-x-2">
