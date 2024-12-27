@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Definición de global para el SDK de Chime
 if (typeof global === 'undefined') {
     window.global = window;
 }
@@ -25,11 +24,11 @@ const VideoCall = () => {
     const [error, setError] = useState('');
     const [isHost, setIsHost] = useState(false);
     const [meetingData, setMeetingData] = useState(null);
+    const [audioConnected, setAudioConnected] = useState(false);
 
     const localVideoRef = useRef(null);
     const remoteVideoRefs = useRef({});
 
-    // Función para crear una reunión
     const createMeeting = async () => {
         try {
             const response = await fetch('http://localhost:4005/api/chime/create-meeting', {
@@ -43,30 +42,21 @@ const VideoCall = () => {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error);
 
-            console.log('Meeting created:', data);
             setMeetingData(data);
             setMeetingId(data.meeting.MeetingId);
             setIsHost(true);
             await initializeMeetingSession(data.meeting, data.attendee);
         } catch (err) {
-            console.error('Error details:', err);
             setError('Error al crear la reunión: ' + err.message);
         }
     };
 
-    // Función para unirse a una reunión
     const joinMeeting = async () => {
         try {
-            // Validaciones iniciales
-            if (!meetingId.trim()) {
-                throw new Error('El ID de la reunión es necesario');
+            if (!meetingId.trim() || !userEmail.trim()) {
+                throw new Error('El ID de la reunión y el correo electrónico son necesarios');
             }
 
-            if (!userEmail.trim()) {
-                throw new Error('El correo electrónico es necesario');
-            }
-
-            // Unirse directamente a la reunión
             const joinResponse = await fetch('http://localhost:4005/api/chime/join-meeting', {
                 method: 'POST',
                 headers: {
@@ -84,23 +74,16 @@ const VideoCall = () => {
             }
 
             const joinData = await joinResponse.json();
-            console.log('Joined meeting:', joinData);
-
-            // Verificar que tenemos toda la información necesaria
             if (!joinData.meeting || !joinData.attendee) {
                 throw new Error('No se recibió la información completa de la reunión');
             }
 
-            // Inicializar la sesión con los datos recibidos
             await initializeMeetingSession(joinData.meeting, joinData.attendee);
-
         } catch (err) {
-            console.error('Error al unirse a la reunión:', err);
             setError(err.message);
         }
     };
 
-    // Inicializar la sesión de la reunión
     const initializeMeetingSession = async (meeting, attendee) => {
         try {
             const logger = new ConsoleLogger('MeetingLogs', LogLevel.INFO);
@@ -110,19 +93,14 @@ const VideoCall = () => {
             const session = new DefaultMeetingSession(configuration, logger, deviceController);
 
             setMeetingSession(session);
-
-            // Iniciar el audio y video
             await startAudioVideo(session);
         } catch (err) {
-            console.error('Session initialization error:', err);
             setError('Error al inicializar la sesión: ' + err.message);
         }
     };
 
-    // Iniciar audio y video
     const startAudioVideo = async (session) => {
         try {
-            // Solicitar permisos de media primero
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 1280 },
@@ -132,20 +110,14 @@ const VideoCall = () => {
                 audio: true
             });
 
-            // Asegurarse de que tenemos una pista de video activa
-            const videoTrack = mediaStream.getVideoTracks()[0];
-            if (!videoTrack) {
-                throw new Error('No se pudo obtener la pista de video');
-            }
-
-            // Mostrar vista previa del video local
             if (localVideoRef.current) {
                 localVideoRef.current.srcObject = mediaStream;
             }
 
-            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
-            if (videoInputDevices.length > 0) {
-                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
+            // Configurar audio
+            const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
+            if (audioOutputDevices.length > 0) {
+                await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
             }
 
             const audioInputDevices = await session.audioVideo.listAudioInputDevices();
@@ -153,11 +125,20 @@ const VideoCall = () => {
                 await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
             }
 
-            await session.audioVideo.start();
-            setLocalVideo(true);
+            // Configurar video
+            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
+            if (videoInputDevices.length > 0) {
+                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
+            }
 
-            // Configurar observadores de video
+            // Configurar observadores
             session.audioVideo.addObserver({
+                audioVideoDidStart: () => {
+                    setAudioConnected(true);
+                },
+                audioVideoDidStop: (sessionStatus) => {
+                    setAudioConnected(false);
+                },
                 videoTileDidUpdate: (tileState) => {
                     if (!tileState.localTile) {
                         setRemoteVideos(prev => [...prev, tileState.tileId]);
@@ -165,16 +146,20 @@ const VideoCall = () => {
                 },
                 videoTileWasRemoved: (tileId) => {
                     setRemoteVideos(prev => prev.filter(id => id !== tileId));
+                },
+                remoteVideoSourcesDidChange: (videoSources) => {
+                    console.log('Remote video sources changed:', videoSources);
                 }
             });
 
+            await session.audioVideo.start();
+            setLocalVideo(true);
+
         } catch (err) {
-            console.error('StartAudioVideo error:', err);
             setError('Error al iniciar audio/video: ' + err.message);
         }
     };
 
-    // Efecto para manejar el video local
     useEffect(() => {
         if (!meetingSession || !localVideo || !localVideoRef.current) return;
 
@@ -183,14 +168,11 @@ const VideoCall = () => {
         const startLocalVideo = async () => {
             try {
                 videoTileId = meetingSession.audioVideo.startLocalVideoTile();
-
                 if (videoTileId) {
                     await meetingSession.audioVideo.bindVideoElement(
                         videoTileId,
                         localVideoRef.current
                     );
-
-                    // Forzar actualización del elemento de video
                     localVideoRef.current.style.transform = 'scaleX(-1)';
                 }
             } catch (err) {
@@ -202,16 +184,11 @@ const VideoCall = () => {
 
         return () => {
             if (videoTileId) {
-                try {
-                    meetingSession.audioVideo.unbindVideoElement(videoTileId);
-                } catch (err) {
-                    console.error('Error unbinding video:', err);
-                }
+                meetingSession.audioVideo.unbindVideoElement(videoTileId);
             }
         };
     }, [meetingSession, localVideo]);
 
-    // Efecto para manejar videos remotos
     useEffect(() => {
         if (!meetingSession) return;
 
@@ -225,7 +202,6 @@ const VideoCall = () => {
         });
     }, [meetingSession, remoteVideos]);
 
-    // Limpiar al desmontar
     useEffect(() => {
         return () => {
             if (meetingSession) {
