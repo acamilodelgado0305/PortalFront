@@ -3,7 +3,7 @@ import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { TbMessage } from "react-icons/tb";
 import { BsTriangle } from "react-icons/bs";
 import { CiVideoOn } from "react-icons/ci";
-import VideoModal from "../../../VideoConference/VideoModal";
+import VideoModal from "../../../VideoConference/VideoCall";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
