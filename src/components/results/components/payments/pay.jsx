@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Modal } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
@@ -8,7 +8,40 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [selectedMethod, setSelectedMethod] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState(null);
+    const [paymentData, setPaymentData] = useState(null);
+    const [paymentHistory, setPaymentHistory] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+
+    useEffect(() => {
+        // Solicitar el historial de pagos al backend
+        const fetchPaymentHistory = async () => {
+            try {
+                const response = await fetch(`https://back.app.esturio.com/api/transactions/studentId/${user.id}`);
+                if (!response.ok) {
+                    throw new Error("Error fetching payment history");
+                }
+                const data = await response.json();
+                setPaymentHistory(data.data || []); // Actualizar el estado con los datos
+            } catch (error) {
+                console.error("Error fetching payment history:", error);
+                setError("Failed to load payment history");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPaymentHistory();
+    }, [user.id]);
+    // Mostrar estado de carga o error
+    if (isLoading) {
+        return <p className="text-blue-600 font-medium">Loading payment history...</p>;
+    }
+
+    if (error) {
+        return <p className="text-red-600 font-medium">{error}</p>;
+    }
     const showModal = (details) => {
         setTransactionDetails(details); // Guarda los detalles de la transacción
         setIsModalVisible(true); // Muestra el modal
@@ -17,6 +50,61 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const handleOk = () => {
         setIsModalVisible(false); // Oculta el modal
     };
+
+    const handlePaymentApproval = async (transactionDetails) => {
+        // Combinar los datos del pago con los datos del estudiante y profesor
+        const combinedData = {
+            transactionDetails: {
+                transactionId: transactionDetails.id,
+                payerName: `${transactionDetails.payer.name.given_name} ${transactionDetails.payer.name.surname}`,
+                payerEmail: transactionDetails.payer.email_address,
+                amount: transactionDetails.purchase_units[0].amount.value,
+                currency: transactionDetails.purchase_units[0].amount.currency_code,
+            },
+            student: {
+                id: user.id,
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+            },
+            teacher: {
+                id: teacher.id,
+                name: `${teacher.firstName} ${teacher.lastName}`,
+                email: teacher.email,
+            },
+            classDetails: {
+                day: daySelected,
+                hour: hourSelected,
+                teacherAvailability: hourSelectedTeacher,
+                cost: hourValue,
+            },
+        };
+
+        try {
+            // Enviar los datos al backend
+            const response = await fetch("https://back.app.esturio.com/api/transactions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(combinedData),
+            });
+
+            if (response.ok) {
+                console.log("Transacción guardada exitosamente");
+            } else {
+                console.error("Error al guardar la transacción:", await response.json());
+            }
+        } catch (error) {
+            console.error("Error en la solicitud al backend:", error);
+        }
+
+        // Guardar los datos combinados en el estado
+        setPaymentData(combinedData);
+
+        // Mostrar los datos en la consola
+        console.log("Datos combinados para guardar:", combinedData);
+    };
+
     const renderMenu = () => (
         <div className="flex flex-col bg-white rounded-lg w-full max-w-md border-2 border-black p-2">
             <div className="flex flex-col gap-4 w-full p-8 mb-20">
@@ -168,6 +256,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                         .then((details) => {
                                             console.log("Payment successful:", details);
                                             showModal(details); // Llama a la función para mostrar el modal
+                                            handlePaymentApproval(details);
                                         })
                                         .catch((error) => console.error("Payment error:", error));
                                 }}
@@ -323,52 +412,45 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     );
 
     const renderPaymentHistory = () => (
-        <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
-            <h2 className="text-2xl font-semibold text-blue-600 mb-4">Payment History</h2>
-            <table className="w-full border-collapse border border-gray-300 text-left mb-6">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th className="border border-gray-300 px-4 py-2">Number</th>
-                        <th className="border border-gray-300 px-4 py-2">Via</th>
-                        <th className="border border-gray-300 px-4 py-2">Process</th>
-                        <th className="border border-gray-300 px-4 py-2">Date</th>
-                        <th className="border border-gray-300 px-4 py-2">Amount</th>
-                        <th className="border border-gray-300 px-4 py-2">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="border border-gray-300 px-4 py-2">2205130</td>
-                        <td className="border border-gray-300 px-4 py-2">PayPal</td>
-                        <td className="border border-gray-300 px-4 py-2">Automatic</td>
-                        <td className="border border-gray-300 px-4 py-2">08-19-22</td>
-                        <td className="border border-gray-300 px-4 py-2">$100.02</td>
-                        <td className="border border-gray-300 px-4 py-2 text-green-600">Paid</td>
-                    </tr>
-                    <tr>
-                        <td className="border border-gray-300 px-4 py-2">2204121</td>
-                        <td className="border border-gray-300 px-4 py-2">Card 6023</td>
-                        <td className="border border-gray-300 px-4 py-2">Manual</td>
-                        <td className="border border-gray-300 px-4 py-2">08-17-22</td>
-                        <td className="border border-gray-300 px-4 py-2">$600.00</td>
-                        <td className="border border-gray-300 px-4 py-2 text-green-600">Paid</td>
-                    </tr>
-                    <tr>
-                        <td className="border border-gray-300 px-4 py-2">2203122</td>
-                        <td className="border border-gray-300 px-4 py-2">Card 6023</td>
-                        <td className="border border-gray-300 px-4 py-2">Automatic</td>
-                        <td className="border border-gray-300 px-4 py-2">08-16-22</td>
-                        <td className="border border-gray-300 px-4 py-2">$600.00</td>
-                        <td className="border border-gray-300 px-4 py-2 text-red-600">Failed</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button
-                className="text-blue-600 font-medium hover:underline"
-                onClick={() => setCurrentView("menu")}
-            >
-                Back
-            </button>
+        <div className="flex flex-col  bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-[2px] border-black">
+            <div className=" text-left mb-2">
+                <button
+                    className="text-purple-600"
+                    onClick={() => setCurrentView("menu")}
+                >
+                    <span className="text-purple-600 font-bold text-4xl">←</span>
+                </button>
+            </div>
+            <h2 className="text-2xl font-semibold mb-4">Payment History</h2>
+            <div className="overflow-x-auto mt-4">
+                <table className="table-auto border-collapse border border-gray-200 w-full text-left text-sm">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="border border-gray-300 px-1 py-2">Number</th>
+                            <th className="border border-gray-300 px-1 py-2">Via</th>
+                            <th className="border border-gray-300 px-3 py-2">Process</th>
+                            <th className="border border-gray-300 px-3 py-2">Date</th>
+                            <th className="border border-gray-300 px-2 py-2">Amount</th>
+                            <th className="border border-gray-300 px-2 py-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {paymentHistory.map((payment, index) => (
+                            <tr key={payment.id}>
+                                <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
+                                <td className="border border-gray-300 px-2 py-2">PayPal</td>
+                                <td className="border border-gray-300 px-3 py-2">Automatic</td>
+                                <td className="border border-gray-300 px-2 py-2">{new Date(payment.createdAt).toLocaleDateString()}</td>
+                                <td className="border border-gray-300 px-3 py-2">USD&nbsp;{payment.amount}</td>
+                                <td className={`border border-gray-300 px-2 py-2 ${payment.status === "Completed" ? "text-green-600" : "text-red-600"}`}>
+                                    {payment.status}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     );
 
