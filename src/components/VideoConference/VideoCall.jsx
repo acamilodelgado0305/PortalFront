@@ -34,6 +34,8 @@ const VideoCall = () => {
     const localVideoRef = useRef(null);
     const remoteVideoRefs = useRef({});
     const audioAnalyzerInterval = useRef(null);
+    const [remoteAudioLevel, setRemoteAudioLevel] = useState({});
+    const remoteAudioAnalyzerInterval = useRef(null);
 
     // Función para crear una reunión
     const createMeeting = async () => {
@@ -156,10 +158,74 @@ const VideoCall = () => {
             const configuration = new MeetingSessionConfiguration(meeting, attendee);
             const session = new DefaultMeetingSession(configuration, logger, deviceController);
 
+            // Configurar observador de audio remoto
+            session.audioVideo.addObserver({
+                // Mantener observadores existentes
+                videoTileDidUpdate: (tileState) => {
+                    if (!tileState.localTile) {
+                        setRemoteVideos(prev => [...prev, tileState.tileId]);
+                    }
+                },
+                videoTileWasRemoved: (tileId) => {
+                    setRemoteVideos(prev => prev.filter(id => id !== tileId));
+                },
+
+                // Añadir observadores de audio remoto
+                remoteVideoSourcesDidChange: (videoSources) => {
+                    console.log('Remote video sources changed:', videoSources);
+                },
+
+                // Manejar cambios en el volumen remoto
+                volumeDidChange: (attendeeId, volume, muted, signalStrength) => {
+                    if (attendeeId !== session.configuration.credentials.attendeeId) {
+                        setRemoteAudioLevel(prev => ({
+                            ...prev,
+                            [attendeeId]: {
+                                volume: Math.round(volume * 100),
+                                muted,
+                                signalStrength
+                            }
+                        }));
+                    }
+                },
+
+                // Manejar eventos de audio
+                audioVideoDidStart: () => {
+                    console.log('Audio and video started');
+                },
+                audioVideoDidStop: (sessionStatus) => {
+                    console.log('Audio and video stopped:', sessionStatus);
+                },
+                connectionDidBecomePoor: () => {
+                    console.log('Connection quality became poor');
+                },
+                connectionDidSuggestStopVideo: () => {
+                    console.log('Connection quality suggests stopping video');
+                }
+            });
+
             setMeetingSession(session);
 
             // Iniciar el audio y video
             await startAudioVideo(session);
+
+            // Configurar audio remoto
+            session.audioVideo.realtimeSubscribeToVolumeIndicator(
+                attendee.AttendeeId,
+                (attendeeId, volume, muted, signalStrength) => {
+                    if (attendeeId !== attendee.AttendeeId) {
+                        setRemoteAudioLevel(prev => ({
+                            ...prev,
+                            [attendeeId]: {
+                                volume: Math.round(volume * 100),
+                                muted,
+                                signalStrength
+                            }
+                        }));
+                    }
+                }
+            );
+
         } catch (err) {
             console.error('Session initialization error:', err);
             setError('Error al inicializar la sesión: ' + err.message);
@@ -197,6 +263,37 @@ const VideoCall = () => {
                 setAudioLevel(0);
             }
         }, 100);
+    };
+
+
+
+    const startRemoteAudioMonitoring = () => {
+        if (remoteAudioAnalyzerInterval.current) {
+            clearInterval(remoteAudioAnalyzerInterval.current);
+        }
+
+        remoteAudioAnalyzerInterval.current = setInterval(() => {
+            if (meetingSession) {
+                const attendees = meetingSession.audioVideo.realtimeGetAttendeeIdPresence();
+                Object.keys(attendees).forEach(attendeeId => {
+                    if (attendeeId !== meetingSession.configuration.credentials.attendeeId) {
+                        meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
+                            attendeeId,
+                            (id, volume, muted, signalStrength) => {
+                                setRemoteAudioLevel(prev => ({
+                                    ...prev,
+                                    [id]: {
+                                        volume: Math.round(volume * 100),
+                                        muted,
+                                        signalStrength
+                                    }
+                                }));
+                            }
+                        );
+                    }
+                });
+            }
+        }, 200);
     };
 
     // Función para alternar el mute del audio
@@ -344,6 +441,33 @@ const VideoCall = () => {
         };
     }, []);
 
+
+    useEffect(() => {
+        if (meetingSession) {
+            startRemoteAudioMonitoring();
+        }
+
+        return () => {
+            if (remoteAudioAnalyzerInterval.current) {
+                clearInterval(remoteAudioAnalyzerInterval.current);
+            }
+        };
+    }, [meetingSession]);
+
+
+
+    useEffect(() => {
+        if (meetingSession) {
+            startRemoteAudioMonitoring();
+        }
+
+        return () => {
+            if (remoteAudioAnalyzerInterval.current) {
+                clearInterval(remoteAudioAnalyzerInterval.current);
+            }
+        };
+    }, [meetingSession]);
+
     return (
         <div className="p-4">
             <div className="mb-4 space-y-4">
@@ -369,15 +493,14 @@ const VideoCall = () => {
                     </div>
                 )}
 
-
                 {meetingSession && (
                     <div className="mb-4 space-y-4">
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={testAudio}
                                 className={`px-4 py-2 rounded ${isTestingAudio
-                                    ? 'bg-green-500 hover:bg-green-600'
-                                    : 'bg-blue-500 hover:bg-blue-600'
+                                        ? 'bg-green-500 hover:bg-green-600'
+                                        : 'bg-blue-500 hover:bg-blue-600'
                                     } text-white transition-colors`}
                             >
                                 {isTestingAudio ? 'Probando Audio...' : 'Probar Audio'}
@@ -386,8 +509,8 @@ const VideoCall = () => {
                             <button
                                 onClick={toggleMute}
                                 className={`px-4 py-2 rounded ${isMuted
-                                    ? 'bg-red-500 hover:bg-red-600'
-                                    : 'bg-green-500 hover:bg-green-600'
+                                        ? 'bg-red-500 hover:bg-red-600'
+                                        : 'bg-green-500 hover:bg-green-600'
                                     } text-white transition-colors`}
                             >
                                 {isMuted ? 'Unmute' : 'Mute'}
@@ -414,8 +537,6 @@ const VideoCall = () => {
                         )}
                     </div>
                 )}
-
-
 
                 {!meetingSession && (
                     <div className="space-x-2">
@@ -448,9 +569,11 @@ const VideoCall = () => {
                 </div>
             )}
 
-            <div className="flex flex-wrap gap-4">
+            {/* Nueva sección de videos en split-screen */}
+            <div className="flex gap-4 h-96">
+                {/* Video local (anfitrión) */}
                 {localVideo && (
-                    <div className="w-64 h-48 bg-black rounded overflow-hidden relative">
+                    <div className="w-1/2 bg-black rounded overflow-hidden relative">
                         <video
                             ref={localVideoRef}
                             className="w-full h-full object-cover transform -scale-x-100"
@@ -459,21 +582,67 @@ const VideoCall = () => {
                             muted
                         />
                         <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Tú
+                            Anfitrión
                         </div>
                     </div>
                 )}
-                {remoteVideos.map((tileId) => (
-                    <div key={tileId} className="w-64 h-48 bg-black rounded overflow-hidden">
+
+                {/* Video remoto (asistente) - solo mostramos el primer video remoto */}
+                {remoteVideos.length > 0 && (
+                    <div className="w-1/2 bg-black rounded overflow-hidden relative">
                         <video
-                            ref={(el) => (remoteVideoRefs.current[tileId] = el)}
+                            ref={(el) => (remoteVideoRefs.current[remoteVideos[0]] = el)}
                             className="w-full h-full object-cover"
                             autoPlay
                             playsInline
                         />
+                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                            Asistente
+                        </div>
+                        {/* Indicador de audio para el asistente */}
+                        {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
+                            <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
+                                <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
+                                    <div
+                                        className="h-full bg-green-500 transition-all duration-200"
+                                        style={{ width: `${data.volume}%` }}
+                                    />
+                                </div>
+                                {data.muted && (
+                                    <span className="text-red-500 text-xs">
+                                        Muteado
+                                    </span>
+                                )}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                )}
             </div>
+
+            {/* Indicadores de audio remoto - solo para el asistente */}
+            {Object.entries(remoteAudioLevel).length > 0 && (
+                <div className="mt-4 p-4 bg-gray-50 rounded">
+                    <h3 className="text-lg font-semibold mb-2">Audio Remoto</h3>
+                    {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
+                        <div key={attendeeId} className="flex items-center space-x-4 mb-2">
+                            <span className="text-sm">Asistente</span>
+                            <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
+                                <div
+                                    className="h-full bg-blue-500 transition-all duration-200"
+                                    style={{ width: `${data.volume}%` }}
+                                />
+                            </div>
+                            <span className="text-sm">{data.volume}%</span>
+                            {data.muted && (
+                                <span className="text-red-500 text-sm">Muteado</span>
+                            )}
+                            <span className="text-sm">
+                                Señal: {data.signalStrength * 100}%
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
