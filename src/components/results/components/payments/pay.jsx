@@ -13,6 +13,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
     useEffect(() => {
         // Solicitar el historial de pagos al backend
         const fetchPaymentHistory = async () => {
