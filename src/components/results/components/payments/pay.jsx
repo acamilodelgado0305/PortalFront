@@ -8,6 +8,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [selectedMethod, setSelectedMethod] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState(null);
+    const [paymentData, setPaymentData] = useState(null);
 
     const showModal = (details) => {
         setTransactionDetails(details); // Guarda los detalles de la transacción
@@ -17,6 +18,42 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const handleOk = () => {
         setIsModalVisible(false); // Oculta el modal
     };
+
+    const handlePaymentApproval = (transactionDetails) => {
+        // Combinar los datos del pago con los datos del estudiante y profesor
+        const combinedData = {
+            transactionDetails: {
+                transactionId: transactionDetails.id,
+                payerName: `${transactionDetails.payer.name.given_name} ${transactionDetails.payer.name.surname}`,
+                payerEmail: transactionDetails.payer.email_address,
+                amount: transactionDetails.purchase_units[0].amount.value,
+                currency: transactionDetails.purchase_units[0].amount.currency_code,
+            },
+            student: {
+                id: user.id,
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+            },
+            teacher: {
+                id: teacher.id,
+                name: `${teacher.firstName} ${teacher.lastName}`,
+                email: teacher.email,
+            },
+            classDetails: {
+                day: daySelected,
+                hour: hourSelected,
+                teacherAvailability: hourSelectedTeacher,
+                cost: hourValue,
+            },
+        };
+
+        // Guardar los datos combinados en el estado
+        setPaymentData(combinedData);
+
+        // Mostrar los datos en la consola
+        console.log("Datos combinados para guardar:", combinedData);
+    };
+
     const renderMenu = () => (
         <div className="flex flex-col bg-white rounded-lg w-full max-w-md border-2 border-black p-2">
             <div className="flex flex-col gap-4 w-full p-8 mb-20">
@@ -168,6 +205,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                         .then((details) => {
                                             console.log("Payment successful:", details);
                                             showModal(details); // Llama a la función para mostrar el modal
+                                            handlePaymentApproval(details);
                                         })
                                         .catch((error) => console.error("Payment error:", error));
                                 }}
