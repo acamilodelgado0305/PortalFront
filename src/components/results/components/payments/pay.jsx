@@ -1,10 +1,22 @@
 import React, { useState } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
+import { Modal } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
 import humanIcon from "../../../../../public/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
     const [selectedMethod, setSelectedMethod] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [transactionDetails, setTransactionDetails] = useState(null);
+
+    const showModal = (details) => {
+        setTransactionDetails(details); // Guarda los detalles de la transacción
+        setIsModalVisible(true); // Muestra el modal
+    };
+
+    const handleOk = () => {
+        setIsModalVisible(false); // Oculta el modal
+    };
     const renderMenu = () => (
         <div className="flex flex-col bg-white rounded-lg w-full max-w-md border-2 border-black p-2">
             <div className="flex flex-col gap-4 w-full p-8 mb-20">
@@ -155,7 +167,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                         .capture()
                                         .then((details) => {
                                             console.log("Payment successful:", details);
-                                            alert(`Transaction completed by ${details.payer.name.given_name}`);
+                                            showModal(details); // Llama a la función para mostrar el modal
                                         })
                                         .catch((error) => console.error("Payment error:", error));
                                 }}
@@ -164,6 +176,46 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                 }}
                             />
                         </div>
+
+                        {/* Modal para mostrar detalles de la transacción */}
+                        <Modal
+                            title="Pago Exitoso"
+                            visible={isModalVisible}
+                            onOk={handleOk}
+                            onCancel={handleOk}
+                            footer={[
+                                <button
+                                    key="ok"
+                                    onClick={handleOk}
+                                    className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                                >
+                                    Aceptar
+                                </button>,
+                            ]}
+                        >
+                            {transactionDetails && (
+                                <div>
+                                    <p>
+                                        <strong>Nombre:</strong>{" "}
+                                        {transactionDetails.payer.name.given_name}{" "}
+                                        {transactionDetails.payer.name.surname}
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong>{" "}
+                                        {transactionDetails.payer.email_address}
+                                    </p>
+                                    <p>
+                                        <strong>Transacción ID:</strong>{" "}
+                                        {transactionDetails.id}
+                                    </p>
+                                    <p>
+                                        <strong>Monto:</strong>{" "}
+                                        {transactionDetails.purchase_units[0].amount.value}{" "}
+                                        {transactionDetails.purchase_units[0].amount.currency_code}
+                                    </p>
+                                </div>
+                            )}
+                        </Modal>
                     </div>
 
 
