@@ -40,7 +40,7 @@ const VideoCall = () => {
     // Función para crear una reunión
     const createMeeting = async () => {
         try {
-            const response = await fetch('http://localhost:4005/api/chime/create-meeting', {
+            const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const VideoCall = () => {
             }
 
             // Unirse directamente a la reunión
-            const joinResponse = await fetch('http://localhost:4005/api/chime/join-meeting', {
+            const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
