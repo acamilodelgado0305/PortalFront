@@ -487,7 +487,7 @@ const CalendarModal = ({
             fontSize: "22px",
             lineHeight: "1.8",
             textAlign: "center",
-            color: "#374151", // Gris oscuro para mejor contraste
+            color: "#374151",
           }}
         >
           Tu clase ha sido reservada con éxito. Ahora continúa con el proceso de pago para confirmar tu asistencia.
