@@ -12,7 +12,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [showPayPalButtons, setShowPayPalButtons] = useState(false);
 
     useEffect(() => {
         // Solicitar el historial de pagos al backend
@@ -43,12 +43,12 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         return <p className="text-red-600 font-medium">{error}</p>;
     }
     const showModal = (details) => {
-        setTransactionDetails(details); // Guarda los detalles de la transacción
-        setIsModalVisible(true); // Muestra el modal
+        setTransactionDetails(details);
+        setIsModalVisible(true);
     };
 
     const handleOk = () => {
-        setIsModalVisible(false); // Oculta el modal
+        setIsModalVisible(false);
     };
 
     const handlePaymentApproval = async (transactionDetails) => {
@@ -115,14 +115,14 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 />
                 <h1> {user.firstName} {user.lastName}</h1>
                 <button
-                    className="flex items-center justify-between bg-gray-100 hover:bg-gray-200 p-2 rounded-lg shadow transition mt-8"
+                    className="flex items-center justify-between bg-purple-600 hover:bg-purple-500 p-2 rounded-lg shadow transition mt-8"
                     onClick={() => setCurrentView("proceedToPayment")}
                 >
                     <div className="text-left">
-                        <h3 className="text-lg font-medium text-gray-800">Proceed to Payment</h3>
+                        <h3 className="text-lg font-medium text-white">Proceed to Payment</h3>
 
                     </div>
-                    <span className="text-purple-600 text-xl font-semibold">→</span>
+                    <span className="text-white text-xl font-semibold">→</span>
                 </button>
                 <button
                     className="flex items-center justify-between bg-gray-100 hover:bg-gray-200 p-2 rounded-lg shadow transition"
@@ -233,11 +233,33 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     </div>
 
                     {/* Opción de PayPal */}
-                    <div className="p-4 rounded-lg border shadow-md flex items-center gap-4">
-                        <span className="text-purple-600 text-xl">
-                            {selectedMethod === "paypal" ? "●" : "○"}
-                        </span>
-                        <div className="flex-1">
+                    {selectedMethod !== "paypal" || !showPayPalButtons ? (
+                        <div
+                            className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "paypal" ? "bg-gray-200" : ""
+                                }`}
+                            onClick={() => {
+                                setSelectedMethod("paypal");
+                                setShowPayPalButtons(true); // Mostrar los botones de PayPal
+                            }}
+                        >
+                            <span className="text-purple-600 text-xl">
+                                {selectedMethod === "paypal" ? "●" : "○"}
+                            </span>
+                            <div
+                                className="flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-blue-700 font-bold text-2xl py-1 px-14 rounded-lg transition-all"
+                                style={{
+                                    fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                                    color: "#003087", // Azul del logo de PayPal
+                                }}
+                            >
+                                Pay<span style={{ color: "#009CDE" }}>Pal</span>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {/* Botones de PayPal */}
+                    {selectedMethod === "paypal" && showPayPalButtons && (
+                        <div className="mt-4">
                             <PayPalButtons
                                 createOrder={(data, actions) => {
                                     return actions.order.create({
@@ -265,49 +287,46 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                 }}
                             />
                         </div>
-
-                        {/* Modal para mostrar detalles de la transacción */}
-                        <Modal
-                            title="Pago Exitoso"
-                            visible={isModalVisible}
-                            onOk={handleOk}
-                            onCancel={handleOk}
-                            footer={[
-                                <button
-                                    key="ok"
-                                    onClick={handleOk}
-                                    className="bg-purple-600 text-white px-4 py-2 rounded-lg"
-                                >
-                                    Aceptar
-                                </button>,
-                            ]}
-                        >
-                            {transactionDetails && (
-                                <div>
-                                    <p>
-                                        <strong>Nombre:</strong>{" "}
-                                        {transactionDetails.payer.name.given_name}{" "}
-                                        {transactionDetails.payer.name.surname}
-                                    </p>
-                                    <p>
-                                        <strong>Email:</strong>{" "}
-                                        {transactionDetails.payer.email_address}
-                                    </p>
-                                    <p>
-                                        <strong>Transacción ID:</strong>{" "}
-                                        {transactionDetails.id}
-                                    </p>
-                                    <p>
-                                        <strong>Monto:</strong>{" "}
-                                        {transactionDetails.purchase_units[0].amount.value}{" "}
-                                        {transactionDetails.purchase_units[0].amount.currency_code}
-                                    </p>
-                                </div>
-                            )}
-                        </Modal>
-                    </div>
-
-
+                    )}
+                    {/* Modal para mostrar detalles de la transacción */}
+                    <Modal
+                        title="Pago Exitoso"
+                        visible={isModalVisible}
+                        onOk={handleOk}
+                        onCancel={handleOk}
+                        footer={[
+                            <button
+                                key="ok"
+                                onClick={handleOk}
+                                className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                            >
+                                Aceptar
+                            </button>,
+                        ]}
+                    >
+                        {transactionDetails && (
+                            <div>
+                                <p>
+                                    <strong>Nombre:</strong>{" "}
+                                    {transactionDetails.payer.name.given_name}{" "}
+                                    {transactionDetails.payer.name.surname}
+                                </p>
+                                <p>
+                                    <strong>Email:</strong>{" "}
+                                    {transactionDetails.payer.email_address}
+                                </p>
+                                <p>
+                                    <strong>Transacción ID:</strong>{" "}
+                                    {transactionDetails.id}
+                                </p>
+                                <p>
+                                    <strong>Monto:</strong>{" "}
+                                    {transactionDetails.purchase_units[0].amount.value}{" "}
+                                    {transactionDetails.purchase_units[0].amount.currency_code}
+                                </p>
+                            </div>
+                        )}
+                    </Modal>
                     {/* Opción de Transferencia Bancaria */}
                     <div
                         className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
@@ -321,6 +340,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         <p className="text-lg font-semibold">Bank Transfer</p>
                     </div>
                 </div>
+
+
+
             </div>
         );
     };

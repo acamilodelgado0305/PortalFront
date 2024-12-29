@@ -1,6 +1,5 @@
 import {
   CloseOutlined,
-  ConsoleSqlOutlined,
   LeftOutlined,
   RightOutlined,
   SunOutlined,
@@ -12,14 +11,11 @@ import { useAuth } from "../../../Context/AuthContext";
 import Pay from "./payments/pay";
 import { createClass } from "../../../services/class.services";
 import {
-  createClassReservations,
   getClassReservationCurrentById,
 } from "../../../services/classReservation";
-import { ComputerIcon } from "lucide-react";
-import { zonasHorariasg } from "./ZonaHoraria";
 import { getLocalStartAndEnd, getLocalTimeWithTimezone } from "../../../helpers/getLocalStartAndEnd";
 const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const zonasHorarias = zonasHorariasg
+
 
 const CalendarModal = ({
   showCalendarModal,
@@ -43,6 +39,7 @@ const CalendarModal = ({
   const [horaReservada, setHoraReservada] = useState([]);
   const [weekDays, setWeekDays] = useState([]);
   const [pay, setPay] = useState(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [calendarTeacher, setCalendarTeacher] = useState([
     {
       name: "Domingo",
@@ -81,6 +78,10 @@ const CalendarModal = ({
     },
   ]);
 
+  const handleConfirmModalOk = () => {
+    setIsConfirmModalVisible(false);
+    setPay(true);
+  };
   // Estado que guarda la fecha del inicio de la semana actual
   const [startOfWeek, setStartOfWeek] = useState(() => {
     const today = new Date();
@@ -186,8 +187,6 @@ const CalendarModal = ({
 
     const startMinutesTe = convertToMinutes(getHourTeacher(timeStart));
 
-
-    const classDuration = 30;
     const array = [];
 
     let currentMinutesTeacher = startMinutesTe;
@@ -238,8 +237,7 @@ const CalendarModal = ({
     try {
       const response = await createClass(data);
       if (response.success) {
-        success("realiza el pago", "success");
-        setPay(true);
+        setIsConfirmModalVisible(true);
         resolve(null);
       }
     } catch (error) {
@@ -259,7 +257,7 @@ const CalendarModal = ({
     <Modal
       title={
         <div style={{ display: 'flex', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-          {pay ? "Payment Account" : "Reserva tu clase"}
+          {pay ? "" : "Reserva tu clase"}
         </div>
       } open={showCalendarModal}
       onCancel={() => setShowCalendarModal(false)}
@@ -371,30 +369,133 @@ const CalendarModal = ({
                   </div>
 
                 </div>
-                <Popconfirm
-                  title="confirma tu reserva"
-                  description={`Reservaste una clase con el profesor ${teacher.firstName} 
-                    el dia ${daySelected.split("/")[0]} 
-                    a las ${hourSelected}`}
-                  onConfirm={confirm}
-                  onOpenChange={() => console.log('open change')}
+                <div
+                  style={{
+                    position: 'relative', // Contenedor para manejar el z-index
+                  }}
                 >
-                  <Button
-                    className="m-2"
-                    style={{ backgroundColor: '#9D4EDD' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
-                    type="primary"
+                  {/* Fondo opaco */}
+                  <div
+                    style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      width: '100vw',
+                      height: '100vh',
+                      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro semitransparente
+                      zIndex: 1000, // Fondo detrás del Popconfirm
+                      display: 'none', // Ocultar inicialmente
+                    }}
+                    id="overlay"
+                  ></div>
+
+                  {/* Popconfirm */}
+                  <Popconfirm
+                    title={
+                      <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#4B5563' }}>
+                        Confirma tu reserva
+                      </span>
+                    }
+                    description={
+                      <div style={{ fontSize: '20px', lineHeight: '1.5', color: '#374151' }}>
+                        Reservaste una clase con el profesor{' '}
+                        <span style={{ fontWeight: 'bold', color: '#9D4EDD' }}>
+                          {teacher.firstName}
+                        </span>{' '}
+                        el día{' '}
+                        <span style={{ fontWeight: 'bold', color: '#4CAF50' }}>
+                          {daySelected.split('/')[0]}
+                        </span>{' '}
+                        a las{' '}
+                        <span style={{ fontWeight: 'bold', color: '#F59E0B' }}>
+                          {hourSelected}
+                        </span>
+                      </div>
+                    }
+                    onConfirm={confirm}
+                    onOpenChange={(open) => {
+                      // Mostrar u ocultar el fondo opaco según el estado del Popconfirm
+                      const overlay = document.getElementById('overlay');
+                      if (overlay) {
+                        overlay.style.display = open ? 'block' : 'none';
+                      }
+                      console.log('open change');
+                    }}
+                    overlayStyle={{
+                      zIndex: 1100, // Popconfirm por encima del fondo opaco
+                    }}
                   >
-                    Continuar
-                  </Button>
-                </Popconfirm>
+                    <Button
+                      className="m-2"
+                      style={{
+                        backgroundColor: '#9D4EDD',
+                        color: '#fff',
+                        padding: '10px 20px',
+                        fontSize: '20px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        transition: 'background-color 0.3s ease',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#7B2CBF')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9D4EDD')}
+                      type="primary"
+                    >
+                      Continuar
+                    </Button>
+                  </Popconfirm>
+                </div>
               </div>
             </div>
           </>
       }
+      <Modal
+        title={
+          <div
+            style={{
+              fontSize: "32px",
+              fontWeight: "bold",
+              textAlign: "center",
+              color: "#9D4EDD", // Púrpura 600
+            }}
+          >
+            Reserva Confirmada
+          </div>
+        }
+        open={isConfirmModalVisible}
+        onOk={handleConfirmModalOk}
+        cancelButtonProps={{ style: { display: "none" } }} // Ocultar botón de cancelar
+        centered
+        okText={
+          <span style={{ fontSize: "20px", fontWeight: "bold", color: "#fff" }}>
+            OK
+          </span>
+        }
+        okButtonProps={{
+          style: {
+            backgroundColor: "#9D4EDD", // Púrpura 600
+            border: "none",
+            borderRadius: "8px",
+            padding: "10px 20px",
+            fontSize: "20px",
+            fontWeight: "bold",
+          },
+        }}
+        width={700} // Ancho del modal más grande
+      >
+        <p
+          style={{
+            fontSize: "22px",
+            lineHeight: "1.8",
+            textAlign: "center",
+            color: "#374151",
+          }}
+        >
+          Tu clase ha sido reservada con éxito. Ahora continúa con el proceso de pago para confirmar tu asistencia.
+        </p>
+      </Modal>
     </Modal>
   );
+
 };
 
 export default CalendarModal;
