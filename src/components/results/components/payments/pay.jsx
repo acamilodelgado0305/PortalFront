@@ -43,12 +43,12 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         return <p className="text-red-600 font-medium">{error}</p>;
     }
     const showModal = (details) => {
-        setTransactionDetails(details); // Guarda los detalles de la transacción
-        setIsModalVisible(true); // Muestra el modal
+        setTransactionDetails(details);
+        setIsModalVisible(true);
     };
 
     const handleOk = () => {
-        setIsModalVisible(false); // Oculta el modal
+        setIsModalVisible(false);
     };
 
     const handlePaymentApproval = async (transactionDetails) => {
