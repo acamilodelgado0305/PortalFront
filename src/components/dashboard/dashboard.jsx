@@ -6,8 +6,9 @@ import Index from "./index";
 import StudentsSection from './StudentsSection';
 import TeachersSection from './TeacherSection';
 import TeacherDetail from './TeacherDetail';
-import TeacherDashboard from './teacher/TeacherDashboard';  
-import StudentDashboard from './student/StudentDashboard';  
+import TeacherDashboard from './teacher/TeacherDashboard';
+import StudentDashboard from './student/StudentDashboard';
+import Payment from './student/Payment';
 import Calendar from "./Calendar";
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -16,32 +17,32 @@ import Header from '../results/Header';
 const Dashboard = () => {
     const [activeSection, setActiveSection] = useState('');
     const [selectedTeacherId, setSelectedTeacherId] = useState(null);
-    const { user } = useAuth(); 
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 1000); 
+            setIsMobile(window.innerWidth < 1000);
         };
 
         handleResize();
-        window.addEventListener('resize', handleResize); 
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', handleResize); 
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
 
     useEffect(() => {
         if (user.role === 'admin') {
-            setActiveSection('dashboard');  
+            setActiveSection('dashboard');
         } else if (user.role === 'teacher') {
-            setActiveSection('teachers'); 
+            setActiveSection('teachers');
         } else if (user.role === 'student') {
-            setActiveSection('students');  
+            setActiveSection('students');
         }
-    }, [user.role]);  
+    }, [user.role]);
 
     const handleViewTeacher = (teacherId) => {
         setSelectedTeacherId(teacherId);
@@ -57,12 +58,12 @@ const Dashboard = () => {
         return (
             <div className="flex min-h-screen">
                 {renderSidebar()}
-                <div className="w-full flex flex-col items-center md:p-8"> 
+                <div className="w-full flex flex-col items-center md:p-8">
                     <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
                         <Header />
                     </div>
                     <div className="flex-1 w-full">
-                    {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection}/> }
+                        {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection} />}
                         {activeSection === 'dashboard' && <Index />}
                         {activeSection === 'students' && <StudentsSection />}
                         {activeSection === 'teachers' && <TeachersSection onViewTeacher={handleViewTeacher} />}
@@ -80,13 +81,13 @@ const Dashboard = () => {
         return (
             <div className="flex min-h-screen">
                 {renderSidebar()}
-                <div className="w-full flex flex-col items-center md:p-8">  
+                <div className="w-full flex flex-col items-center md:p-8">
                     <div className="w-full sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
                         <Header />
                     </div>
                     <div className="flex-1 w-full">
-                    {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection}/> }
-                        {activeSection === 'teachers' && <TeacherDashboard />} 
+                        {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection} />}
+                        {activeSection === 'teachers' && <TeacherDashboard />}
                         {activeSection === 'calendar' && <Calendar user={user} />}
                     </div>
                 </div>
@@ -103,9 +104,10 @@ const Dashboard = () => {
                         <Header />
                     </div>
                     <div className="flex-1 min-w-full">
-                    {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection}/> }
-                        {activeSection === 'students' && <StudentDashboard />} 
+                        {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection} />}
+                        {activeSection === 'students' && <StudentDashboard />}
                         {activeSection === 'calendar' && <Calendar user={user} />}
+                        {activeSection === 'rewards' && <Payment user={user} />}
                     </div>
                 </div>
             </div>
