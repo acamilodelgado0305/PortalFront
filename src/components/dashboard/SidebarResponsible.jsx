@@ -67,7 +67,7 @@ const SidebarResponsible = ({ activeSection, setActiveSection }) => {
         <div
             className={`transition-all duration-300 ease-in-out bg-white border-b border-gray-200  relative shadow-sm w-[100%]`}
         >
-        
+
             {/* Header */}
             <div className={`h-16 border-b border-gray-200 flex items-center ${isCollapsed ? 'justify-center' : 'px-4'}`}>
                 <div className="flex items-center">
