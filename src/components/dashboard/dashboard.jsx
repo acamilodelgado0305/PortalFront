@@ -7,6 +7,7 @@ import StudentsSection from './StudentsSection';
 import TeachersSection from './TeacherSection';
 import TeacherDetail from './TeacherDetail';
 import TeacherDashboard from './teacher/TeacherDashboard';
+import PaymenTeacher from './teacher/PaymenTeaher';
 import StudentDashboard from './student/StudentDashboard';
 import Payment from './student/Payment';
 import Calendar from "./Calendar";
@@ -89,6 +90,7 @@ const Dashboard = () => {
                         {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection} />}
                         {activeSection === 'teachers' && <TeacherDashboard />}
                         {activeSection === 'calendar' && <Calendar user={user} />}
+                        {activeSection === 'rewards' && <PaymenTeacher user={user} />}
                     </div>
                 </div>
             </div>
