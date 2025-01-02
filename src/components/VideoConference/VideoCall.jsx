@@ -16,7 +16,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = () => {
+const VideoCall = ({visible}) => {
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
     const [remoteVideos, setRemoteVideos] = useState([]);
@@ -191,7 +191,8 @@ const VideoCall = () => {
 
                 // Manejar eventos de audio
                 audioVideoDidStart: () => {
-                    console.log('Audio and video started');
+                    console.log('AudioVideo started');
+                    session.audioVideo.startLocalAudioInput(audioInputDevice?.deviceId);
                 },
                 audioVideoDidStop: (sessionStatus) => {
                     console.log('Audio and video stopped:', sessionStatus);
@@ -201,6 +202,9 @@ const VideoCall = () => {
                 },
                 connectionDidSuggestStopVideo: () => {
                     console.log('Connection quality suggests stopping video');
+                },
+                audioInputFailed: (e) => {
+                    console.error('Audio input failed:', e);
                 }
             });
 
@@ -299,16 +303,14 @@ const VideoCall = () => {
     // Función para alternar el mute del audio
     const toggleMute = async () => {
         if (!meetingSession) return;
-
+        
         try {
             if (isMuted) {
-                await meetingSession.audioVideo.resubscribe();
-                setIsMuted(false);
+                await meetingSession.audioVideo.unmute();
             } else {
-                await meetingSession.audioVideo.unsubscribe();
-                setIsMuted(true);
+                await meetingSession.audioVideo.mute();
             }
-            setAudioLevel(0); // Resetear el nivel de audio al mutear
+            setIsMuted(!isMuted);
         } catch (err) {
             console.error('Error al cambiar el estado del audio:', err);
             setError('Error al cambiar el estado del audio: ' + err.message);
@@ -318,52 +320,34 @@ const VideoCall = () => {
     // Iniciar audio y video
     const startAudioVideo = async (session) => {
         try {
-            // Solicitar permisos de media primero
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    frameRate: { ideal: 30 }
-                },
-                audio: true
-            });
-
-            // Asegurarse de que tenemos una pista de video activa
-            const videoTrack = mediaStream.getVideoTracks()[0];
-            if (!videoTrack) {
-                throw new Error('No se pudo obtener la pista de video');
-            }
-
-            // Mostrar vista previa del video local
-            if (localVideoRef.current) {
-                localVideoRef.current.srcObject = mediaStream;
-            }
-
-            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
-            if (videoInputDevices.length > 0) {
-                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
-            }
-
+            // Iniciar audio primero
             const audioInputDevices = await session.audioVideo.listAudioInputDevices();
             if (audioInputDevices.length > 0) {
                 await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
             }
-
+    
+            // Iniciar audio output (altavoces)
+            const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
+            if (audioOutputDevices.length > 0) {
+                await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
+            }
+    
             await session.audioVideo.start();
-            setLocalVideo(true);
-
-            // Configurar observadores de video
-            session.audioVideo.addObserver({
-                videoTileDidUpdate: (tileState) => {
-                    if (!tileState.localTile) {
-                        setRemoteVideos(prev => [...prev, tileState.tileId]);
+            session.audioVideo.realtimeSubscribeToVolumeIndicator(
+                session.configuration.credentials.attendeeId,
+                (attendeeId, volume) => {
+                    if (!isMuted) {
+                        setAudioLevel(Math.round(volume * 100));
                     }
-                },
-                videoTileWasRemoved: (tileId) => {
-                    setRemoteVideos(prev => prev.filter(id => id !== tileId));
                 }
-            });
-
+            );
+    
+            // Video después del audio
+            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
+            if (videoInputDevices.length > 0) {
+                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
+                setLocalVideo(true);
+            }
         } catch (err) {
             console.error('StartAudioVideo error:', err);
             setError('Error al iniciar audio/video: ' + err.message);
@@ -469,8 +453,8 @@ const VideoCall = () => {
     }, [meetingSession]);
 
     return (
-        <div className="p-4">
-            <div className="mb-4 space-y-4">
+        <div className="p-4 ">
+            <div className="mb-4 space-y-4 ">
                 <div>
                     <input
                         type="email"
