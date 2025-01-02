@@ -20,7 +20,7 @@ function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goTo
 
 
   const handleVideoButtonClick = () => {
-    navigate('/meet');
+    setIsVideoModalVisible(!isVideoModalVisible);
   };
 
   const handleCloseVideoModal = () => {
@@ -29,6 +29,7 @@ function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goTo
 
 
   return (
+    <>
     <div className="flex justify-between items-center absolute w-full px-[1.4vw] bottom-[10vh]">
       <FloatButton
         className="static"
@@ -84,14 +85,14 @@ function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goTo
 
         }
         onClick={() => goToNextPage(emitToSocket)}
-      />
-
-      <VideoModal
-        visible={isVideoModalVisible}
-        onClose={handleCloseVideoModal}
-      />
-
+      />   
     </div>
+    <div className="absolute w-auto h-auto right-0 z-[88]">
+    {isVideoModalVisible &&  <VideoModal
+        onClose={handleCloseVideoModal}
+      />}
+</div>
+    </>
   );
 }
 

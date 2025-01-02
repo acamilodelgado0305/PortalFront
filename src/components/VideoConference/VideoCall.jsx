@@ -16,7 +16,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = () => {
+const VideoCall = ({visible}) => {
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
     const [remoteVideos, setRemoteVideos] = useState([]);
@@ -469,8 +469,8 @@ const VideoCall = () => {
     }, [meetingSession]);
 
     return (
-        <div className="p-4">
-            <div className="mb-4 space-y-4">
+        <div className="p-4 ">
+            <div className="mb-4 space-y-4 ">
                 <div>
                     <input
                         type="email"
