@@ -16,7 +16,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = () => {
+const VideoCall = ({visible}) => {
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
     const [remoteVideos, setRemoteVideos] = useState([]);
@@ -458,13 +458,91 @@ const VideoCall = () => {
     }, [meetingSession]);
 
     return (
-        <div >
-            <div className="mb-4 space-y-4">
-                
+        <div className="p-4 ">
+            <div className="mb-4 space-y-4 ">
+                <div>
+                    <input
+                        type="email"
+                        placeholder="Tu correo electrónico"
+                        className="p-2 border rounded mr-2 w-64"
+                        value={userEmail}
+                        onChange={(e) => setUserEmail(e.target.value)}
+                    />
+                </div>
 
-                
+                {!isHost && (
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="ID de la reunión"
+                            className="p-2 border rounded mr-2 w-64"
+                            value={meetingId}
+                            onChange={(e) => setMeetingId(e.target.value)}
+                        />
+                    </div>
+                )}
 
-                
+                {meetingSession && (
+                    <div className="mb-4 space-y-4">
+                        <div className="flex items-center space-x-4">
+                            <button
+                                onClick={testAudio}
+                                className={`px-4 py-2 rounded ${isTestingAudio
+                                        ? 'bg-green-500 hover:bg-green-600'
+                                        : 'bg-blue-500 hover:bg-blue-600'
+                                    } text-white transition-colors`}
+                            >
+                                {isTestingAudio ? 'Probando Audio...' : 'Probar Audio'}
+                            </button>
+
+                            <button
+                                onClick={toggleMute}
+                                className={`px-4 py-2 rounded ${isMuted
+                                        ? 'bg-red-500 hover:bg-red-600'
+                                        : 'bg-green-500 hover:bg-green-600'
+                                    } text-white transition-colors`}
+                            >
+                                {isMuted ? 'Unmute' : 'Mute'}
+                            </button>
+
+                            {isTestingAudio && (
+                                <div className="flex items-center space-x-2">
+                                    <div className="text-sm">Nivel de Audio:</div>
+                                    <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
+                                        <div
+                                            className="h-full bg-blue-500 transition-all duration-200"
+                                            style={{ width: `${audioLevel}%` }}
+                                        />
+                                    </div>
+                                    <div className="text-sm">{audioLevel}%</div>
+                                </div>
+                            )}
+                        </div>
+
+                        {audioInputDevice && (
+                            <div className="text-sm text-gray-600">
+                                Dispositivo de audio: {audioInputDevice.label}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {!meetingSession && (
+                    <div className="space-x-2">
+                        <button
+                            onClick={createMeeting}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                        >
+                            Crear Reunión
+                        </button>
+                        <button
+                            onClick={joinMeeting}
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                        >
+                            Unirse a Reunión
+                        </button>
+                    </div>
+                )}
             </div>
 
             {error && (
