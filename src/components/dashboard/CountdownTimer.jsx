@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
-import {FaChalkboardTeacher } from "react-icons/fa";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import './CountdownTimer.css';
 
 const CountdownTimer = ({ nextClassId, classDate }) => {
@@ -58,7 +58,7 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
   }, [classDate]);
 
   const handleGoToWhiteboard = () => {
-    if (totalMinutesLeft > 15) { 
+    if (totalMinutesLeft > 15) {
       notification.warning({
         message: 'Advertencia',
         description: 'Quedan más de 15 minutos para la clase.',
@@ -71,14 +71,14 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
 
   return (
     timeRemaining && (
-      <div className="flex flex-col  flex-col items-center justify-center py-3 px-6 rounded-md bg-[#9333ea66] shadow-lg mt-3">
+      <div className="flex  flex-col items-center justify-center py-3 px-6 rounded-md border-[2px] border-purple-600 mt-3">
         <h3 className={`text-lg font-semibold text-[#a14eec]`}>Tiempo restante para la clase:</h3>
         <p className={`${!isText ? 'text-[2.3rem]' : 'text-lg'} mt-2 digital-clock`}>{timeRemaining}</p>
         <button
           onClick={handleGoToWhiteboard}
           className="rounded-lg bg-purple-500 px-6 py-1 text-white items-center justify-center shadow-md transition-all hover:bg-purple-700 mt-1 flex gap-3"
         >
-          Ir a la Pizarra <FaChalkboardTeacher/>
+          Ir a la Pizarra <FaChalkboardTeacher />
         </button>
       </div>
     )
