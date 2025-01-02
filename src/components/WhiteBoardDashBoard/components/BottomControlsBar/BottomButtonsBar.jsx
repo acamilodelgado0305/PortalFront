@@ -2,15 +2,34 @@ import { FloatButton } from "antd";
 import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { TbMessage } from "react-icons/tb";
 import { BsTriangle } from "react-icons/bs";
+import { CiVideoOn } from "react-icons/ci";
+import VideoModal from "../../../VideoConference/VideoCall";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
-function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToNextPage, goToPreviousPage}) {
-  const shapeForm =  "square"||"circle"; 
+function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goToNextPage, goToPreviousPage }) {
+  const navigate = useNavigate();
+
+  const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
+  const shapeForm = "square" || "circle";
   const emitToSocket = true;
-  const style =   {
+  const style = {
     width: '50px',
     height: '50px',
-   }
+  }
+
+
+  const handleVideoButtonClick = () => {
+    setIsVideoModalVisible(!isVideoModalVisible);
+  };
+
+  const handleCloseVideoModal = () => {
+    setIsVideoModalVisible(false);
+  };
+
+
   return (
+    <>
     <div className="flex justify-between items-center absolute w-full px-[1.4vw] bottom-[10vh]">
       <FloatButton
         className="static"
@@ -22,30 +41,37 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToN
             style={{ transform: "rotate(-90deg)" }}
           />
         }
-        onClick={()=>goToPreviousPage(emitToSocket)}
+        onClick={() => goToPreviousPage(emitToSocket)}
       />
       <div className="flex gap-1">
-      <FloatButton
-        className="  static"
-        shape={shapeForm}
-        style={style}
-        icon={<PlayCircleOutlined className="iconAudioFloat" />}
-        onClick={handleFloatButtonClick}
-       
-      />
-      <FloatButton
-        className="  static"
-        shape={shapeForm}
-        style={style}
-        icon={<FileImageOutlined className="iconImageFloat" />}
-        onClick={handleImageButtonClick}
-      />
-      <FloatButton
-        className="  static"
-        shape={shapeForm}
-        style={style}
-        icon={<TbMessage className="iconImageFloat" />}
-      />
+        <FloatButton
+          className="  static"
+          shape={shapeForm}
+          style={style}
+          icon={<PlayCircleOutlined className="iconAudioFloat" />}
+          onClick={handleFloatButtonClick}
+
+        />
+        <FloatButton
+          className="  static"
+          shape={shapeForm}
+          style={style}
+          icon={<FileImageOutlined className="iconImageFloat" />}
+          onClick={handleImageButtonClick}
+        />
+        <FloatButton
+          className="  static"
+          shape={shapeForm}
+          style={style}
+          icon={<TbMessage className="iconImageFloat" />}
+        />
+        <FloatButton
+          className="static"
+          shape={shapeForm}
+          style={style}
+          icon={<CiVideoOn className="iconImageFloat" />}
+          onClick={handleVideoButtonClick}
+        />
       </div>
       <FloatButton
         className=" static"
@@ -54,13 +80,19 @@ function BottomButtonsBar({handleFloatButtonClick, handleImageButtonClick, goToN
         icon={
           <BsTriangle
             className="iconImageFloat"
-            style={{ transform: "rotate(90deg)"  }}
+            style={{ transform: "rotate(90deg)" }}
           />
 
         }
-        onClick={()=>goToNextPage(emitToSocket)}
-      />
+        onClick={() => goToNextPage(emitToSocket)}
+      />   
     </div>
+    <div className="absolute w-auto h-auto right-0 z-[88]">
+    {isVideoModalVisible &&  <VideoModal
+        onClose={handleCloseVideoModal}
+      />}
+</div>
+    </>
   );
 }
 
