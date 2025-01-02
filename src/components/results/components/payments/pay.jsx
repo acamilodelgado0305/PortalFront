@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Modal } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
-import humanIcon from "../../../../../public/humanicon.svg";
+import humanIcon from "../../../../../src/assets/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
     const [selectedMethod, setSelectedMethod] = useState(null);

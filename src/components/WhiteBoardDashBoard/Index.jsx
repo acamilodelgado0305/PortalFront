@@ -14,6 +14,7 @@ import "./animations.css";
 import WhiteBoardListener from "./components/Socket/WhiteBoardListener.jsx";
 import BoardImage from "./components/BoardImage/index.jsx";
 import BottomControlsBar from "./components/BottomControlsBar/Index.jsx";
+import HeaderVideoConference from "../VideoConference/HeaderVideoConference.jsx";
 
 
 function WhiteBoardDashBoard() {
@@ -63,7 +64,7 @@ useEffect(()=>{
         setImageUrl={setImageUrl}
         room={room}
       />
-      <Header />
+      <HeaderVideoConference />
       <div className="fixed flex h-full w-full justify-center">
      
      <BottomControlsBar

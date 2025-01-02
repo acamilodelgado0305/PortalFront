@@ -38,29 +38,33 @@ const VideoCall = () => {
     const remoteAudioAnalyzerInterval = useRef(null);
 
     // Función para crear una reunión
-    const createMeeting = async () => {
-        try {
-            const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ externalUserId: userEmail }),
-            });
+    useEffect(() => {
+        const initializeMeeting = async () => {
+            try {
+                const userEmail = JSON.parse(localStorage.getItem('user')).email;
+                setUserEmail(userEmail);
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error);
+                const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ externalUserId: userEmail }),
+                });
 
-            console.log('Meeting created:', data);
-            setMeetingData(data);
-            setMeetingId(data.meeting.MeetingId);
-            setIsHost(true);
-            await initializeMeetingSession(data.meeting, data.attendee);
-        } catch (err) {
-            console.error('Error details:', err);
-            setError('Error al crear la reunión: ' + err.message);
-        }
-    };
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+
+                setMeetingData(data);
+                setMeetingId(data.meeting.MeetingId);
+                setIsHost(true);
+                await initializeMeetingSession(data.meeting, data.attendee);
+
+            } catch (err) {
+                setError('Error al iniciar reunión: ' + err.message);
+            }
+        };
+
+        initializeMeeting();
+    }, []);
 
 
     const testAudio = async () => {
@@ -166,6 +170,7 @@ const VideoCall = () => {
                         setRemoteVideos(prev => [...prev, tileState.tileId]);
                     }
                 },
+
                 videoTileWasRemoved: (tileId) => {
                     setRemoteVideos(prev => prev.filter(id => id !== tileId));
                 },
@@ -191,7 +196,8 @@ const VideoCall = () => {
 
                 // Manejar eventos de audio
                 audioVideoDidStart: () => {
-                    console.log('Audio and video started');
+                    console.log('AudioVideo started');
+                    session.audioVideo.startLocalAudioInput(audioInputDevice?.deviceId);
                 },
                 audioVideoDidStop: (sessionStatus) => {
                     console.log('Audio and video stopped:', sessionStatus);
@@ -201,6 +207,9 @@ const VideoCall = () => {
                 },
                 connectionDidSuggestStopVideo: () => {
                     console.log('Connection quality suggests stopping video');
+                },
+                audioInputFailed: (e) => {
+                    console.error('Audio input failed:', e);
                 }
             });
 
@@ -302,13 +311,11 @@ const VideoCall = () => {
 
         try {
             if (isMuted) {
-                await meetingSession.audioVideo.resubscribe();
-                setIsMuted(false);
+                await meetingSession.audioVideo.unmute();
             } else {
-                await meetingSession.audioVideo.unsubscribe();
-                setIsMuted(true);
+                await meetingSession.audioVideo.mute();
             }
-            setAudioLevel(0); // Resetear el nivel de audio al mutear
+            setIsMuted(!isMuted);
         } catch (err) {
             console.error('Error al cambiar el estado del audio:', err);
             setError('Error al cambiar el estado del audio: ' + err.message);
@@ -318,52 +325,34 @@ const VideoCall = () => {
     // Iniciar audio y video
     const startAudioVideo = async (session) => {
         try {
-            // Solicitar permisos de media primero
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    frameRate: { ideal: 30 }
-                },
-                audio: true
-            });
-
-            // Asegurarse de que tenemos una pista de video activa
-            const videoTrack = mediaStream.getVideoTracks()[0];
-            if (!videoTrack) {
-                throw new Error('No se pudo obtener la pista de video');
-            }
-
-            // Mostrar vista previa del video local
-            if (localVideoRef.current) {
-                localVideoRef.current.srcObject = mediaStream;
-            }
-
-            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
-            if (videoInputDevices.length > 0) {
-                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
-            }
-
+            // Iniciar audio primero
             const audioInputDevices = await session.audioVideo.listAudioInputDevices();
             if (audioInputDevices.length > 0) {
                 await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
             }
 
+            // Iniciar audio output (altavoces)
+            const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
+            if (audioOutputDevices.length > 0) {
+                await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
+            }
+
             await session.audioVideo.start();
-            setLocalVideo(true);
-
-            // Configurar observadores de video
-            session.audioVideo.addObserver({
-                videoTileDidUpdate: (tileState) => {
-                    if (!tileState.localTile) {
-                        setRemoteVideos(prev => [...prev, tileState.tileId]);
+            session.audioVideo.realtimeSubscribeToVolumeIndicator(
+                session.configuration.credentials.attendeeId,
+                (attendeeId, volume) => {
+                    if (!isMuted) {
+                        setAudioLevel(Math.round(volume * 100));
                     }
-                },
-                videoTileWasRemoved: (tileId) => {
-                    setRemoteVideos(prev => prev.filter(id => id !== tileId));
                 }
-            });
+            );
 
+            // Video después del audio
+            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
+            if (videoInputDevices.length > 0) {
+                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
+                setLocalVideo(true);
+            }
         } catch (err) {
             console.error('StartAudioVideo error:', err);
             setError('Error al iniciar audio/video: ' + err.message);
@@ -469,91 +458,13 @@ const VideoCall = () => {
     }, [meetingSession]);
 
     return (
-        <div className="p-4">
+        <div >
             <div className="mb-4 space-y-4">
-                <div>
-                    <input
-                        type="email"
-                        placeholder="Tu correo electrónico"
-                        className="p-2 border rounded mr-2 w-64"
-                        value={userEmail}
-                        onChange={(e) => setUserEmail(e.target.value)}
-                    />
-                </div>
+                
 
-                {!isHost && (
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="ID de la reunión"
-                            className="p-2 border rounded mr-2 w-64"
-                            value={meetingId}
-                            onChange={(e) => setMeetingId(e.target.value)}
-                        />
-                    </div>
-                )}
+                
 
-                {meetingSession && (
-                    <div className="mb-4 space-y-4">
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={testAudio}
-                                className={`px-4 py-2 rounded ${isTestingAudio
-                                        ? 'bg-green-500 hover:bg-green-600'
-                                        : 'bg-blue-500 hover:bg-blue-600'
-                                    } text-white transition-colors`}
-                            >
-                                {isTestingAudio ? 'Probando Audio...' : 'Probar Audio'}
-                            </button>
-
-                            <button
-                                onClick={toggleMute}
-                                className={`px-4 py-2 rounded ${isMuted
-                                        ? 'bg-red-500 hover:bg-red-600'
-                                        : 'bg-green-500 hover:bg-green-600'
-                                    } text-white transition-colors`}
-                            >
-                                {isMuted ? 'Unmute' : 'Mute'}
-                            </button>
-
-                            {isTestingAudio && (
-                                <div className="flex items-center space-x-2">
-                                    <div className="text-sm">Nivel de Audio:</div>
-                                    <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
-                                        <div
-                                            className="h-full bg-blue-500 transition-all duration-200"
-                                            style={{ width: `${audioLevel}%` }}
-                                        />
-                                    </div>
-                                    <div className="text-sm">{audioLevel}%</div>
-                                </div>
-                            )}
-                        </div>
-
-                        {audioInputDevice && (
-                            <div className="text-sm text-gray-600">
-                                Dispositivo de audio: {audioInputDevice.label}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {!meetingSession && (
-                    <div className="space-x-2">
-                        <button
-                            onClick={createMeeting}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-                        >
-                            Crear Reunión
-                        </button>
-                        <button
-                            onClick={joinMeeting}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
-                        >
-                            Unirse a Reunión
-                        </button>
-                    </div>
-                )}
+                
             </div>
 
             {error && (
@@ -562,12 +473,6 @@ const VideoCall = () => {
                 </div>
             )}
 
-            {meetingId && isHost && (
-                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
-                    <p className="font-medium">ID de la reunión (comparte este ID):</p>
-                    <p className="font-mono bg-white p-2 rounded mt-1">{meetingId}</p>
-                </div>
-            )}
 
             {/* Nueva sección de videos en split-screen */}
             <div className="flex gap-4 h-96">
@@ -589,10 +494,10 @@ const VideoCall = () => {
 
                 {/* Video remoto (asistente) - solo mostramos el primer video remoto */}
                 {remoteVideos.length > 0 && (
-                    <div className="w-1/2 bg-black rounded overflow-hidden relative">
+                    <div className="w-[20em] bg-black rounded overflow-hidden relative">
                         <video
                             ref={(el) => (remoteVideoRefs.current[remoteVideos[0]] = el)}
-                            className="w-full h-full object-cover"
+                            className="w-30 h-30 object-cover"
                             autoPlay
                             playsInline
                         />
