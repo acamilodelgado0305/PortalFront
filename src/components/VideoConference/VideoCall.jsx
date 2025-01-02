@@ -38,33 +38,29 @@ const VideoCall = ({visible}) => {
     const remoteAudioAnalyzerInterval = useRef(null);
 
     // Función para crear una reunión
-    useEffect(() => {
-        const initializeMeeting = async () => {
-            try {
-                const userEmail = JSON.parse(localStorage.getItem('user')).email;
-                setUserEmail(userEmail);
+    const createMeeting = async () => {
+        try {
+            const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ externalUserId: userEmail }),
+            });
 
-                const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ externalUserId: userEmail }),
-                });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
 
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error);
-
-                setMeetingData(data);
-                setMeetingId(data.meeting.MeetingId);
-                setIsHost(true);
-                await initializeMeetingSession(data.meeting, data.attendee);
-
-            } catch (err) {
-                setError('Error al iniciar reunión: ' + err.message);
-            }
-        };
-
-        initializeMeeting();
-    }, []);
+            console.log('Meeting created:', data);
+            setMeetingData(data);
+            setMeetingId(data.meeting.MeetingId);
+            setIsHost(true);
+            await initializeMeetingSession(data.meeting, data.attendee);
+        } catch (err) {
+            console.error('Error details:', err);
+            setError('Error al crear la reunión: ' + err.message);
+        }
+    };
 
 
     const testAudio = async () => {
@@ -170,7 +166,6 @@ const VideoCall = ({visible}) => {
                         setRemoteVideos(prev => [...prev, tileState.tileId]);
                     }
                 },
-
                 videoTileWasRemoved: (tileId) => {
                     setRemoteVideos(prev => prev.filter(id => id !== tileId));
                 },
@@ -308,7 +303,7 @@ const VideoCall = ({visible}) => {
     // Función para alternar el mute del audio
     const toggleMute = async () => {
         if (!meetingSession) return;
-
+        
         try {
             if (isMuted) {
                 await meetingSession.audioVideo.unmute();
@@ -330,13 +325,13 @@ const VideoCall = ({visible}) => {
             if (audioInputDevices.length > 0) {
                 await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
             }
-
+    
             // Iniciar audio output (altavoces)
             const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
             if (audioOutputDevices.length > 0) {
                 await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
             }
-
+    
             await session.audioVideo.start();
             session.audioVideo.realtimeSubscribeToVolumeIndicator(
                 session.configuration.credentials.attendeeId,
@@ -346,7 +341,7 @@ const VideoCall = ({visible}) => {
                     }
                 }
             );
-
+    
             // Video después del audio
             const videoInputDevices = await session.audioVideo.listVideoInputDevices();
             if (videoInputDevices.length > 0) {
@@ -551,6 +546,12 @@ const VideoCall = ({visible}) => {
                 </div>
             )}
 
+            {meetingId && isHost && (
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
+                    <p className="font-medium">ID de la reunión (comparte este ID):</p>
+                    <p className="font-mono bg-white p-2 rounded mt-1">{meetingId}</p>
+                </div>
+            )}
 
             {/* Nueva sección de videos en split-screen */}
             <div className="flex gap-4 h-96">
@@ -572,10 +573,10 @@ const VideoCall = ({visible}) => {
 
                 {/* Video remoto (asistente) - solo mostramos el primer video remoto */}
                 {remoteVideos.length > 0 && (
-                    <div className="w-[20em] bg-black rounded overflow-hidden relative">
+                    <div className="w-1/2 bg-black rounded overflow-hidden relative">
                         <video
                             ref={(el) => (remoteVideoRefs.current[remoteVideos[0]] = el)}
-                            className="w-30 h-30 object-cover"
+                            className="w-full h-full object-cover"
                             autoPlay
                             playsInline
                         />
