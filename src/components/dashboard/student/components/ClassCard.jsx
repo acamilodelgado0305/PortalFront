@@ -92,9 +92,7 @@ const ClassCard = ({ professor }) => {
           <p className="text-lg mb-2">
             <strong>Hora:</strong> {convertToLocalTime(hours)}
           </p>
-          <p className="text-lg mb-4">
-            <strong>Tipo de Clase:</strong> <span className="text-blue-500">{classType || "No especificado"}</span>
-          </p>
+          
           <p className="text-lg mb-4">
             <strong>Estado:</strong>
             <span className="block mt-1 text-base">
