@@ -78,7 +78,7 @@ const CountdownTimer = ({ nextClassId, classDate }) => {
           onClick={handleGoToWhiteboard}
           className="rounded-lg bg-purple-500 px-6 py-1 text-white items-center justify-center shadow-md transition-all hover:bg-purple-700 mt-1 flex gap-3"
         >
-          Ir a la Pizarra <FaChalkboardTeacher/>
+          Unirse a la clase <FaChalkboardTeacher/>
         </button>
       </div>
     )

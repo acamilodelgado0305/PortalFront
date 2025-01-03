@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { FiVideo, FiVideoOff, FiMic, FiMicOff } from 'react-icons/fi';
+import { HiPhoneXMark } from 'react-icons/hi2';
 
 // Definición de global para el SDK de Chime
 if (typeof global === 'undefined') {
@@ -16,7 +18,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = ({visible}) => {
+const VideoCall = ({ visible }) => {
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
     const [remoteVideos, setRemoteVideos] = useState([]);
@@ -30,6 +32,7 @@ const VideoCall = ({visible}) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isTestingAudio, setIsTestingAudio] = useState(false);
     const [audioInputDevice, setAudioInputDevice] = useState(null);
+    const [isCameraOff, setIsCameraOff] = useState(false);
 
     const localVideoRef = useRef(null);
     const remoteVideoRefs = useRef({});
@@ -38,70 +41,34 @@ const VideoCall = ({visible}) => {
     const remoteAudioAnalyzerInterval = useRef(null);
 
     // Función para crear una reunión
-    const createMeeting = async () => {
-        try {
-            const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ externalUserId: userEmail }),
-            });
+    useEffect(() => {
+        const initializeMeeting = async () => {
+            try {
+                const userEmail = JSON.parse(localStorage.getItem('user')).email;
+                setUserEmail(userEmail);
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error);
+                const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ externalUserId: userEmail }),
+                });
 
-            console.log('Meeting created:', data);
-            setMeetingData(data);
-            setMeetingId(data.meeting.MeetingId);
-            setIsHost(true);
-            await initializeMeetingSession(data.meeting, data.attendee);
-        } catch (err) {
-            console.error('Error details:', err);
-            setError('Error al crear la reunión: ' + err.message);
-        }
-    };
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
 
+                setMeetingData(data);
+                setMeetingId(data.meeting.MeetingId);
+                setIsHost(true);
+                await initializeMeetingSession(data.meeting, data.attendee);
 
-    const testAudio = async () => {
-        if (!meetingSession) return;
-
-        try {
-            setIsTestingAudio(true);
-
-            // Obtener lista de dispositivos de audio
-            const audioInputs = await meetingSession.audioVideo.listAudioInputDevices();
-
-            if (audioInputs.length === 0) {
-                throw new Error('No se encontraron dispositivos de audio');
+            } catch (err) {
+                setError('Error al iniciar reunión: ' + err.message);
             }
+        };
 
-            // Seleccionar el primer dispositivo de audio
-            const selectedDevice = audioInputs[0];
-            setAudioInputDevice(selectedDevice);
+        initializeMeeting();
+    }, []);
 
-            // Iniciar el audio input
-            await meetingSession.audioVideo.startAudioInput(selectedDevice.deviceId);
-
-            // Configurar el observador de métricas de audio
-            meetingSession.audioVideo.addObserver({
-                metricsDidReceive: (metrics) => {
-                    if (metrics.audioInputLevel !== null) {
-                        const level = Math.min(Math.floor(metrics.audioInputLevel * 100), 100);
-                        setAudioLevel(level);
-                    }
-                }
-            });
-
-            // Iniciar el analizador de audio
-            startAudioAnalyzer();
-
-        } catch (err) {
-            console.error('Error al probar el audio:', err);
-            setError('Error al probar el audio: ' + err.message);
-            setIsTestingAudio(false);
-        }
-    };
 
     // Función para unirse a una reunión
     const joinMeeting = async () => {
@@ -146,6 +113,24 @@ const VideoCall = ({visible}) => {
         } catch (err) {
             console.error('Error al unirse a la reunión:', err);
             setError(err.message);
+        }
+    };
+
+
+    const toggleCamera = async () => {
+        if (!meetingSession) return;
+        try {
+            if (isCameraOff) {
+                const devices = await meetingSession.audioVideo.listVideoInputDevices();
+                await meetingSession.audioVideo.startVideoInput(devices[0].deviceId);
+                setLocalVideo(true);
+            } else {
+                await meetingSession.audioVideo.stopVideoInput();
+                setLocalVideo(false);
+            }
+            setIsCameraOff(!isCameraOff);
+        } catch (err) {
+            setError('Error con la cámara: ' + err.message);
         }
     };
 
@@ -269,6 +254,25 @@ const VideoCall = ({visible}) => {
         }, 100);
     };
 
+    const handleClose = async () => {
+        try {
+          if (meetingSession) {
+            const response = await fetch(`https://back.app.esturio.com/api/chime/meetings/${meetingId}`, {
+              method: 'DELETE',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({ requesterId: userEmail })
+            });
+            
+            if (!response.ok) throw new Error('Error al finalizar la reunión');
+            
+            meetingSession.audioVideo.stop();
+            // Cierra el modal o finaliza la videollamada
+          }
+        } catch (err) {
+          setError('Error al cerrar la reunión: ' + err.message);
+        }
+      };
+
 
 
     const startRemoteAudioMonitoring = () => {
@@ -303,7 +307,7 @@ const VideoCall = ({visible}) => {
     // Función para alternar el mute del audio
     const toggleMute = async () => {
         if (!meetingSession) return;
-        
+
         try {
             if (isMuted) {
                 await meetingSession.audioVideo.unmute();
@@ -325,13 +329,13 @@ const VideoCall = ({visible}) => {
             if (audioInputDevices.length > 0) {
                 await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
             }
-    
+
             // Iniciar audio output (altavoces)
             const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
             if (audioOutputDevices.length > 0) {
                 await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
             }
-    
+
             await session.audioVideo.start();
             session.audioVideo.realtimeSubscribeToVolumeIndicator(
                 session.configuration.credentials.attendeeId,
@@ -341,7 +345,7 @@ const VideoCall = ({visible}) => {
                     }
                 }
             );
-    
+
             // Video después del audio
             const videoInputDevices = await session.audioVideo.listVideoInputDevices();
             if (videoInputDevices.length > 0) {
@@ -453,111 +457,16 @@ const VideoCall = ({visible}) => {
     }, [meetingSession]);
 
     return (
-        <div className="p-4 ">
-            <div className="mb-4 space-y-4 ">
-                <div>
-                    <input
-                        type="email"
-                        placeholder="Tu correo electrónico"
-                        className="p-2 border rounded mr-2 w-64"
-                        value={userEmail}
-                        onChange={(e) => setUserEmail(e.target.value)}
-                    />
-                </div>
-
-                {!isHost && (
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="ID de la reunión"
-                            className="p-2 border rounded mr-2 w-64"
-                            value={meetingId}
-                            onChange={(e) => setMeetingId(e.target.value)}
-                        />
-                    </div>
-                )}
-
-                {meetingSession && (
-                    <div className="mb-4 space-y-4">
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={testAudio}
-                                className={`px-4 py-2 rounded ${isTestingAudio
-                                        ? 'bg-green-500 hover:bg-green-600'
-                                        : 'bg-blue-500 hover:bg-blue-600'
-                                    } text-white transition-colors`}
-                            >
-                                {isTestingAudio ? 'Probando Audio...' : 'Probar Audio'}
-                            </button>
-
-                            <button
-                                onClick={toggleMute}
-                                className={`px-4 py-2 rounded ${isMuted
-                                        ? 'bg-red-500 hover:bg-red-600'
-                                        : 'bg-green-500 hover:bg-green-600'
-                                    } text-white transition-colors`}
-                            >
-                                {isMuted ? 'Unmute' : 'Mute'}
-                            </button>
-
-                            {isTestingAudio && (
-                                <div className="flex items-center space-x-2">
-                                    <div className="text-sm">Nivel de Audio:</div>
-                                    <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
-                                        <div
-                                            className="h-full bg-blue-500 transition-all duration-200"
-                                            style={{ width: `${audioLevel}%` }}
-                                        />
-                                    </div>
-                                    <div className="text-sm">{audioLevel}%</div>
-                                </div>
-                            )}
-                        </div>
-
-                        {audioInputDevice && (
-                            <div className="text-sm text-gray-600">
-                                Dispositivo de audio: {audioInputDevice.label}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {!meetingSession && (
-                    <div className="space-x-2">
-                        <button
-                            onClick={createMeeting}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-                        >
-                            Crear Reunión
-                        </button>
-                        <button
-                            onClick={joinMeeting}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
-                        >
-                            Unirse a Reunión
-                        </button>
-                    </div>
-                )}
-            </div>
-
+        <div className="p-4">
             {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                     {error}
                 </div>
             )}
 
-            {meetingId && isHost && (
-                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
-                    <p className="font-medium">ID de la reunión (comparte este ID):</p>
-                    <p className="font-mono bg-white p-2 rounded mt-1">{meetingId}</p>
-                </div>
-            )}
-
-            {/* Nueva sección de videos en split-screen */}
-            <div className="flex gap-4 h-96">
-                {/* Video local (anfitrión) */}
+            <div className="flex flex-col gap-4 w-72">
                 {localVideo && (
-                    <div className="w-1/2 bg-black rounded overflow-hidden relative">
+                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
                         <video
                             ref={localVideoRef}
                             className="w-full h-full object-cover transform -scale-x-100"
@@ -571,9 +480,8 @@ const VideoCall = ({visible}) => {
                     </div>
                 )}
 
-                {/* Video remoto (asistente) - solo mostramos el primer video remoto */}
                 {remoteVideos.length > 0 && (
-                    <div className="w-1/2 bg-black rounded overflow-hidden relative">
+                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
                         <video
                             ref={(el) => (remoteVideoRefs.current[remoteVideos[0]] = el)}
                             className="w-full h-full object-cover"
@@ -583,7 +491,6 @@ const VideoCall = ({visible}) => {
                         <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
                             Asistente
                         </div>
-                        {/* Indicador de audio para el asistente */}
                         {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
                             <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
                                 <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
@@ -593,14 +500,37 @@ const VideoCall = ({visible}) => {
                                     />
                                 </div>
                                 {data.muted && (
-                                    <span className="text-red-500 text-xs">
-                                        Muteado
-                                    </span>
+                                    <span className="text-red-500 text-xs">Muteado</span>
                                 )}
                             </div>
                         ))}
                     </div>
                 )}
+
+                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+                    <button
+                        onClick={handleClose}
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                    >
+                        <HiPhoneXMark className="text-xl" />
+                    </button>
+
+                    <button
+                        onClick={toggleCamera}
+                        className={`${isCameraOff ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
+                    >
+                        {isCameraOff ? <FiVideoOff className="text-xl" /> : <FiVideo className="text-xl" />}
+                    </button>
+
+                    <button
+                        onClick={toggleMute}
+                        className={`${isMuted ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
+                    >
+                        {isMuted ? <FiMicOff className="text-xl" /> : <FiMic className="text-xl" />}
+                    </button>
+                </div>
+
+
             </div>
 
             {/* Indicadores de audio remoto - solo para el asistente */}

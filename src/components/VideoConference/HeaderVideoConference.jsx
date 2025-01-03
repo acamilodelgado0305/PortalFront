@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { CiVideoOn } from "react-icons/ci"
 import { Modal } from 'antd'
 import VideoCall from './VideoCall'
+import { FloatButton } from "antd";
 
 function HeaderVideoConference() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [meetingStarted, setMeetingStarted] = useState(false)
+    const [isVideoCallVisible, setIsVideoCallVisible] = useState(false);
+
 
     const handleStartMeeting = async () => {
         try {
@@ -25,34 +28,34 @@ function HeaderVideoConference() {
         }
     }
 
+
+   
+
+    
+  const handleVideoButtonClick = () => {
+    setIsVideoCallVisible(!isVideoCallVisible);
+  };
+
+  const handleCloseVideoCall = () => {
+    setIsVideoCallVisible(false);
+  };
+
     return (
         <>
             <div className="flex justify-end w-full p-4">
-                <button
-                    onClick={handleStartMeeting}
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                    <CiVideoOn className="text-xl" />
-                </button>
+                <FloatButton
+                    className="static"
+
+                    icon={<CiVideoOn className="iconImageFloat" />}
+                    onClick={handleVideoButtonClick}
+                />
             </div>
 
-            <Modal
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                footer={null}
-                width={200}
-                height={200}
-                destroyOnClose
-                modalRenderProps={{ draggable: true }}
-                style={{
-                    position: 'fixed',
-                    top: 70,
-                    right: 10,
-                    margin: 0
-                }}
-            >
-                <VideoCall />
-            </Modal>
+            <div className="absolute w-auto h-auto right-0 z-[88]">
+                {isVideoCallVisible && <VideoCall
+                    onClose={handleCloseVideoCall}
+                />}
+            </div>
         </>
     )
 }
