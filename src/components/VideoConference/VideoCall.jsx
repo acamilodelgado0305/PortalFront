@@ -15,8 +15,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = ({ onClose }) => {
-    const meetingId ='924e4f7b-eac6-4a80-a587-22b962442713'; 
+const VideoCall = ({ onClose, meetingId }) => {
     const [meetingSession, setMeetingSession] = useState(null);
     const [error, setError] = useState({ type: '', message: '' });
     const [isAudioMuted, setIsAudioMuted] = useState(false);
