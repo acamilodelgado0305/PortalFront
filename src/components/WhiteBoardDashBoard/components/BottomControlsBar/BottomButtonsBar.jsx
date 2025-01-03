@@ -3,14 +3,14 @@ import { PlayCircleOutlined, FileImageOutlined } from "@ant-design/icons";
 import { TbMessage } from "react-icons/tb";
 import { BsTriangle } from "react-icons/bs";
 import { CiVideoOn } from "react-icons/ci";
-import VideoModal from "../../../VideoConference/VideoCall";
+import VideoCall from "../../../VideoConference/VideoCall";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goToNextPage, goToPreviousPage }) {
   const navigate = useNavigate();
 
-  const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
+  const [isVideoCallVisible, setIsVideoCallVisible] = useState(false);
   const shapeForm = "square" || "circle";
   const emitToSocket = true;
   const style = {
@@ -20,11 +20,11 @@ function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goTo
 
 
   const handleVideoButtonClick = () => {
-    setIsVideoModalVisible(!isVideoModalVisible);
+    setIsVideoCallVisible(!isVideoCallVisible);
   };
 
-  const handleCloseVideoModal = () => {
-    setIsVideoModalVisible(false);
+  const handleCloseVideoCall = () => {
+    setIsVideoCallVisible(false);
   };
 
 
@@ -88,8 +88,8 @@ function BottomButtonsBar({ handleFloatButtonClick, handleImageButtonClick, goTo
       />   
     </div>
     <div className="absolute w-auto h-auto right-0 z-[88]">
-    {isVideoModalVisible &&  <VideoModal
-        onClose={handleCloseVideoModal}
+    {isVideoCallVisible &&  <VideoCall
+        onClose={handleCloseVideoCall}
       />}
 </div>
     </>

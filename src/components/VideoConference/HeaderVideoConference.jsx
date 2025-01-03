@@ -1,60 +1,67 @@
-import React, { useState } from 'react'
-import { CiVideoOn } from "react-icons/ci"
-import { Modal } from 'antd'
-import VideoCall from './VideoCall'
+import React, { useState, useEffect } from 'react';
+import { CiVideoOn } from "react-icons/ci";
+import { Modal } from 'antd';
+import VideoCall from './VideoCall';
+import { FloatButton } from "antd";
+import { useLocation } from 'react-router-dom';
 
 function HeaderVideoConference() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [meetingStarted, setMeetingStarted] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [meetingStarted, setMeetingStarted] = useState(false);
+    const [isVideoCallVisible, setIsVideoCallVisible] = useState(false);
+    const [classInfo, setClassInfo] = useState(null);
+    const [meetingId, setMeetingId] = useState(null); 
+    const location = useLocation();
 
-    const handleStartMeeting = async () => {
-        try {
-            const userEmail = JSON.parse(localStorage.getItem('user')).email
-            const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ externalUserId: userEmail })
-            })
-
-            if (response.ok) {
-                setIsModalOpen(true)
-                setMeetingStarted(true)
+    useEffect(() => {
+        const getClassInfo = async () => {
+            try {
+                const pathSegments = location.pathname.split('/');
+                const whiteboardId = pathSegments[pathSegments.length - 1];
+                
+                const response = await fetch(`https://back.app.esturio.com/api/clases/${whiteboardId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setClassInfo(data);
+                    // Guardamos el meetingId en el estado
+                    setMeetingId(data.data.meetingId);
+                }
+            } catch (error) {
+                console.error('Error al obtener información de la clase:', error);
             }
-        } catch (error) {
-            console.error('Error al crear reunión:', error)
-        }
-    }
+        };
+    
+        getClassInfo();
+    }, [location]);
+
+
+
+    const handleVideoButtonClick = () => {
+        setIsVideoCallVisible(!isVideoCallVisible);
+    };
+
+    const handleCloseVideoCall = () => {
+        setIsVideoCallVisible(false);
+    };
 
     return (
         <>
             <div className="flex justify-end w-full p-4">
-                <button
-                    onClick={handleStartMeeting}
-                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                    <CiVideoOn className="text-xl" />
-                </button>
+                <FloatButton
+                    className="static"
+                    icon={<CiVideoOn className="iconImageFloat" />}
+                    onClick={handleVideoButtonClick}
+                />
             </div>
 
-            <Modal
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                footer={null}
-                width={200}
-                height={200}
-                destroyOnClose
-                modalRenderProps={{ draggable: true }}
-                style={{
-                    position: 'fixed',
-                    top: 70,
-                    right: 10,
-                    margin: 0
-                }}
-            >
-                <VideoCall />
-            </Modal>
+            <div className="absolute w-auto h-auto right-0 z-[88]">
+                {isVideoCallVisible && <VideoCall
+                    onClose={handleCloseVideoCall}
+                    meetingId={meetingId} 
+                />}
+            </div>
         </>
-    )
+    );
 }
 
-export default HeaderVideoConference
+export default HeaderVideoConference;
