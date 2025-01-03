@@ -158,7 +158,7 @@ const CalendarModal = ({
   function processDate(date, timeSlots) {
     setDaySelected(date),
       setTimeSlots(timeSlots)
-    claseReservada();
+    //claseReservada();
     getHoursFormat(timeSlots, date);
   }
 
