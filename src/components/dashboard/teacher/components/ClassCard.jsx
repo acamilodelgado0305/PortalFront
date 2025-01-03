@@ -68,26 +68,51 @@ const ClassCard = ({ classItem }) => {
 
       {/* Modal con los detalles */}
       <Modal
-        title="Detalles de la Clase"
+        title={
+          <h2 className="text-2xl font-bold text-purple-600">Detalles de la Clase</h2>
+        }
         open={isModalOpen}
         onCancel={handleCloseModal}
         footer={[
-          <Button key="close" onClick={handleCloseModal}>
+          <Button
+            key="close"
+            onClick={handleCloseModal}
+            className="bg-red-500 text-white hover:bg-red-600 px-6 py-2 rounded-lg"
+          >
             Cerrar
           </Button>,
         ]}
+        bodyStyle={{
+          backgroundColor: "#f9f9f9",
+          padding: "24px",
+          borderRadius: "10px",
+        }}
+        style={{
+          maxWidth: "800px",
+          top: 50,
+          fontSize: "16px",
+        }}
       >
-        <p><strong>Estudiante:</strong> {student ? `${student.nombre} ${student.apellido}` : "Desconocido"}</p>
-        <p><strong>Fecha:</strong> {classItem.date}</p>
-        <p><strong>Hora:</strong> {convertToLocalTime(classItem.hours)}</p>
-        <p><strong>Estado:</strong></p>
-        <div>
-          {!hasClassEnded(classItem) &&
-            (classItem.status ? "Aceptado" : "Pendiente de aprobación")}
-          {hasClassEnded(classItem) &&
-            (classItem.status ? "Clase finalizada" : "Finalizada sin aprobar")}
+        <div className="text-gray-700">
+          <p className="text-lg mb-2">
+            <strong>Estudiante:</strong> {student ? `${student.nombre} ${student.apellido}` : "Desconocido"}
+          </p>
+          <p className="text-lg mb-2">
+            <strong>Fecha:</strong> {classItem.date}
+          </p>
+          <p className="text-lg mb-2">
+            <strong>Hora:</strong> {convertToLocalTime(classItem.hours)}
+          </p>
+          <p className="text-lg mb-4">
+            <strong>Estado:</strong>
+            <span className="block mt-1 text-base">
+              {!hasClassEnded(classItem) &&
+                (classItem.status ? "Aceptado" : "Pendiente de aprobación")}
+              {hasClassEnded(classItem) &&
+                (classItem.status ? "Clase finalizada" : "Finalizada sin aprobar")}
+            </span>
+          </p>
         </div>
-        {/* Puedes agregar más detalles aquí */}
       </Modal>
     </>
   );
