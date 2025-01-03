@@ -19,7 +19,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 const VideoCall = () => {
-    const meetingId = '7ece0f71-0de5-40c5-8b6b-6b991ea92713';
+    const meetingId = 'b9b0f37e-4ae4-4544-beb5-5878eb7b2713';
     const [externalUserId, setExternalUserId] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
@@ -48,49 +48,56 @@ const VideoCall = () => {
         } else {
             setError('Usuario no encontrado en localStorage');
         }
-        joinMeeting();
+
     }, []);
 
-    const joinMeeting = async () => {
-        try {
-            if (!externalUserId) {
-                throw new Error('El usuario externo es necesario');
+    useEffect(() => {
+        const joinMeeting = async () => {
+            try {
+                if (!externalUserId) {
+                    throw new Error('El usuario externo es necesario');
+                }
+
+                if (!meetingId?.trim()) {
+                    throw new Error('El ID de la reunión es necesario');
+                }
+
+                const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        meetingId: meetingId.trim(),
+                        externalUserId: externalUserId.trim(),
+                    }),
+                });
+
+                if (!joinResponse.ok) {
+                    const errorData = await joinResponse.json();
+                    throw new Error(errorData.error || 'Error al unirse a la reunión');
+                }
+
+                const joinData = await joinResponse.json();
+                console.log('Joined meeting:', joinData);
+
+                if (!joinData.meeting || !joinData.attendee) {
+                    throw new Error('No se recibió la información completa de la reunión');
+                }
+
+                await initializeMeetingSession(joinData.meeting, joinData.attendee);
+
+            } catch (err) {
+                console.error('Error al unirse a la reunión:', err);
+                setError(err.message);
             }
+        };
 
-            if (!meetingId.trim()) {
-                throw new Error('El ID de la reunión es necesario');
-            }
-
-            const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    meetingId: meetingId.trim(),
-                    externalUserId: externalUserId.trim(), // Utilizar el externalUserId del estado
-                }),
-            });
-
-            if (!joinResponse.ok) {
-                const errorData = await joinResponse.json();
-                throw new Error(errorData.error || 'Error al unirse a la reunión');
-            }
-
-            const joinData = await joinResponse.json();
-            console.log('Joined meeting:', joinData);
-
-            if (!joinData.meeting || !joinData.attendee) {
-                throw new Error('No se recibió la información completa de la reunión');
-            }
-
-            await initializeMeetingSession(joinData.meeting, joinData.attendee);
-
-        } catch (err) {
-            console.error('Error al unirse a la reunión:', err);
-            setError(err.message);
+        if (externalUserId && meetingId) {
+            joinMeeting();
         }
-    };
+
+    }, [externalUserId, meetingId]); 
 
     const toggleCamera = async () => {
         if (!meetingSession) return;
