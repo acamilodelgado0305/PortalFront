@@ -7,7 +7,7 @@ const ClassCard = ({ professor }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { firstName, subjectYouTeach } = professor.teacher;
-  const { date, hours, status, meetingId  } = professor;
+  const { date, hours, status, meetingId } = professor;
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
@@ -20,7 +20,7 @@ const ClassCard = ({ professor }) => {
           <span className="text-purple-600">{subjectYouTeach}</span>
           <span className="text-purple-600">{meetingId}</span>
           <span className="text-gray-600">{date} {' '} {convertToLocalTime(hours)}</span>
-          
+
           <span className="text-gray-600">
             {!hasClassEnded(professor) && (status ? (
               <div className="flex items-center gap-1 font-medium text-[#8bc34a]">
