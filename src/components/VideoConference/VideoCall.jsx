@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiVideo, FiVideoOff, FiMic, FiMicOff } from 'react-icons/fi';
-import { HiPhoneXMark } from 'react-icons/hi2';
+import { Video, VideoOff, Mic, MicOff } from 'lucide-react';
+import { Alert, Button } from 'antd';
 
-// Definición de global para el SDK de Chime
+// Configuración global necesaria para Chime SDK
 if (typeof global === 'undefined') {
     window.global = window;
-}
-if (typeof process === 'undefined') {
-    window.process = { env: {} };
 }
 
 import {
@@ -18,398 +15,247 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = ({ visible }) => {
+const VideoCall = ({ onClose }) => {
+    const meetingId ='924e4f7b-eac6-4a80-a587-22b962442713'; 
     const [meetingSession, setMeetingSession] = useState(null);
-    const [localVideo, setLocalVideo] = useState(false);
-    const [remoteVideos, setRemoteVideos] = useState([]);
-    const [meetingId, setMeetingId] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [error, setError] = useState('');
-    const [isHost, setIsHost] = useState(false);
-    const [meetingData, setMeetingData] = useState(null);
-
-    const [audioLevel, setAudioLevel] = useState(0);
-    const [isMuted, setIsMuted] = useState(false);
-    const [isTestingAudio, setIsTestingAudio] = useState(false);
-    const [audioInputDevice, setAudioInputDevice] = useState(null);
-    const [isCameraOff, setIsCameraOff] = useState(false);
-
+    const [error, setError] = useState({ type: '', message: '' });
+    const [isAudioMuted, setIsAudioMuted] = useState(false);
+    const [isVideoOff, setIsVideoOff] = useState(false);
+    const [hasLocalVideo, setHasLocalVideo] = useState(false);
+    const [hasRemoteVideo, setHasRemoteVideo] = useState(false);
+    
     const localVideoRef = useRef(null);
-    const remoteVideoRefs = useRef({});
-    const audioAnalyzerInterval = useRef(null);
-    const [remoteAudioLevel, setRemoteAudioLevel] = useState({});
-    const remoteAudioAnalyzerInterval = useRef(null);
+    const remoteVideoRef = useRef(null);
 
-    // Función para crear una reunión
+    // Unirse a la reunión automáticamente al montar el componente
     useEffect(() => {
-        const initializeMeeting = async () => {
-            try {
-                const userEmail = JSON.parse(localStorage.getItem('user')).email;
-                setUserEmail(userEmail);
-
-                const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ externalUserId: userEmail }),
-                });
-
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error);
-
-                setMeetingData(data);
-                setMeetingId(data.meeting.MeetingId);
-                setIsHost(true);
-                await initializeMeetingSession(data.meeting, data.attendee);
-
-            } catch (err) {
-                setError('Error al iniciar reunión: ' + err.message);
-            }
-        };
-
-        initializeMeeting();
+        joinMeeting();
     }, []);
 
-
-    // Función para unirse a una reunión
     const joinMeeting = async () => {
         try {
-            // Validaciones iniciales
-            if (!meetingId.trim()) {
-                throw new Error('El ID de la reunión es necesario');
+            const userData = localStorage.getItem('user');
+            if (!userData) {
+                throw new Error('Usuario no encontrado en localStorage');
             }
-
-            if (!userEmail.trim()) {
-                throw new Error('El correo electrónico es necesario');
+            
+            const user = JSON.parse(userData);
+            if (!user.email) {
+                throw new Error('Email de usuario no encontrado');
             }
+            
+            const externalUserId = user.email;
 
-            // Unirse directamente a la reunión
-            const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
+            console.log('Intentando unirse a la reunión...', { meetingId, externalUserId });
+
+            const response = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    meetingId: meetingId.trim(),
-                    externalUserId: userEmail.trim(),
+                    meetingId: meetingId,
+                    externalUserId: externalUserId
                 }),
             });
 
-            if (!joinResponse.ok) {
-                const errorData = await joinResponse.json();
-                throw new Error(errorData.error || 'Error al unirse a la reunión');
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al unirse a la reunión');
             }
 
-            const joinData = await joinResponse.json();
-            console.log('Joined meeting:', joinData);
-
-            // Verificar que tenemos toda la información necesaria
-            if (!joinData.meeting || !joinData.attendee) {
-                throw new Error('No se recibió la información completa de la reunión');
-            }
-
-            // Inicializar la sesión con los datos recibidos
-            await initializeMeetingSession(joinData.meeting, joinData.attendee);
+            // Mostrar mensaje de éxito
+            console.log('Unión exitosa a la reunión:', data);
+            setError(''); // Limpiar cualquier error previo
+            
+            // Mostrar mensaje de éxito temporal
+            const successMessage = data.message || 'Te has unido exitosamente a la reunión';
+            setError({ type: 'success', message: successMessage });
+            
+            await initializeMeetingSession(data.meeting, data.attendee);
 
         } catch (err) {
             console.error('Error al unirse a la reunión:', err);
-            setError(err.message);
+            setError({ type: 'error', message: err.message });
         }
     };
 
-
-    const toggleCamera = async () => {
-        if (!meetingSession) return;
-        try {
-            if (isCameraOff) {
-                const devices = await meetingSession.audioVideo.listVideoInputDevices();
-                await meetingSession.audioVideo.startVideoInput(devices[0].deviceId);
-                setLocalVideo(true);
-            } else {
-                await meetingSession.audioVideo.stopVideoInput();
-                setLocalVideo(false);
-            }
-            setIsCameraOff(!isCameraOff);
-        } catch (err) {
-            setError('Error con la cámara: ' + err.message);
-        }
-    };
-
-    // Inicializar la sesión de la reunión
     const initializeMeetingSession = async (meeting, attendee) => {
         try {
-            const logger = new ConsoleLogger('MeetingLogs', LogLevel.INFO);
+            console.log('Initializing meeting session with:', { meeting, attendee });
+            
+            const logger = new ConsoleLogger('ChimeLogger', LogLevel.INFO);
             const deviceController = new DefaultDeviceController(logger);
-
             const configuration = new MeetingSessionConfiguration(meeting, attendee);
-            const session = new DefaultMeetingSession(configuration, logger, deviceController);
+            
+            const session = new DefaultMeetingSession(
+                configuration,
+                logger,
+                deviceController
+            );
 
-            // Configurar observador de audio remoto
+            // Configurar observadores
             session.audioVideo.addObserver({
-                // Mantener observadores existentes
+                // Video handlers
                 videoTileDidUpdate: (tileState) => {
-                    if (!tileState.localTile) {
-                        setRemoteVideos(prev => [...prev, tileState.tileId]);
-                    }
-                },
-                videoTileWasRemoved: (tileId) => {
-                    setRemoteVideos(prev => prev.filter(id => id !== tileId));
-                },
-
-                // Añadir observadores de audio remoto
-                remoteVideoSourcesDidChange: (videoSources) => {
-                    console.log('Remote video sources changed:', videoSources);
-                },
-
-                // Manejar cambios en el volumen remoto
-                volumeDidChange: (attendeeId, volume, muted, signalStrength) => {
-                    if (attendeeId !== session.configuration.credentials.attendeeId) {
-                        setRemoteAudioLevel(prev => ({
-                            ...prev,
-                            [attendeeId]: {
-                                volume: Math.round(volume * 100),
-                                muted,
-                                signalStrength
-                            }
-                        }));
+                    if (!tileState) return;
+                    console.log('Video tile updated:', tileState);
+                    
+                    if (tileState.localTile) {
+                        setHasLocalVideo(true);
+                        if (localVideoRef.current) {
+                            session.audioVideo.bindVideoElement(
+                                tileState.tileId,
+                                localVideoRef.current
+                            );
+                        }
+                    } else {
+                        setHasRemoteVideo(true);
+                        if (remoteVideoRef.current) {
+                            session.audioVideo.bindVideoElement(
+                                tileState.tileId,
+                                remoteVideoRef.current
+                            );
+                        }
                     }
                 },
 
-                // Manejar eventos de audio
+                // Audio handlers
                 audioVideoDidStart: () => {
                     console.log('AudioVideo started');
-                    session.audioVideo.startLocalAudioInput(audioInputDevice?.deviceId);
                 },
                 audioVideoDidStop: (sessionStatus) => {
-                    console.log('Audio and video stopped:', sessionStatus);
+                    console.log('AudioVideo stopped:', sessionStatus);
                 },
+
+                // Remote audio specific handlers
+                remoteAudioStarted: (attendeeId) => {
+                    console.log('Remote audio started for:', attendeeId);
+                },
+                remoteAudioStopped: (attendeeId) => {
+                    console.log('Remote audio stopped for:', attendeeId);
+                },
+
+                // Volume indicators
+                volumeDidChange: (attendeeId, volume, muted, signalStrength) => {
+                    console.log('Volume changed for:', attendeeId, {volume, muted, signalStrength});
+                },
+
+                // Connection quality
                 connectionDidBecomePoor: () => {
                     console.log('Connection quality became poor');
+                    setError({ type: 'warning', message: 'La calidad de conexión es baja' });
                 },
                 connectionDidSuggestStopVideo: () => {
-                    console.log('Connection quality suggests stopping video');
+                    console.log('Poor connection: suggesting stop video');
+                    setError({ type: 'warning', message: 'Conexión débil: considera apagar el video' });
                 },
-                audioInputFailed: (e) => {
-                    console.error('Audio input failed:', e);
-                }
+
+                // Audio mixing
+                audioIsLocallyMuted: (muted) => {
+                    console.log('Local audio muted:', muted);
+                    setIsAudioMuted(muted);
+                },
             });
 
             setMeetingSession(session);
-
-            // Iniciar el audio y video
             await startAudioVideo(session);
 
-            // Configurar audio remoto
-            session.audioVideo.realtimeSubscribeToVolumeIndicator(
-                attendee.AttendeeId,
-                (attendeeId, volume, muted, signalStrength) => {
-                    if (attendeeId !== attendee.AttendeeId) {
-                        setRemoteAudioLevel(prev => ({
-                            ...prev,
-                            [attendeeId]: {
-                                volume: Math.round(volume * 100),
-                                muted,
-                                signalStrength
-                            }
-                        }));
-                    }
-                }
-            );
-
         } catch (err) {
-            console.error('Session initialization error:', err);
-            setError('Error al inicializar la sesión: ' + err.message);
+            console.error('Error initializing session:', err);
+            setError({ type: 'error', message: 'Error al inicializar la sesión: ' + err.message });
         }
     };
 
-    // Función para iniciar el analizador de audio
-    const startAudioAnalyzer = () => {
-        if (audioAnalyzerInterval.current) {
-            clearInterval(audioAnalyzerInterval.current);
-        }
-
-        audioAnalyzerInterval.current = setInterval(() => {
-            if (meetingSession && !isMuted) {
-                try {
-                    // Obtener métricas directamente del observador de audio
-                    meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
-                        meetingSession.configuration.credentials.attendeeId,
-                        (attendeeId, volume, muted, signalStrength) => {
-                            // Convertir el volumen a un porcentaje (volume viene entre 0 y 1)
-                            const levelPercentage = Math.min(Math.round(volume * 100), 100);
-                            // Solo actualizar si tenemos un valor válido
-                            if (!isNaN(levelPercentage) && levelPercentage >= 0) {
-                                setAudioLevel(levelPercentage);
-                            }
-                        }
-                    );
-                } catch (error) {
-                    console.error('Error en el análisis de audio:', error);
-                    // Si hay error, establecer el nivel a 0
-                    setAudioLevel(0);
-                }
-            } else {
-                // Si está muteado o no hay sesión, establecer el nivel a 0
-                setAudioLevel(0);
-            }
-        }, 100);
-    };
-
-    const handleClose = async () => {
-        try {
-          if (meetingSession) {
-            const response = await fetch(`https://back.app.esturio.com/api/chime/meetings/${meetingId}`, {
-              method: 'DELETE',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({ requesterId: userEmail })
-            });
-            
-            if (!response.ok) throw new Error('Error al finalizar la reunión');
-            
-            meetingSession.audioVideo.stop();
-            // Cierra el modal o finaliza la videollamada
-          }
-        } catch (err) {
-          setError('Error al cerrar la reunión: ' + err.message);
-        }
-      };
-
-
-
-    const startRemoteAudioMonitoring = () => {
-        if (remoteAudioAnalyzerInterval.current) {
-            clearInterval(remoteAudioAnalyzerInterval.current);
-        }
-
-        remoteAudioAnalyzerInterval.current = setInterval(() => {
-            if (meetingSession) {
-                const attendees = meetingSession.audioVideo.realtimeGetAttendeeIdPresence();
-                Object.keys(attendees).forEach(attendeeId => {
-                    if (attendeeId !== meetingSession.configuration.credentials.attendeeId) {
-                        meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
-                            attendeeId,
-                            (id, volume, muted, signalStrength) => {
-                                setRemoteAudioLevel(prev => ({
-                                    ...prev,
-                                    [id]: {
-                                        volume: Math.round(volume * 100),
-                                        muted,
-                                        signalStrength
-                                    }
-                                }));
-                            }
-                        );
-                    }
-                });
-            }
-        }, 200);
-    };
-
-    // Función para alternar el mute del audio
-    const toggleMute = async () => {
-        if (!meetingSession) return;
-
-        try {
-            if (isMuted) {
-                await meetingSession.audioVideo.unmute();
-            } else {
-                await meetingSession.audioVideo.mute();
-            }
-            setIsMuted(!isMuted);
-        } catch (err) {
-            console.error('Error al cambiar el estado del audio:', err);
-            setError('Error al cambiar el estado del audio: ' + err.message);
-        }
-    };
-
-    // Iniciar audio y video
     const startAudioVideo = async (session) => {
         try {
-            // Iniciar audio primero
-            const audioInputDevices = await session.audioVideo.listAudioInputDevices();
-            if (audioInputDevices.length > 0) {
-                await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
-            }
-
-            // Iniciar audio output (altavoces)
-            const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
-            if (audioOutputDevices.length > 0) {
-                await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
-            }
-
+            // Iniciar la sesión primero
             await session.audioVideo.start();
-            session.audioVideo.realtimeSubscribeToVolumeIndicator(
-                session.configuration.credentials.attendeeId,
-                (attendeeId, volume) => {
-                    if (!isMuted) {
-                        setAudioLevel(Math.round(volume * 100));
+            console.log('Session started successfully');
+
+            // Iniciar audio
+            try {
+                const audioInputDevices = await session.audioVideo.listAudioInputDevices();
+                console.log('Audio devices:', audioInputDevices);
+                
+                if (audioInputDevices && audioInputDevices.length > 0) {
+                    const audioDevice = audioInputDevices[0];
+                    if (audioDevice && audioDevice.deviceId) {
+                        await session.audioVideo.startAudioInput(audioDevice.deviceId);
+                        console.log('Audio started with device:', audioDevice.deviceId);
                     }
                 }
-            );
-
-            // Video después del audio
-            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
-            if (videoInputDevices.length > 0) {
-                await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
-                setLocalVideo(true);
+            } catch (audioError) {
+                console.error('Error starting audio:', audioError);
             }
+
+            // Iniciar video
+            try {
+                const videoInputDevices = await session.audioVideo.listVideoInputDevices();
+                console.log('Video devices:', videoInputDevices);
+                
+                if (videoInputDevices && videoInputDevices.length > 0) {
+                    const videoDevice = videoInputDevices[0];
+                    if (videoDevice && videoDevice.deviceId) {
+                        await session.audioVideo.startVideoInput(videoDevice.deviceId);
+                        console.log('Video input started');
+                        
+                        // Iniciar el tile de video local
+                        session.audioVideo.startLocalVideoTile();
+                        console.log('Local video tile started');
+                    }
+                }
+            } catch (videoError) {
+                console.error('Error starting video:', videoError);
+            }
+
         } catch (err) {
-            console.error('StartAudioVideo error:', err);
-            setError('Error al iniciar audio/video: ' + err.message);
+            console.error('Error starting devices:', err);
+            setError('Error al iniciar dispositivos: ' + err.message);
         }
     };
 
-    // Efecto para manejar el video local
-    useEffect(() => {
-        if (!meetingSession || !localVideo || !localVideoRef.current) return;
-
-        let videoTileId = null;
-
-        const startLocalVideo = async () => {
+    const toggleAudio = async () => {
+        if (meetingSession) {
             try {
-                videoTileId = meetingSession.audioVideo.startLocalVideoTile();
-
-                if (videoTileId) {
-                    await meetingSession.audioVideo.bindVideoElement(
-                        videoTileId,
-                        localVideoRef.current
-                    );
-
-                    // Forzar actualización del elemento de video
-                    localVideoRef.current.style.transform = 'scaleX(-1)';
+                if (isAudioMuted) {
+                    await meetingSession.audioVideo.unmute();
+                } else {
+                    await meetingSession.audioVideo.mute();
                 }
+                setIsAudioMuted(!isAudioMuted);
             } catch (err) {
-                console.error('Error starting local video:', err);
+                setError('Error al cambiar el estado del audio');
             }
-        };
+        }
+    };
 
-        startLocalVideo();
-
-        return () => {
-            if (videoTileId) {
-                try {
-                    meetingSession.audioVideo.unbindVideoElement(videoTileId);
-                } catch (err) {
-                    console.error('Error unbinding video:', err);
+    const toggleVideo = async () => {
+        if (meetingSession) {
+            try {
+                if (isVideoOff) {
+                    const devices = await meetingSession.audioVideo.listVideoInputDevices();
+                    await meetingSession.audioVideo.startVideoInput(devices[0].deviceId);
+                    meetingSession.audioVideo.startLocalVideoTile();
+                } else {
+                    await meetingSession.audioVideo.stopVideoInput();
+                    meetingSession.audioVideo.stopLocalVideoTile();
                 }
+                setIsVideoOff(!isVideoOff);
+            } catch (err) {
+                setError('Error al cambiar el estado del video');
             }
-        };
-    }, [meetingSession, localVideo]);
+        }
+    };
 
-    // Efecto para manejar videos remotos
-    useEffect(() => {
-        if (!meetingSession) return;
+    const handleClose = () => {
+        if (meetingSession) {
+            meetingSession.audioVideo.stop();
+        }
+        onClose();
+    };
 
-        remoteVideos.forEach(tileId => {
-            if (remoteVideoRefs.current[tileId]) {
-                meetingSession.audioVideo.bindVideoElement(
-                    tileId,
-                    remoteVideoRefs.current[tileId]
-                );
-            }
-        });
-    }, [meetingSession, remoteVideos]);
-
-    // Limpiar al desmontar
     useEffect(() => {
         return () => {
             if (meetingSession) {
@@ -418,145 +264,82 @@ const VideoCall = ({ visible }) => {
         };
     }, [meetingSession]);
 
-
-
-    // Limpiar el intervalo del analizador de audio al desmontar
-    useEffect(() => {
-        return () => {
-            if (audioAnalyzerInterval.current) {
-                clearInterval(audioAnalyzerInterval.current);
-            }
-        };
-    }, []);
-
-
-    useEffect(() => {
-        if (meetingSession) {
-            startRemoteAudioMonitoring();
-        }
-
-        return () => {
-            if (remoteAudioAnalyzerInterval.current) {
-                clearInterval(remoteAudioAnalyzerInterval.current);
-            }
-        };
-    }, [meetingSession]);
-
-
-
-    useEffect(() => {
-        if (meetingSession) {
-            startRemoteAudioMonitoring();
-        }
-
-        return () => {
-            if (remoteAudioAnalyzerInterval.current) {
-                clearInterval(remoteAudioAnalyzerInterval.current);
-            }
-        };
-    }, [meetingSession]);
-
     return (
-        <div className="p-4">
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                </div>
+        <div className="fixed top-0 right-0 bg-white p-4 shadow-lg rounded-lg w-96">
+            {error.message && (
+                <Alert
+                    message={error.type === 'success' ? 'Éxito' : 'Error'}
+                    description={error.message}
+                    type={error.type === 'success' ? 'success' : 'error'}
+                    showIcon
+                    className="mb-4"
+                    closable
+                    onClose={() => setError({ type: '', message: '' })}
+                />
             )}
 
-            <div className="flex flex-col gap-4 w-72">
-                {localVideo && (
-                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
-                        <video
-                            ref={localVideoRef}
-                            className="w-full h-full object-cover transform -scale-x-100"
-                            autoPlay
-                            playsInline
-                            muted
-                        />
-                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Anfitrión
-                        </div>
-                    </div>
-                )}
-
-                {remoteVideos.length > 0 && (
-                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
-                        <video
-                            ref={(el) => (remoteVideoRefs.current[remoteVideos[0]] = el)}
-                            className="w-full h-full object-cover"
-                            autoPlay
-                            playsInline
-                        />
-                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Asistente
-                        </div>
-                        {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
-                            <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
-                                <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
-                                    <div
-                                        className="h-full bg-green-500 transition-all duration-200"
-                                        style={{ width: `${data.volume}%` }}
-                                    />
-                                </div>
-                                {data.muted && (
-                                    <span className="text-red-500 text-xs">Muteado</span>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
-                    <button
-                        onClick={handleClose}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
-                    >
-                        <HiPhoneXMark className="text-xl" />
-                    </button>
-
-                    <button
-                        onClick={toggleCamera}
-                        className={`${isCameraOff ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
-                    >
-                        {isCameraOff ? <FiVideoOff className="text-xl" /> : <FiVideo className="text-xl" />}
-                    </button>
-
-                    <button
-                        onClick={toggleMute}
-                        className={`${isMuted ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
-                    >
-                        {isMuted ? <FiMicOff className="text-xl" /> : <FiMic className="text-xl" />}
-                    </button>
+            <div className="flex flex-col space-y-4">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-semibold">Video Call</h2>
+                    <Button type="text" onClick={handleClose}>
+                        ✕
+                    </Button>
                 </div>
 
-
-            </div>
-
-            {/* Indicadores de audio remoto - solo para el asistente */}
-            {Object.entries(remoteAudioLevel).length > 0 && (
-                <div className="mt-4 p-4 bg-gray-50 rounded">
-                    <h3 className="text-lg font-semibold mb-2">Audio Remoto</h3>
-                    {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
-                        <div key={attendeeId} className="flex items-center space-x-4 mb-2">
-                            <span className="text-sm">Asistente</span>
-                            <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
-                                <div
-                                    className="h-full bg-blue-500 transition-all duration-200"
-                                    style={{ width: `${data.volume}%` }}
+                <div className="space-y-4">
+                    {/* Contenedor de videos */}
+                    <div className="flex space-x-2">
+                        {/* Video local */}
+                        <div className="w-1/2">
+                            <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+                                <video
+                                    ref={localVideoRef}
+                                    className="w-full h-full object-cover transform -scale-x-100"
+                                    autoPlay
+                                    playsInline
+                                    muted
                                 />
+                                <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
+                                    Tú
+                                </div>
                             </div>
-                            <span className="text-sm">{data.volume}%</span>
-                            {data.muted && (
-                                <span className="text-red-500 text-sm">Muteado</span>
-                            )}
-                            <span className="text-sm">
-                                Señal: {data.signalStrength * 100}%
-                            </span>
                         </div>
-                    ))}
+
+                        {/* Video remoto */}
+                        <div className="w-1/2">
+                            <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+                                <video
+                                    ref={remoteVideoRef}
+                                    className="w-full h-full object-cover"
+                                    autoPlay
+                                    playsInline
+                                />
+                                <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded">
+                                    Participante
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Controles */}
+                    <div className="flex justify-center space-x-4">
+                        <Button
+                            type="primary"
+                            danger={isVideoOff}
+                            shape="circle"
+                            icon={isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
+                            onClick={toggleVideo}
+                        />
+                        <Button
+                            type="primary"
+                            danger={isAudioMuted}
+                            shape="circle"
+                            icon={isAudioMuted ? <MicOff size={20} /> : <Mic size={20} />}
+                            onClick={toggleAudio}
+                        />
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

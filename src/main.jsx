@@ -15,7 +15,7 @@ import RegisterPage from "./components/auth/RegisterPage";
 import Results from "./components/results/Results";
 import WhiteBoardDashBoard from "./components/WhiteBoardDashBoard/Index.jsx";
 import TeacherDetail from "./components/dashboard/TeacherDetail";
-import VideoCall from "./components/VideoConference/VideoCall.jsx";
+import VideoCallRoute from "./components/VideoConference/VideoCallRoute.jsx";
 
 
 import "./index.css";
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/meet",
-    element: <VideoCall />,
+    element: <VideoCallRoute />,
   },
 ]);
 
