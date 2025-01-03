@@ -4,13 +4,14 @@ import { hasClassEnded, convertToLocalTime } from "../../../../helpers";
 
 const ClassCard = ({ professor }) => {
   const { firstName, subjectYouTeach } = professor.teacher;
-  const { date, hours, status } = professor;
+  const { date, hours, status, meetingId} = professor;
 
   return (
     <div className="shadow-md bg-[#fff] transition-all hover:shadow-lg">
       <div className="flex flex-col p-4">
         <span className="text-lg font-semibold">{firstName}</span>
         <span className="text-purple-600">{subjectYouTeach}</span>
+        <span className="text-purple-600">{meetingId}</span>
         <span className="text-gray-600">{date} {'  '} {convertToLocalTime(hours)}</span>
         <span className="text-gray-600">
           {!hasClassEnded(professor) && (status ? (
