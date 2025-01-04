@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FiVideo, FiVideoOff, FiMic, FiMicOff } from 'react-icons/fi';
 import { HiPhoneXMark } from 'react-icons/hi2';
+import LocalVideo from './LocalVideo';
+import RemoteVideo from './RemoteVideo';
+import Controls from './Controls';
 
 // Definición de global para el SDK de Chime
 if (typeof global === 'undefined') {
@@ -97,7 +100,7 @@ const VideoCall = () => {
             joinMeeting();
         }
 
-    }, [externalUserId, meetingId]); 
+    }, [externalUserId, meetingId]);
 
     const toggleCamera = async () => {
         if (!meetingSession) return;
@@ -415,72 +418,15 @@ const VideoCall = () => {
             )}
 
             <div className="flex flex-col gap-4 w-72">
-                {localVideo && (
-                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
-                        <video
-                            ref={localVideoRef}
-                            className="w-full h-full object-cover transform -scale-x-100"
-                            autoPlay
-                            playsInline
-                            muted
-                        />
-                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Anfitrión
-                        </div>
-                    </div>
-                )}
-
-                {remoteVideos.length > 0 && (
-                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
-                        <video
-                            ref={(el) => (remoteVideoRefs.current[remoteVideos[0]] = el)}
-                            className="w-full h-full object-cover"
-                            autoPlay
-                            playsInline
-                        />
-                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Asistente
-                        </div>
-                        {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
-                            <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
-                                <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
-                                    <div
-                                        className="h-full bg-green-500 transition-all duration-200"
-                                        style={{ width: `${data.volume}%` }}
-                                    />
-                                </div>
-                                {data.muted && (
-                                    <span className="text-red-500 text-xs">Muteado</span>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
-                    <button
-                        onClick={handleClose}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
-                    >
-                        <HiPhoneXMark className="text-xl" />
-                    </button>
-
-                    <button
-                        onClick={toggleCamera}
-                        className={`${isCameraOff ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
-                    >
-                        {isCameraOff ? <FiVideoOff className="text-xl" /> : <FiVideo className="text-xl" />}
-                    </button>
-
-                    <button
-                        onClick={toggleMute}
-                        className={`${isMuted ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
-                    >
-                        {isMuted ? <FiMicOff className="text-xl" /> : <FiMic className="text-xl" />}
-                    </button>
-                </div>
-
-
+                <LocalVideo localVideoRef={localVideoRef} localVideo={localVideo} />
+                <RemoteVideo remoteVideoRefs={remoteVideoRefs} remoteVideos={remoteVideos} remoteAudioLevel={remoteAudioLevel} />
+                <Controls
+                    handleClose={handleClose}
+                    toggleCamera={toggleCamera}
+                    isCameraOff={isCameraOff}
+                    toggleMute={toggleMute}
+                    isMuted={isMuted}
+                />
             </div>
 
             {/* Indicadores de audio remoto - solo para el asistente */}
