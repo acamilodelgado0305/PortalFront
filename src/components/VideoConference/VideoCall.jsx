@@ -15,7 +15,6 @@ import {
     DefaultDeviceController,
     DefaultMeetingSession,
     LogLevel,
-    MeetingSessionConfigurations
 } from 'amazon-chime-sdk-js';
 
 const VideoCall = ({meetingId}) => {
@@ -412,7 +411,7 @@ const VideoCall = ({meetingId}) => {
                     {error}
                 </div>
             )}
-            el id de la reunion es {meetingId}
+        
 
             <div className="flex flex-col gap-4 w-72">
                 {localVideo && (
