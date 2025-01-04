@@ -10,6 +10,7 @@ const LocalVideo = ({ localVideoRef, localVideo }) => {
             className="w-full h-full object-cover transform -scale-x-100"
             autoPlay
             playsInline
+            muted
           />
           <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
             Anfitrión
