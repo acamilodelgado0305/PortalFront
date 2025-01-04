@@ -19,7 +19,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 const VideoCall = () => {
-    const meetingId = 'b9b0f37e-4ae4-4544-beb5-5878eb7b2713';
+    const meetingId = 'bdd631de-5a48-4a4d-aff6-c050474b2713';
     const [externalUserId, setExternalUserId] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
@@ -97,7 +97,7 @@ const VideoCall = () => {
             joinMeeting();
         }
 
-    }, [externalUserId, meetingId]); 
+    }, [externalUserId, meetingId]);
 
     const toggleCamera = async () => {
         if (!meetingSession) return;
