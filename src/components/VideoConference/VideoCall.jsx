@@ -15,6 +15,7 @@ import {
     DefaultDeviceController,
     DefaultMeetingSession,
     LogLevel,
+    MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
 const VideoCall = ({meetingId}) => {
