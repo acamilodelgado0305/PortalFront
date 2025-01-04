@@ -19,7 +19,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 const VideoCall = () => {
-    const meetingId = 'bdd631de-5a48-4a4d-aff6-c050474b2713';
+    const meetingId = 'dafcedf1-5164-405c-a9e5-997b82cf2713';
     const [externalUserId, setExternalUserId] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
@@ -34,24 +34,6 @@ const VideoCall = () => {
     const audioAnalyzerInterval = useRef(null);
     const [remoteAudioLevel, setRemoteAudioLevel] = useState({});
     const remoteAudioAnalyzerInterval = useRef(null);
-
-    // Check browser permissions for audio and video
-    const checkPermissions = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: true,
-            });
-            stream.getTracks().forEach((track) => track.stop());
-        } catch (err) {
-            console.error("Permisos denegados o dispositivos no disponibles:", err.message);
-            setError("Permisos denegados o dispositivos no disponibles.");
-        }
-    };
-    // Automatically check permissions on mount
-    useEffect(() => {
-        checkPermissions();
-    }, []);
 
     // Unirse a la reunión automáticamente al montar el componente
     useEffect(() => {
@@ -133,37 +115,6 @@ const VideoCall = () => {
             setError('Error con la cámara: ' + err.message);
         }
     };
-    const checkDevices = async () => {
-        try {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const audioInputs = devices.filter(device => device.kind === "audioinput");
-            const videoInputs = devices.filter(device => device.kind === "videoinput");
-
-            if (audioInputs.length === 0) {
-                throw new Error("No se encontraron dispositivos de entrada de audio.");
-            }
-            if (videoInputs.length === 0) {
-                throw new Error("No se encontraron dispositivos de entrada de video.");
-            }
-
-            console.log("Dispositivos detectados:", { audioInputs, videoInputs });
-            return { audioInputs, videoInputs };
-        } catch (err) {
-            console.error("Error al verificar dispositivos:", err.message);
-            throw err;
-        }
-    };
-    useEffect(() => {
-        const verifyDevices = async () => {
-            try {
-                await checkDevices();
-            } catch (err) {
-                setError("Error verificando dispositivos: " + err.message);
-            }
-        };
-
-        verifyDevices();
-    }, []);
 
     const initializeMeetingSession = async (meeting, attendee) => {
         try {
@@ -323,31 +274,19 @@ const VideoCall = () => {
 
     const startAudioVideo = async (session) => {
         try {
-            // Listar dispositivos de entrada y salida
+            // Iniciar audio primero
             const audioInputDevices = await session.audioVideo.listAudioInputDevices();
-            const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
-            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
-
-            // Manejar dispositivos de audio de entrada
-            if (audioInputDevices.length === 0) {
-                throw new Error("No se encontraron dispositivos de entrada de audio.");
-            } else {
+            if (audioInputDevices.length > 0) {
                 await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
-                console.log("Audio de entrada iniciado con éxito.");
             }
 
-            // Manejar dispositivos de audio de salida
-            if (audioOutputDevices.length === 0) {
-                console.warn("No se encontraron dispositivos de salida de audio (altavoces).");
-            } else {
+            // Iniciar audio output (altavoces)
+            const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
+            if (audioOutputDevices.length > 0) {
                 await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
-                console.log("Audio de salida configurado con éxito.");
             }
 
-            // Iniciar la transmisión de audio y video
             await session.audioVideo.start();
-
-            // Suscribirse al indicador de volumen en tiempo real
             session.audioVideo.realtimeSubscribeToVolumeIndicator(
                 session.configuration.credentials.attendeeId,
                 (attendeeId, volume) => {
@@ -357,18 +296,15 @@ const VideoCall = () => {
                 }
             );
 
-            // Manejar dispositivos de video
-            if (videoInputDevices.length === 0) {
-                console.warn("No se encontraron dispositivos de entrada de video.");
-            } else {
+            // Video después del audio
+            const videoInputDevices = await session.audioVideo.listVideoInputDevices();
+            if (videoInputDevices.length > 0) {
                 await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
                 setLocalVideo(true);
-                console.log("Video de entrada iniciado con éxito.");
             }
-
         } catch (err) {
-            console.error("Error en startAudioVideo:", err.message);
-            setError("Error al iniciar audio/video: " + err.message);
+            console.error('StartAudioVideo error:', err);
+            setError('Error al iniciar audio/video: ' + err.message);
         }
     };
 
