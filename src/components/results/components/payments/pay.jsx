@@ -520,7 +520,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     return (
         <div className="flex justify-center items-center bg-gray-50 py-8">
             {isLoadingPayment && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-100 z-50">
                     <Spin size="large" />
                 </div>
             )}
