@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import { Modal } from "antd"; // Importa el componente Modal de antd
+import { Modal, Spin } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
 import humanIcon from "../../../../../src/assets/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
@@ -13,6 +13,8 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showPayPalButtons, setShowPayPalButtons] = useState(false);
+    const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+
 
     useEffect(() => {
         // Solicitar el historial de pagos al backend
@@ -44,6 +46,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     }
     const showModal = (details) => {
         setTransactionDetails(details);
+        setIsLoadingPayment(false);
         setIsModalVisible(true);
     };
 
@@ -274,6 +277,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                     });
                                 }}
                                 onApprove={(data, actions) => {
+                                    setIsLoadingPayment(true)
                                     return actions.order
                                         .capture()
                                         .then((details) => {
@@ -282,10 +286,14 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             handlePaymentApproval(details);
 
                                         })
-                                        .catch((error) => console.error("Payment error:", error));
+                                        .catch((error) => {
+                                            console.error("Payment error:", error);
+                                            setIsLoadingPayment(false); // Detén el spinner en caso de error
+                                        });
                                 }}
                                 onError={(error) => {
                                     console.error("PayPal error:", error);
+                                    setIsLoadingPayment(false); // Detén el spinner en caso de error
                                 }}
                             />
                         </div>
@@ -511,6 +519,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
     return (
         <div className="flex justify-center items-center bg-gray-50 py-8">
+            {isLoadingPayment && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <Spin size="large" />
+                </div>
+            )}
             {currentView === "menu" && renderMenu()}
             {currentView === "proceedToPayment" && renderProceedToPayment()}
             {currentView === "paymentSettings" && renderPaymentSettings()}
