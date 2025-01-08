@@ -49,6 +49,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
     const handleOk = () => {
         setIsModalVisible(false);
+        setCurrentView("menu");
     };
 
     const handlePaymentApproval = async (transactionDetails) => {
@@ -279,6 +280,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             console.log("Payment successful:", details);
                                             showModal(details); // Llama a la función para mostrar el modal
                                             handlePaymentApproval(details);
+
                                         })
                                         .catch((error) => console.error("Payment error:", error));
                                 }}
@@ -290,40 +292,62 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     )}
                     {/* Modal para mostrar detalles de la transacción */}
                     <Modal
-                        title="Pago Exitoso"
+                        title=""
                         visible={isModalVisible}
                         onOk={handleOk}
                         onCancel={handleOk}
-                        footer={[
-                            <button
-                                key="ok"
-                                onClick={handleOk}
-                                className="bg-purple-600 text-white px-4 py-2 rounded-lg"
-                            >
-                                Aceptar
-                            </button>,
-                        ]}
+                        footer={null} // Sin footer predeterminado
                     >
                         {transactionDetails && (
-                            <div>
-                                <p>
-                                    <strong>Nombre:</strong>{" "}
-                                    {transactionDetails.payer.name.given_name}{" "}
-                                    {transactionDetails.payer.name.surname}
-                                </p>
-                                <p>
-                                    <strong>Email:</strong>{" "}
-                                    {transactionDetails.payer.email_address}
-                                </p>
-                                <p>
-                                    <strong>Transacción ID:</strong>{" "}
-                                    {transactionDetails.id}
-                                </p>
-                                <p>
-                                    <strong>Monto:</strong>{" "}
-                                    {transactionDetails.purchase_units[0].amount.value}{" "}
-                                    {transactionDetails.purchase_units[0].amount.currency_code}
-                                </p>
+                            <div className="flex flex-col items-center space-y-6 p-4">
+                                {/* Recuadro con detalles de la transacción */}
+                                <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
+                                    <h3 className="text-3xl font-semibold text-center text-green-500 mb-4">Tu clase ha sido pagada</h3>
+                                    <p className="text-lg font-semibold"><strong>Nombre:</strong> {transactionDetails.payer.name.given_name} {transactionDetails.payer.name.surname}</p>
+                                    <p className="text-lg font-semibold"><strong>Email:</strong> {transactionDetails.payer.email_address}</p>
+                                    <p className="text-lg font-semibold"><strong>Transacción ID:</strong> {transactionDetails.id}</p>
+                                    <p className="text-lg font-semibold"><strong>Monto:</strong> {transactionDetails.purchase_units[0].amount.value} {transactionDetails.purchase_units[0].amount.currency_code}</p>
+                                    {/* Botones de "Capturar" e "Imprimir" */}
+                                    <div className="flex justify-between mt-6">
+                                        <button
+                                            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-400 transition"
+                                            onClick={() => console.log("Capturar")}
+                                        >
+                                            Capturar
+                                        </button>
+                                        <button
+                                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                                            onClick={() => console.log("Imprimir")}
+                                        >
+                                            Imprimir
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Recuadro con acciones adicionales */}
+                                <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
+                                    <h3 className="text-lg font-semibold text-center text-gray-700 mb-4">Acciones Adicionales</h3>
+                                    <div className="flex flex-col space-y-4">
+                                        <button
+                                            className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
+                                            onClick={() => console.log("Ver historial de pagos")}
+                                        >
+                                            Ver Historial de Pagos
+                                        </button>
+                                        <button
+                                            className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
+                                            onClick={() => console.log("Agendar nueva clase")}
+                                        >
+                                            Agendar Nueva Clase
+                                        </button>
+                                        <button
+                                            className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
+                                            onClick={() => console.log("Otro servicio")}
+                                        >
+                                            Otro Servicio
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </Modal>
