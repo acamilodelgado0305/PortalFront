@@ -49,6 +49,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
     const handleOk = () => {
         setIsModalVisible(false);
+        setCurrentView("menu");
     };
 
     const handlePaymentApproval = async (transactionDetails) => {
@@ -279,6 +280,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             console.log("Payment successful:", details);
                                             showModal(details); // Llama a la función para mostrar el modal
                                             handlePaymentApproval(details);
+
                                         })
                                         .catch((error) => console.error("Payment error:", error));
                                 }}
