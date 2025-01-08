@@ -310,7 +310,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                     {/* Botones de "Capturar" e "Imprimir" */}
                                     <div className="flex justify-between mt-6">
                                         <button
-                                            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                                            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-400 transition"
                                             onClick={() => console.log("Capturar")}
                                         >
                                             Capturar
