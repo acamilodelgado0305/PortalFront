@@ -296,61 +296,70 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         visible={isModalVisible}
                         onOk={handleOk}
                         onCancel={handleOk}
-                        footer={null} // Sin footer predeterminado
+                        footer={null} // No default footer
                     >
                         {transactionDetails && (
                             <div className="flex flex-col items-center space-y-6 p-4">
-                                {/* Recuadro con detalles de la transacción */}
+                                {/* Box with transaction details */}
                                 <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
-                                    <h3 className="text-3xl font-semibold text-center text-green-500 mb-4">Tu clase ha sido pagada</h3>
-                                    <p className="text-lg font-semibold"><strong>Nombre:</strong> {transactionDetails.payer.name.given_name} {transactionDetails.payer.name.surname}</p>
-                                    <p className="text-lg font-semibold"><strong>Email:</strong> {transactionDetails.payer.email_address}</p>
-                                    <p className="text-lg font-semibold"><strong>Transacción ID:</strong> {transactionDetails.id}</p>
-                                    <p className="text-lg font-semibold"><strong>Monto:</strong> {transactionDetails.purchase_units[0].amount.value} {transactionDetails.purchase_units[0].amount.currency_code}</p>
-                                    {/* Botones de "Capturar" e "Imprimir" */}
+                                    <h3 className="text-3xl font-semibold text-center text-green-500 mb-4">Your class has been paid</h3>
+                                    <p className="text-lg font-semibold">
+                                        <strong>Name:</strong> {transactionDetails.payer.name.given_name} {transactionDetails.payer.name.surname}
+                                    </p>
+                                    <p className="text-lg font-semibold">
+                                        <strong>Email:</strong> {transactionDetails.payer.email_address}
+                                    </p>
+                                    <p className="text-lg font-semibold">
+                                        <strong>Transaction ID:</strong> {transactionDetails.id}
+                                    </p>
+                                    <p className="text-lg font-semibold">
+                                        <strong>Amount:</strong> {transactionDetails.purchase_units[0].amount.value} {transactionDetails.purchase_units[0].amount.currency_code}
+                                    </p>
+                                    {/* "Capture" and "Print" buttons */}
                                     <div className="flex justify-between mt-6">
                                         <button
                                             className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-400 transition"
-                                            onClick={() => console.log("Capturar")}
+                                            onClick={() => console.log("Capture")}
                                         >
-                                            Capturar
+                                            Capture
                                         </button>
                                         <button
                                             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-                                            onClick={() => console.log("Imprimir")}
+                                            onClick={() => console.log("Print")}
                                         >
-                                            Imprimir
+                                            Print
                                         </button>
                                     </div>
                                 </div>
 
-                                {/* Recuadro con acciones adicionales */}
+                                {/* Box with additional actions */}
                                 <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
-                                    <h3 className="text-lg font-semibold text-center text-gray-700 mb-4">Acciones Adicionales</h3>
+                                    <h3 className="text-lg font-semibold text-center text-gray-700 mb-4">Additional Actions</h3>
                                     <div className="flex flex-col space-y-4">
                                         <button
                                             className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
-                                            onClick={() => console.log("Ver historial de pagos")}
+                                            onClick={() => console.log("View payment history")}
                                         >
-                                            Ver Historial de Pagos
+                                            View Payment History
                                         </button>
                                         <button
                                             className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
-                                            onClick={() => console.log("Agendar nueva clase")}
+                                            onClick={() => console.log("Schedule a new class")}
                                         >
-                                            Agendar Nueva Clase
+                                            Schedule a New Class
                                         </button>
                                         <button
                                             className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
-                                            onClick={() => console.log("Otro servicio")}
+                                            onClick={() => console.log("Other service")}
                                         >
-                                            Otro Servicio
+                                            Other Service
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </Modal>
+
                     {/* Opción de Transferencia Bancaria */}
                     <div
                         className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
