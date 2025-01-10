@@ -14,6 +14,64 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [error, setError] = useState(null);
     const [showPayPalButtons, setShowPayPalButtons] = useState(false);
     const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+    const [savedCards, setSavedCards] = useState([]);
+
+    const [cardDetails, setCardDetails] = useState({
+        number: "",
+        expiration: "",
+        cvv: "",
+        firstName: "",
+        lastName: "",
+        country: "",
+        billingAddress1: "",
+        billingAddress2: "",
+    });
+
+    const saveCardDetails = () => {
+        // Verificar si los campos obligatorios están completos
+        const { number, expiration, cvv, firstName, lastName, country, billingAddress1 } = cardDetails;
+        if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Guardar los datos de la tarjeta
+        setSavedCards([...savedCards, cardDetails]);
+        setCardDetails({
+            number: "",
+            expiration: "",
+            cvv: "",
+            firstName: "",
+            lastName: "",
+            country: "",
+            billingAddress1: "",
+            billingAddress2: "",
+        });
+        console.log("Card Details Saved:", cardDetails);
+        setCurrentView("paymentOptions"); // Cambiar de vista
+    };
+
+    const cancelCardDetails = () => {
+        console.log("Cancelling and resetting card details...");
+
+        // Limpia los detalles de la tarjeta
+        setCardDetails({
+            number: "",
+            expiration: "",
+            cvv: "",
+            firstName: "",
+            lastName: "",
+            country: "",
+            billingAddress1: "",
+            billingAddress2: "",
+        });
+
+        // Limpia el método seleccionado
+        setSelectedMethod(null);
+
+        // Cambia la vista a opciones de pago
+        setCurrentView("paymentOptions");
+    };
 
 
     useEffect(() => {
@@ -223,17 +281,21 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
                 <h2 className=" flex flex-col items-center text-2xl text-center font-semibold  my-6">How do you plan to pay for your classes?</h2>
                 <div className="flex flex-col gap-6 p-8">
-                    {/* Opción de Tarjeta de Crédito */}
                     <div
-                        className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""
+                        className={`flex flex-col p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""
                             }`}
-                        onClick={() => setSelectedMethod("creditCard")}
+                        onClick={() => {
+                            setSelectedMethod("creditCard"); // Selecciona el método como tarjeta de crédito
+                            setCurrentView("addCreditCard"); // Cambia la vista al formulario de tarjeta de crédito
+                        }}
                     >
-                        <span className="text-purple-600 text-xl ">
-                            {selectedMethod === "creditCard" ? "●" : "○"}
-                        </span>
-                        <CreditCardOutlined style={{ fontSize: '36px', color: '#9333EA' }} />
-                        <p className="text-lg font-semibold">Credit Card</p>
+                        <div className="flex items-center gap-4">
+                            <span className="text-purple-600 text-xl">
+                                {selectedMethod === "creditCard" ? "●" : "○"}
+                            </span>
+                            <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
+                            <p className="text-lg font-semibold">Credit Card</p>
+                        </div>
                     </div>
 
                     {/* Opción de PayPal */}
@@ -387,6 +449,128 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             </div>
         );
     };
+    const renderCreditCardForm = () => (
+        <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
+            <h2 className="text-2xl font-semibold text-center mb-6">Add Credit Card</h2>
+            <form className="flex flex-col gap-4">
+                {/* Número de tarjeta */}
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Card Number *</label>
+                    <input
+                        type="text"
+                        placeholder="4444 5555 6666 7777"
+                        className="border rounded-lg p-2 w-full"
+                        value={cardDetails.number}
+                        onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
+                    />
+                </div>
+
+
+                {/* Fecha de expiración */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Expiration *</label>
+                        <input
+                            type="text"
+                            placeholder="MM/YYYY"
+                            className="border rounded-lg p-2 w-full"
+                            value={cardDetails.expiration}
+                            onChange={(e) => setCardDetails({ ...cardDetails, expiration: e.target.value })}
+                        />
+                    </div>
+
+                    {/* CVV */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">CVV *</label>
+                        <input
+                            type="text"
+                            placeholder="123"
+                            className="border rounded-lg p-2 w-full"
+                            value={cardDetails.cvv}
+                            onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
+                        />
+
+                    </div>
+                </div>
+
+                {/* Nombre del titular */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">First Name *</label>
+                        <input
+                            type="text"
+                            placeholder="David"
+                            className="border rounded-lg p-2 w-full"
+                            value={cardDetails.firstName}
+                            onChange={(e) => setCardDetails({ ...cardDetails, firstName: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Last Name *</label>
+                        <input
+                            type="text"
+                            placeholder="Martinez"
+                            className="border rounded-lg p-2 w-full"
+                            value={cardDetails.lastName}
+                            onChange={(e) => setCardDetails({ ...cardDetails, lastName: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                {/* País */}
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Country *</label>
+                    <input
+                        type="text"
+                        placeholder="Mexico"
+                        className="border rounded-lg p-2 w-full"
+                        value={cardDetails.country}
+                        onChange={(e) => setCardDetails({ ...cardDetails, country: e.target.value })}
+                    />
+                </div>
+
+                {/* Dirección de facturación */}
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Billing Address Line 1 *</label>
+                    <input
+                        type="text"
+                        placeholder="C Independencia No. 54"
+                        className="border rounded-lg p-2 w-full"
+                        value={cardDetails.billingAddress1}
+                        onChange={(e) => setCardDetails({ ...cardDetails, billingAddress1: e.target.value })}
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Billing Address Line 2</label>
+                    <input
+                        type="text"
+                        placeholder="D.F. Mexico, Mexico"
+                        className="border rounded-lg p-2 w-full"
+                        value={cardDetails.billingAddress2}
+                        onChange={(e) => setCardDetails({ ...cardDetails, billingAddress2: e.target.value })}
+                    />
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex justify-between mt-4">
+                    <button
+                        type="button"
+                        className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"
+                        onClick={cancelCardDetails}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        className="bg-purple-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-purple-400"
+                        onClick={() => saveCardDetails()}
+                    >
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
 
     const renderPaymentSettings = () => (
         <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
@@ -530,6 +714,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             {currentView === "billing" && renderBilling()}
             {currentView === "paymentOptions" && renderPaymentOptions()}
             {currentView === "paymentHistory" && renderPaymentHistory()}
+            {currentView === "addCreditCard" && renderCreditCardForm()}
         </div>
     );
 };
