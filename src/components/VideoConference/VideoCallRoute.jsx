@@ -16,7 +16,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCallRoute = ({visible}) => {
+const VideoCallRoute = ({ visible }) => {
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
     const [remoteVideos, setRemoteVideos] = useState([]);
@@ -33,89 +33,129 @@ const VideoCallRoute = ({visible}) => {
 
     const localVideoRef = useRef(null);
     const remoteVideoRefs = useRef({});
-    const audioAnalyzerInterval = useRef(null);
+    const audioContextRef = useRef(null);
+    const audioAnalyzerRef = useRef(null);
     const [remoteAudioLevel, setRemoteAudioLevel] = useState({});
-    const remoteAudioAnalyzerInterval = useRef(null);
 
-    // Función para crear una reunión
-    const createMeeting = async () => {
-        try {
-            const response = await fetch('https://back.app.esturio.com/api/chime/create-meeting', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ externalUserId: userEmail }),
-            });
-
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error);
-
-            console.log('Meeting created:', data);
-            setMeetingData(data);
-            setMeetingId(data.meeting.MeetingId);
-            setIsHost(true);
-            await initializeMeetingSession(data.meeting, data.attendee);
-        } catch (err) {
-            console.error('Error details:', err);
-            setError('Error al crear la reunión: ' + err.message);
-        }
-    };
-
-
+    
+    // Función para probar el audio
     const testAudio = async () => {
-        if (!meetingSession) return;
-
         try {
-            setIsTestingAudio(true);
-
-            // Obtener lista de dispositivos de audio
-            const audioInputs = await meetingSession.audioVideo.listAudioInputDevices();
-
-            if (audioInputs.length === 0) {
-                throw new Error('No se encontraron dispositivos de audio');
+            if (!meetingSession) {
+                throw new Error('La sesión no está inicializada');
             }
 
-            // Seleccionar el primer dispositivo de audio
-            const selectedDevice = audioInputs[0];
-            setAudioInputDevice(selectedDevice);
+            setIsTestingAudio(true);
 
-            // Iniciar el audio input
-            await meetingSession.audioVideo.startAudioInput(selectedDevice.deviceId);
+            // Detener cualquier audio previo
+            if (audioContextRef.current) {
+                await audioContextRef.current.close();
+                audioContextRef.current = null;
+            }
 
-            // Configurar el observador de métricas de audio
-            meetingSession.audioVideo.addObserver({
-                metricsDidReceive: (metrics) => {
-                    if (metrics.audioInputLevel !== null) {
-                        const level = Math.min(Math.floor(metrics.audioInputLevel * 100), 100);
-                        setAudioLevel(level);
-                    }
+            // Crear nuevo contexto de audio
+            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            const audioContext = audioContextRef.current;
+
+            // Solicitar permisos y obtener stream
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
                 }
             });
 
-            // Iniciar el analizador de audio
-            startAudioAnalyzer();
+            // Crear y configurar analizador
+            const analyser = audioContext.createAnalyser();
+            analyser.fftSize = 1024;
+            analyser.smoothingTimeConstant = 0.8;
+            audioAnalyzerRef.current = analyser;
+
+            // Crear procesador de script
+            const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+            const source = audioContext.createMediaStreamSource(stream);
+            
+            // Conectar nodos
+            source.connect(analyser);
+            analyser.connect(scriptProcessor);
+            scriptProcessor.connect(audioContext.destination);
+
+            // Procesar audio
+            scriptProcessor.onaudioprocess = () => {
+                if (!isTestingAudio) return;
+
+                const array = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(array);
+                
+                // Calcular RMS (Root Mean Square) para mejor detección de volumen
+                const rms = Math.sqrt(
+                    array.reduce((acc, val) => acc + (val * val), 0) / array.length
+                );
+                
+                // Aplicar una escala logarítmica para mejor respuesta
+                const normalizedLevel = Math.min(
+                    Math.round((Math.log(rms + 1) / Math.log(256)) * 100),
+                    100
+                );
+
+                setAudioLevel(normalizedLevel);
+            };
+
+            // Configurar dispositivo en Chime
+            const audioInputs = await meetingSession.audioVideo.listAudioInputDevices();
+            console.log('Dispositivos de audio disponibles:', audioInputs);
+
+            if (audioInputs.length > 0) {
+                const selectedDevice = audioInputs[0];
+                console.log('Seleccionando dispositivo:', selectedDevice);
+                setAudioInputDevice(selectedDevice);
+                await meetingSession.audioVideo.startAudioInput(selectedDevice.deviceId);
+            }
 
         } catch (err) {
-            console.error('Error al probar el audio:', err);
+            console.error('Error en la prueba de audio:', err);
             setError('Error al probar el audio: ' + err.message);
-            setIsTestingAudio(false);
+        }
+    };
+
+    const stopAudioTest = async () => {
+        setIsTestingAudio(false);
+        setAudioLevel(0);
+
+        try {
+            // Detener el analizador
+            if (audioAnalyzerRef.current) {
+                audioAnalyzerRef.current.disconnect();
+                audioAnalyzerRef.current = null;
+            }
+
+            // Detener el contexto de audio
+            if (audioContextRef.current) {
+                // Desconectar todos los nodos primero
+                const source = audioContextRef.current.createBufferSource();
+                source.disconnect();
+                
+                await audioContextRef.current.close();
+                audioContextRef.current = null;
+            }
+
+            // Detener el audio en Chime si está activo
+            if (meetingSession) {
+                await meetingSession.audioVideo.stopAudioInput();
+            }
+        } catch (err) {
+            console.error('Error al detener la prueba de audio:', err);
         }
     };
 
     // Función para unirse a una reunión
     const joinMeeting = async () => {
         try {
-            // Validaciones iniciales
-            if (!meetingId.trim()) {
-                throw new Error('El ID de la reunión es necesario');
+            if (!meetingId.trim() || !userEmail.trim()) {
+                throw new Error('El ID de la reunión y el correo electrónico son necesarios');
             }
 
-            if (!userEmail.trim()) {
-                throw new Error('El correo electrónico es necesario');
-            }
-
-            // Unirse directamente a la reunión
             const joinResponse = await fetch('http://localhost:4005/api/chime/join-meeting', {
                 method: 'POST',
                 headers: {
@@ -135,13 +175,23 @@ const VideoCallRoute = ({visible}) => {
             const joinData = await joinResponse.json();
             console.log('Joined meeting:', joinData);
 
-            // Verificar que tenemos toda la información necesaria
             if (!joinData.meeting || !joinData.attendee) {
                 throw new Error('No se recibió la información completa de la reunión');
             }
 
-            // Inicializar la sesión con los datos recibidos
+            // Inicializar la sesión y el audio/video
             await initializeMeetingSession(joinData.meeting, joinData.attendee);
+
+            // Verificar el estado del audio después de unirse
+            setTimeout(async () => {
+                if (meetingSession) {
+                    const audioState = await meetingSession.audioVideo.realtimeIsLocalAudioMuted();
+                    if (audioState) {
+                        console.log('Audio está muteado, intentando unmutear...');
+                        await meetingSession.audioVideo.realtimeUnmuteLocalAudio();
+                    }
+                }
+            }, 1000);
 
         } catch (err) {
             console.error('Error al unirse a la reunión:', err);
@@ -152,30 +202,44 @@ const VideoCallRoute = ({visible}) => {
     // Inicializar la sesión de la reunión
     const initializeMeetingSession = async (meeting, attendee) => {
         try {
-            const logger = new ConsoleLogger('MeetingLogs', LogLevel.INFO);
+            const logger = new ConsoleLogger('MeetingLogs', LogLevel.DEBUG); // Cambiado a DEBUG para más información
             const deviceController = new DefaultDeviceController(logger);
 
             const configuration = new MeetingSessionConfiguration(meeting, attendee);
             const session = new DefaultMeetingSession(configuration, logger, deviceController);
 
-            // Configurar observador de audio remoto
+            // Configurar observadores
             session.audioVideo.addObserver({
-                // Mantener observadores existentes
+                audioVideoDidStart: async () => {
+                    console.log('AudioVideo started - Configurando audio...');
+                    try {
+                        const audioInputs = await session.audioVideo.listAudioInputDevices();
+                        if (audioInputs.length > 0) {
+                            await session.audioVideo.startAudioInput(audioInputs[0].deviceId);
+                            console.log('Audio input iniciado correctamente');
+                        }
+                    } catch (err) {
+                        console.error('Error al iniciar audio input:', err);
+                    }
+                },
+                audioVideoDidStop: (sessionStatus) => {
+                    console.log('AudioVideo stopped:', sessionStatus);
+                },
+                audioInputDidStart: () => {
+                    console.log('Audio input started successfully');
+                },
+                audioInputDidStop: () => {
+                    console.log('Audio input stopped');
+                },
                 videoTileDidUpdate: (tileState) => {
                     if (!tileState.localTile) {
+                        console.log('Remote video updated:', tileState);
                         setRemoteVideos(prev => [...prev, tileState.tileId]);
                     }
                 },
                 videoTileWasRemoved: (tileId) => {
                     setRemoteVideos(prev => prev.filter(id => id !== tileId));
                 },
-
-                // Añadir observadores de audio remoto
-                remoteVideoSourcesDidChange: (videoSources) => {
-                    console.log('Remote video sources changed:', videoSources);
-                },
-
-                // Manejar cambios en el volumen remoto
                 volumeDidChange: (attendeeId, volume, muted, signalStrength) => {
                     if (attendeeId !== session.configuration.credentials.attendeeId) {
                         setRemoteAudioLevel(prev => ({
@@ -187,118 +251,107 @@ const VideoCallRoute = ({visible}) => {
                             }
                         }));
                     }
-                },
-
-                // Manejar eventos de audio
-                audioVideoDidStart: () => {
-                    console.log('AudioVideo started');
-                    session.audioVideo.startLocalAudioInput(audioInputDevice?.deviceId);
-                },
-                audioVideoDidStop: (sessionStatus) => {
-                    console.log('Audio and video stopped:', sessionStatus);
-                },
-                connectionDidBecomePoor: () => {
-                    console.log('Connection quality became poor');
-                },
-                connectionDidSuggestStopVideo: () => {
-                    console.log('Connection quality suggests stopping video');
-                },
-                audioInputFailed: (e) => {
-                    console.error('Audio input failed:', e);
                 }
             });
 
             setMeetingSession(session);
-
-            // Iniciar el audio y video
-            await startAudioVideo(session);
-
-            // Configurar audio remoto
-            session.audioVideo.realtimeSubscribeToVolumeIndicator(
-                attendee.AttendeeId,
-                (attendeeId, volume, muted, signalStrength) => {
-                    if (attendeeId !== attendee.AttendeeId) {
-                        setRemoteAudioLevel(prev => ({
-                            ...prev,
-                            [attendeeId]: {
-                                volume: Math.round(volume * 100),
-                                muted,
-                                signalStrength
-                            }
-                        }));
-                    }
-                }
-            );
+            
+            // Inicializar audio y video de manera más robusta
+            await initializeAudioVideo(session);
 
         } catch (err) {
-            console.error('Session initialization error:', err);
+            console.error('Error al inicializar la sesión:', err);
             setError('Error al inicializar la sesión: ' + err.message);
         }
     };
 
-    // Función para iniciar el analizador de audio
-    const startAudioAnalyzer = () => {
-        if (audioAnalyzerInterval.current) {
-            clearInterval(audioAnalyzerInterval.current);
-        }
+    // Nueva función para inicializar audio y video
+    const initializeAudioVideo = async (session) => {
+        try {
+            console.log('Iniciando configuración de audio/video...');
 
-        audioAnalyzerInterval.current = setInterval(() => {
-            if (meetingSession && !isMuted) {
-                try {
-                    // Obtener métricas directamente del observador de audio
-                    meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
-                        meetingSession.configuration.credentials.attendeeId,
+            // 1. Primero aseguramos los permisos de audio/video
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                },
+                video: true
+            });
+            console.log('Permisos de audio y video concedidos');
+
+            // 2. Configurar audio de entrada de manera más robusta
+            const audioInputs = await session.audioVideo.listAudioInputDevices();
+            console.log('Dispositivos de audio disponibles:', audioInputs);
+
+            if (audioInputs.length === 0) {
+                throw new Error('No se encontraron dispositivos de audio');
+            }
+
+            // Seleccionar el dispositivo de audio predeterminado
+            const selectedAudioInput = audioInputs[0];
+            console.log('Seleccionando dispositivo de audio:', selectedAudioInput.label);
+
+            // 3. Detener cualquier audio existente y reiniciar
+            await session.audioVideo.stopAudioInput().catch(() => {});
+            await session.audioVideo.startAudioInput(selectedAudioInput.deviceId);
+            setAudioInputDevice(selectedAudioInput);
+
+            // 4. Configurar audio de salida (altavoces)
+            const audioOutputs = await session.audioVideo.listAudioOutputDevices();
+            if (audioOutputs.length > 0) {
+                const selectedOutput = audioOutputs[0];
+                await session.audioVideo.chooseAudioOutput(selectedOutput.deviceId);
+                console.log('Audio output configurado:', selectedOutput.label);
+            }
+
+            // 5. Asegurarnos de que el audio no está muteado por defecto
+            await session.audioVideo.realtimeUnmuteLocalAudio();
+            setIsMuted(false);
+
+            // 6. Iniciar la sesión de audio/video
+            console.log('Iniciando sesión de audio/video...');
+            await session.audioVideo.start();
+            console.log('Sesión de audio/video iniciada correctamente');
+
+            // 7. Configurar observadores de audio específicos
+            session.audioVideo.realtimeSubscribeToAttendeeIdPresence((attendeeId, present) => {
+                if (present) {
+                    console.log(`Attendee ${attendeeId} joined with audio`);
+                    // Asegurarnos de que podemos escuchar al participante
+                    session.audioVideo.realtimeSubscribeToVolumeIndicator(
+                        attendeeId,
                         (attendeeId, volume, muted, signalStrength) => {
-                            // Convertir el volumen a un porcentaje (volume viene entre 0 y 1)
-                            const levelPercentage = Math.min(Math.round(volume * 100), 100);
-                            // Solo actualizar si tenemos un valor válido
-                            if (!isNaN(levelPercentage) && levelPercentage >= 0) {
-                                setAudioLevel(levelPercentage);
-                            }
+                            console.log(`Volume for ${attendeeId}:`, volume, 'muted:', muted);
+                            setRemoteAudioLevel(prev => ({
+                                ...prev,
+                                [attendeeId]: {
+                                    volume: Math.round(volume * 100),
+                                    muted,
+                                    signalStrength
+                                }
+                            }));
                         }
                     );
-                } catch (error) {
-                    console.error('Error en el análisis de audio:', error);
-                    // Si hay error, establecer el nivel a 0
-                    setAudioLevel(0);
                 }
-            } else {
-                // Si está muteado o no hay sesión, establecer el nivel a 0
-                setAudioLevel(0);
+            });
+
+            // 8. Configurar video después del audio
+            const videoInputs = await session.audioVideo.listVideoInputDevices();
+            if (videoInputs.length > 0) {
+                await session.audioVideo.startVideoInput(videoInputs[0].deviceId);
+                setLocalVideo(true);
+                console.log('Video local iniciado');
             }
-        }, 100);
-    };
 
-
-
-    const startRemoteAudioMonitoring = () => {
-        if (remoteAudioAnalyzerInterval.current) {
-            clearInterval(remoteAudioAnalyzerInterval.current);
+        } catch (err) {
+            console.error('Error en initializeAudioVideo:', err);
+            setError('Error al inicializar audio/video: ' + err.message);
+            throw err;
         }
-
-        remoteAudioAnalyzerInterval.current = setInterval(() => {
-            if (meetingSession) {
-                const attendees = meetingSession.audioVideo.realtimeGetAttendeeIdPresence();
-                Object.keys(attendees).forEach(attendeeId => {
-                    if (attendeeId !== meetingSession.configuration.credentials.attendeeId) {
-                        meetingSession.audioVideo.realtimeSubscribeToVolumeIndicator(
-                            attendeeId,
-                            (id, volume, muted, signalStrength) => {
-                                setRemoteAudioLevel(prev => ({
-                                    ...prev,
-                                    [id]: {
-                                        volume: Math.round(volume * 100),
-                                        muted,
-                                        signalStrength
-                                    }
-                                }));
-                            }
-                        );
-                    }
-                });
-            }
-        }, 200);
     };
+
 
     // Función para alternar el mute del audio
     const toggleMute = async () => {
@@ -320,41 +373,37 @@ const VideoCallRoute = ({visible}) => {
     // Iniciar audio y video
     const startAudioVideo = async (session) => {
         try {
-            // Iniciar audio primero
+            // Configurar audio de entrada
             const audioInputDevices = await session.audioVideo.listAudioInputDevices();
             if (audioInputDevices.length > 0) {
-                await session.audioVideo.startAudioInput(audioInputDevices[0].deviceId);
+                const inputDevice = audioInputDevices[0];
+                await session.audioVideo.startAudioInput(inputDevice.deviceId);
+                setAudioInputDevice(inputDevice);
             }
-    
-            // Iniciar audio output (altavoces)
+
+            // Configurar audio de salida
             const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
             if (audioOutputDevices.length > 0) {
                 await session.audioVideo.chooseAudioOutput(audioOutputDevices[0].deviceId);
             }
-    
+
+            // Iniciar la sesión
             await session.audioVideo.start();
-            session.audioVideo.realtimeSubscribeToVolumeIndicator(
-                session.configuration.credentials.attendeeId,
-                (attendeeId, volume) => {
-                    if (!isMuted) {
-                        setAudioLevel(Math.round(volume * 100));
-                    }
-                }
-            );
-    
-            // Video después del audio
+            
+            // Configurar video
             const videoInputDevices = await session.audioVideo.listVideoInputDevices();
             if (videoInputDevices.length > 0) {
                 await session.audioVideo.startVideoInput(videoInputDevices[0].deviceId);
                 setLocalVideo(true);
             }
+
         } catch (err) {
-            console.error('StartAudioVideo error:', err);
+            console.error('Error al iniciar audio/video:', err);
             setError('Error al iniciar audio/video: ' + err.message);
         }
     };
 
-    // Efecto para manejar el video local
+    // Efectos para manejo de video local
     useEffect(() => {
         if (!meetingSession || !localVideo || !localVideoRef.current) return;
 
@@ -369,12 +418,10 @@ const VideoCallRoute = ({visible}) => {
                         videoTileId,
                         localVideoRef.current
                     );
-
-                    // Forzar actualización del elemento de video
                     localVideoRef.current.style.transform = 'scaleX(-1)';
                 }
             } catch (err) {
-                console.error('Error starting local video:', err);
+                console.error('Error al iniciar video local:', err);
             }
         };
 
@@ -385,7 +432,7 @@ const VideoCallRoute = ({visible}) => {
                 try {
                     meetingSession.audioVideo.unbindVideoElement(videoTileId);
                 } catch (err) {
-                    console.error('Error unbinding video:', err);
+                    console.error('Error al desvincular video:', err);
                 }
             }
         };
@@ -405,56 +452,20 @@ const VideoCallRoute = ({visible}) => {
         });
     }, [meetingSession, remoteVideos]);
 
-    // Limpiar al desmontar
+    // Efecto para limpieza
     useEffect(() => {
         return () => {
             if (meetingSession) {
                 meetingSession.audioVideo.stop();
             }
+            stopAudioTest();
         };
     }, [meetingSession]);
 
-
-
-    // Limpiar el intervalo del analizador de audio al desmontar
-    useEffect(() => {
-        return () => {
-            if (audioAnalyzerInterval.current) {
-                clearInterval(audioAnalyzerInterval.current);
-            }
-        };
-    }, []);
-
-
-    useEffect(() => {
-        if (meetingSession) {
-            startRemoteAudioMonitoring();
-        }
-
-        return () => {
-            if (remoteAudioAnalyzerInterval.current) {
-                clearInterval(remoteAudioAnalyzerInterval.current);
-            }
-        };
-    }, [meetingSession]);
-
-
-
-    useEffect(() => {
-        if (meetingSession) {
-            startRemoteAudioMonitoring();
-        }
-
-        return () => {
-            if (remoteAudioAnalyzerInterval.current) {
-                clearInterval(remoteAudioAnalyzerInterval.current);
-            }
-        };
-    }, [meetingSession]);
-
+    // JSX del componente
     return (
-        <div className="p-4 ">
-            <div className="mb-4 space-y-4 ">
+        <div className="p-4">
+            <div className="mb-4 space-y-4">
                 <div>
                     <input
                         type="email"
@@ -479,40 +490,7 @@ const VideoCallRoute = ({visible}) => {
 
                 {meetingSession && (
                     <div className="mb-4 space-y-4">
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={testAudio}
-                                className={`px-4 py-2 rounded ${isTestingAudio
-                                        ? 'bg-green-500 hover:bg-green-600'
-                                        : 'bg-blue-500 hover:bg-blue-600'
-                                    } text-white transition-colors`}
-                            >
-                                {isTestingAudio ? 'Probando Audio...' : 'Probar Audio'}
-                            </button>
-
-                            <button
-                                onClick={toggleMute}
-                                className={`px-4 py-2 rounded ${isMuted
-                                        ? 'bg-red-500 hover:bg-red-600'
-                                        : 'bg-green-500 hover:bg-green-600'
-                                    } text-white transition-colors`}
-                            >
-                                {isMuted ? 'Unmute' : 'Mute'}
-                            </button>
-
-                            {isTestingAudio && (
-                                <div className="flex items-center space-x-2">
-                                    <div className="text-sm">Nivel de Audio:</div>
-                                    <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
-                                        <div
-                                            className="h-full bg-blue-500 transition-all duration-200"
-                                            style={{ width: `${audioLevel}%` }}
-                                        />
-                                    </div>
-                                    <div className="text-sm">{audioLevel}%</div>
-                                </div>
-                            )}
-                        </div>
+                       
 
                         {audioInputDevice && (
                             <div className="text-sm text-gray-600">
@@ -524,12 +502,7 @@ const VideoCallRoute = ({visible}) => {
 
                 {!meetingSession && (
                     <div className="space-x-2">
-                        <button
-                            onClick={createMeeting}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-                        >
-                            Crear Reunión
-                        </button>
+                        
                         <button
                             onClick={joinMeeting}
                             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
@@ -553,7 +526,7 @@ const VideoCallRoute = ({visible}) => {
                 </div>
             )}
 
-            {/* Nueva sección de videos en split-screen */}
+            {/* Sección de videos en split-screen */}
             <div className="flex gap-4 h-96">
                 {/* Video local (anfitrión) */}
                 {localVideo && (
@@ -566,12 +539,25 @@ const VideoCallRoute = ({visible}) => {
                             muted
                         />
                         <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Anfitrión
+                            Tú
+                        </div>
+                        <div className="absolute bottom-2 right-2 flex items-center space-x-2">
+                            <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
+                                <div
+                                    className="h-full bg-green-500 transition-all duration-200"
+                                    style={{ width: `${audioLevel}%` }}
+                                />
+                            </div>
+                            {isMuted && (
+                                <span className="text-red-500 text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
+                                    Muteado
+                                </span>
+                            )}
                         </div>
                     </div>
                 )}
 
-                {/* Video remoto (asistente) - solo mostramos el primer video remoto */}
+                {/* Video remoto (participante) */}
                 {remoteVideos.length > 0 && (
                     <div className="w-1/2 bg-black rounded overflow-hidden relative">
                         <video
@@ -581,9 +567,9 @@ const VideoCallRoute = ({visible}) => {
                             playsInline
                         />
                         <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Asistente
+                            Participante
                         </div>
-                        {/* Indicador de audio para el asistente */}
+                        {/* Indicador de audio para el participante remoto */}
                         {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
                             <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
                                 <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
@@ -593,7 +579,7 @@ const VideoCallRoute = ({visible}) => {
                                     />
                                 </div>
                                 {data.muted && (
-                                    <span className="text-red-500 text-xs">
+                                    <span className="text-red-500 text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
                                         Muteado
                                     </span>
                                 )}
@@ -603,13 +589,13 @@ const VideoCallRoute = ({visible}) => {
                 )}
             </div>
 
-            {/* Indicadores de audio remoto - solo para el asistente */}
+            {/* Indicadores de audio remoto */}
             {Object.entries(remoteAudioLevel).length > 0 && (
                 <div className="mt-4 p-4 bg-gray-50 rounded">
                     <h3 className="text-lg font-semibold mb-2">Audio Remoto</h3>
-                    {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
+                    {Object.entries(remoteAudioLevel).map(([attendeeId, data]) => (
                         <div key={attendeeId} className="flex items-center space-x-4 mb-2">
-                            <span className="text-sm">Asistente</span>
+                            <span className="text-sm">Participante</span>
                             <div className="w-48 h-4 bg-gray-200 rounded overflow-hidden">
                                 <div
                                     className="h-full bg-blue-500 transition-all duration-200"
@@ -621,7 +607,7 @@ const VideoCallRoute = ({visible}) => {
                                 <span className="text-red-500 text-sm">Muteado</span>
                             )}
                             <span className="text-sm">
-                                Señal: {data.signalStrength * 100}%
+                                Señal: {Math.round(data.signalStrength * 100)}%
                             </span>
                         </div>
                     ))}
