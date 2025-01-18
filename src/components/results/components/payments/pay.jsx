@@ -282,11 +282,10 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 <h2 className=" flex flex-col items-center text-2xl text-center font-semibold  my-6">How do you plan to pay for your classes?</h2>
                 <div className="flex flex-col gap-6 p-8">
                     <div
-                        className={`flex flex-col p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""
-                            }`}
+                        className={`flex flex-col p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""}`}
                         onClick={() => {
-                            setSelectedMethod("creditCard"); // Selecciona el método como tarjeta de crédito
-                            setCurrentView("addCreditCard"); // Cambia la vista al formulario de tarjeta de crédito
+                            setSelectedMethod("creditCard");
+                            setShowPayPalButtons(true);
                         }}
                     >
                         <div className="flex items-center gap-4">
@@ -298,6 +297,47 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         </div>
                     </div>
 
+                    {/* Botón para pago con tarjeta de crédito */}
+                    {selectedMethod === "creditCard" && showPayPalButtons && (
+                        <div className="mt-4">
+                            <PayPalButtons
+                                fundingSource="card"
+                                createOrder={(data, actions) => {
+                                    return actions.order.create({
+                                        purchase_units: [
+                                            {
+                                                amount: {
+                                                    value: hourValue,
+                                                },
+                                            },
+                                        ],
+                                    });
+                                }}
+                                onApprove={(data, actions) => {
+                                    setIsLoadingPayment(true);
+                                    return actions.order
+                                        .capture()
+                                        .then((details) => {
+                                            console.log("Payment successful:", details);
+                                            showModal(details);
+                                            handlePaymentApproval(details);
+                                        })
+                                        .catch((error) => {
+                                            console.error("Payment error:", error);
+                                            setIsLoadingPayment(false);
+                                        });
+                                }}
+                                onError={(error) => {
+                                    console.error("PayPal error:", error);
+                                    setIsLoadingPayment(false);
+                                }}
+                                style={{
+                                    layout: "vertical",
+                                }}
+                            />
+                        </div>
+                    )}
+
                     {/* Opción de PayPal */}
                     {selectedMethod !== "paypal" || !showPayPalButtons ? (
                         <div
@@ -305,7 +345,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                 }`}
                             onClick={() => {
                                 setSelectedMethod("paypal");
-                                setShowPayPalButtons(true); // Mostrar los botones de PayPal
+                                setShowPayPalButtons(true);
                             }}
                         >
                             <span className="text-purple-600 text-xl">
@@ -315,7 +355,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                 className="flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-blue-700 font-bold text-2xl py-1 px-14 rounded-lg transition-all"
                                 style={{
                                     fontFamily: '"Helvetica Neue", Arial, sans-serif',
-                                    color: "#003087", // Azul del logo de PayPal
+                                    color: "#003087",
                                 }}
                             >
                                 Pay<span style={{ color: "#009CDE" }}>Pal</span>
@@ -344,18 +384,18 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                         .capture()
                                         .then((details) => {
                                             console.log("Payment successful:", details);
-                                            showModal(details); // Llama a la función para mostrar el modal
+                                            showModal(details);
                                             handlePaymentApproval(details);
 
                                         })
                                         .catch((error) => {
                                             console.error("Payment error:", error);
-                                            setIsLoadingPayment(false); // Detén el spinner en caso de error
+                                            setIsLoadingPayment(false);
                                         });
                                 }}
                                 onError={(error) => {
                                     console.error("PayPal error:", error);
-                                    setIsLoadingPayment(false); // Detén el spinner en caso de error
+                                    setIsLoadingPayment(false);
                                 }}
                             />
                         </div>
