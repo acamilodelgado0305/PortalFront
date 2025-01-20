@@ -20,7 +20,7 @@ import {
 } from 'amazon-chime-sdk-js';
 
 const VideoCall = () => {
-    const meetingId = '3e40919c-c722-4651-bd94-a809fe872713'; // ID de la reunión
+    const meetingId = '272c4442-5e32-4296-a1c4-be941e3e2713'; // ID de la reunión
     const [externalUserId, setExternalUserId] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
@@ -65,7 +65,7 @@ const VideoCall = () => {
                     throw new Error('El ID de la reunión es necesario');
                 }
 
-                const joinResponse = await fetch('http://localhost:4005/api/chime/join-meeting', {
+                const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
