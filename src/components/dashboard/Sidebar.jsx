@@ -37,7 +37,8 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
         { icon: FaChalkboardTeacher, text: "Teachers", id: "teachers" },
         { icon: FaLink, text: "Workspaces", id: "workspaces" },
         { icon: FaWallet, text: "Earnings", id: "earnings" },
-        { icon: FaGift, text: "Earn $154.244 and more", id: "rewards" }
+        { icon: FaGift, text: "Earn $154.244 and more", id: "rewards" },
+        { icon: FaUserFriends, text: "Studen-landing", id: "landing" },
     ];
 
     // Los items del menú según el rol
