@@ -83,11 +83,21 @@ const resendCodeCognito = async (data) => {
 };
 const loginCognito = async (email, password) => {
   try {
-    const response = await backApi.post('/api/users/login', {email, password});
+    const response = await backApi.post('/api/users/login', { email, password });
     console.log("user Login")
     return response.data;
   } catch (error) {
     console.error("err:", error);
+    throw error;
+  }
+};
+
+const getAllUsersLanding = async () => {
+  try {
+    const response = await backApi.get('/api/usersLanding/getall');
+    return response.data;
+  } catch (error) {
+    console.error("Error getting all users landing:", error);
     throw error;
   }
 };
@@ -101,7 +111,8 @@ export {
   createStudentCognito,
   codeStudentCognito,
   resendCodeCognito,
-  loginCognito
+  loginCognito,
+  getAllUsersLanding
 };
 
 
