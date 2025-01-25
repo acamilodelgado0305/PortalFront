@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Modal, Spin, Table, Button } from "antd"; // Importa el componente Modal de antd
-import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
+import { CreditCardOutlined, BankOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
 import humanIcon from "../../../../../src/assets/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
@@ -16,7 +17,27 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [isLoadingPayment, setIsLoadingPayment] = useState(false);
     const [savedCards, setSavedCards] = useState([]);
     const [isLoadingCards, setIsLoadingCards] = useState(false);
+    const [editingCard, setEditingCard] = useState(false);
 
+    const handleEditCard = (card) => {
+        setCardDetails(card);
+        setEditingCard(card);
+        setCurrentView("addCreditCard");
+    };
+    const cancelCardDetails = () => {
+        setCardDetails({
+            number: "",
+            expiration: "",
+            cvv: "",
+            firstName: "",
+            lastName: "",
+            country: "",
+            billingAddress1: "",
+            billingAddress2: "",
+        });
+        setEditingCard(false);
+        setCurrentView("paymentOptions");
+    };
     useEffect(() => {
         const fetchSavedCards = async () => {
             setIsLoadingCards(true);
@@ -45,6 +66,130 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         setSelectedMethod(null); // Restablecer para mostrar todas las opciones
     };
 
+    const saveCardDetails = async () => {
+        // Verificar si los campos obligatorios están completos
+        const { number, expiration, cvv, firstName, lastName, country, billingAddress1, billingAddress2 } = cardDetails;
+
+        if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Formatear los datos de la nueva tarjeta
+        const newCard = {
+            number: number.trim(),
+            expiration: expiration.trim(),
+            cvv: cvv.trim(),
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            country: country.trim(),
+            billingAddress1: billingAddress1.trim(),
+            billingAddress2: billingAddress2 ? billingAddress2.trim() : "",
+            userId: user.id,
+        };
+
+        try {
+            // Realizar la solicitud para guardar la tarjeta
+            const response = await fetch("https://back.app.esturio.com/api/card/cards", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newCard),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                if (result.success) {
+                    // Actualizar el estado con la nueva tarjeta
+                    setSavedCards((prevCards) => [...prevCards, result.data]);
+                    alert("Card saved successfully!");
+                    setCurrentView("paymentOptions"); // Volver a la vista principal de opciones de pago
+                } else {
+                    // Manejar el caso en el que la respuesta del servidor no sea exitosa
+                    console.error("Server error:", result.message);
+                    alert(result.message || "Failed to save the card. Please try again.");
+                }
+            } else {
+                // Manejar errores HTTP (como 400, 500, etc.)
+                const errorData = await response.json();
+                console.error("HTTP error:", errorData);
+                alert(errorData.message || "Failed to save the card. Please try again.");
+            }
+        } catch (error) {
+            // Manejar errores de red o de otra índole
+            console.error("Error saving card:", error);
+            alert("An error occurred while saving the card. Please try again later.");
+        }
+    };
+
+
+    const updateCardDetails = async () => {
+        // Verificar si los campos obligatorios están completos
+        const { number, expiration, cvv, firstName, lastName, country, billingAddress1, id } = cardDetails;
+        if (!id || !number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        const updatedCard = {
+            number,
+            expiration,
+            cvv,
+            firstName,
+            lastName,
+            country,
+            billingAddress1,
+            billingAddress2: cardDetails.billingAddress2 || "",
+            userId: user.id,
+        };
+
+        try {
+            const response = await fetch(`https://back.app.esturio.com/api/card/cards/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedCard),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setSavedCards((prevCards) =>
+                    prevCards.map((card) => (card.id === id ? { ...card, ...updatedCard } : card))
+                );
+                alert("Card updated successfully!");
+                setCurrentView("paymentOptions");
+            } else {
+                alert("Failed to update the card. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error updating card:", error);
+            alert("An error occurred while updating the card.");
+        }
+    };
+
+    const handleDeleteCard = async (card) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this card?");
+        if (!confirmDelete) return;
+
+        try {
+            const response = await fetch(`https://back.app.esturio.com/api/card/${card.id}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                alert("Card deleted successfully.");
+                setSavedCards(savedCards.filter((c) => c.id !== card.id)); // Actualizar el estado eliminando la tarjeta
+            } else {
+                const errorData = await response.json();
+                console.error("Failed to delete card:", errorData.message);
+            }
+        } catch (error) {
+            console.error("Error deleting card:", error);
+        }
+    };
 
     const [cardDetails, setCardDetails] = useState({
         number: "",
@@ -57,51 +202,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         billingAddress2: "",
     });
 
-    const saveCardDetails = () => {
-        // Verificar si los campos obligatorios están completos
-        const { number, expiration, cvv, firstName, lastName, country, billingAddress1 } = cardDetails;
-        if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
-            alert("Please fill in all required fields.");
-            return;
-        }
 
-        // Guardar los datos de la tarjeta
-        setSavedCards([...savedCards, cardDetails]);
-        setCardDetails({
-            number: "",
-            expiration: "",
-            cvv: "",
-            firstName: "",
-            lastName: "",
-            country: "",
-            billingAddress1: "",
-            billingAddress2: "",
-        });
-        console.log("Card Details Saved:", cardDetails);
-        setCurrentView("paymentOptions");
-    };
-
-    const cancelCardDetails = () => {
-        console.log("Cancelling and resetting card details...");
-
-        // Limpia los detalles de la tarjeta
-        setCardDetails({
-            number: "",
-            expiration: "",
-            cvv: "",
-            firstName: "",
-            lastName: "",
-            country: "",
-            billingAddress1: "",
-            billingAddress2: "",
-        });
-
-        // Limpia el método seleccionado
-        setSelectedMethod(null);
-
-        // Cambia la vista a opciones de pago
-        setCurrentView("paymentOptions");
-    };
 
 
     useEffect(() => {
@@ -318,18 +419,41 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
                         {isLoadingCards ? (
                             <p className="text-gray-500">Loading saved cards...</p>
-                        ) : savedCards.length > 0 ? (
+                        ) : savedCards && savedCards.length > 0 ? (
                             <div>
                                 {savedCards.map((card, index) => (
                                     <div
-                                        key={index}
-                                        className={`p-4 border rounded-lg mb-2 cursor-pointer ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""
-                                            }`}
-                                        onClick={() => setSelectedMethod(`card-${index}`)}
+                                        key={card.id || index} // Usa card.id como clave si está disponible
+                                        className={`flex items-center justify-between p-4 border rounded-lg mb-2 ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""}`}
                                     >
-                                        <p>**** **** **** {card.number.slice(-4)}</p>
-                                        <p>{card.firstName} {card.lastName}</p>
-                                        <p>{`${card.expiration.slice(0, 2)}/${card.expiration.slice(2)}`}</p>
+                                        {/* Botón de eliminar */}
+                                        <button
+                                            className="text-red-600 hover:text-red-800"
+                                            onClick={() => handleDeleteCard(card)}
+                                        >
+                                            <DeleteOutlined style={{ fontSize: "20px" }} />
+                                        </button>
+
+                                        {/* Botones de edición y eliminación */}
+                                        <div className="flex gap-4">
+                                            {/* Botón de editar */}
+                                            <button
+                                                className="text-purple-600 hover:text-purple-800"
+                                                onClick={() => handleEditCard(card)}
+                                            >
+                                                <EditOutlined style={{ fontSize: "20px" }} />
+                                            </button>
+                                        </div>
+
+                                        {/* Contenido de la tarjeta */}
+                                        <div
+                                            onClick={() => setSelectedMethod(`card-${index}`)}
+                                            className="cursor-pointer flex flex-col items-start"
+                                        >
+                                            <p>**** **** **** {card?.number?.slice(-4) || "XXXX"}</p>
+                                            <p>{`${card?.firstName || "Unknown"} ${card?.lastName || "Unknown"}`}</p>
+                                            <p>{`${card?.expiration?.slice(0, 2) || "MM"}/${card?.expiration?.slice(2) || "YYYY"}`}</p>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -553,40 +677,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         );
     };
 
-    const handlePaymentWithSavedCard = async () => {
-        const selectedCardIndex = parseInt(selectedMethod.split("-")[1]);
-        const selectedCard = savedCards[selectedCardIndex];
-
-        const paymentData = {
-            cardNumber: selectedCard.number,
-            expiration: selectedCard.expiration,
-            cvv: selectedCard.cvv,
-            amount: hourValue,
-        };
-
-        try {
-            const response = await fetch("https://your-backend-api.com/process-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(paymentData),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                alert("Payment successful!");
-                setSelectedMethod(null); // Reset view
-            } else {
-                alert(`Payment failed: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error processing payment:", error);
-        }
-    };
-
-
     const renderCreditCardForm = () => (
         <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
-            <h2 className="text-2xl font-semibold text-center mb-6">Add Credit Card</h2>
+            <h2 className="text-2xl font-semibold text-center mb-6">
+                {editingCard ? "Edit Credit Card" : "Add Credit Card"}
+            </h2>
             <form className="flex flex-col gap-4">
                 {/* Número de tarjeta */}
                 <div>
@@ -599,7 +694,6 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
                     />
                 </div>
-
 
                 {/* Fecha de expiración */}
                 <div className="grid grid-cols-2 gap-4">
@@ -624,7 +718,6 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             value={cardDetails.cvv}
                             onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
                         />
-
                     </div>
                 </div>
 
@@ -672,7 +765,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         placeholder="C Independencia No. 54"
                         className="border rounded-lg p-2 w-full"
                         value={cardDetails.billingAddress1}
-                        onChange={(e) => setCardDetails({ ...cardDetails, billingAddress1: e.target.value })}
+                        onChange={(e) =>
+                            setCardDetails({ ...cardDetails, billingAddress1: e.target.value })
+                        }
                     />
                 </div>
                 <div>
@@ -682,7 +777,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         placeholder="D.F. Mexico, Mexico"
                         className="border rounded-lg p-2 w-full"
                         value={cardDetails.billingAddress2}
-                        onChange={(e) => setCardDetails({ ...cardDetails, billingAddress2: e.target.value })}
+                        onChange={(e) =>
+                            setCardDetails({ ...cardDetails, billingAddress2: e.target.value })
+                        }
                     />
                 </div>
 
@@ -698,14 +795,15 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     <button
                         type="button"
                         className="bg-purple-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-purple-400"
-                        onClick={() => saveCardDetails()}
+                        onClick={() => (editingCard ? updateCardDetails() : saveCardDetails())}
                     >
-                        Save
+                        {editingCard ? "Update" : "Save"}
                     </button>
                 </div>
             </form>
         </div>
     );
+
 
     const renderPaymentSettings = () => (
         <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
