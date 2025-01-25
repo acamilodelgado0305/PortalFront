@@ -10,6 +10,7 @@ import TeacherDashboard from './teacher/TeacherDashboard';
 import PaymenTeacher from './teacher/PaymenTeaher';
 import StudentDashboard from './student/StudentDashboard';
 import Payment from './student/Payment';
+import Landing from "./admin/UsersLandingList";
 import Calendar from "./Calendar";
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -67,6 +68,7 @@ const Dashboard = () => {
                         {isMobile && <SidebarResponsible activeSection={activeSection} setActiveSection={setActiveSection} />}
                         {activeSection === 'dashboard' && <Index />}
                         {activeSection === 'students' && <StudentsSection />}
+                        {activeSection === 'landing' && <Landing />}
                         {activeSection === 'teachers' && <TeachersSection onViewTeacher={handleViewTeacher} />}
                         {activeSection === 'teacherDetail' && selectedTeacherId && (
                             <TeacherDetail teacherId={selectedTeacherId} onBack={() => setActiveSection('teachers')} />

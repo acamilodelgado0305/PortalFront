@@ -50,7 +50,8 @@
     "react-world-flags": "^1.6.0",
     "recharts": "^2.13.3",
     "socket.io-client": "^4.8.1",
-    "sweetalert2": "^11.6.13"
+    "sweetalert2": "^11.6.13",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

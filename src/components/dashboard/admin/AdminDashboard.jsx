@@ -4,7 +4,8 @@ import StudentsSection from '../StudentsSection'; // Sección para gestionar est
 import TeachersSection from '../TeacherSection'; // Sección para gestionar profesores
 import Calendar from '../Calendar'; // Sección común de calendario
 import Sidebar from '../Sidebar'; // Sidebar del Admin
-import Header from '../../results/Header'; // Cabecera común
+import Header from '../../results/Header';
+import Landing from "./UsersLandingList"; // Cabecera común
 
 const AdminDashboard = () => {
     const [activeSection, setActiveSection] = useState('dashboard');
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
                 {activeSection === 'students' && <StudentsSection />}
                 {activeSection === 'teachers' && <TeachersSection />}
                 {activeSection === 'calendar' && <Calendar />}
+                {activeSection === 'landing' && <Landing />}
             </div>
         </div>
     );
