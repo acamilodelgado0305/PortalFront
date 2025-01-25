@@ -262,7 +262,7 @@ const CalendarModal = ({
       } open={showCalendarModal}
       onCancel={() => setShowCalendarModal(false)}
       footer={null}
-      width={600}
+      width={700}
       height={800}
       closeIcon={<CloseOutlined className="text-black text-xl" />}
       centered
