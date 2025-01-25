@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import { Modal, Spin } from "antd"; // Importa el componente Modal de antd
-import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
+import { Modal, Spin, Table, Button } from "antd"; // Importa el componente Modal de antd
+import { CreditCardOutlined, BankOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
 import humanIcon from "../../../../../src/assets/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
@@ -16,6 +17,30 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [isLoadingPayment, setIsLoadingPayment] = useState(false);
     const [savedCards, setSavedCards] = useState([]);
     const [isLoadingCards, setIsLoadingCards] = useState(false);
+    const [editingCard, setEditingCard] = useState(false);
+
+    const handleEditCard = (card) => {
+        setCardDetails(card);
+        setEditingCard(card);
+        setCurrentView("addCreditCard");
+    };
+    const cancelCardDetails = () => {
+
+        setCardDetails({
+            number: "",
+            expiration: "",
+            cvv: "",
+            firstName: "",
+            lastName: "",
+            country: "",
+            billingAddress1: "",
+            billingAddress2: "",
+        });
+
+        // Resetear estado de edición y redirigir
+        setEditingCard(false);
+        setCurrentView("paymentOptions");
+    };
 
     useEffect(() => {
         const fetchSavedCards = async () => {
@@ -45,6 +70,218 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         setSelectedMethod(null); // Restablecer para mostrar todas las opciones
     };
 
+    const saveCardDetails = async () => {
+        // Verificar si los campos obligatorios están completos
+        const { number, expiration, cvv, firstName, lastName, country, billingAddress1, billingAddress2 } = cardDetails;
+
+        if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Formatear los datos de la nueva tarjeta
+        const newCard = {
+            number: number.trim(),
+            expiration: expiration.trim(),
+            cvv: cvv.trim(),
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            country: country.trim(),
+            billingAddress1: billingAddress1.trim(),
+            billingAddress2: billingAddress2 ? billingAddress2.trim() : "",
+            userId: user.id,
+        };
+
+        try {
+            // Realizar la solicitud para guardar la tarjeta
+            const response = await fetch("https://back.app.esturio.com/api/card/cards", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newCard),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+
+                if (result.success) {
+                    setSavedCards((prevCards) => [...prevCards, result.data]); // Agregar la nueva tarjeta
+                    alert("Card saved successfully!");
+
+                    // Limpiar los campos y redirigir
+                    setCardDetails({
+                        number: "",
+                        expiration: "",
+                        cvv: "",
+                        firstName: "",
+                        lastName: "",
+                        country: "",
+                        billingAddress1: "",
+                        billingAddress2: "",
+                    });
+                    setCurrentView("paymentOptions");
+                } else {
+                    // Manejar el caso en el que la respuesta del servidor no sea exitosa
+                    console.error("Server error:", result.message);
+                    alert(result.message || "Failed to save the card. Please try again.");
+                }
+            } else {
+                // Manejar errores HTTP (como 400, 500, etc.)
+                const errorData = await response.json();
+                console.error("HTTP error:", errorData);
+                alert(errorData.message || "Failed to save the card. Please try again.");
+            }
+        } catch (error) {
+            // Manejar errores de red o de otra índole
+            console.error("Error saving card:", error);
+            alert("An error occurred while saving the card. Please try again later.");
+        }
+    };
+
+
+    const updateCardDetails = async () => {
+        // Verificar si los campos obligatorios están completos
+        const { number, expiration, cvv, firstName, lastName, country, billingAddress1, id } = cardDetails;
+        if (!id || !number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        const updatedCard = {
+            number,
+            expiration,
+            cvv,
+            firstName,
+            lastName,
+            country,
+            billingAddress1,
+            billingAddress2: cardDetails.billingAddress2 || "",
+            userId: user.id,
+        };
+
+        try {
+            const response = await fetch(`https://back.app.esturio.com/api/card/cards/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedCard),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setSavedCards((prevCards) =>
+                    prevCards.map((card) => (card.id === id ? { ...card, ...updatedCard } : card))
+                );
+                alert("Card updated successfully!");
+
+                // Limpiar los campos y redirigir
+                setCardDetails({
+                    number: "",
+                    expiration: "",
+                    cvv: "",
+                    firstName: "",
+                    lastName: "",
+                    country: "",
+                    billingAddress1: "",
+                    billingAddress2: "",
+                });
+                setEditingCard(false);
+                setCurrentView("paymentOptions");
+            } else {
+                alert("Failed to update the card. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error updating card:", error);
+            alert("An error occurred while updating the card.");
+        }
+    };
+
+    const handleDeleteCard = async (card) => {
+        if (!card.id) {
+            alert("Card ID is missing. Unable to delete the card.");
+            return;
+        }
+
+        // Confirmación para evitar eliminaciones accidentales
+        const confirmation = window.confirm(`Are you sure you want to delete the card ending in ${card.number.slice(-4)}?`);
+        if (!confirmation) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://back.app.esturio.com/api/card/cards/${card.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId: user.id }), // Incluye el `userId` como lo requiere el backend
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    // Actualizar las tarjetas guardadas en el estado eliminando la tarjeta específica
+                    setSavedCards((prevCards) => prevCards.filter((savedCard) => savedCard.id !== card.id));
+                    alert("Card deleted successfully!");
+                } else {
+                    alert(result.message || "Failed to delete the card. Please try again.");
+                }
+            } else {
+                const errorData = await response.json();
+                alert(errorData.message || "Failed to delete the card. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error deleting card:", error);
+            alert("An error occurred while deleting the card. Please try again later.");
+        }
+    };
+
+    const handlePaymentWithSavedCard = async (card) => {
+        // Verificar que la tarjeta tenga todos los datos necesarios
+        if (!card || !card.number || !card.expiration || !card.cvv) {
+            alert("Card details are incomplete. Please try again.");
+            return;
+        }
+
+        // Crear el payload con los datos de la tarjeta y el monto a pagar
+        const paymentData = {
+            number: card.number,
+            expiration: card.expiration,
+            cvv: card.cvv,
+            amount: hourValue, // Monto a pagar
+            currency: "USD", // Asegúrate de usar la moneda adecuada
+            userId: user.id, // Opcional si el backend lo requiere
+        };
+
+        try {
+            // Llamar al backend para procesar el pago
+            const response = await fetch("https://back.app.esturio.com/api/payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(paymentData),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Payment successful:", result);
+
+                // Mostrar detalles de la transacción en un modal (opcional)
+                showModal(result);
+                alert("Payment successful!");
+            } else {
+                const errorData = await response.json();
+                console.error("Payment failed:", errorData);
+                alert("Payment failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            alert("An error occurred while processing the payment.");
+        }
+    };
 
     const [cardDetails, setCardDetails] = useState({
         number: "",
@@ -57,51 +294,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         billingAddress2: "",
     });
 
-    const saveCardDetails = () => {
-        // Verificar si los campos obligatorios están completos
-        const { number, expiration, cvv, firstName, lastName, country, billingAddress1 } = cardDetails;
-        if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
-            alert("Please fill in all required fields.");
-            return;
-        }
 
-        // Guardar los datos de la tarjeta
-        setSavedCards([...savedCards, cardDetails]);
-        setCardDetails({
-            number: "",
-            expiration: "",
-            cvv: "",
-            firstName: "",
-            lastName: "",
-            country: "",
-            billingAddress1: "",
-            billingAddress2: "",
-        });
-        console.log("Card Details Saved:", cardDetails);
-        setCurrentView("paymentOptions"); // Cambiar de vista
-    };
-
-    const cancelCardDetails = () => {
-        console.log("Cancelling and resetting card details...");
-
-        // Limpia los detalles de la tarjeta
-        setCardDetails({
-            number: "",
-            expiration: "",
-            cvv: "",
-            firstName: "",
-            lastName: "",
-            country: "",
-            billingAddress1: "",
-            billingAddress2: "",
-        });
-
-        // Limpia el método seleccionado
-        setSelectedMethod(null);
-
-        // Cambia la vista a opciones de pago
-        setCurrentView("paymentOptions");
-    };
 
 
     useEffect(() => {
@@ -293,23 +486,43 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const renderPaymentOptions = () => {
         return (
             <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-2 border-black">
-                <div className="flex flex-col items-start">
-                    <button
-                        className="text-purple-600"
-                        onClick={() => setCurrentView("proceedToPayment")}
-                    >
-                        <span className="text-purple-600 font-bold text-4xl">←</span>
-                    </button>
-                    <img
-                        src={"https://res.cloudinary.com/dybws2ubw/image/upload/v1734818674/caba_tmxsay.png"}
-                        className="w-10 h-12"
-                        alt="User Icon"
-                    />
-                </div>
+                {selectedMethod === null && (
+                    <div className="flex flex-col items-start">
+                        {/* Botón de retroceso */}
+                        <button
+                            className="text-purple-600"
+                            onClick={() => setCurrentView("proceedToPayment")}
+                        >
+                            <span className="text-purple-600 font-bold text-4xl">←</span>
+                        </button>
 
-                <h2 className="flex flex-col items-center text-2xl text-center font-semibold my-6">
-                    How do you plan to pay for your classes?
-                </h2>
+                        {/* Imagen del usuario */}
+                        <img
+                            src={"https://res.cloudinary.com/dybws2ubw/image/upload/v1734818674/caba_tmxsay.png"}
+                            className="w-10 h-12"
+                            alt="User Icon"
+                        />
+                    </div>
+                )}
+
+                {/* Título, solo cuando no hay método seleccionado */}
+                {selectedMethod === null && (
+                    <h2 className="flex flex-col items-center text-2xl text-center font-semibold my-6">
+                        How do you plan to pay for your classes?
+                    </h2>
+                )}
+
+                {/* Mostrar solo la flecha cuando hay un método de pago seleccionado */}
+                {selectedMethod !== null && (
+                    <div className="flex flex-col items-start">
+                        <button
+                            className="text-purple-600"
+                            onClick={() => setSelectedMethod(null)} // Volver a la vista principal
+                        >
+                            <span className="text-purple-600 font-bold text-4xl">←</span>
+                        </button>
+                    </div>
+                )}
 
                 {/* Opción de pago con tarjeta de crédito */}
                 {selectedMethod === "creditCard" && (
@@ -318,18 +531,72 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
                         {isLoadingCards ? (
                             <p className="text-gray-500">Loading saved cards...</p>
-                        ) : savedCards.length > 0 ? (
+                        ) : savedCards && savedCards.length > 0 ? (
                             <div>
                                 {savedCards.map((card, index) => (
                                     <div
-                                        key={index}
-                                        className={`p-4 border rounded-lg mb-2 cursor-pointer ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""
-                                            }`}
-                                        onClick={() => setSelectedMethod(`card-${index}`)}
+                                        key={card.id || index} // Usa card.id como clave si está disponible
+                                        className={`flex items-center justify-between p-4 border rounded-lg mb-2 ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""}`}
                                     >
-                                        <p>**** **** **** {card.number.slice(-4)}</p>
-                                        <p>{card.firstName} {card.lastName}</p>
-                                        <p>{`${card.expiration.slice(0, 2)}/${card.expiration.slice(2)}`}</p>
+                                        {/* Botón de eliminar */}
+                                        <button
+                                            className="text-red-600 hover:text-red-800"
+                                            onClick={() => handleDeleteCard(card)}
+                                        >
+                                            <DeleteOutlined style={{ fontSize: "20px" }} />
+                                        </button>
+
+                                        {/* Botones de edición y eliminación */}
+                                        <div className="flex gap-4">
+                                            {/* Botón de editar */}
+                                            <button
+                                                className="text-purple-600 hover:text-purple-800"
+                                                onClick={() => handleEditCard(card)}
+                                            >
+                                                <EditOutlined style={{ fontSize: "20px" }} />
+                                            </button>
+                                        </div>
+
+                                        <div
+                                            onClick={() => setSelectedMethod(`card-${index}`)}
+                                            className="cursor-pointer flex flex-col bg-gradient-to-r from-gray-100 to-gray-200 shadow-md rounded-lg p-2 w-56 max-w-sm border border-gray-300 hover:shadow-lg transition"
+                                        >
+                                            {/* Número de la tarjeta */}
+                                            <p className="text-base font-semibold text-gray-800 tracking-wide mb-1">
+                                                **** **** **** {card?.number?.slice(-4) || "XXXX"}
+                                            </p>
+
+                                            {/* Nombre del titular */}
+                                            <p className="text-xs text-gray-700 mb-1 leading-tight">
+                                                {`${card?.firstName || "Unknown"} ${card?.lastName || "Unknown"}`}
+                                            </p>
+
+                                            {/* Fecha de expiración */}
+                                            <p className="text-xs text-gray-600 leading-tight">
+                                                Exp: {`${card?.expiration?.slice(0, 2) || "MM"}/${card?.expiration?.slice(2) || "YYYY"}`}
+                                            </p>
+
+                                            {/* Icono o marca de tarjeta */}
+                                            <div className="flex justify-end mt-2">
+                                                {card?.number?.startsWith("4") ? (
+                                                    <img
+                                                        src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
+                                                        alt="Visa"
+                                                        className="h-4"
+                                                    />
+                                                ) : card?.number?.startsWith("5") ? (
+                                                    <img
+                                                        src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg"
+                                                        alt="Mastercard"
+                                                        className="h-4"
+                                                    />
+                                                ) : (
+                                                    <p className="text-xs text-gray-500">Unknown</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+
                                     </div>
                                 ))}
                             </div>
@@ -338,15 +605,57 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         )}
                         {/* Botón para agregar nueva tarjeta */}
                         <button
-                            className="flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            className="flex flex-col items-center gap-2 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
                             onClick={() => setSelectedMethod("newCard")}
                         >
-                            <span className="text-purple-600 text-xl">+</span>
-                            <div className="flex items-center gap-2">
-                                <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
-                                <p className="text-lg font-semibold">Add New Card</p>
-                            </div>
+                            {/* Ícono centrado */}
+                            <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
+
+                            {/* Texto debajo del ícono */}
+                            <p className="text-lg font-semibold text-center">Add New Card</p>
                         </button>
+                        <div className="flex flex-col items-center gap-6 p-4 border rounded-lg shadow-md bg-white max-w-lg">
+                            {/* Título */}
+                            <h2 className="text-xl font-semibold">Select a payment cycle</h2>
+
+                            {/* Opciones de ciclo */}
+                            <div className="flex items-center gap-4">
+                                <button className="px-4 py-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+                                    Monthly
+                                </button>
+                                <button className="px-4 py-2 border rounded-full bg-green-200 text-green-800 hover:bg-green-300">
+                                    15 days
+                                </button>
+                            </div>
+
+                            {/* Configuración de pago manual o automático */}
+                            <div className="flex items-center gap-4">
+                                <label className="text-lg font-medium">Manual</label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        onChange={(e) => console.log(e.target.checked ? 'Automatic' : 'Manual')}
+                                    />
+                                    <span className="relative inline-block w-10 h-6 bg-gray-300 rounded-full">
+                                        <span className="absolute w-4 h-4 bg-white rounded-full top-1 left-1 transform transition-all duration-200"></span>
+                                    </span>
+                                </label>
+                                <label className="text-lg font-medium">Automatic</label>
+                            </div>
+
+                            {/* Botones */}
+                            <div className="flex items-center justify-between w-full mt-4">
+                                <button className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Save</button>
+                                <button
+                                    className="text-blue-500 underline"
+                                    onClick={() => setSelectedMethod(null)}
+                                >
+                                    View Other Payment Methods
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 )}
 
@@ -364,7 +673,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             </div>
                         </button>
                         <button
-                            className="flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            className="flex items-center gap-4 p-4 mt-8 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
                             onClick={() => setSelectedMethod("paypal")}
                         >
                             <span className="text-purple-600 text-xl">{selectedMethod === "paypal" ? "●" : "○"}</span>
@@ -394,15 +703,20 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 {/* Uso de tarjeta guardada */}
                 {selectedMethod?.startsWith("card-") && (
                     <div>
+                        {/* Mostrar información de la tarjeta seleccionada */}
                         <p className="text-lg font-medium mb-4">
                             Using Card: **** **** **** {savedCards[parseInt(selectedMethod.split("-")[1])]?.number.slice(-4)}
                         </p>
+
+                        {/* Botón para procesar el pago */}
                         <button
                             className="bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-500"
-                            onClick={handlePaymentWithSavedCard}
+                            onClick={() => handlePaymentWithSavedCard(savedCards[parseInt(selectedMethod.split("-")[1])])}
                         >
                             Pay Now
                         </button>
+
+                        {/* Botón para volver a las tarjetas guardadas */}
                         <button
                             className="text-blue-500 underline mt-4"
                             onClick={() => setSelectedMethod("creditCard")}
@@ -514,7 +828,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 {/* Opción de Transferencia Bancaria */}
                 {(selectedMethod === null || selectedMethod === "bank") && (
                     <div
-                        className={`flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
+                        className={`flex flex-col items-start gap-4 p-4 mt-8 mb-8 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
                             }`}
                     >
                         <div
@@ -547,40 +861,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         );
     };
 
-    const handlePaymentWithSavedCard = async () => {
-        const selectedCardIndex = parseInt(selectedMethod.split("-")[1]);
-        const selectedCard = savedCards[selectedCardIndex];
-
-        const paymentData = {
-            cardNumber: selectedCard.number,
-            expiration: selectedCard.expiration,
-            cvv: selectedCard.cvv,
-            amount: hourValue,
-        };
-
-        try {
-            const response = await fetch("https://your-backend-api.com/process-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(paymentData),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                alert("Payment successful!");
-                setSelectedMethod(null); // Reset view
-            } else {
-                alert(`Payment failed: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error processing payment:", error);
-        }
-    };
-
-
     const renderCreditCardForm = () => (
         <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
-            <h2 className="text-2xl font-semibold text-center mb-6">Add Credit Card</h2>
+            <h2 className="text-2xl font-semibold text-center mb-6">
+                {editingCard ? "Edit Credit Card" : "Add Credit Card"}
+            </h2>
             <form className="flex flex-col gap-4">
                 {/* Número de tarjeta */}
                 <div>
@@ -593,7 +878,6 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
                     />
                 </div>
-
 
                 {/* Fecha de expiración */}
                 <div className="grid grid-cols-2 gap-4">
@@ -618,7 +902,6 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             value={cardDetails.cvv}
                             onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
                         />
-
                     </div>
                 </div>
 
@@ -666,7 +949,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         placeholder="C Independencia No. 54"
                         className="border rounded-lg p-2 w-full"
                         value={cardDetails.billingAddress1}
-                        onChange={(e) => setCardDetails({ ...cardDetails, billingAddress1: e.target.value })}
+                        onChange={(e) =>
+                            setCardDetails({ ...cardDetails, billingAddress1: e.target.value })
+                        }
                     />
                 </div>
                 <div>
@@ -676,7 +961,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         placeholder="D.F. Mexico, Mexico"
                         className="border rounded-lg p-2 w-full"
                         value={cardDetails.billingAddress2}
-                        onChange={(e) => setCardDetails({ ...cardDetails, billingAddress2: e.target.value })}
+                        onChange={(e) =>
+                            setCardDetails({ ...cardDetails, billingAddress2: e.target.value })
+                        }
                     />
                 </div>
 
@@ -692,14 +979,15 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     <button
                         type="button"
                         className="bg-purple-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-purple-400"
-                        onClick={() => saveCardDetails()}
+                        onClick={() => (editingCard ? updateCardDetails() : saveCardDetails())}
                     >
-                        Save
+                        {editingCard ? "Update" : "Save"}
                     </button>
                 </div>
             </form>
         </div>
     );
+
 
     const renderPaymentSettings = () => (
         <div className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
@@ -787,48 +1075,76 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         </div>
     );
 
-    const renderPaymentHistory = () => (
-        <div className="flex flex-col  bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-[2px] border-black">
-            <div className=" text-left mb-2">
-                <button
-                    className="text-purple-600"
-                    onClick={() => setCurrentView("menu")}
-                >
-                    <span className="text-purple-600 font-bold text-4xl">←</span>
-                </button>
-            </div>
-            <h2 className="text-2xl font-semibold mb-4">Payment History</h2>
-            <div className="overflow-x-auto mt-4">
-                <table className="table-auto border-collapse border border-gray-200 w-full text-left text-sm">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border border-gray-300 px-1 py-2">Number</th>
-                            <th className="border border-gray-300 px-1 py-2">Via</th>
-                            <th className="border border-gray-300 px-3 py-2">Process</th>
-                            <th className="border border-gray-300 px-3 py-2">Date</th>
-                            <th className="border border-gray-300 px-2 py-2">Amount</th>
-                            <th className="border border-gray-300 px-2 py-2">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {paymentHistory.map((payment, index) => (
-                            <tr key={payment.id}>
-                                <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
-                                <td className="border border-gray-300 px-2 py-2">PayPal</td>
-                                <td className="border border-gray-300 px-3 py-2">Automatic</td>
-                                <td className="border border-gray-300 px-2 py-2">{new Date(payment.createdAt).toLocaleDateString()}</td>
-                                <td className="border border-gray-300 px-3 py-2">USD&nbsp;{payment.amount}</td>
-                                <td className={`border border-gray-300 px-2 py-2 ${payment.status === "Completed" ? "text-green-600" : "text-red-600"}`}>
-                                    {payment.status}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+    const renderPaymentHistory = () => {
+        const columns = [
+            {
+                title: "Number",
+                dataIndex: "number",
+                key: "number",
+                render: (text, record, index) => index + 1,
+            },
+            {
+                title: "Via",
+                dataIndex: "via",
+                key: "via",
+                render: () => "PayPal",
+            },
+            {
+                title: "Process",
+                dataIndex: "process",
+                key: "process",
+                render: () => "Automatic",
+            },
+            {
+                title: "Date",
+                dataIndex: "createdAt",
+                key: "date",
+                render: (text) => new Date(text).toLocaleDateString(),
+                sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+                defaultSortOrder: "descend",
+            },
+            {
+                title: "Amount",
+                dataIndex: "amount",
+                key: "amount",
+                render: (text) => `USD ${parseFloat(text).toFixed(2)}`,
+            },
+            {
+                title: "Status",
+                dataIndex: "status",
+                key: "status",
+                render: (text) => (
+                    <span className={text === "Completed" ? "text-green-600" : "text-red-600"}>
+                        {text}
+                    </span>
+                ),
+            },
+        ];
 
-        </div>
-    );
+        return (
+            <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-[2px] border-black">
+                <div className="text-left mb-4">
+                    <Button type="link" onClick={() => setCurrentView("menu")}>
+                        <span className="text-purple-600 font-bold text-4xl">←</span>
+                    </Button>
+                </div>
+                <h2 className="text-2xl font-semibold mb-4">Payment History</h2>
+                <div className="overflow-x-auto mt-4">
+                    <Table
+                        columns={columns}
+                        dataSource={paymentHistory}
+                        rowKey="id"
+                        pagination={{
+                            pageSize: 5,
+                            showSizeChanger: true,
+                            pageSizeOptions: ["5", "10", "20"],
+                        }}
+                        bordered
+                    />
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="flex justify-center items-center bg-gray-50 py-8">
