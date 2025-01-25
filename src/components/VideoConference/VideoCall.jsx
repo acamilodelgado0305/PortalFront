@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FiVideo, FiVideoOff, FiMic, FiMicOff } from 'react-icons/fi';
 import { HiPhoneXMark } from 'react-icons/hi2';
+import Draggable from 'react-draggable';
 
 
 // Definición de global para el SDK de Chime
@@ -19,8 +20,8 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = () => {
-    const meetingId = '272c4442-5e32-4296-a1c4-be941e3e2713'; // ID de la reunión
+const VideoCall = ({ meetingId }) => {
+
     const [externalUserId, setExternalUserId] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
@@ -578,86 +579,90 @@ const VideoCall = () => {
                 </div>
             )}
 
-
-            <div className="flex flex-col gap-4 w-72">
+            <div className="relative min-h-[100vh] min-w-[28vh] flex space-x-4">
                 {localVideo && (
-                    <div className="w-full h-48 bg-black rounded overflow-hidden relative">
-                        <video
-                            ref={localVideoRef}
-                            className="w-full h-full object-cover transform -scale-x-100"
-                            autoPlay
-                            playsInline
-                            muted
-                        />
-                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Anfitrión
+                    <Draggable bounds="parent" handle=".drag-handle">
+                        <div className="w-64 h-36 cursor-move">
+                            <div className="bg-black rounded overflow-hidden relative">
+                                <div className="drag-handle absolute top-0 left-0 right-0 h-6 bg-black bg-opacity-50 z-10" />
+                                <video
+                                    ref={localVideoRef}
+                                    className="w-full h-full object-cover transform -scale-x-100"
+                                    autoPlay
+                                    playsInline
+                                    muted
+                                />
+                                <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                    Anfitrión
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </Draggable>
                 )}
 
                 {remoteVideos.map((tileId) => (
-                    <div key={tileId} className="w-full h-48 bg-black rounded overflow-hidden relative">
-                        <video
-                            ref={el => {
-                                if (el) {
-                                    remoteVideoRefs.current[tileId] = el;
-                                    // Intentar vincular el elemento si el meetingSession existe
-                                    if (meetingSession) {
-                                        meetingSession.audioVideo.bindVideoElement(tileId, el);
-                                    }
-                                }
-                            }}
-                            className="w-full h-full object-cover"
-                            autoPlay
-                            playsInline
-                        />
-                        <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Asistente
-                        </div>
-                        {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
-                            <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
-                                <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
-                                    <div
-                                        className="h-full bg-green-500 transition-all duration-200"
-                                        style={{ width: `${data.volume}%` }}
-                                    />
+                    <Draggable key={tileId} bounds="parent" handle=".drag-handle">
+                        <div className="w-64 h-36 cursor-move">
+                            <div className="bg-black rounded overflow-hidden relative">
+                                <div className="drag-handle absolute top-0 left-0 right-0 h-6 bg-black bg-opacity-50 z-10" />
+                                <video
+                                    ref={el => {
+                                        if (el) {
+                                            remoteVideoRefs.current[tileId] = el;
+                                            if (meetingSession) {
+                                                meetingSession.audioVideo.bindVideoElement(tileId, el);
+                                            }
+                                        }
+                                    }}
+                                    className="w-full h-full object-cover"
+                                    autoPlay
+                                    playsInline
+                                />
+                                <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                    Asistente
                                 </div>
-                                {data.muted && (
-                                    <span className="text-red-500 text-xs">Muteado</span>
-                                )}
+                                {Object.entries(remoteAudioLevel).slice(0, 1).map(([attendeeId, data]) => (
+                                    <div key={attendeeId} className="absolute bottom-2 right-2 flex items-center space-x-2">
+                                        <div className="w-20 h-2 bg-gray-200 rounded overflow-hidden">
+                                            <div
+                                                className="h-full bg-green-500 transition-all duration-200"
+                                                style={{ width: `${data.volume}%` }}
+                                            />
+                                        </div>
+                                        {data.muted && (
+                                            <span className="text-red-500 text-xs">Muteado</span>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    </Draggable>
                 ))}
-
-                <div className="fixed bottom-[4em] left-1/2 transform -translate-x-1/2 flex gap-4">
-                    <button
-                        onClick={handleClose}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
-                    >
-                        <HiPhoneXMark className="text-xl" />
-                    </button>
-
-                    <button
-                        onClick={toggleCamera}
-                        className={`${isCameraOff ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
-                    >
-                        {isCameraOff ? <FiVideoOff className="text-xl" /> : <FiVideo className="text-xl" />}
-                    </button>
-
-                    <button
-                        onClick={toggleMute}
-                        className={`${isMuted ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
-                    >
-                        {isMuted ? <FiMicOff className="text-xl" /> : <FiMic className="text-xl" />}
-                    </button>
-                </div>
-
-
-
             </div>
 
-            {/* Indicadores de audio remoto - solo para el asistente */}
+            <div className="fixed bottom-[4em] left-1/2 transform -translate-x-1/2 flex gap-4">
+                <button
+                    onClick={handleClose}
+                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                >
+                    <HiPhoneXMark className="text-xl" />
+                </button>
+
+                <button
+                    onClick={toggleCamera}
+                    className={`${isCameraOff ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
+                >
+                    {isCameraOff ? <FiVideoOff className="text-xl" /> : <FiVideo className="text-xl" />}
+                </button>
+
+                <button
+                    onClick={toggleMute}
+                    className={`${isMuted ? 'bg-red-500' : 'bg-gray-500'} hover:opacity-80 text-white p-2 rounded-full`}
+                >
+                    {isMuted ? <FiMicOff className="text-xl" /> : <FiMic className="text-xl" />}
+                </button>
+            </div>
+
             {Object.entries(remoteAudioLevel).length > 0 && (
                 <div className="mt-4 p-4 bg-gray-50 rounded">
                     <h3 className="text-lg font-semibold mb-2">Audio Remoto</h3>
