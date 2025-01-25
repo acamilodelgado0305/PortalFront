@@ -282,6 +282,73 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 <h2 className="flex flex-col items-center text-2xl text-center font-semibold my-6">
                     How do you plan to pay for your classes?
                 </h2>
+                <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-2 border-black">
+                    <h2 className="text-2xl font-semibold text-center mb-6">Choose a Payment Method</h2>
+                    {/* Mostrar tarjetas guardadas */}
+                    {selectedMethod === null && savedCards.length > 0 && (
+                        <div>
+                            <h3 className="text-lg font-medium mb-4">Saved Cards</h3>
+                            {savedCards.map((card, index) => (
+                                <div
+                                    key={index}
+                                    className={`p-4 border rounded-lg mb-2 cursor-pointer ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""
+                                        }`}
+                                    onClick={() => setSelectedMethod(`card-${index}`)}
+                                >
+                                    <p>**** **** **** {card.number.slice(-4)}</p>
+                                    <p>{card.firstName} {card.lastName}</p>
+                                    <p>{card.expiration}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {/* Botones para seleccionar método de pago */}
+                    {selectedMethod === null && (
+                        <>
+                            <button
+                                className="bg-purple-600 text-white py-2 px-6 rounded-lg font-semibold mb-4 hover:bg-purple-500"
+                                onClick={() => setSelectedMethod("paypal")}
+                            >
+                                Pay with PayPal
+                            </button>
+                            <button
+                                className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"
+                                onClick={() => setSelectedMethod("newCard")}
+                            >
+                                Add New Card
+                            </button>
+                        </>
+                    )}
+                    {/* Mostrar el formulario de nueva tarjeta */}
+                    {selectedMethod === "newCard" && renderCreditCardForm()}
+                    {/* Mostrar PayPal */}
+                    {selectedMethod === "paypal" && (
+                        <div className="mt-4">
+                            <PayPalButtons
+                                createOrder={(data, actions) => {
+                                    return actions.order.create({
+                                        purchase_units: [
+                                            {
+                                                amount: { value: hourValue },
+                                            },
+                                        ],
+                                    });
+                                }}
+                                onApprove={(data, actions) => {
+                                    return actions.order
+                                        .capture()
+                                        .then((details) => {
+                                            console.log("Payment successful:", details);
+                                            showModal(details);
+                                            handlePaymentApproval(details);
+                                        })
+                                        .catch((error) => console.error("Payment error:", error));
+                                }}
+                                onError={(error) => console.error("PayPal error:", error)}
+                            />
+                        </div>
+                    )}
+                </div>
                 <div className="flex flex-col gap-6 p-8">
                     {selectedMethod !== null && (
                         <button
