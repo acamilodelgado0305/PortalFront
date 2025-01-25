@@ -67,7 +67,7 @@ const VideoCall = ({ meetingId }) => {
                 }
 
                 const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
-                const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
+              
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
