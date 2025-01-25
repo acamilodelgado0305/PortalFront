@@ -264,10 +264,10 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         console.log("Rendering Payment Options");
 
         return (
-            <div className="flex flex-col  bg-white shadow-lg rounded-lg p-2 w-full max-w-lg border-2 border-black">
+            <div className="flex flex-col bg-white shadow-lg rounded-lg p-2 w-full max-w-lg border-2 border-black">
                 <div className="flex flex-col items-start">
                     <button
-                        className="text-purple-600 "
+                        className="text-purple-600"
                         onClick={() => setCurrentView("proceedToPayment")}
                     >
                         <span className="text-purple-600 font-bold text-4xl">←</span>
@@ -279,25 +279,40 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     />
                 </div>
 
-                <h2 className=" flex flex-col items-center text-2xl text-center font-semibold  my-6">How do you plan to pay for your classes?</h2>
+                <h2 className="flex flex-col items-center text-2xl text-center font-semibold my-6">
+                    How do you plan to pay for your classes?
+                </h2>
                 <div className="flex flex-col gap-6 p-8">
-                    <div
-                        className={`flex flex-col p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""}`}
-                        onClick={() => {
-                            setSelectedMethod("creditCard");
-                            setShowPayPalButtons(true);
-                        }}
-                    >
-                        <div className="flex items-center gap-4">
-                            <span className="text-purple-600 text-xl">
-                                {selectedMethod === "creditCard" ? "●" : "○"}
-                            </span>
-                            <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
-                            <p className="text-lg font-semibold">Credit Card</p>
+                    {selectedMethod !== null && (
+                        <button
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold p-2 rounded-lg mb-4"
+                            onClick={() => setSelectedMethod(null)}
+                        >
+                            View Other Payment Methods
+                        </button>
+                    )}
+                    {/* Opción de tarjeta de crédito */}
+                    {(selectedMethod === null || selectedMethod === "creditCard") && (
+                        <div
+                            className={`flex flex-col p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""
+                                }`}
+                            onClick={() => {
+                                setSelectedMethod("creditCard");
+                                setShowPayPalButtons(true);
+                            }}
+                        >
+                            <div className="flex items-center gap-4">
+                                <span className="text-purple-600 text-xl">
+                                    {selectedMethod === "creditCard" ? "●" : "○"}
+                                </span>
+                                <CreditCardOutlined
+                                    style={{ fontSize: "36px", color: "#9333EA" }}
+                                />
+                                <p className="text-lg font-semibold">Credit Card</p>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Botón para pago con tarjeta de crédito */}
                     {selectedMethod === "creditCard" && showPayPalButtons && (
                         <div className="mt-4">
                             <PayPalButtons
@@ -339,7 +354,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     )}
 
                     {/* Opción de PayPal */}
-                    {selectedMethod !== "paypal" || !showPayPalButtons ? (
+                    {(selectedMethod === null || selectedMethod === "paypal") && (
                         <div
                             className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "paypal" ? "bg-gray-200" : ""
                                 }`}
@@ -361,9 +376,8 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                 Pay<span style={{ color: "#009CDE" }}>Pal</span>
                             </div>
                         </div>
-                    ) : null}
+                    )}
 
-                    {/* Botones de PayPal */}
                     {selectedMethod === "paypal" && showPayPalButtons && (
                         <div className="mt-4">
                             <PayPalButtons
@@ -379,14 +393,13 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                     });
                                 }}
                                 onApprove={(data, actions) => {
-                                    setIsLoadingPayment(true)
+                                    setIsLoadingPayment(true);
                                     return actions.order
                                         .capture()
                                         .then((details) => {
                                             console.log("Payment successful:", details);
                                             showModal(details);
                                             handlePaymentApproval(details);
-
                                         })
                                         .catch((error) => {
                                             console.error("Payment error:", error);
@@ -471,24 +484,26 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     </Modal>
 
                     {/* Opción de Transferencia Bancaria */}
-                    <div
-                        className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
-                            }`}
-                        onClick={() => setSelectedMethod("bank")}
-                    >
-                        <span className="text-purple-600 text-xl">
-                            {selectedMethod === "bank" ? "●" : "○"}
-                        </span>
-                        <BankOutlined style={{ fontSize: '36px', color: '#9333EA' }} />
-                        <p className="text-lg font-semibold">Bank Transfer</p>
-                    </div>
+                    {(selectedMethod === null || selectedMethod === "bank") && (
+                        <div
+                            className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
+                                }`}
+                            onClick={() => setSelectedMethod("bank")}
+                        >
+                            <span className="text-purple-600 text-xl">
+                                {selectedMethod === "bank" ? "●" : "○"}
+                            </span>
+                            <BankOutlined
+                                style={{ fontSize: "36px", color: "#9333EA" }}
+                            />
+                            <p className="text-lg font-semibold">Bank Transfer</p>
+                        </div>
+                    )}
                 </div>
-
-
-
             </div>
         );
     };
+
     const renderCreditCardForm = () => (
         <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
             <h2 className="text-2xl font-semibold text-center mb-6">Add Credit Card</h2>
