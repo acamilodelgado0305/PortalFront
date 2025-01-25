@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import { Modal, Spin } from "antd"; // Importa el componente Modal de antd
+import { Modal, Spin, Table, Button } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined } from "@ant-design/icons";
 import humanIcon from "../../../../../src/assets/humanicon.svg";
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
@@ -78,7 +78,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             billingAddress2: "",
         });
         console.log("Card Details Saved:", cardDetails);
-        setCurrentView("paymentOptions"); // Cambiar de vista
+        setCurrentView("paymentOptions");
     };
 
     const cancelCardDetails = () => {
@@ -347,6 +347,12 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                 <p className="text-lg font-semibold">Add New Card</p>
                             </div>
                         </button>
+                        <button
+                            className="text-blue-500 underline mt-4"
+                            onClick={() => setSelectedMethod(null)}
+                        >
+                            View Other Payment Methods
+                        </button>
                     </div>
                 )}
 
@@ -364,7 +370,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             </div>
                         </button>
                         <button
-                            className="flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            className="flex items-center gap-4 p-4 mt-8 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
                             onClick={() => setSelectedMethod("paypal")}
                         >
                             <span className="text-purple-600 text-xl">{selectedMethod === "paypal" ? "●" : "○"}</span>
@@ -514,7 +520,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 {/* Opción de Transferencia Bancaria */}
                 {(selectedMethod === null || selectedMethod === "bank") && (
                     <div
-                        className={`flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
+                        className={`flex flex-col items-start gap-4 p-4 mt-8 mb-8 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
                             }`}
                     >
                         <div
@@ -787,48 +793,76 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         </div>
     );
 
-    const renderPaymentHistory = () => (
-        <div className="flex flex-col  bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-[2px] border-black">
-            <div className=" text-left mb-2">
-                <button
-                    className="text-purple-600"
-                    onClick={() => setCurrentView("menu")}
-                >
-                    <span className="text-purple-600 font-bold text-4xl">←</span>
-                </button>
-            </div>
-            <h2 className="text-2xl font-semibold mb-4">Payment History</h2>
-            <div className="overflow-x-auto mt-4">
-                <table className="table-auto border-collapse border border-gray-200 w-full text-left text-sm">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border border-gray-300 px-1 py-2">Number</th>
-                            <th className="border border-gray-300 px-1 py-2">Via</th>
-                            <th className="border border-gray-300 px-3 py-2">Process</th>
-                            <th className="border border-gray-300 px-3 py-2">Date</th>
-                            <th className="border border-gray-300 px-2 py-2">Amount</th>
-                            <th className="border border-gray-300 px-2 py-2">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {paymentHistory.map((payment, index) => (
-                            <tr key={payment.id}>
-                                <td className="border border-gray-300 px-2 py-2">{index + 1}</td>
-                                <td className="border border-gray-300 px-2 py-2">PayPal</td>
-                                <td className="border border-gray-300 px-3 py-2">Automatic</td>
-                                <td className="border border-gray-300 px-2 py-2">{new Date(payment.createdAt).toLocaleDateString()}</td>
-                                <td className="border border-gray-300 px-3 py-2">USD&nbsp;{payment.amount}</td>
-                                <td className={`border border-gray-300 px-2 py-2 ${payment.status === "Completed" ? "text-green-600" : "text-red-600"}`}>
-                                    {payment.status}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+    const renderPaymentHistory = () => {
+        const columns = [
+            {
+                title: "Number",
+                dataIndex: "number",
+                key: "number",
+                render: (text, record, index) => index + 1,
+            },
+            {
+                title: "Via",
+                dataIndex: "via",
+                key: "via",
+                render: () => "PayPal",
+            },
+            {
+                title: "Process",
+                dataIndex: "process",
+                key: "process",
+                render: () => "Automatic",
+            },
+            {
+                title: "Date",
+                dataIndex: "createdAt",
+                key: "date",
+                render: (text) => new Date(text).toLocaleDateString(),
+                sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+                defaultSortOrder: "descend",
+            },
+            {
+                title: "Amount",
+                dataIndex: "amount",
+                key: "amount",
+                render: (text) => `USD ${parseFloat(text).toFixed(2)}`,
+            },
+            {
+                title: "Status",
+                dataIndex: "status",
+                key: "status",
+                render: (text) => (
+                    <span className={text === "Completed" ? "text-green-600" : "text-red-600"}>
+                        {text}
+                    </span>
+                ),
+            },
+        ];
 
-        </div>
-    );
+        return (
+            <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-[2px] border-black">
+                <div className="text-left mb-4">
+                    <Button type="link" onClick={() => setCurrentView("menu")}>
+                        <span className="text-purple-600 font-bold text-4xl">←</span>
+                    </Button>
+                </div>
+                <h2 className="text-2xl font-semibold mb-4">Payment History</h2>
+                <div className="overflow-x-auto mt-4">
+                    <Table
+                        columns={columns}
+                        dataSource={paymentHistory}
+                        rowKey="id"
+                        pagination={{
+                            pageSize: 5,
+                            showSizeChanger: true,
+                            pageSizeOptions: ["5", "10", "20"],
+                        }}
+                        bordered
+                    />
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="flex justify-center items-center bg-gray-50 py-8">
