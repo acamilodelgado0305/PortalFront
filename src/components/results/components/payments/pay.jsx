@@ -15,6 +15,36 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [showPayPalButtons, setShowPayPalButtons] = useState(false);
     const [isLoadingPayment, setIsLoadingPayment] = useState(false);
     const [savedCards, setSavedCards] = useState([]);
+    const [isLoadingCards, setIsLoadingCards] = useState(false);
+
+    useEffect(() => {
+        const fetchSavedCards = async () => {
+            setIsLoadingCards(true);
+            try {
+                const response = await fetch(`https://back.app.esturio.com/api/card/user/${user.id}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch saved cards");
+                }
+                const data = await response.json();
+                setSavedCards(data.data || []);
+                console.log("datostargeta", data)
+                // Asegúrate de que el campo sea el correcto
+            } catch (error) {
+                console.error("Error fetching saved cards:", error);
+            } finally {
+                setIsLoadingCards(false);
+            }
+        };
+
+        if (user.id) {
+            fetchSavedCards();
+        }
+    }, [user.id]);
+
+    const handleViewOtherMethods = () => {
+        setSelectedMethod(null); // Restablecer para mostrar todas las opciones
+    };
+
 
     const [cardDetails, setCardDetails] = useState({
         number: "",
@@ -261,10 +291,8 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     );
 
     const renderPaymentOptions = () => {
-        console.log("Rendering Payment Options");
-
         return (
-            <div className="flex flex-col bg-white shadow-lg rounded-lg p-2 w-full max-w-lg border-2 border-black">
+            <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-2 border-black">
                 <div className="flex flex-col items-start">
                     <button
                         className="text-purple-600"
@@ -282,227 +310,273 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 <h2 className="flex flex-col items-center text-2xl text-center font-semibold my-6">
                     How do you plan to pay for your classes?
                 </h2>
-                <div className="flex flex-col gap-6 p-8">
-                    {selectedMethod !== null && (
+
+                {/* Opción de pago con tarjeta de crédito */}
+                {selectedMethod === "creditCard" && (
+                    <div className="flex flex-col gap-4">
+                        <h3 className="text-lg font-medium mb-4">Saved Cards</h3>
+
+                        {isLoadingCards ? (
+                            <p className="text-gray-500">Loading saved cards...</p>
+                        ) : savedCards.length > 0 ? (
+                            <div>
+                                {savedCards.map((card, index) => (
+                                    <div
+                                        key={index}
+                                        className={`p-4 border rounded-lg mb-2 cursor-pointer ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""
+                                            }`}
+                                        onClick={() => setSelectedMethod(`card-${index}`)}
+                                    >
+                                        <p>**** **** **** {card.number.slice(-4)}</p>
+                                        <p>{card.firstName} {card.lastName}</p>
+                                        <p>{`${card.expiration.slice(0, 2)}/${card.expiration.slice(2)}`}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-600">No saved cards available.</p>
+                        )}
+                        {/* Botón para agregar nueva tarjeta */}
                         <button
-                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold p-2 rounded-lg mb-4"
+                            className="flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            onClick={() => setSelectedMethod("newCard")}
+                        >
+                            <span className="text-purple-600 text-xl">+</span>
+                            <div className="flex items-center gap-2">
+                                <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
+                                <p className="text-lg font-semibold">Add New Card</p>
+                            </div>
+                        </button>
+                    </div>
+                )}
+
+                {/* Opciones principales */}
+                {selectedMethod === null && (
+                    <>
+                        <button
+                            className="flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            onClick={() => setSelectedMethod("creditCard")}
+                        >
+                            <span className="text-purple-600 text-xl">{selectedMethod === "creditCard" ? "●" : "○"}</span>
+                            <div className="flex items-center gap-2">
+                                <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
+                                <p className="text-lg font-semibold">Pay with Credit Card</p>
+                            </div>
+                        </button>
+                        <button
+                            className="flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            onClick={() => setSelectedMethod("paypal")}
+                        >
+                            <span className="text-purple-600 text-xl">{selectedMethod === "paypal" ? "●" : "○"}</span>
+                            <div
+                                className="flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-blue-700 font-bold text-2xl py-1 px-14 rounded-lg transition-all"
+                                style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', color: "#003087" }}
+                            >
+                                Pay<span style={{ color: "#009CDE" }}>Pal</span>
+                            </div>
+                        </button>
+                    </>
+                )}
+
+                {/* Formulario de nueva tarjeta */}
+                {selectedMethod === "newCard" && (
+                    <>
+                        {renderCreditCardForm()}
+                        <button
+                            className="text-blue-500 underline mt-4"
+                            onClick={() => setSelectedMethod("creditCard")}
+                        >
+                            Back to Saved Cards
+                        </button>
+                    </>
+                )}
+
+                {/* Uso de tarjeta guardada */}
+                {selectedMethod?.startsWith("card-") && (
+                    <div>
+                        <p className="text-lg font-medium mb-4">
+                            Using Card: **** **** **** {savedCards[parseInt(selectedMethod.split("-")[1])]?.number.slice(-4)}
+                        </p>
+                        <button
+                            className="bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-500"
+                            onClick={handlePaymentWithSavedCard}
+                        >
+                            Pay Now
+                        </button>
+                        <button
+                            className="text-blue-500 underline mt-4"
+                            onClick={() => setSelectedMethod("creditCard")}
+                        >
+                            Back to Saved Cards
+                        </button>
+                    </div>
+                )}
+
+                {/* Pago con PayPal */}
+                {selectedMethod === "paypal" && (
+                    <div className="flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100">
+                        <div className="mt-4 w-full">
+                            <PayPalButtons
+                                createOrder={(data, actions) => {
+                                    return actions.order.create({
+                                        purchase_units: [{ amount: { value: hourValue } }],
+                                    });
+                                }}
+                                onApprove={(data, actions) => {
+                                    return actions.order.capture().then((details) => {
+                                        console.log("Payment successful:", details);
+                                        showModal(details);
+                                        handlePaymentApproval(details);
+                                    });
+                                }}
+                                onError={(error) => console.error("PayPal error:", error)}
+                            />
+                        </div>
+                        <button
+                            className="text-blue-500 underline mt-4"
                             onClick={() => setSelectedMethod(null)}
                         >
                             View Other Payment Methods
                         </button>
-                    )}
-                    {/* Opción de tarjeta de crédito */}
-                    {(selectedMethod === null || selectedMethod === "creditCard") && (
-                        <div
-                            className={`flex flex-col p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "creditCard" ? "bg-gray-200" : ""
-                                }`}
-                            onClick={() => {
-                                setSelectedMethod("creditCard");
-                                setShowPayPalButtons(true);
-                            }}
-                        >
-                            <div className="flex items-center gap-4">
-                                <span className="text-purple-600 text-xl">
-                                    {selectedMethod === "creditCard" ? "●" : "○"}
-                                </span>
-                                <CreditCardOutlined
-                                    style={{ fontSize: "36px", color: "#9333EA" }}
-                                />
-                                <p className="text-lg font-semibold">Credit Card</p>
+                    </div>
+                )}
+
+                {/* Modal para mostrar detalles de la transacción */}
+                <Modal
+                    title=""
+                    visible={isModalVisible}
+                    onOk={handleOk}
+                    onCancel={handleOk}
+                    footer={null} // No default footer
+                >
+                    {transactionDetails && (
+                        <div className="flex flex-col items-center space-y-6 p-4">
+                            {/* Box with transaction details */}
+                            <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
+                                <h3 className="text-3xl font-semibold text-center text-green-500 mb-4">Your class has been paid</h3>
+                                <p className="text-lg font-semibold">
+                                    <strong>Name:</strong> {transactionDetails.payer.name.given_name} {transactionDetails.payer.name.surname}
+                                </p>
+                                <p className="text-lg font-semibold">
+                                    <strong>Email:</strong> {transactionDetails.payer.email_address}
+                                </p>
+                                <p className="text-lg font-semibold">
+                                    <strong>Transaction ID:</strong> {transactionDetails.id}
+                                </p>
+                                <p className="text-lg font-semibold">
+                                    <strong>Amount:</strong> {transactionDetails.purchase_units[0].amount.value} {transactionDetails.purchase_units[0].amount.currency_code}
+                                </p>
+                                {/* "Capture" and "Print" buttons */}
+                                <div className="flex justify-between mt-6">
+                                    <button
+                                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-400 transition"
+                                        onClick={() => console.log("Capture")}
+                                    >
+                                        Capture
+                                    </button>
+                                    <button
+                                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                                        onClick={() => console.log("Print")}
+                                    >
+                                        Print
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Box with additional actions */}
+                            <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
+                                <h3 className="text-lg font-semibold text-center text-gray-700 mb-4">Additional Actions</h3>
+                                <div className="flex flex-col space-y-4">
+                                    <button
+                                        className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
+                                        onClick={() => console.log("View payment history")}
+                                    >
+                                        View Payment History
+                                    </button>
+                                    <button
+                                        className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
+                                        onClick={() => console.log("Schedule a new class")}
+                                    >
+                                        Schedule a New Class
+                                    </button>
+                                    <button
+                                        className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
+                                        onClick={() => console.log("Other service")}
+                                    >
+                                        Other Service
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
+                </Modal>
 
-                    {selectedMethod === "creditCard" && showPayPalButtons && (
-                        <div className="mt-4">
-                            <PayPalButtons
-                                fundingSource="card"
-                                createOrder={(data, actions) => {
-                                    return actions.order.create({
-                                        purchase_units: [
-                                            {
-                                                amount: {
-                                                    value: hourValue,
-                                                },
-                                            },
-                                        ],
-                                    });
-                                }}
-                                onApprove={(data, actions) => {
-                                    setIsLoadingPayment(true);
-                                    return actions.order
-                                        .capture()
-                                        .then((details) => {
-                                            console.log("Payment successful:", details);
-                                            showModal(details);
-                                            handlePaymentApproval(details);
-                                        })
-                                        .catch((error) => {
-                                            console.error("Payment error:", error);
-                                            setIsLoadingPayment(false);
-                                        });
-                                }}
-                                onError={(error) => {
-                                    console.error("PayPal error:", error);
-                                    setIsLoadingPayment(false);
-                                }}
-                                style={{
-                                    layout: "vertical",
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Opción de PayPal */}
-                    {(selectedMethod === null || selectedMethod === "paypal") && (
-                        <div
-                            className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "paypal" ? "bg-gray-200" : ""
-                                }`}
-                            onClick={() => {
-                                setSelectedMethod("paypal");
-                                setShowPayPalButtons(true);
-                            }}
-                        >
-                            <span className="text-purple-600 text-xl">
-                                {selectedMethod === "paypal" ? "●" : "○"}
-                            </span>
-                            <div
-                                className="flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-blue-700 font-bold text-2xl py-1 px-14 rounded-lg transition-all"
-                                style={{
-                                    fontFamily: '"Helvetica Neue", Arial, sans-serif',
-                                    color: "#003087",
-                                }}
-                            >
-                                Pay<span style={{ color: "#009CDE" }}>Pal</span>
-                            </div>
-                        </div>
-                    )}
-
-                    {selectedMethod === "paypal" && showPayPalButtons && (
-                        <div className="mt-4">
-                            <PayPalButtons
-                                createOrder={(data, actions) => {
-                                    return actions.order.create({
-                                        purchase_units: [
-                                            {
-                                                amount: {
-                                                    value: hourValue,
-                                                },
-                                            },
-                                        ],
-                                    });
-                                }}
-                                onApprove={(data, actions) => {
-                                    setIsLoadingPayment(true);
-                                    return actions.order
-                                        .capture()
-                                        .then((details) => {
-                                            console.log("Payment successful:", details);
-                                            showModal(details);
-                                            handlePaymentApproval(details);
-                                        })
-                                        .catch((error) => {
-                                            console.error("Payment error:", error);
-                                            setIsLoadingPayment(false);
-                                        });
-                                }}
-                                onError={(error) => {
-                                    console.error("PayPal error:", error);
-                                    setIsLoadingPayment(false);
-                                }}
-                            />
-                        </div>
-                    )}
-                    {/* Modal para mostrar detalles de la transacción */}
-                    <Modal
-                        title=""
-                        visible={isModalVisible}
-                        onOk={handleOk}
-                        onCancel={handleOk}
-                        footer={null} // No default footer
+                {/* Opción de Transferencia Bancaria */}
+                {(selectedMethod === null || selectedMethod === "bank") && (
+                    <div
+                        className={`flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
+                            }`}
                     >
-                        {transactionDetails && (
-                            <div className="flex flex-col items-center space-y-6 p-4">
-                                {/* Box with transaction details */}
-                                <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
-                                    <h3 className="text-3xl font-semibold text-center text-green-500 mb-4">Your class has been paid</h3>
-                                    <p className="text-lg font-semibold">
-                                        <strong>Name:</strong> {transactionDetails.payer.name.given_name} {transactionDetails.payer.name.surname}
-                                    </p>
-                                    <p className="text-lg font-semibold">
-                                        <strong>Email:</strong> {transactionDetails.payer.email_address}
-                                    </p>
-                                    <p className="text-lg font-semibold">
-                                        <strong>Transaction ID:</strong> {transactionDetails.id}
-                                    </p>
-                                    <p className="text-lg font-semibold">
-                                        <strong>Amount:</strong> {transactionDetails.purchase_units[0].amount.value} {transactionDetails.purchase_units[0].amount.currency_code}
-                                    </p>
-                                    {/* "Capture" and "Print" buttons */}
-                                    <div className="flex justify-between mt-6">
-                                        <button
-                                            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-400 transition"
-                                            onClick={() => console.log("Capture")}
-                                        >
-                                            Capture
-                                        </button>
-                                        <button
-                                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-                                            onClick={() => console.log("Print")}
-                                        >
-                                            Print
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Box with additional actions */}
-                                <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-full max-w-md">
-                                    <h3 className="text-lg font-semibold text-center text-gray-700 mb-4">Additional Actions</h3>
-                                    <div className="flex flex-col space-y-4">
-                                        <button
-                                            className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
-                                            onClick={() => console.log("View payment history")}
-                                        >
-                                            View Payment History
-                                        </button>
-                                        <button
-                                            className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
-                                            onClick={() => console.log("Schedule a new class")}
-                                        >
-                                            Schedule a New Class
-                                        </button>
-                                        <button
-                                            className="border border-purple-600 text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-purple-100 transition"
-                                            onClick={() => console.log("Other service")}
-                                        >
-                                            Other Service
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </Modal>
-
-                    {/* Opción de Transferencia Bancaria */}
-                    {(selectedMethod === null || selectedMethod === "bank") && (
                         <div
-                            className={`flex items-center gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100 ${selectedMethod === "bank" ? "bg-gray-200" : ""
-                                }`}
-                            onClick={() => setSelectedMethod("bank")}
+                            className="flex items-center gap-4"
+                            onClick={() => setSelectedMethod("bank")} // Seleccionar método de transferencia bancaria
                         >
                             <span className="text-purple-600 text-xl">
                                 {selectedMethod === "bank" ? "●" : "○"}
                             </span>
-                            <BankOutlined
-                                style={{ fontSize: "36px", color: "#9333EA" }}
-                            />
+                            <BankOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
                             <p className="text-lg font-semibold">Bank Transfer</p>
                         </div>
-                    )}
-                </div>
+
+                        {/* Mostrar botón para volver a los demás métodos si se seleccionó "bank" */}
+                        {selectedMethod === "bank" && (
+                            <button
+                                className="text-blue-500 underline mt-4"
+                                onClick={() => {
+                                    console.log("Volviendo a otros métodos de pago");
+                                    setSelectedMethod(null); // Restablecer a null para mostrar todas las opciones
+                                }}
+                            >
+                                View Other Payment Methods
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
+
         );
     };
+
+    const handlePaymentWithSavedCard = async () => {
+        const selectedCardIndex = parseInt(selectedMethod.split("-")[1]);
+        const selectedCard = savedCards[selectedCardIndex];
+
+        const paymentData = {
+            cardNumber: selectedCard.number,
+            expiration: selectedCard.expiration,
+            cvv: selectedCard.cvv,
+            amount: hourValue,
+        };
+
+        try {
+            const response = await fetch("https://your-backend-api.com/process-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(paymentData),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Payment successful!");
+                setSelectedMethod(null); // Reset view
+            } else {
+                alert(`Payment failed: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error processing payment:", error);
+        }
+    };
+
 
     const renderCreditCardForm = () => (
         <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
