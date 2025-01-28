@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiVideo, FiVideoOff, FiMic, FiMicOff } from 'react-icons/fi';
+import { FiVideo, FiVideoOff, FiMic, FiMicOff, FiMaximize, FiMinimize } from 'react-icons/fi';
 import { HiPhoneXMark } from 'react-icons/hi2';
 import Draggable from 'react-draggable';
 
@@ -20,8 +20,7 @@ import {
     MeetingSessionConfiguration
 } from 'amazon-chime-sdk-js';
 
-const VideoCall = ({ meetingId }) => {
-
+const VideoCall = ({meetingId}) => {
     const [externalUserId, setExternalUserId] = useState(null);
     const [meetingSession, setMeetingSession] = useState(null);
     const [localVideo, setLocalVideo] = useState(false);
@@ -38,6 +37,7 @@ const VideoCall = ({ meetingId }) => {
     const remoteAudioAnalyzerInterval = useRef(null);
     const audioElementRef = useRef(null);
     const audioContextRef = useRef(null);
+    const [isMaximized, setIsMaximized] = useState(false);
 
     // Unirse a la reunión automáticamente al montar el componente
     useEffect(() => {
@@ -67,7 +67,7 @@ const VideoCall = ({ meetingId }) => {
                 }
 
                 const joinResponse = await fetch('https://back.app.esturio.com/api/chime/join-meeting', {
-              
+
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -119,6 +119,10 @@ const VideoCall = ({ meetingId }) => {
         } catch (err) {
             setError('Error con la cámara: ' + err.message);
         }
+    };
+
+    const toggleSize = (tileId = null) => {
+        setIsMaximized(!isMaximized);
     };
 
     const initializeMeetingSession = async (meeting, attendee) => {
@@ -583,10 +587,16 @@ const VideoCall = ({ meetingId }) => {
 
             <div className="relative min-h-[100vh] min-w-[28vh] flex space-x-4">
                 {localVideo && (
-                    <Draggable bounds="parent" handle=".drag-handle">
-                        <div className="w-64 h-36 cursor-move">
+                    <Draggable bounds="parent" handle=".drag-handle" disabled={isMaximized}>
+                        <div className={`${isMaximized ? 'w-full h-[80vh]' : 'w-64 h-36'} transition-all duration-300 cursor-move`}>
                             <div className="bg-black rounded overflow-hidden relative">
                                 <div className="drag-handle absolute top-0 left-0 right-0 h-6 bg-black bg-opacity-50 z-10" />
+                                <button
+                                    onClick={() => toggleSize()}
+                                    className="absolute top-2 right-2 text-white bg-black bg-opacity-50 p-1 rounded-full z-20 hover:bg-opacity-75"
+                                >
+                                    {isMaximized ? <FiMinimize /> : <FiMaximize />}
+                                </button>
                                 <video
                                     ref={localVideoRef}
                                     className="w-full h-full object-cover transform -scale-x-100"
@@ -602,11 +612,17 @@ const VideoCall = ({ meetingId }) => {
                     </Draggable>
                 )}
 
-                {remoteVideos.map((tileId) => (
+                {!isMaximized && remoteVideos.map((tileId) => (
                     <Draggable key={tileId} bounds="parent" handle=".drag-handle">
                         <div className="w-64 h-36 cursor-move">
                             <div className="bg-black rounded overflow-hidden relative">
                                 <div className="drag-handle absolute top-0 left-0 right-0 h-6 bg-black bg-opacity-50 z-10" />
+                                <button
+                                    onClick={() => toggleSize(tileId)}
+                                    className="absolute top-2 right-2 text-white bg-black bg-opacity-50 p-1 rounded-full z-20 hover:bg-opacity-75"
+                                >
+                                    <FiMaximize />
+                                </button>
                                 <video
                                     ref={el => {
                                         if (el) {
