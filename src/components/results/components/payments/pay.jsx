@@ -544,7 +544,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             className="text-red-600 hover:text-red-800"
                                             onClick={() => handleDeleteCard(card)}
                                         >
-                                            <img src="/images/Caneca.JPG" alt="Eliminar" className="w-5 h-5" />
+                                            <img src="https://res.cloudinary.com/dybws2ubw/image/upload/v1738201771/Caneca_jgzvl3.jpg" alt="Eliminar" className="w-5 h-5" />
                                         </button>
 
                                         {/* Botón de editar */}
@@ -552,7 +552,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             className="text-purple-600 hover:text-purple-800"
                                             onClick={() => handleEditCard(card)}
                                         >
-                                            <img src="/images/Lapiz.JPG" alt="Editar" className="w-8 h-8" />
+                                            <img src="https://res.cloudinary.com/dybws2ubw/image/upload/v1738201806/Lapiz_jfopar.jpg" alt="Editar" className="w-8 h-8" />
                                         </button>
 
                                         {/* Tarjeta */}
