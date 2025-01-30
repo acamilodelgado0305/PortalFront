@@ -18,6 +18,18 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [savedCards, setSavedCards] = useState([]);
     const [isLoadingCards, setIsLoadingCards] = useState(false);
     const [editingCard, setEditingCard] = useState(false);
+    const [isAutomatic, setIsAutomatic] = useState(false); // Estado de pago automático
+    const [selectedPriority, setSelectedPriority] = useState({}); // Prioridad de tarjetas
+    const [selectedCycle, setSelectedCycle] = useState("Monthly");
+
+    const maxCards = Math.min(savedCards.length, 3);
+    // Manejar el cambio de prioridad de tarjeta
+    const handlePriorityChange = (cardNumber, priority) => {
+        setSelectedPriority((prev) => ({
+            ...prev,
+            [cardNumber]: prev[cardNumber] === priority ? null : priority,
+        }));
+    };
 
     const handleEditCard = (card) => {
         setCardDetails(card);
@@ -513,18 +525,6 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 )}
 
                 {/* Mostrar solo la flecha cuando hay un método de pago seleccionado */}
-                {selectedMethod !== null && (
-                    <div className="flex flex-col items-start">
-                        <button
-                            className="text-purple-600"
-                            onClick={() => setSelectedMethod(null)} // Volver a la vista principal
-                        >
-                            <span className="text-purple-600 font-bold text-4xl">←</span>
-                        </button>
-                    </div>
-                )}
-
-                {/* Opción de pago con tarjeta de crédito */}
                 {selectedMethod === "creditCard" && (
                     <div className="flex flex-col gap-4">
                         <h3 className="text-lg font-medium mb-4">Saved Cards</h3>
@@ -533,33 +533,32 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             <p className="text-gray-500">Loading saved cards...</p>
                         ) : savedCards && savedCards.length > 0 ? (
                             <div>
-                                {savedCards.map((card, index) => (
+                                {savedCards.slice(0, maxCards).map((card, index) => (
                                     <div
-                                        key={card.id || index} // Usa card.id como clave si está disponible
-                                        className={`flex items-center justify-between p-4 border rounded-lg mb-2 ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""}`}
+                                        key={card.id || index}
+                                        className={`flex items-center justify-between p-4 border rounded-lg mb-2 ${selectedMethod === `card-${index}` ? "bg-gray-200" : ""
+                                            }`}
                                     >
                                         {/* Botón de eliminar */}
                                         <button
                                             className="text-red-600 hover:text-red-800"
                                             onClick={() => handleDeleteCard(card)}
                                         >
-                                            <DeleteOutlined style={{ fontSize: "20px" }} />
+                                            <img src="/images/Caneca.JPG" alt="Eliminar" className="w-5 h-5" />
                                         </button>
 
-                                        {/* Botones de edición y eliminación */}
-                                        <div className="flex gap-4">
-                                            {/* Botón de editar */}
-                                            <button
-                                                className="text-purple-600 hover:text-purple-800"
-                                                onClick={() => handleEditCard(card)}
-                                            >
-                                                <EditOutlined style={{ fontSize: "20px" }} />
-                                            </button>
-                                        </div>
+                                        {/* Botón de editar */}
+                                        <button
+                                            className="text-purple-600 hover:text-purple-800"
+                                            onClick={() => handleEditCard(card)}
+                                        >
+                                            <img src="/images/Lapiz.JPG" alt="Editar" className="w-8 h-8" />
+                                        </button>
 
+                                        {/* Tarjeta */}
                                         <div
                                             onClick={() => setSelectedMethod(`card-${index}`)}
-                                            className="cursor-pointer flex flex-col bg-gradient-to-r from-gray-100 to-gray-200 shadow-md rounded-lg p-2 w-56 max-w-sm border border-gray-300 hover:shadow-lg transition"
+                                            className="cursor-pointer flex flex-col bg-gradient-to-r from-gray-100 to-gray-200 shadow-md rounded-lg p-2 w-48 max-w-sm border border-gray-300 hover:shadow-lg transition"
                                         >
                                             {/* Número de la tarjeta */}
                                             <p className="text-base font-semibold text-gray-800 tracking-wide mb-1">
@@ -576,7 +575,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                                 Exp: {`${card?.expiration?.slice(0, 2) || "MM"}/${card?.expiration?.slice(2) || "YYYY"}`}
                                             </p>
 
-                                            {/* Icono o marca de tarjeta */}
+                                            {/* Icono de tarjeta */}
                                             <div className="flex justify-end mt-2">
                                                 {card?.number?.startsWith("4") ? (
                                                     <img
@@ -596,7 +595,23 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             </div>
                                         </div>
 
-
+                                        {/* Selección de prioridad (solo si es automático) */}
+                                        {isAutomatic && (
+                                            <div className="flex gap-2">
+                                                {[...Array(maxCards)].map((_, priority) => (
+                                                    <button
+                                                        key={priority + 1}
+                                                        className={`w-8 h-8 border-2 rounded-full text-sm font-bold flex items-center justify-center transition-all ${selectedPriority[card.number] === priority + 1
+                                                            ? "bg-green-400 border-green-600 text-white"
+                                                            : "border-gray-400 text-gray-700 hover:bg-gray-200"
+                                                            }`}
+                                                        onClick={() => handlePriorityChange(card.number, priority + 1)}
+                                                    >
+                                                        {priority + 1}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -605,57 +620,73 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         )}
                         {/* Botón para agregar nueva tarjeta */}
                         <button
-                            className="flex flex-col items-center gap-2 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            className="flex flex-col items-center gap-2 p-4 cursor-pointer"
                             onClick={() => setSelectedMethod("newCard")}
                         >
-                            {/* Ícono centrado */}
-                            <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
+                            {/* Caja con borde y "+" en el centro */}
+                            <div className="flex items-center justify-center w-12 h-8 border border-gray-800 rounded-md">
+                                <span className="text-xl font-bold text-gray-800">+</span>
+                            </div>
 
-                            {/* Texto debajo del ícono */}
-                            <p className="text-lg font-semibold text-center">Add New Card</p>
+                            {/* Texto debajo */}
+                            <p className="text-sm font-medium text-gray-800">Add Card</p>
                         </button>
+
+                        {/* Configuración de pago manual o automático */}
                         <div className="flex flex-col items-center gap-6 p-4 border rounded-lg shadow-md bg-white max-w-lg">
-                            {/* Título */}
                             <h2 className="text-xl font-semibold">Select a payment cycle</h2>
 
-                            {/* Opciones de ciclo */}
+                            {/* Opciones de ciclo (Cambian de color al seleccionar) */}
                             <div className="flex items-center gap-4">
-                                <button className="px-4 py-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+                                <button
+                                    className={`px-4 py-2 border rounded-full ${selectedCycle === "Monthly" ? "bg-blue-400 text-white" : "bg-gray-100 hover:bg-gray-200"
+                                        }`}
+                                    onClick={() => setSelectedCycle("Monthly")}
+                                >
                                     Monthly
                                 </button>
-                                <button className="px-4 py-2 border rounded-full bg-green-200 text-green-800 hover:bg-green-300">
+                                <button
+                                    className={`px-4 py-2 border rounded-full ${selectedCycle === "15 days" ? "bg-blue-400 text-white" : "bg-green-200 hover:bg-green-300"
+                                        }`}
+                                    onClick={() => setSelectedCycle("15 days")}
+                                >
                                     15 days
                                 </button>
                             </div>
 
-                            {/* Configuración de pago manual o automático */}
+                            {/* Switch Manual / Automático */}
                             <div className="flex items-center gap-4">
                                 <label className="text-lg font-medium">Manual</label>
                                 <label className="flex items-center">
                                     <input
                                         type="checkbox"
                                         className="hidden"
-                                        onChange={(e) => console.log(e.target.checked ? 'Automatic' : 'Manual')}
+                                        checked={isAutomatic}
+                                        onChange={() => setIsAutomatic(!isAutomatic)}
                                     />
-                                    <span className="relative inline-block w-10 h-6 bg-gray-300 rounded-full">
-                                        <span className="absolute w-4 h-4 bg-white rounded-full top-1 left-1 transform transition-all duration-200"></span>
+                                    <span
+                                        className={`relative inline-block w-10 h-6 rounded-full transition-all duration-200 ${isAutomatic ? "bg-green-500" : "bg-gray-300"
+                                            }`}
+                                    >
+                                        <span
+                                            className={`absolute w-4 h-4 bg-white rounded-full top-1 transition-all duration-200 ${isAutomatic ? "translate-x-4" : "translate-x-0"
+                                                }`}
+                                        ></span>
                                     </span>
                                 </label>
                                 <label className="text-lg font-medium">Automatic</label>
                             </div>
 
-                            {/* Botones */}
+                            {/* Botón para guardar selección */}
                             <div className="flex items-center justify-between w-full mt-4">
-                                <button className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Save</button>
-                                <button
-                                    className="text-blue-500 underline"
-                                    onClick={() => setSelectedMethod(null)}
-                                >
+                                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    Save
+                                </button>
+                                <button className="text-blue-500 underline" onClick={() => setSelectedMethod(null)}>
                                     View Other Payment Methods
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 )}
 
