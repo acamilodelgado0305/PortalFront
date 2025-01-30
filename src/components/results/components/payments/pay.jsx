@@ -543,7 +543,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                             className="text-red-600 hover:text-red-800"
                                             onClick={() => handleDeleteCard(card)}
                                         >
-                                            <DeleteOutlined style={{ fontSize: "20px" }} />
+                                            <img
+                                                src="/images/Caneca.JPG"
+                                                alt="Eliminar"
+                                                className="w-5 h-5"
+                                            />
                                         </button>
 
                                         {/* Botones de edición y eliminación */}
@@ -553,13 +557,17 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                                 className="text-purple-600 hover:text-purple-800"
                                                 onClick={() => handleEditCard(card)}
                                             >
-                                                <EditOutlined style={{ fontSize: "20px" }} />
+                                                <img
+                                                    src="/images/Lapiz.JPG"
+                                                    alt="Editar"
+                                                    className="w-8 h-8"
+                                                />
                                             </button>
                                         </div>
 
                                         <div
                                             onClick={() => setSelectedMethod(`card-${index}`)}
-                                            className="cursor-pointer flex flex-col bg-gradient-to-r from-gray-100 to-gray-200 shadow-md rounded-lg p-2 w-56 max-w-sm border border-gray-300 hover:shadow-lg transition"
+                                            className="cursor-pointer flex flex-col bg-gradient-to-r from-gray-100 to-gray-200 shadow-md rounded-lg p-2 w-48 max-w-sm border border-gray-300 hover:shadow-lg transition"
                                         >
                                             {/* Número de la tarjeta */}
                                             <p className="text-base font-semibold text-gray-800 tracking-wide mb-1">
@@ -605,14 +613,16 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         )}
                         {/* Botón para agregar nueva tarjeta */}
                         <button
-                            className="flex flex-col items-center gap-2 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100"
+                            className="flex flex-col items-center gap-2 p-4  cursor-pointer"
                             onClick={() => setSelectedMethod("newCard")}
                         >
-                            {/* Ícono centrado */}
-                            <CreditCardOutlined style={{ fontSize: "36px", color: "#9333EA" }} />
+                            {/* Caja con borde y "+" en el centro */}
+                            <div className="flex items-center justify-center w-12 h-8 border border-gray-800 rounded-md">
+                                <span className="text-xl font-bold text-gray-800">+</span>
+                            </div>
 
-                            {/* Texto debajo del ícono */}
-                            <p className="text-lg font-semibold text-center">Add New Card</p>
+                            {/* Texto debajo */}
+                            <p className="text-sm font-medium text-gray-800">Add Card</p>
                         </button>
                         <div className="flex flex-col items-center gap-6 p-4 border rounded-lg shadow-md bg-white max-w-lg">
                             {/* Título */}
