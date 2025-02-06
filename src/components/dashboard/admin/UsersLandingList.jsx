@@ -38,6 +38,39 @@ function UsersLandingList() {
         fetchUsers();
     }, []);
 
+    const monthColors = {
+        0: "text-purple-700",   // Enero - Morado intenso
+        1: "text-blue-700",     // Febrero - Azul fuerte
+        2: "text-teal-800",     // Marzo - Verde azulado fuerte
+        3: "text-green-800",    // Abril - Verde fuerte
+        4: "text-yellow-800",   // Mayo - Amarillo fuerte
+        5: "text-orange-800",   // Junio - Naranja fuerte
+        6: "text-red-800",      // Julio - Rojo fuerte
+        7: "text-pink-800",     // Agosto - Rosa fuerte
+        8: "text-indigo-800",   // Septiembre - Índigo fuerte
+        9: "text-gray-800",     // Octubre - Gris fuerte
+        10: "text-lime-800",    // Noviembre - Lima fuerte
+        11: "text-cyan-800",    // Diciembre - Cian fuerte
+    };
+
+    // Lista de meses para el filtro
+    const months = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+
+    const handleMonthFilter = (value) => {
+        if (value) {
+            const filteredUsers = users.filter(user => {
+                const month = dayjs(user.createdAt, 'DD/MM/YYYY').month();
+                return month === value;
+            });
+            setUsers(filteredUsers);
+        } else {
+            // Si no hay filtro, mostramos todos los usuarios
+            fetchUsers();
+        }
+    };
+
     const columns = [
         {
             title: <span className="text-blue-700 text-lg font-bold">Nombre</span>,
@@ -53,7 +86,19 @@ function UsersLandingList() {
             title: <span className="text-red-700 text-lg font-bold">Fecha de Creación</span>,
             dataIndex: 'createdAt',
             key: 'createdAt',
-            sorter: (a, b) => dayjs(a.createdAt, 'DD/MM/YYYY').unix() - dayjs(b.createdAt, 'DD/MM/YYYY').unix(),
+            render: (text) => {
+                const month = dayjs(text, 'DD/MM/YYYY').month(); // Extrae el mes de la fecha
+                return <span className={`${monthColors[month]} font-bold`}>{text}</span>;
+            },
+            // Filtro por mes
+            filters: months.map((month, index) => ({
+                text: month,
+                value: index
+            })),
+            onFilter: (value, record) => {
+                const month = dayjs(record.createdAt, 'DD/MM/YYYY').month();
+                return month === value;
+            }
         }
     ];
 
