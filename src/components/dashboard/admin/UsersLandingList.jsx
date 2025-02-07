@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, Input } from 'antd';
 import { getAllUsersLanding } from '../../../services/studendent.services';
 import * as XLSX from 'xlsx';
 import dayjs from 'dayjs';
@@ -7,8 +7,10 @@ import dayjs from 'dayjs';
 const DEFAULT_DATE = dayjs('2025-01-25T00:00:00Z');
 
 function UsersLandingList() {
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState([]);  // Usuarios a mostrar
+    const [allUsers, setAllUsers] = useState([]);  // Todos los usuarios (sin filtrar)
     const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const formatDate = (dateString) => {
         if (!dateString || !dayjs(dateString).isValid()) {
@@ -28,6 +30,7 @@ function UsersLandingList() {
                     createdAt: formatDate(user.createdAt)
                 }));
                 setUsers(formattedUsers);
+                setAllUsers(formattedUsers); // Guardamos todos los usuarios
             } catch (error) {
                 console.error('Error obteniendo usuarios:', error);
             } finally {
@@ -60,14 +63,28 @@ function UsersLandingList() {
 
     const handleMonthFilter = (value) => {
         if (value) {
-            const filteredUsers = users.filter(user => {
+            const filteredUsers = allUsers.filter(user => {
                 const month = dayjs(user.createdAt, 'DD/MM/YYYY').month();
                 return month === value;
             });
             setUsers(filteredUsers);
         } else {
             // Si no hay filtro, mostramos todos los usuarios
-            fetchUsers();
+            setUsers(allUsers);
+        }
+    };
+
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        if (term === '') {
+            setUsers(allUsers); // Si está vacío, mostramos todos los usuarios
+        } else {
+            const filteredUsers = allUsers.filter(user => {
+                return user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
+            });
+            setUsers(filteredUsers); // Filtramos los usuarios según el término
         }
     };
 
@@ -88,9 +105,8 @@ function UsersLandingList() {
             key: 'createdAt',
             render: (text) => {
                 const month = dayjs(text, 'DD/MM/YYYY').month(); // Extrae el mes de la fecha
-                return <span className={`${monthColors[month]} font-bold`}>{text}</span>;
+                return <span className={`${monthColors[month]} font-semibold`}>{text}</span>;
             },
-            // Filtro por mes
             filters: months.map((month, index) => ({
                 text: month,
                 value: index
@@ -119,10 +135,17 @@ function UsersLandingList() {
         <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">Usuarios Landing</h2>
 
-            <div className="mb-4">
+            <div className="mb-4 flex justify-between items-center">
                 <Button type="primary" onClick={handleDownloadExcel} className="bg-blue-600 hover:bg-blue-700 text-white">
                     Descargar Excel
                 </Button>
+
+                <Input
+                    placeholder="Buscar por nombre o correo"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className="w-60"
+                />
             </div>
 
             <Table
