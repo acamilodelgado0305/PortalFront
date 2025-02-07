@@ -4,6 +4,10 @@ import { getAllUsersLanding } from "../../../services/studendent.services";
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 import { SlidersHorizontal, Circle, Triangle } from "lucide-react";
+import isBetween from "dayjs/plugin/isBetween";
+dayjs.extend(isBetween);
+
+
 
 const DEFAULT_DATE = dayjs("2025-01-25T00:00:00Z");
 
@@ -17,24 +21,26 @@ function UsersLandingList() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [visible, setVisible] = useState(false);
+  
 
   const handleDateRangeChange = (date, dateString, picker) => {
     if (picker === "start") {
-      const start = dayjs(dateString, "DD/MM/YYYY").startOf("day");
-      setStartDate(start);
+      setStartDate(dayjs(dateString, "DD/MM/YYYY").startOf("day"));
     } else if (picker === "end") {
-      const end = dayjs(dateString, "DD/MM/YYYY").endOf("day");
-      setEndDate(end);
+      setEndDate(dayjs(dateString, "DD/MM/YYYY").endOf("day"));
     }
+  };
 
+  useEffect(() => {
     if (startDate && endDate) {
+      setVisible(false);
       const filteredUsers = allUsers.filter((user) => {
         const userDate = dayjs(user.createdAt, "DD/MM/YYYY");
         return userDate.isBetween(startDate, endDate, "day", "[]");
       });
       setUsers(filteredUsers);
     }
-  };
+  }, [startDate, endDate]);
 
   const handleVisibleChange = (visible) => {
     if (endDate) {
@@ -120,6 +126,8 @@ function UsersLandingList() {
         return month === value;
       });
       setUsers(filteredUsers);
+      setStartDate(null)
+      setEndDate(null)
     } else {
       setUsers(allUsers);
     }
@@ -314,7 +322,7 @@ function UsersLandingList() {
 
           <Dropdown overlay={monthMenu} trigger={["click"]} className="ml-4">
             <Button>
-              {selectedMonth !== null ? months[selectedMonth] : "Mes"}
+              {selectedMonth !== null ? <span className="text-purple-700 font-medium">{months[selectedMonth]}</span> : "Mes"}
             </Button>
           </Dropdown>
 
@@ -325,7 +333,19 @@ function UsersLandingList() {
             onVisibleChange={setVisible}
             className="ml-4"
           >
-            <Button>Rango de fecha</Button>
+            <Button>{startDate && endDate ? (
+    <span>
+      <span className="text-purple-600 font-medium">
+        {startDate.format("DD/MM/YYYY")}
+      </span>{" "}
+      -{" "}
+      <span className="text-purple-600 font-medium">
+        {endDate.format("DD/MM/YYYY")}
+      </span>
+    </span>
+  ) : (
+    "Rango de Fecha"
+  )}</Button>
           </Dropdown>
         </div>
       </div>
