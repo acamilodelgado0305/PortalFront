@@ -100,7 +100,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const confirmDetails = () => {
         saveCardDetails();
     }
-
+    console.log(selectedPriority)
     const saveCardDetails = async () => {
         
         // Verificar que tempData no esté vacío
@@ -147,8 +147,10 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             billingAddress1: card.billingAddress1.trim(),
             billingAddress2: card.billingAddress2 ? card.billingAddress2.trim() : "",
             userId: user.id,
+            position: selectedPriority[card.number],
+            automatic: isAutomatic,
+            billinperiod: selectedCycle
         };
-
                 const response = await fetch("https://back.app.esturio.com/api/card/cards", {
                     method: "POST",
                     headers: {
@@ -212,6 +214,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             billingAddress1,
             billingAddress2: cardDetails.billingAddress2 || "",
             userId: user.id,
+            position: selectedPriority,
+            automatic: isAutomatic,
+            billinperiod: selectedCycle
         };
 
         try {
