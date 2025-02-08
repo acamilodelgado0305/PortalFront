@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 import { SlidersHorizontal, Circle, Triangle } from "lucide-react";
 import isBetween from "dayjs/plugin/isBetween";
+import { styled } from "@mui/material";
 dayjs.extend(isBetween);
 
 
@@ -130,6 +131,7 @@ function UsersLandingList() {
       setUsers(filteredUsers);
       setStartDate(null)
       setEndDate(null)
+      setShowFilters(false)
     } else {
       setUsers(allUsers);
     }
@@ -177,6 +179,7 @@ function UsersLandingList() {
       title: <span className="text-lg font-bold text-blue-700">Nombre</span>,
       dataIndex: "name",
       key: "name",
+      render: text => <span style={{ fontSize: '18px' }}>{text}</span> 
     },
     {
       title: (
@@ -186,6 +189,7 @@ function UsersLandingList() {
       ),
       dataIndex: "email",
       key: "email",
+      render: text => <span style={{ fontSize: '18px' }}>{text}</span> 
     },
     {
       title: (
@@ -198,7 +202,7 @@ function UsersLandingList() {
       render: (text) => {
         const month = dayjs(text, "DD/MM/YYYY").month(); // Extrae el mes de la fecha
         return (
-          <span className={`${monthColors[month]} font-bold`}>{text}</span>
+          <span className={`${monthColors[month]} font-bold text-lg`}>{text}</span>
         );
       },
     },
@@ -308,12 +312,12 @@ function UsersLandingList() {
           className="w-60"
         />
 
-        <div className="w-40 grid justify-center items-center relative">
-          <button onClick={(e) => setShowFilters(!showFilters)}>
-            Filtros
-          </button>
+        <div className="flex justify-center items-center relative">
+          
+            Filtros:
+          
 
-          <div className={`${showFilters ? "grid" : "hidden"} absolute z-50 right-24 top-6`}>
+          <div className="flex">
           <Dropdown overlay={sortMenu} trigger={["click"]}>
             <Button className="ml-4">
               Orden{" "}
@@ -362,9 +366,12 @@ function UsersLandingList() {
         rowKey="id"
         loading={loading}
         pagination={false}
+        style={{fontSize: "24px"}}
       />
     </div>
   );
 }
+
+
 
 export default UsersLandingList;
