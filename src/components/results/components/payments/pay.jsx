@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import { Modal, Spin, Table, Button } from "antd"; // Importa el componente Modal de antd
+import { Modal, Spin, Table, Button, Popconfirm } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import humanIcon from "../../../../../src/assets/humanicon.svg";
+
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
     const [selectedMethod, setSelectedMethod] = useState(null);
@@ -21,8 +22,22 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const [isAutomatic, setIsAutomatic] = useState(false); // Estado de pago automático
     const [selectedPriority, setSelectedPriority] = useState({}); // Prioridad de tarjetas
     const [selectedCycle, setSelectedCycle] = useState("Monthly");
+    const [isEventCardTemp, setIsEventCardTemp] = useState({ event: false, data: null });
+    const [cardDetails, setCardDetails] = useState({
+        number: "",
+        expiration: "",
+        cvv: "",
+        firstName: "",
+        lastName: "",
+        country: "",
+        billingAddress1: "",
+        billingAddress2: "",
+    });
+
+    const [tempData, setTempData] = useState([]);
 
     const maxCards = Math.min(savedCards.length, 3);
+    const maxCardsTemp = Math.min(tempData.length, 3);
     // Manejar el cambio de prioridad de tarjeta
     const handlePriorityChange = (cardNumber, priority) => {
         setSelectedPriority((prev) => ({
@@ -37,91 +52,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         setCurrentView("addCreditCard");
     };
     const cancelCardDetails = () => {
-
-        setCardDetails({
-            number: "",
-            expiration: "",
-            cvv: "",
-            firstName: "",
-            lastName: "",
-            country: "",
-            billingAddress1: "",
-            billingAddress2: "",
-        });
-
-        // Resetear estado de edición y redirigir
-        setEditingCard(false);
-        setCurrentView("paymentOptions");
-    };
-
-    useEffect(() => {
-        const fetchSavedCards = async () => {
-            setIsLoadingCards(true);
-            try {
-                const response = await fetch(`https://back.app.esturio.com/api/card/user/${user.id}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch saved cards");
-                }
-                const data = await response.json();
-                setSavedCards(data.data || []);
-                console.log("datostargeta", data)
-                // Asegúrate de que el campo sea el correcto
-            } catch (error) {
-                console.error("Error fetching saved cards:", error);
-            } finally {
-                setIsLoadingCards(false);
-            }
-        };
-
-        if (user.id) {
-            fetchSavedCards();
-        }
-    }, [user.id]);
-
-    const handleViewOtherMethods = () => {
-        setSelectedMethod(null); // Restablecer para mostrar todas las opciones
-    };
-
-    const saveCardDetails = async () => {
-        // Verificar si los campos obligatorios están completos
-        const { number, expiration, cvv, firstName, lastName, country, billingAddress1, billingAddress2 } = cardDetails;
-
-        if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
-            alert("Please fill in all required fields.");
-            return;
-        }
-
-        // Formatear los datos de la nueva tarjeta
-        const newCard = {
-            number: number.trim(),
-            expiration: expiration.trim(),
-            cvv: cvv.trim(),
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            country: country.trim(),
-            billingAddress1: billingAddress1.trim(),
-            billingAddress2: billingAddress2 ? billingAddress2.trim() : "",
-            userId: user.id,
-        };
-
-        try {
-            // Realizar la solicitud para guardar la tarjeta
-            const response = await fetch("https://back.app.esturio.com/api/card/cards", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newCard),
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-
-                if (result.success) {
-                    setSavedCards((prevCards) => [...prevCards, result.data]); // Agregar la nueva tarjeta
-                    alert("Card saved successfully!");
-
-                    // Limpiar los campos y redirigir
+    
                     setCardDetails({
                         number: "",
                         expiration: "",
@@ -132,22 +63,133 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         billingAddress1: "",
                         billingAddress2: "",
                     });
-                    setCurrentView("paymentOptions");
-                } else {
+            
+         //Resetear estado de edición y redirigir
+         setEditingCard(false);
+        setCurrentView("paymentOptions");
+        setSelectedMethod(null)
+    };
+
+    const fetchSavedCards = async () => {
+        setIsLoadingCards(true);
+        try {
+            const response = await fetch(`https://back.app.esturio.com/api/card/user/${user.id}`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch saved cards");
+            }
+            const data = await response.json();
+            setSavedCards(data.data || []);
+            console.log("datostargeta", data)
+            // Asegúrate de que el campo sea el correcto
+        } catch (error) {
+            console.error("Error fetching saved cards:", error);
+        } finally {
+            setIsLoadingCards(false);
+        }
+    };
+    useEffect(() => {
+
+        if (user.id) {
+            fetchSavedCards();
+        }
+    }, [user.id]);
+
+    const handleViewOtherMethods = () => {
+        setSelectedMethod(null); // Restablecer para mostrar todas las opciones
+    };
+    const confirmDetails = () => {
+        saveCardDetails();
+    }
+
+    const saveCardDetails = async () => {
+        
+        // Verificar que tempData no esté vacío
+        if (tempData.length === 0) {
+            alert("No cards to save. Please add at least one card.");
+            return;
+        }
+    
+        // Validar cada tarjeta en tempData
+        for (const card of tempData) {
+            const { number, expiration, cvv, firstName, lastName, country, billingAddress1 } = card;
+    
+            // Verificar campos obligatorios
+            if (!number || !expiration || !cvv || !firstName || !lastName || !country || !billingAddress1) {
+                alert(`Please fill in all required fields for the card ending with ${number.slice(-4)}.`);
+                return;
+            }
+    
+            // Verificar formato del número de tarjeta 
+            if (number.replace(/\s/g, "").length !== 16) {
+                alert(`Invalid card number for the card ending with ${number.slice(-4)}.`);
+                return;
+            }
+            
+            // Verificar formato del CVV (3 o 4 dígitos)
+            if (cvv.length < 3 || cvv.length > 4 || !/^\d+$/.test(cvv)) {
+                alert(`Invalid CVV for the card ending with ${number.slice(-4)}.`);
+                return;
+            }
+            delete card.id;
+        }
+        
+        try {
+            // Enviar cada tarjeta en tempData al servidor una por una
+            for (const card of tempData) {
+                 // Formatear los datos de la nueva tarjeta
+        const newCard = {
+            number: card.number.trim(),
+            expiration: card.expiration.trim(),
+            cvv: card.cvv.trim(),
+            firstName: card.firstName.trim(),
+            lastName: card.lastName.trim(),
+            country: card.country.trim(),
+            billingAddress1: card.billingAddress1.trim(),
+            billingAddress2: card.billingAddress2 ? card.billingAddress2.trim() : "",
+            userId: user.id,
+        };
+
+                const response = await fetch("https://back.app.esturio.com/api/card/cards", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newCard), // Enviar una tarjeta a la vez
+                });
+    
+                if (!response.ok) {
+                    // Manejar errores HTTP (como 400, 500, etc.)
+                    const errorData = await response.json();
+                    console.error("HTTP error:", errorData);
+                    alert(`Failed to save the card ending with ${card.number.slice(-4)}. ${errorData.message || "Please try again."}`);
+                    return; // Detener el proceso si hay un error
+                }
+    
+                const result = await response.json();
+    
+                if (!result.success) {
                     // Manejar el caso en el que la respuesta del servidor no sea exitosa
                     console.error("Server error:", result.message);
-                    alert(result.message || "Failed to save the card. Please try again.");
+                    alert(`Failed to save the card ending with ${card.number.slice(-4)}. ${result.message || "Please try again."}`);
+                    return; // Detener el proceso si hay un error
                 }
-            } else {
-                // Manejar errores HTTP (como 400, 500, etc.)
-                const errorData = await response.json();
-                console.error("HTTP error:", errorData);
-                alert(errorData.message || "Failed to save the card. Please try again.");
+    
+                // Si la tarjeta se guardó correctamente, la agregamos a savedCards
+                //setSavedCards((prevCards) => [...prevCards, result.data]);
             }
+    
+            // Si todas las tarjetas se guardaron correctamente
+            alert("All cards saved successfully!");
+    
+            // Limpiar tempData después de guardar
+            setTempData([]);
+            setCurrentView("paymentOptions");
+            setSelectedMethod("creditCard");
+            fetchSavedCards();
         } catch (error) {
             // Manejar errores de red o de otra índole
-            console.error("Error saving card:", error);
-            alert("An error occurred while saving the card. Please try again later.");
+            console.error("Error saving cards:", error);
+            alert("An error occurred while saving the cards. Please try again later.");
         }
     };
 
@@ -208,6 +250,12 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             console.error("Error updating card:", error);
             alert("An error occurred while updating the card.");
         }
+    };
+
+    const handleDeleteCardTemp = (data) => {
+        const id = data.id; 
+        const updatedTempData = tempData.filter((card) => card.id !== id);
+        setTempData(updatedTempData);
     };
 
     const handleDeleteCard = async (card) => {
@@ -294,18 +342,6 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             alert("An error occurred while processing the payment.");
         }
     };
-
-    const [cardDetails, setCardDetails] = useState({
-        number: "",
-        expiration: "",
-        cvv: "",
-        firstName: "",
-        lastName: "",
-        country: "",
-        billingAddress1: "",
-        billingAddress2: "",
-    });
-
 
 
 
@@ -494,7 +530,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
         </div>
     );
-
+   
     const renderPaymentOptions = () => {
         return (
             <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-2 border-black">
@@ -601,11 +637,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                                                 {[...Array(maxCards)].map((_, priority) => (
                                                     <button
                                                         key={priority + 1}
-                                                        className={`w-8 h-8 border-2 rounded-full text-sm font-bold flex items-center justify-center transition-all ${selectedPriority[card.number] === priority + 1
+                                                        className={`w-8 h-8 border-2 rounded-full text-sm font-bold flex items-center justify-center transition-all ${selectedPriority[card?.number] === priority + 1
                                                             ? "bg-green-400 border-green-600 text-white"
                                                             : "border-gray-400 text-gray-700 hover:bg-gray-200"
                                                             }`}
-                                                        onClick={() => handlePriorityChange(card.number, priority + 1)}
+                                                        onClick={() => handlePriorityChange(card?.number, priority + 1)}
                                                     >
                                                         {priority + 1}
                                                     </button>
@@ -678,10 +714,8 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             </div>
 
                             {/* Botón para guardar selección */}
-                            <div className="flex items-center justify-between w-full mt-4">
-                                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                    Save
-                                </button>
+                            <div className="flex items-center justify-center w-full mt-4">
+                               
                                 <button className="text-blue-500 underline" onClick={() => setSelectedMethod(null)}>
                                     View Other Payment Methods
                                 </button>
@@ -721,7 +755,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 {/* Formulario de nueva tarjeta */}
                 {selectedMethod === "newCard" && (
                     <>
-                        {renderCreditCardForm()}
+                        {tempData.length > 0 ?renderPaymentOptionsbefore(): renderCreditCardForm() }
                         <button
                             className="text-blue-500 underline mt-4"
                             onClick={() => setSelectedMethod("creditCard")}
@@ -892,6 +926,203 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         );
     };
 
+    
+    const renderPaymentOptionsbefore = () => {
+
+        return (
+            <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-2 border-black">
+
+
+                {/* Título, solo cuando no hay método seleccionado */}
+                {selectedMethod === null && (
+                    <h2 className="flex flex-col items-center text-2xl text-center font-semibold my-6">
+                        How do you plan to pay for your classes?
+                    </h2>
+                )}
+
+                {/* Mostrar solo la flecha cuando hay un método de pago seleccionado */}
+
+                {
+                    !isEventCardTemp.event ?
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-lg font-medium mb-4">Card Details Confirmation</h3>
+
+                            {isLoadingCards ? (
+                                <p className="text-gray-500">Loading saved cards...</p>
+                            ) : tempData && tempData.length > 0 ? (
+                                <div>
+                                    {
+                                        tempData.map((data, key) => {
+                                            return (
+                                                <div
+                                                    key={key || 0} // Usamos 0 como índice por defecto
+                                                    className={`flex items-center justify-between p-4 border rounded-lg mb-2 ${selectedMethod === `card-0` ? "bg-gray-200" : ""}`}
+                                                >
+                                                    {/* Botón de eliminar */}
+                                                    <button
+                                                        className="text-red-600 hover:text-red-800"
+                                                        onClick={() => handleDeleteCardTemp(data)}
+                                                    >
+                                                        <img src="https://res.cloudinary.com/dybws2ubw/image/upload/v1738201771/Caneca_jgzvl3.jpg" alt="Eliminar" className="w-5 h-5" />
+                                                    </button>
+
+                                                    {/* Botón de editar */}
+                                                    <button
+                                                        className="text-purple-600 hover:text-purple-800"
+                                                        onClick={() => { setIsEventCardTemp({ event: true, data }); setCardDetails(data) }}
+                                                    >
+                                                        <img src="https://res.cloudinary.com/dybws2ubw/image/upload/v1738201806/Lapiz_jfopar.jpg" alt="Editar" className="w-8 h-8" />
+                                                    </button>
+
+                                                    {/* Tarjeta */}
+                                                    <div
+                                                        onClick={() => setSelectedMethod(`card-0`)}
+                                                        className="cursor-pointer flex flex-col bg-gradient-to-r from-gray-100 to-gray-200 shadow-md rounded-lg p-2 w-48 max-w-sm border border-gray-300 hover:shadow-lg transition"
+                                                    >
+                                                        {/* Número de la tarjeta */}
+                                                        <p className="text-base font-semibold text-gray-800 tracking-wide mb-1">
+                                                            **** **** **** {data?.number?.slice(-4) || "XXXX"}
+                                                        </p>
+
+                                                        {/* Nombre del titular */}
+                                                        <p className="text-xs text-gray-700 mb-1 leading-tight">
+                                                            {`${data?.firstName || "Unknown"} ${cardDetails?.lastName || "Unknown"}`}
+                                                        </p>
+
+                                                        {/* Fecha de expiración */}
+                                                        <p className="text-xs text-gray-600 leading-tight">
+                                                            Exp: {`${data?.expiration?.slice(0, 2) || "MM"}/${cardDetails?.expiration?.slice(2) || "YYYY"}`}
+                                                        </p>
+
+                                                        {/* Icono de tarjeta */}
+                                                        <div className="flex justify-end mt-2">
+                                                            {data?.number?.startsWith("4") ? (
+                                                                <img
+                                                                    src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
+                                                                    alt="Visa"
+                                                                    className="h-4"
+                                                                />
+                                                            ) : data?.number?.startsWith("5") ? (
+                                                                <img
+                                                                    src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg"
+                                                                    alt="Mastercard"
+                                                                    className="h-4"
+                                                                />
+                                                            ) : (
+                                                                <p className="text-xs text-gray-500">Unknown</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Selección de prioridad (solo si es automático) */}
+                                                    {isAutomatic && (
+                                                        <div className="flex gap-2">
+                                                            {[...Array(maxCardsTemp)].map((_, priority) => (
+                                                                <button
+                                                                    key={priority + 1}
+                                                                    className={`w-8 h-8 border-2 rounded-full text-sm font-bold flex items-center justify-center transition-all ${selectedPriority[data?.number] === priority + 1
+                                                                        ? "bg-green-400 border-green-600 text-white"
+                                                                        : "border-gray-400 text-gray-700 hover:bg-gray-200"
+                                                                        }`}
+                                                                    onClick={() => handlePriorityChange(data?.number, priority + 1)}
+                                                                >
+                                                                    {priority + 1}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            ) : (
+                                <p className="text-gray-600">No saved cards available.</p>
+                            )}
+                            {/* Botón para agregar nueva tarjeta */}
+                            <button
+                                className="flex flex-col items-center gap-2 p-4 cursor-pointer"
+                                onClick={() => setIsEventCardTemp({ event: true, data: null })}
+                            >
+                                {/* Caja con borde y "+" en el centro */}
+                                <div className="flex items-center justify-center w-12 h-8 border border-gray-800 rounded-md">
+                                    <span className="text-xl font-bold text-gray-800">+</span>
+                                </div>
+
+                                {/* Texto debajo */}
+                                <p className="text-sm font-medium text-gray-800">Add Card</p>
+                            </button>
+
+                            {/* Configuración de pago manual o automático */}
+                            <div className="flex flex-col items-center gap-6 p-4 border rounded-lg shadow-md bg-white max-w-lg">
+                                <h2 className="text-xl font-semibold">Select a payment cycle</h2>
+
+                                {/* Opciones de ciclo (Cambian de color al seleccionar) */}
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        className={`px-4 py-2 border rounded-full ${selectedCycle === "Monthly" ? "bg-blue-400 text-white" : "bg-gray-100 hover:bg-gray-200"
+                                            }`}
+                                        onClick={() => setSelectedCycle("Monthly")}
+                                    >
+                                        Monthly
+                                    </button>
+                                    <button
+                                        className={`px-4 py-2 border rounded-full ${selectedCycle === "15 days" ? "bg-blue-400 text-white" : "bg-green-200 hover:bg-green-300"
+                                            }`}
+                                        onClick={() => setSelectedCycle("15 days")}
+                                    >
+                                        15 days
+                                    </button>
+                                </div>
+
+                                {/* Switch Manual / Automático */}
+                                <div className="flex items-center gap-4">
+                                    <label className="text-lg font-medium">Manual</label>
+                                    <label className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            className="hidden"
+                                            checked={isAutomatic}
+                                            onChange={() => setIsAutomatic(!isAutomatic)}
+                                        />
+                                        <span
+                                            className={`relative inline-block w-10 h-6 rounded-full transition-all duration-200 ${isAutomatic ? "bg-green-500" : "bg-gray-300"
+                                                }`}
+                                        >
+                                            <span
+                                                className={`absolute w-4 h-4 bg-white rounded-full top-1 transition-all duration-200 ${isAutomatic ? "translate-x-4" : "translate-x-0"
+                                                    }`}
+                                            ></span>
+                                        </span>
+                                    </label>
+                                    <label className="text-lg font-medium">Automatic</label>
+                                </div>
+
+                                {/* Botón para guardar selección */}
+                                <div className="flex items-center justify-between w-full mt-4">
+                    
+                                    <Popconfirm
+                                    title="confirma el registro de tus targetas"
+                                    description="revisa los detalles de las targetas si estas seguro de la informacion pulsa ok para guardar"
+                                    className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                                    onConfirm={confirmDetails}
+                                    >
+                                        Save
+                                    </Popconfirm>
+                                    <button className=" text-blue-500 underline" onClick={() => {setSelectedMethod(null), setCurrentView("paymentOptions")}}>
+                                        View Other Payment Methods
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        :
+                        renderCreditCardFormTemp()
+                }
+
+            </div>
+
+        );
+    };
     const renderCreditCardForm = () => (
         <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
             <h2 className="text-2xl font-semibold text-center mb-6">
@@ -1010,7 +1241,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     <button
                         type="button"
                         className="bg-purple-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-purple-400"
-                        onClick={() => (editingCard ? updateCardDetails() : saveCardDetails())}
+                        onClick={() => (editingCard ? updateCardDetails() :/*saveCardDetails() */ setCurrentView("addCreditCardConfirm"), setTempData([...tempData, { ...cardDetails, id: Date.now() }]))}
                     >
                         {editingCard ? "Update" : "Save"}
                     </button>
@@ -1018,6 +1249,159 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             </form>
         </div>
     );
+
+    const renderCreditCardFormTemp = () => {
+        const saveCardDetails = () => {
+            if (isEventCardTemp.data != null) {
+                // Si estamos editando, actualizamos la tarjeta existente en tempData
+                const updatedTempData = tempData.map((card) =>
+                    card.id === isEventCardTemp.data.id ? cardDetails : card
+                );
+                setTempData(updatedTempData);
+            } else {
+                // Si es una nueva tarjeta, la agregamos a tempData
+                setTempData([...tempData, { ...cardDetails, id: Date.now() }]); // Usamos Date.now() como ID temporal
+            }
+            setIsEventCardTemp({ event: false, data: null }); // Cambiamos la vista después de guardar
+            setCardDetails({
+                number: "",
+                expiration: "",
+                cvv: "",
+                firstName: "",
+                lastName: "",
+                country: "",
+                billingAddress1: "",
+                billingAddress2: "",
+            });
+        };
+
+        return (
+            <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-xl border-2 border-black">
+                <h2 className="text-2xl font-semibold text-center mb-6">
+                    {isEventCardTemp.data && isEventCardTemp.event ? "Edit Credit Card" : "Add Credit Card"}
+                </h2>
+                <form className="flex flex-col gap-4">
+                    {/* Número de tarjeta */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Card Number *</label>
+                        <input
+                            type="text"
+                            placeholder="4444 5555 6666 7777"
+                            className="border rounded-lg p-2 w-full"
+                            value={isEventCardTemp.data && cardDetails.number}
+                            onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
+                        />
+                    </div>
+
+                    {/* Fecha de expiración */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-gray-700 font-semibold mb-2">Expiration *</label>
+                            <input
+                                type="text"
+                                placeholder="MM/YYYY"
+                                className="border rounded-lg p-2 w-full"
+                                value={isEventCardTemp.data && cardDetails.expiration}
+                                onChange={(e) => setCardDetails({ ...cardDetails, expiration: e.target.value })}
+                            />
+                        </div>
+
+                        {/* CVV */}
+                        <div>
+                            <label className="block text-gray-700 font-semibold mb-2">CVV *</label>
+                            <input
+                                type="text"
+                                placeholder="123"
+                                className="border rounded-lg p-2 w-full"
+                                value={isEventCardTemp.data && cardDetails.cvv}
+                                onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Nombre del titular */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-gray-700 font-semibold mb-2">First Name *</label>
+                            <input
+                                type="text"
+                                placeholder="David"
+                                className="border rounded-lg p-2 w-full"
+                                value={isEventCardTemp.data && cardDetails.firstName}
+                                onChange={(e) => setCardDetails({ ...cardDetails, firstName: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-gray-700 font-semibold mb-2">Last Name *</label>
+                            <input
+                                type="text"
+                                placeholder="Martinez"
+                                className="border rounded-lg p-2 w-full"
+                                value={isEventCardTemp.data && cardDetails.lastName}
+                                onChange={(e) => setCardDetails({ ...cardDetails, lastName: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    {/* País */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Country *</label>
+                        <input
+                            type="text"
+                            placeholder="Mexico"
+                            className="border rounded-lg p-2 w-full"
+                            value={isEventCardTemp.data && cardDetails.country}
+                            onChange={(e) => setCardDetails({ ...cardDetails, country: e.target.value })}
+                        />
+                    </div>
+
+                    {/* Dirección de facturación */}
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Billing Address Line 1 *</label>
+                        <input
+                            type="text"
+                            placeholder="C Independencia No. 54"
+                            className="border rounded-lg p-2 w-full"
+                            value={isEventCardTemp.data && cardDetails.billingAddress1}
+                            onChange={(e) =>
+                                setCardDetails({ ...cardDetails, billingAddress1: e.target.value })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Billing Address Line 2</label>
+                        <input
+                            type="text"
+                            placeholder="D.F. Mexico, Mexico"
+                            className="border rounded-lg p-2 w-full"
+                            value={isEventCardTemp.data && cardDetails.billingAddress2}
+                            onChange={(e) =>
+                                setCardDetails({ ...cardDetails, billingAddress2: e.target.value })
+                            }
+                        />
+                    </div>
+
+                    {/* Botones de acción */}
+                    <div className="flex justify-between mt-4">
+                        <button
+                            type="button"
+                            className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-400"
+                            onClick={() => setIsEventCardTemp({ event: false, data: null })}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className="bg-purple-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-purple-400"
+                            onClick={saveCardDetails} // Usamos la nueva función saveCardDetails
+                        >
+                            {editingCard ? "Update" : "Save"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        );
+    };
 
 
     const renderPaymentSettings = () => (
@@ -1191,6 +1575,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             {currentView === "paymentOptions" && renderPaymentOptions()}
             {currentView === "paymentHistory" && renderPaymentHistory()}
             {currentView === "addCreditCard" && renderCreditCardForm()}
+            {currentView === "addCreditCardConfirm" && renderPaymentOptionsbefore()}
         </div>
     );
 };
