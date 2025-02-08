@@ -21,6 +21,7 @@ function UsersLandingList() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [showFilters, setShowFilters] = useState(false)
   
 
   const handleDateRangeChange = (date, dateString, picker) => {
@@ -28,6 +29,7 @@ function UsersLandingList() {
       setStartDate(dayjs(dateString, "DD/MM/YYYY").startOf("day"));
     } else if (picker === "end") {
       setEndDate(dayjs(dateString, "DD/MM/YYYY").endOf("day"));
+      setSelectedMonth(null)
     }
   };
 
@@ -306,9 +308,12 @@ function UsersLandingList() {
           className="w-60"
         />
 
-        <div>
-          <span>Filtros: </span>
+        <div className="w-40 grid justify-center items-center relative">
+          <button onClick={(e) => setShowFilters(!showFilters)}>
+            Filtros
+          </button>
 
+          <div className={`${showFilters ? "grid" : "hidden"} absolute z-50 right-24 top-6`}>
           <Dropdown overlay={sortMenu} trigger={["click"]}>
             <Button className="ml-4">
               Orden{" "}
@@ -347,6 +352,7 @@ function UsersLandingList() {
     "Rango de Fecha"
   )}</Button>
           </Dropdown>
+          </div>
         </div>
       </div>
 
