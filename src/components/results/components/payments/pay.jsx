@@ -100,7 +100,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
     const confirmDetails = () => {
         saveCardDetails();
     }
-    console.log(selectedPriority)
+
     const saveCardDetails = async () => {
         
         // Verificar que tempData no esté vacío
