@@ -250,7 +250,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         }
     };
 
-    const handlePaymentWithSavedCard = async (card) => {
+    /* const handlePaymentWithSavedCard = async (card) => {
         // Verificar que la tarjeta tenga todos los datos necesarios
         if (!card || !card.number || !card.expiration || !card.cvv) {
             alert("Card details are incomplete. Please try again.");
@@ -293,7 +293,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
             console.error("Error processing payment:", error);
             alert("An error occurred while processing the payment.");
         }
-    };
+    }; */
 
     const [cardDetails, setCardDetails] = useState({
         number: "",
@@ -347,6 +347,14 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         setIsModalVisible(false);
         setCurrentView("menu");
     };
+
+    const handlePaymentWithSavedCard = async (details) => {
+        // Aquí puedes enviar la información del pago al backend o procesarlo directamente
+        console.log("Payment successful:", details);
+        showModal(details);
+        handlePaymentApproval(details); // Llamar a tu función para manejar la aprobación del pago
+    };
+
 
     const handlePaymentApproval = async (transactionDetails) => {
         // Combinar los datos del pago con los datos del estudiante y profesor
@@ -757,8 +765,51 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     </div>
                 )}
 
-                {/* Pago con PayPal */}
                 {selectedMethod === "paypal" && (
+                    <div className="flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100">
+                        <div className="mt-4 w-full">
+                            <PayPalButtons
+                                createOrder={(data, actions) => {
+                                    return actions.order.create({
+                                        purchase_units: [{ amount: { value: hourValue } }],
+                                    });
+                                }}
+                                onApprove={async (data, actions) => {
+                                    try {
+                                        // Capture el pago (esto lo hace después de la aprobación)
+                                        const details = await actions.order.capture();
+
+                                        console.log("Payment successful:", details);
+
+                                        // Si el pago es exitoso, guarda el acuerdo de facturación
+                                        // Esto es opcional y solo si deseas guardar la información de pago
+                                        if (details.purchase_units[0].payments.captures[0].status === "COMPLETED") {
+                                            // Aquí puedes almacenar el 'payerId' para realizar futuros pagos sin que el estudiante ingrese sus datos
+                                            const payerId = details.payer.payer_id;
+                                            console.log("Saved payerId:", payerId);
+                                        }
+
+                                        // Mostrar modal de éxito y manejar la aprobación
+                                        showModal(details);
+                                        handlePaymentApproval(details);
+                                    } catch (error) {
+                                        console.error("PayPal error:", error);
+                                        alert("An error occurred during payment.");
+                                    }
+                                }}
+                                onError={(error) => console.error("PayPal error:", error)}
+                            />
+                        </div>
+                        <button
+                            className="text-blue-500 underline mt-4"
+                            onClick={() => setSelectedMethod(null)}
+                        >
+                            View Other Payment Methods
+                        </button>
+                    </div>
+                )}
+                {/* Pago con PayPal */}
+                {/* {selectedMethod === "paypal" && (
                     <div className="flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100">
                         <div className="mt-4 w-full">
                             <PayPalButtons
@@ -784,7 +835,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                             View Other Payment Methods
                         </button>
                     </div>
-                )}
+                )} */}
 
                 {/* Modal para mostrar detalles de la transacción */}
                 <Modal
