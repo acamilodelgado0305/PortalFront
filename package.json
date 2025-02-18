@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.6",
     "@mui/x-data-grid": "^6.19.1",
-    "@paypal/react-paypal-js": "^8.7.0",
+    "@paypal/react-paypal-js": "^8.8.2",
     "@shadcn/ui": "^0.0.4",
     "amazon-chime-sdk-js": "^3.26.0",
     "antd": "^5.21.6",
