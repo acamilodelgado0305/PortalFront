@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Modal, Spin, Table, Button, Popconfirm } from "antd"; // Importa el componente Modal de antd
 import { CreditCardOutlined, BankOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import PayPalCardForm from "./PayPalCardForm";
 import humanIcon from "../../../../../src/assets/humanicon.svg";
 import BraintreeDropIn from "./dropContaine";
 import PaymentSuccessCheck from "./checkAnimation";
