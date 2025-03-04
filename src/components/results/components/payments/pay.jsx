@@ -4,6 +4,8 @@ import { Modal, Spin, Table, Button, Popconfirm } from "antd"; // Importa el com
 import { CreditCardOutlined, BankOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import PayPalCardForm from "./PayPalCardForm";
 import humanIcon from "../../../../../src/assets/humanicon.svg";
+import BraintreeDropIn from "./dropContaine";
+import PaymentSuccessCheck from "./checkAnimation";
 
 const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, hourValue }) => {
     const [currentView, setCurrentView] = useState("menu"); // Controla la vista actual del componente
@@ -402,10 +404,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
         const combinedData = {
             transactionDetails: {
                 transactionId: transactionDetails.id,
-                payerName: `${transactionDetails.payer.name.given_name} ${transactionDetails.payer.name.surname}`,
-                payerEmail: transactionDetails.payer.email_address,
-                amount: transactionDetails.purchase_units[0].amount.value,
-                currency: transactionDetails.purchase_units[0].amount.currency_code,
+                payerName: `${transactionDetails.firstName} ${transactionDetails.lastName}`,
+                payerEmail: transactionDetails.email,
+                amount: transactionDetails.amount,
+                currency: transactionDetails.currency,
+                customerId: transactionDetails.customerId
             },
             student: {
                 id: user.id,
@@ -424,7 +427,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                 cost: hourValue,
             },
         };
-
+      
         try {
             // Enviar los datos al backend
             const response = await fetch("https://back.app.esturio.com/api/transactions", {
@@ -437,6 +440,9 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
             if (response.ok) {
                 console.log("Transacción guardada exitosamente");
+                setTimeout(() => {
+                   setCurrentView("menu")
+                }, 2000)
             } else {
                 console.error("Error al guardar la transacción:", await response.json());
             }
@@ -543,7 +549,11 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
 
         </div>
     );
+       
 
+    const processPayment = () => {
+
+    }
     const renderPaymentOptions = () => {
         return (
             <div className="flex flex-col bg-white shadow-lg rounded-lg p-4 w-full max-w-lg border-2 border-black">
@@ -640,8 +650,8 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                         </button>
                     </div>
                 )}
- */}
-                {selectedMethod === "creditCard" && <PayPalCardForm amount={hourValue} />}
+ */}            
+                {selectedMethod === "creditCard" && <BraintreeDropIn amount={hourValue}  handlePaymentApproval={handlePaymentApproval} setCurrentView={setCurrentView}  />}
                 {selectedMethod === "paypal" && (
                     <div className="flex flex-col items-start gap-4 p-4 rounded-lg border shadow-md cursor-pointer hover:bg-gray-100">
                         <div className="mt-4 w-full">
@@ -1462,6 +1472,7 @@ const Pay = ({ teacher, user, daySelected, hourSelected, hourSelectedTeacher, ho
                     <Spin size="large" />
                 </div>
             )}
+            {currentView === "successPay" && <PaymentSuccessCheck />}
             {currentView === "menu" && renderMenu()}
             {currentView === "proceedToPayment" && renderProceedToPayment()}
             {currentView === "paymentSettings" && renderPaymentSettings()}
