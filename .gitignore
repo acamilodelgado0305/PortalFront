@@ -31,3 +31,5 @@ Thumbs.db
 package-lock.json
 yarn.lock
 .vscode/
+temp_auto_push.bat
+temp_interactive_push.bat
